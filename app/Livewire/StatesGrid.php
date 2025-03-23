@@ -14,8 +14,8 @@ class StatesGrid extends Component
         // Get states that have at least one project
         $statesWithProjects = State::with('city')
             ->withCount('projects')
-            // ->whereHas('projects')  // This ensures only states with projects are selected
-            ->orderBy('projects_count', 'desc')  // Optional: order by most projects first
+            ->whereHas('city') // This ensures only states with cities are selected
+            ->orderBy('projects_count', 'desc')
             ->take(12)
             ->get();
 
