@@ -26,7 +26,7 @@ class StatesGrid extends Component
                 'name' => $state->name,
                 'projects_count' => $state->projects_count,
                 'height' => $this->getRandomHeight(),
-                'city_id' => $state->city->id ?? 1,
+                'city_id' => $state->city ? $state->city->id : 1,
                 'photo' => $state->photo ? asset('storage/' . $state->photo) : asset('frontend/img/riva.jpg'),
             ];
         });

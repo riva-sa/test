@@ -49,8 +49,8 @@ class AppServiceProvider extends ServiceProvider
         $this->configureModels();
         $this->translatableComponents();
 
-        // $BlogSettings = Setting::first();
-        // view()->share('BlogSettings', $BlogSettings);
+        $BlogSettings = Setting::first();
+        view()->share('BlogSettings', $BlogSettings);
 
         // LanguageSwitch::configureUsing(function (LanguageSwitch $switch) {
         //     $switch
