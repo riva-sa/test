@@ -38,15 +38,24 @@ class ProjectSeder extends Seeder
         }
 
         // Disable foreign key checks
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        // In your seeder:
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        } else if (DB::getDriverName() === 'pgsql') {
+            DB::statement('SET CONSTRAINTS ALL DEFERRED;');
+        }
 
         // First clear the tables to avoid duplicate entries
         DB::table('states')->truncate();
         DB::table('cities')->truncate();
 
         // Re-enable foreign key checks
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-
+        // Re-enable foreign key checks
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        } else if (DB::getDriverName() === 'pgsql') {
+            DB::statement('SET CONSTRAINTS ALL IMMEDIATE;');
+        }
         // Define cities with their states
         $locations = [
             'الرياض' => [
