@@ -1,0 +1,366 @@
+<?php
+
+namespace App\Livewire\Frontend;
+
+use App\Models\Developer;
+use Livewire\Component;
+use App\Models\Project;
+use App\Models\City;
+use App\Models\State;
+use App\Models\Unit;
+use App\Models\ProjectType;
+use Livewire\Attributes\Title;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
+use Livewire\Attributes\Url;
+use Livewire\WithPagination;
+
+#[Title('المشاريع')]
+class ProjectsPage extends Component
+{
+    use LivewireAlert;
+    use WithPagination;
+
+    #[Url]
+    public $view_type = 'projects'; // Default view
+
+    #[Url]
+    public $projects_page = 1; // Pagination for projects
+
+    #[Url]
+    public $units_page = 1; // Pagination for units
+
+    #[Url]
+    public $selected_projectTypes = [];
+    #[Url]
+    public $selected_developer = [];
+    #[Url]
+    public $is_featured = false;
+    #[Url]
+    public $price_range = 0;
+
+    #[Url]
+    public $space_range = 0;
+
+    #[URL]
+    public $price_min = 0;
+
+    #[URL]
+    public $price_max = 10000000;
+
+    #[URL]
+    public $space_min = 0;
+
+    #[URL]
+    public $space_max = 5000;
+
+    #[Url]
+    public $selected_bedrooms = [];
+
+    #[Url]
+    public $selected_bathrooms = [];
+
+    #[Url]
+    public $selected_kitchens = [];
+
+    #[Url]
+    public $selected_cities = null;
+
+    #[Url]
+    public $selected_states = null;
+
+    #[Url]
+    public $projectCaseAvilable = true;
+
+    public $sort_by = 'id';
+    public $sort_direction = 'asc';
+
+    public $states = [];
+    public $cities = [];
+
+    public function sortBy($field)
+    {
+        if ($this->sort_by === $field) {
+            $this->sort_direction = $this->sort_direction === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sort_by = $field;
+            $this->sort_direction = 'asc';
+        }
+    }
+
+    public function mount()
+    {
+        // Get all URL parameters
+        $urlParams = request()->query();
+
+        // Handle arrays in URL parameters
+        $this->selected_projectTypes = !empty($urlParams['selected_projectTypes']) ?
+            (is_array($urlParams['selected_projectTypes']) ? $urlParams['selected_projectTypes'] : [$urlParams['selected_projectTypes']]) :
+            [];
+
+        $this->selected_developer = !empty($urlParams['selected_developer']) ?
+            (is_array($urlParams['selected_developer']) ? $urlParams['selected_developer'] : [$urlParams['selected_developer']]) :
+            [];
+
+        $this->selected_bedrooms = !empty($urlParams['selected_bedrooms']) ?
+            (is_array($urlParams['selected_bedrooms']) ? $urlParams['selected_bedrooms'] : [$urlParams['selected_bedrooms']]) :
+            [];
+
+        $this->selected_bathrooms = !empty($urlParams['selected_bathrooms']) ?
+            (is_array($urlParams['selected_bathrooms']) ? $urlParams['selected_bathrooms'] : [$urlParams['selected_bathrooms']]) :
+            [];
+
+        $this->selected_kitchens = !empty($urlParams['selected_kitchens']) ?
+            (is_array($urlParams['selected_kitchens']) ? $urlParams['selected_kitchens'] : [$urlParams['selected_kitchens']]) :
+            [];
+
+        // Handle boolean values
+        $this->is_featured = isset($urlParams['is_featured']) ?
+            filter_var($urlParams['is_featured'], FILTER_VALIDATE_BOOLEAN) :
+            false;
+
+        $this->projectCaseAvilable = isset($urlParams['projectCaseAvilable']) ? true : false;
+
+        // Handle numeric values
+        $this->price_range = $urlParams['price_range'] ?? 0;
+        $this->space_range = $urlParams['space_range'] ?? null;
+        $this->price_min = $urlParams['price_min'] ?? 0;
+        $this->price_max = $urlParams['price_max'] ?? 10000000;
+        $this->space_min = $urlParams['space_min'] ?? 0;
+        $this->space_max = $urlParams['space_max'] ?? 5000;
+
+        // Handle view type
+        $this->view_type = $urlParams['view_type'] ?? 'projects';
+        // $this->projectCaseAvilable = $urlParams['projectCaseAvilable'] ?? true;
+
+        // Handle city and state
+        $this->selected_cities = $urlParams['selected_cities'] ?? null;
+        $this->selected_states = $urlParams['selected_states'] ?? null;
+
+        // Load cities
+        $this->cities = City::all();
+
+        // Load states if city is selected
+        if ($this->selected_cities) {
+            $this->states = State::where('city_id', $this->selected_cities)->get();
+        } else {
+            $this->states = collect();
+        }
+
+        // Handle sorting
+        $this->sort_by = $urlParams['sort_by'] ?? 'id';
+        $this->sort_direction = $urlParams['sort_direction'] ?? 'asc';
+    }
+
+    protected $queryString = [
+        'view_type' => ['except' => 'projects'],
+        'projects_page' => ['except' => 1],
+        'units_page' => ['except' => 1],
+        'selected_projectTypes' => ['except' => []],
+        'selected_developer' => ['except' => []],
+        'is_featured' => ['except' => false],
+        'projectCaseAvilable' => ['except' => true],
+        'price_range' => ['except' => 0],
+        'space_range' => ['except' => null],
+        'price_min' => ['except' => 0],
+        'price_max' => ['except' => 10000000],
+        'space_min' => ['except' => 0],
+        'space_max' => ['except' => 5000],
+        'selected_bedrooms' => ['except' => []],
+        'selected_bathrooms' => ['except' => []],
+        'selected_kitchens' => ['except' => []],
+        'selected_cities' => ['except' => null],
+        'selected_states' => ['except' => null],
+        'sort_by' => ['except' => 'id'],
+        'sort_direction' => ['except' => 'asc']
+    ];
+
+    // Update state based on selected city
+    public function updatedSelectedCities($value)
+    {
+        if ($value) {
+            $this->states = State::where('city_id', $value)->get();
+            // Reset state when city changes
+            $this->selected_states = null;
+        } else {
+            $this->states = collect();
+            $this->selected_states = null;
+        }
+    }
+
+    // Reset pagination when switching tabs
+    public function updatedViewType($value)
+    {
+        if ($value === 'projects') {
+            $this->resetPage('units_page'); // Reset units pagination
+        } else {
+            $this->resetPage('projects_page'); // Reset projects pagination
+        }
+    }
+
+    public function showUnitDetails($unitId)
+    {
+        $this->dispatch('loadUnit', [
+            'unitId' => $unitId
+        ]);
+    }
+
+    public function render()
+    {
+        $query = null;
+
+        if ($this->view_type === 'projects') {
+            $query = Project::with('projectType', 'developer', 'units')->where('status', 1);
+
+            if (!empty($this->selected_projectTypes)) {
+                $query->whereIn('project_type_id', $this->selected_projectTypes);
+            }
+
+            if (!empty($this->selected_developer)) {
+                $query->whereIn('developer_id', $this->selected_developer);
+            }
+
+            if ($this->is_featured) {
+                $query->where('is_featured', 1);
+            }
+
+            if ($this->selected_cities) {
+                $query->where('city_id', $this->selected_cities);
+            }
+
+            if ($this->selected_states) {
+                $query->where('state_id', $this->selected_states);
+            }
+
+            if (!empty($this->selected_bedrooms)) {
+                $query->whereHas('units', function($q) {
+                    $q->whereIn('beadrooms', $this->selected_bedrooms);
+                });
+            }
+
+            if ($this->projectCaseAvilable == true){
+                $query->whereHas('units', function($q) {
+                    $q->where('case', 0);
+                });
+            }
+
+            if (!empty($this->selected_bathrooms)) {
+                $query->whereHas('units', function($q) {
+                    $q->whereIn('bathrooms', $this->selected_bathrooms);
+                });
+            }
+
+            if (!empty($this->selected_kitchens)) {
+                $query->whereHas('units', function($q) {
+                    $q->whereIn('kitchen', $this->selected_kitchens);
+                });
+            }
+
+            // Add price range filter
+            if ($this->price_min > 0 || $this->price_max < 10000000) {
+                $query->whereHas('units', function($q) {
+                    $q->whereBetween('unit_price', [$this->price_min, $this->price_max]);
+                });
+            }
+
+            // Add space range filter
+            if ($this->space_min > 0 || $this->space_max < 10000) {
+                $query->whereHas('units', function($q) {
+                    $q->whereBetween('unit_area', [$this->space_min, $this->space_max]);
+                });
+            }
+
+            if ($this->sort_by === 'unit_price') {
+                $query->addSelect([
+                    'min_unit_price' => Unit::selectRaw('MIN(unit_price)')
+                        ->whereColumn('units.project_id', 'projects.id')
+                        ->limit(1)
+                ])->orderBy('min_unit_price', $this->sort_direction);
+            } else {
+                $query->orderBy($this->sort_by, $this->sort_direction);
+            }
+
+            // Use projects_page for pagination
+            $items = $query->paginate(18, ['*'], 'projects_page');
+        } else {
+            // Units view
+            $query = Unit::with('project', 'project.developer')->whereHas('project', function($q) {
+                $q->where('status', 1);
+            });
+
+            if (!empty($this->selected_projectTypes)) {
+                $query->whereHas('project', function($q) {
+                    $q->whereIn('project_type_id', $this->selected_projectTypes);
+                });
+            }
+
+            if (!empty($this->selected_developer)) {
+                $query->whereHas('project', function($q) {
+                    $q->whereIn('developer_id', $this->selected_developer);
+                });
+            }
+
+            if ($this->is_featured) {
+                $query->whereHas('project', function($q) {
+                    $q->where('is_featured', 1);
+                });
+            }
+            if ($this->projectCaseAvilable == true){
+                $query->where('case', 0);
+            }
+
+
+            if ($this->selected_cities) {
+                $query->whereHas('project', function($q) {
+                    $q->where('city_id', $this->selected_cities);
+                });
+            }
+
+            if ($this->selected_states) {
+                $query->whereHas('project', function($q) {
+                    $q->where('state_id', $this->selected_states);
+                });
+            }
+
+            if ($this->price_range > 0) {
+                $query->where('unit_price', '<=', $this->price_range);
+            }
+
+            // Add price range filter
+            if ($this->price_min > 0 || $this->price_max < 10000000) {
+                $query->whereBetween('unit_price', [$this->price_min, $this->price_max]);
+            }
+
+            // Add space range filter
+            if ($this->space_min > 0 || $this->space_max < 10000) {
+                $query->whereBetween('unit_area', [$this->space_min, $this->space_max]);
+            }
+
+
+            if (!empty($this->selected_bedrooms)) {
+                $query->where('beadrooms', $this->selected_bedrooms);
+            }
+
+            if (!empty($this->selected_bathrooms)) {
+                $query->where('bathrooms', $this->selected_bathrooms);
+            }
+
+            if (!empty($this->selected_kitchens)) {
+                $query->where('kitchen', $this->selected_kitchens);
+            }
+
+            $query->orderBy($this->sort_by, $this->sort_direction);
+
+            // Use units_page for pagination
+            $items = $query->paginate(12, ['*'], 'units_page');
+        }
+
+        $developers = Developer::all();
+        $projectTypes = ProjectType::where('status', 1)->get();
+
+        return view('livewire.frontend.projects-page', [
+            'items' => $items,
+            'developers' => $developers,
+            'projectTypes' => $projectTypes,
+        ]);
+    }
+}
