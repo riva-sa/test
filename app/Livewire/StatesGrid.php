@@ -19,14 +19,6 @@ class StatesGrid extends Component
             ->take(12)
             ->get();
 
-        $statesWithProjects = State::withCount(['projects' => function($query) {
-            $query->whereRaw('states.id::varchar = projects.state_id');
-        }])
-            ->whereHas('city')
-            ->orderByDesc('projects_count')
-            ->limit(12)
-            ->get();
-
         // State::withCount(['projects' => function($query) {
         //     $query->whereRaw('states.id::varchar = projects.state_id');
         //     // OR

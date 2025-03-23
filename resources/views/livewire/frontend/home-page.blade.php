@@ -33,7 +33,7 @@
         </div>
     </section>
 
-    <livewire:states-grid />
+    {{-- <livewire:states-grid /> --}}
 {{--
     <section class="wrapper bg-light" dir="rtl">
         <div class="container py-10 py-md-10">
