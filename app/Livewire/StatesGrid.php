@@ -12,11 +12,19 @@ class StatesGrid extends Component
     public function mount()
     {
         // Get states that have at least one project
-        $statesWithProjects = State::with('city')
-            ->withCount('projects')
-            ->whereHas('city') // This ensures only states with cities are selected
-            ->orderBy('projects_count', 'desc')
-            ->take(12)
+        // $statesWithProjects = State::with('city')
+        //     ->withCount('projects')
+        //     ->whereHas('city') // This ensures only states with cities are selected
+        //     ->orderBy('projects_count', 'desc')
+        //     ->take(12)
+        //     ->get();
+
+        $statesWithProjects = State::withCount(['projects' => function($query) {
+            $query->whereRaw('states.id = projects.state_id::bigint');
+        }])
+            ->whereHas('city')
+            ->orderByDesc('projects_count')
+            ->limit(12)
             ->get();
 
         // Map the final result
