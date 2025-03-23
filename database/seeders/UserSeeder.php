@@ -38,7 +38,7 @@ class UserSeeder extends Seeder
         $user = User::create([
             'email' => 'admin@riva.sa',
             'password' => Hash::make('password'),
-            'name' => config('app.default_user.name'),
+            'name' => "Admin",
             // Add any other required fields for your User model
         ]);
 
