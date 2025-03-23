@@ -78,7 +78,7 @@ class AdminPanelProvider extends PanelProvider
                 // \TomatoPHP\FilamentSettingsHub\FilamentSettingsHubPlugin::make()
                 // ->allowSiteSettings()
                 // ->allowSocialMenuSettings(),
-                // Blog::make(),
+                Blog::make(),
             ])
             ->authMiddleware([
                 Authenticate::class,

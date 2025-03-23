@@ -24,7 +24,6 @@ use App\Filament\Resources\UnitOrderResource\Widgets\UnitOrderStats;
 use App\Filament\Widgets\LatestUnitOrders;
 use Illuminate\Support\Facades\Storage;
 use Filament\FontProviders\GoogleFontProvider;
-use Firefly\FilamentBlog\Blog;
 use Illuminate\Support\HtmlString;
 
 class AppPanelProvider extends PanelProvider
