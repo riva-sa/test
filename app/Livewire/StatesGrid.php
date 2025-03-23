@@ -21,12 +21,18 @@ class StatesGrid extends Component
 
         // Map the final result
         $this->states = $statesWithProjects->map(function($state) {
+            // Set a default city_id if city doesn't exist
+            $cityId = 1; // Default value
+            if ($state->city !== null) {
+                $cityId = $state->city->id;
+            }
+
             return [
                 'id' => $state->id,
                 'name' => $state->name,
                 'projects_count' => $state->projects_count,
                 'height' => $this->getRandomHeight(),
-                'city_id' => $state->city ? $state->city->id : 1,
+                'city_id' => $cityId,
                 'photo' => $state->photo ? asset('storage/' . $state->photo) : asset('frontend/img/riva.jpg'),
             ];
         });

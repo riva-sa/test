@@ -1,7 +1,5 @@
 <?php
-
 namespace Database\Seeders;
-
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -12,7 +10,7 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // create a roles
+        // create roles
         $roles = [
             [
                 'name' => 'Admin',
@@ -30,18 +28,22 @@ class UserSeeder extends Seeder
                 'name' => 'project_manager',
                 'guard_name' => 'web',
             ]
-
         ];
 
         foreach ($roles as $role) {
             ModelsRole::create($role);
         }
 
-        User::factory()
-            ->create([
-                'email' => 'admin@riva.sa',
-                'password' => Hash::make('password'),
-                'name' => config('app.default_user.name'),
-            ]);
+        // Create admin user directly without factory
+        $user = User::create([
+            'email' => 'admin@riva.sa',
+            'password' => Hash::make('password'),
+            'name' => config('app.default_user.name'),
+            // Add any other required fields for your User model
+        ]);
+
+        // Assign the Admin role to the user
+        $adminRole = ModelsRole::where('name', 'Admin')->first();
+        $user->assignRole($adminRole);
     }
 }
