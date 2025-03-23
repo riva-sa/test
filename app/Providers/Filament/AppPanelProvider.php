@@ -23,7 +23,6 @@ use App\Filament\Pages\Auth\Login;
 use App\Filament\Resources\UnitOrderResource\Widgets\UnitOrderStats;
 use App\Filament\Widgets\LatestUnitOrders;
 use Illuminate\Support\Facades\Storage;
-use TomatoPHP\FilamentSettingsHub\Models\Setting;
 use Filament\FontProviders\GoogleFontProvider;
 use Firefly\FilamentBlog\Blog;
 use Illuminate\Support\HtmlString;
@@ -45,9 +44,9 @@ class AppPanelProvider extends PanelProvider
                 'primary' => Color::Zinc,
             ])
             ->font('IBM Plex Sans Arabic', provider: GoogleFontProvider::class)
-            ->favicon( Storage::url(Setting('site_favicon')) )
-            ->brandName(Setting('site_name'))
-            ->brandLogo( Storage::url(Setting('site_logo')) )
+            // ->favicon( Storage::url(Setting('site_favicon')) )
+            // ->brandName(Setting('site_name'))
+            // ->brandLogo( Storage::url(Setting('site_logo')) )
 
             ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
             ->globalSearchFieldKeyBindingSuffix()
