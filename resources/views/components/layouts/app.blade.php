@@ -29,7 +29,7 @@
         <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-        <link rel="shortcut icon" href="{{ asset('frontend/img/svg/Artboard 16.svg') }}">
+        <link rel="shortcut icon" href="{{ asset('frontend/img/logoyy.png') }}">
         <link rel="stylesheet" href="{{ asset('frontend/css/plugins.css') }}">
         <link rel="stylesheet" href="{{ asset('frontend/css/style.css') }}">
         <link rel="stylesheet" href="{{ asset('frontend/css/custom.css') }}">
