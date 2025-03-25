@@ -45,9 +45,9 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::Zinc,
             ])
             ->font('IBM Plex Sans Arabic', provider: GoogleFontProvider::class)
-            // ->favicon( Storage::url(Setting('site_favicon')) )
-            // ->brandName(Setting('site_name'))
-            // ->brandLogo( Storage::url(Setting('site_logo')) )
+            ->favicon( Storage::url(Setting('site_favicon')) )
+            ->brandName(Setting('site_name'))
+            ->brandLogo( Storage::url(Setting('site_logo')) )
 
             ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
             ->globalSearchFieldKeyBindingSuffix()
