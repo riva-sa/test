@@ -182,7 +182,7 @@ class UnitResource extends Resource
                             '4:3',
                             '1:1',
                         ])
-                        ->directory('units/images')
+                        // ->directory('units/images')
                         ->columnSpan(2),
                     Forms\Components\FileUpload::make('floor_plan')
                         ->label('مخطط الطابق')
@@ -193,7 +193,7 @@ class UnitResource extends Resource
                             '4:3',
                             '1:1',
                         ])
-                        ->directory('units/floor_plans')
+                        // ->directory('units/floor_plans')
                         ->columnSpan(2),
                 ])
                 ->columns(2),
