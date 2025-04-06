@@ -11,6 +11,7 @@
 /storage/framework/views/*
 /storage/logs/*
 /storage/app/public/*
+/storage/app/*
 
 # Keep the directory structure
 !storage/app/public/.gitkeep
