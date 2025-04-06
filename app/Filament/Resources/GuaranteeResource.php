@@ -22,18 +22,24 @@ class GuaranteeResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?string $navigationLabel = 'المضمانات';
+    protected static ?string $navigationGroup = 'المشاريع';
+
+    protected static ?string $navigationLabel = 'الضمانات';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make()
+                Forms\Components\Section::make('معلومات الضمان')
                     ->schema([
-                        Forms\Components\TextInput::make('name')->required(),
+                        Forms\Components\TextInput::make('name')
+                            ->label('الاسم')
+                            ->required(),
                         Forms\Components\Textarea::make('description')
+                            ->label('الوصف')
                             ->columnSpanFull(),
                         Forms\Components\FileUpload::make('icon')
+                            ->label('الأيقونة')
                             ->image()
                             ->imageEditor()
                             ->imageEditorAspectRatios([
@@ -43,10 +49,14 @@ class GuaranteeResource extends Resource
                             ])
                             ->disk('public')
                             ->directory('garantee/images'),
-                        Forms\Components\Toggle::make('is_active')->default(true),
+                        Forms\Components\Toggle::make('is_active')
+                            ->label('مفعل')
+                            ->onColor('success')
+                            ->offColor('danger')
+                            ->default(true),
 
                         CheckboxList::make('projects')
-                            ->label('Projects')
+                            ->label('المشاريع')
                             ->relationship('projects', 'name') // Uses the relationship
                             ->columns(4)
                             ->options(Project::all()->pluck('name', 'id')->toArray()), // Fetch available projects from the database
@@ -60,17 +70,20 @@ class GuaranteeResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')->label('الاسم'),
-                Tables\Columns\ToggleColumn::make('is_active')->label('الحالة')
+                Tables\Columns\ToggleColumn::make('is_active')
+                    ->label('الحالة')
+                    ->onColor('success')
+                    ->offColor('danger')
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()->label('تعديل'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()->label('حذف'),
                 ]),
             ]);
     }

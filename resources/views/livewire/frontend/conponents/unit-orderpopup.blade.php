@@ -1,8 +1,8 @@
 <div class="unit-sheet">
-    <div class="side-sheet border {{ $showOrderSheet ? 'active' : '' }}" style="max-width: 92% !important;height: fit-content !important;">
+    <div class="side-sheet border {{ $showOrderSheet ? 'active' : '' }}" style="max-width: 96% !important;max-height: 100vh;overflow-y: scroll;">
         <div class="d-lg-flex flex-row align-items-lg-center p-4">
             <a class="btn btn-circle btn-soft-primary closeSideSheet side-sheet-close" wire:click="closeSideSheet"><i class="uil uil-multiply"></i></a>
-            <h6 class="mb-0"><i class="uil uil-wall fs-20 ms-1"></i> تقديم اهتمام لشراء الوحدة </h6>
+            <h6 class="mb-0"> تقديم اهتمام لشراء الوحدة </h6>
         </div>
 
         <section class="wrapper bg-light">
@@ -76,7 +76,7 @@
                                                             name="purchaseType"
                                                             id="purchaseType_{{ $value }}"
                                                             value="{{ $value }}"
-                                                            wire:model="purchaseType"
+                                                            wire:model.live="purchaseType"
                                                             class="custom-radio-input">
                                                     <label for="purchaseType_{{ $value }}" class="custom-radio-label">
                                                         <span class="radio-icon"></span>
@@ -91,6 +91,22 @@
                                             </div>
                                         @enderror
                                     </div>
+
+                                    @if($purchaseType === 'bank')
+                                        <div class="col-12 mb-3">
+                                            <label for="support_type" class="form-label text-gray-900">نوع الدعم</label>
+                                            <select wire:model="support_type" class="form-select" id="support_type">
+                                                <option value="">اختر نوع الدعم</option>
+                                                <option value="مدعوم">مدعوم</option>
+                                                <option value="غير مدعوم">غير مدعوم</option>
+                                            </select>
+                                            @error('support_type')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
+                                        </div>
+                                    @endif
 
                                     <div class="col-12">
                                         <label class="form-label text-gray-900 mb-3">الغرض من الشراء</label>

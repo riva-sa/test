@@ -15,6 +15,8 @@ class LatestUnitOrders extends BaseWidget
 
     protected static ?int $sort = 2; // Sort order in dashboard widgets
 
+    protected static ?string $heading = 'أحدث طلبات الوحدات';
+
     public function table(Tables\Table $table): Tables\Table
     {
         return $table
@@ -44,7 +46,7 @@ class LatestUnitOrders extends BaseWidget
                     ->afterStateUpdated(function ($state) {
                         // Show a success notification after state update
                         Notification::make()
-                            ->title('Status Updated')
+                            ->title('تم التحديث')
                             ->body('تم تحديث الحالة بنجاح')
                             ->success()
                             ->send();

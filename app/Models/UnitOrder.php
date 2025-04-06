@@ -17,6 +17,7 @@ class UnitOrder extends Model
         'unit_id',
         'user_id',
         'project_id',
+        'support_type'
     ];
 
     protected $casts =

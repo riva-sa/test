@@ -22,7 +22,7 @@ class DeveloperResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?string $navigationGroup = 'Projects';
+    protected static ?string $navigationGroup = 'المشاريع';
 
     protected static ?string $navigationLabel = 'المطورين';
 
@@ -40,13 +40,15 @@ class DeveloperResource extends Resource
         return $form
             ->schema([
                 // Section 1: Basic Information
-                Section::make('Basic Information')
+                Section::make('المعلومات الأساسية')
                 ->schema([
                     TextInput::make('name')
+                        ->label('الاسم')
                         ->required()
                         ->maxLength(255)
                         ->columnSpan(2), // Span across 2 columns
                     FileUpload::make('logo')
+                        ->label('الشعار')
                         ->image()
                         ->imageEditor()
                         ->imageEditorAspectRatios([
@@ -57,22 +59,26 @@ class DeveloperResource extends Resource
                         ->directory('developers')
                         ->columnSpan(2), // Span across 2 columns
                     RichEditor::make('description')
+                        ->label('الوصف')
                         ->columnSpan(2), // Span across 2 columns
                 ])
                 ->columns(2), // Use 2 columns for this section
 
                 // Section 2: Contact Information
-                Section::make('Contact Information')
+                Section::make('معلومات الاتصال')
                 ->schema([
                     TextInput::make('email')
+                        ->label('البريد الإلكتروني')
                         ->email()
                         ->maxLength(255)
                         ->columnSpan(1), // Span across 1 column
                     TextInput::make('phone')
+                        ->label('رقم الهاتف')
                         ->tel()
                         ->maxLength(255)
                         ->columnSpan(1), // Span across 1 column
                     TextInput::make('website')
+                        ->label('الموقع الإلكتروني')
                         ->url()
                         ->maxLength(255)
                         ->columnSpan(2), // Span across 2 columns
@@ -80,9 +86,10 @@ class DeveloperResource extends Resource
                 ->columns(2), // Use 2 columns for this section
 
                 // Section 3: Address
-                Section::make('Address')
+                Section::make('العنوان')
                 ->schema([
                     Textarea::make('address')
+                        ->label('العنوان التفصيلي')
                         ->maxLength(65535)
                         ->columnSpan(2), // Span across 2 columns
                 ])
@@ -95,21 +102,21 @@ class DeveloperResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')->label('الاسم')->searchable()->sortable(),
-                Tables\Columns\ImageColumn::make('logo')->label('اللوجو'),
-                Tables\Columns\TextColumn::make('email')->label('البريد'),
-                Tables\Columns\TextColumn::make('phone')->label('الهاتف'),
-                Tables\Columns\TextColumn::make('created_at')->label('التاريخ')
+                Tables\Columns\ImageColumn::make('logo')->label('الشعار'),
+                Tables\Columns\TextColumn::make('email')->label('البريد الإلكتروني'),
+                Tables\Columns\TextColumn::make('phone')->label('رقم الهاتف'),
+                Tables\Columns\TextColumn::make('created_at')->label('تاريخ الإنشاء')
                     ->dateTime()->sortable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()->label('تعديل'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()->label('حذف'),
                 ]),
             ]);
     }

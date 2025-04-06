@@ -21,7 +21,7 @@ class ProjectTypeResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?string $navigationGroup = 'Projects';
+    protected static ?string $navigationGroup = 'المشاريع';
     protected static ?int $navigationSort = 2;
     protected static ?string $navigationLabel = 'نوع المشروع';
 
@@ -38,19 +38,22 @@ class ProjectTypeResource extends Resource
     {
         return $form
             ->schema([
-                Section::make('Basic Information')
+                Section::make('المعلومات الأساسية')
                     ->schema([
                         Forms\Components\TextInput::make('name')
+                            ->label('الاسم')
                             ->required()
                             ->maxLength(255)
                             ->columnSpan(2),
                         Forms\Components\Toggle::make('status')
+                            ->label('الحالة')
                             ->onColor('success')
                             ->required()
                             ->default(true)
                             ->columnSpan(1)
                             ->offColor('danger'),
                         Forms\Components\TextInput::make('slug')
+                            ->label('الرابط')
                             ->nullable()
                             ->maxLength(255)
                             ->unique(ProjectType::class, 'slug', ignoreRecord: true)
@@ -74,11 +77,11 @@ class ProjectTypeResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()->label('تعديل'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()->label('حذف'),
                 ]),
             ]);
     }

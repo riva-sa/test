@@ -19,7 +19,7 @@ class StateResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?string $navigationGroup = 'Locations';
+    protected static ?string $navigationGroup = 'المواقع';
     protected static ?string $navigationLabel = 'الحي';
 
     public static function form(Form $form): Form
@@ -30,13 +30,16 @@ class StateResource extends Resource
                 Forms\Components\Grid::make(2)
                     ->schema([
                         Forms\Components\TextInput::make('name')
+                            ->label('الاسم')
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('country')
+                            ->label('الدولة')
                             ->required()
                             ->maxLength(255)
                             ->default('SA'),
                         Forms\Components\FileUpload::make('photo')
+                            ->label('الصورة')
                             ->image()
                             ->imageEditor()
                             ->imageEditorAspectRatios([
@@ -48,9 +51,12 @@ class StateResource extends Resource
                             ->directory('states/photo'),
 
                         Forms\Components\Toggle::make('status')
+                            ->label('الحالة')
+                            ->onColor('success')
+                            ->offColor('danger')
                             ->required(),
                         Forms\Components\Select::make('city_id')
-                            ->label('City')
+                            ->label('المدينة')
                             ->preload()
                             ->native(false)
                             ->relationship('city', 'name')
@@ -66,13 +72,17 @@ class StateResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label('الاسم')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('country')
+                    ->label('الدولة')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('city.name')
+                    ->label('المدينة')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\IconColumn::make('status')
+                    ->label('الحالة')
                     ->boolean(),
             ])
             ->filters([
@@ -84,16 +94,16 @@ class StateResource extends Resource
                 Tables\Filters\SelectFilter::make('country')
                     ->label('الدولة')
                     ->options([
-                        'SA' => 'Saudi Arabia',
+                        'SA' => 'المملكة العربية السعودية',
                     ])
-                ->placeholder('Select a country'),
+                ->placeholder('اختر الدولة'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()->label('تعديل'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()->label('حذف'),
                 ]),
             ]);
     }

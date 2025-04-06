@@ -16,6 +16,7 @@ class UnitOrderpopup extends Component
     public $purchaseType = 'cash'; // Default value
     public $purchasePurpose = 'living'; // Default value
     public $units = [];
+    public $support_type = null;
 
     // Purchase Type Options
     public $purchaseTypes = [
@@ -35,7 +36,8 @@ class UnitOrderpopup extends Component
         'phone' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10',
         'unit_id' => 'required|exists:units,id',
         'purchaseType' => 'required|in:cash,bank',
-        'purchasePurpose' => 'required|in:living,invest'
+        'purchasePurpose' => 'required|in:living,invest',
+        'support_type' => 'nullable',
     ];
 
     // Custom Error Messages
@@ -63,6 +65,7 @@ class UnitOrderpopup extends Component
         $this->phone = '';
         $this->purchaseType = 'cash';
         $this->purchasePurpose = 'living';
+
         $this->resetErrorBag();
     }
 
@@ -98,6 +101,7 @@ class UnitOrderpopup extends Component
                     'phone' => $this->phone,
                     'PurchaseType' => $this->purchaseType,
                     'PurchasePurpose' => $this->purchasePurpose,
+                    'support_type' => $this->support_type,
                     'status' => 0
                 ]);
 

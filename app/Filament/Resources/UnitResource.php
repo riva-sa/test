@@ -30,7 +30,7 @@ class UnitResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?string $navigationGroup = 'Projects';
+    protected static ?string $navigationGroup = 'المشاريع';
     protected static ?int $navigationSort = 4;
     protected static ?string $navigationLabel = 'الوحدات';
 
@@ -46,11 +46,12 @@ class UnitResource extends Resource
         return $form
             ->schema([
                 // Basic Information Section
-                Forms\Components\Section::make('Basic Information')
+                Forms\Components\Section::make('معلومات أساسية')
                 ->schema([
                     // title
 
                     Forms\Components\TextInput::make('title')
+                        ->label('العنوان')
                         ->required()
                         ->maxLength(255)
                         ->columnSpan(1)
@@ -67,6 +68,7 @@ class UnitResource extends Resource
                         }),
 
                     Forms\Components\TextInput::make('slug')
+                        ->label('الرابط')
                         ->nullable()
                         ->maxLength(255)
                         ->unique(Unit::class, 'slug', ignoreRecord: true)
@@ -74,12 +76,13 @@ class UnitResource extends Resource
                         ->dehydrated(fn ($state) => filled($state)),
 
                     Forms\Components\Select::make('project_id')
+                        ->label('المشروع')
                         ->relationship('project', 'name')
                         ->required()
                         ->columnSpan(1)
                         ->preload()
                         ->native(false)
-                        ->noSearchResultsMessage('No projects found.')
+                        ->noSearchResultsMessage('لا توجد مشاريع.')
                         ->suffixAction(
                             Action::make('createProject')
                                 ->icon('heroicon-m-plus')
@@ -87,61 +90,65 @@ class UnitResource extends Resource
                                 ->openUrlInNewTab()
                         ),
                     Forms\Components\TextInput::make('unit_type')
+                        ->label('نوع الوحدة')
                         ->required()
                         ->maxLength(255)
                         ->columnSpan(1),
                     Forms\Components\TextInput::make('building_number')
+                        ->label('رقم المبنى')
                         ->required()
                         ->maxLength(255)
                         ->columnSpan(1),
                     Forms\Components\TextInput::make('unit_number')
+                        ->label('رقم الوحدة')
                         ->required()
                         ->maxLength(255)
                         ->columnSpan(1),
-                    // sale_type
-                    // Forms\Components\Select::make('sale_type')
-                    //     ->options([
-                    //         'direct' => 'direct',
-                    //         'installment' => 'Installment',
-                    //     ])
-                    //     ->required()
-                    //     ->columnSpan(1),
                     Forms\Components\TextInput::make('floor')
+                        ->label('الطابق')
                         ->required()
                         ->columnSpan(1),
                     Forms\Components\RichEditor::make('description')
+                        ->label('الوصف')
                         ->nullable()
                         ->columnSpanFull(),
                 ])
                 ->columns(3),
 
             // Unit Specifications Section
-            Forms\Components\Section::make('Unit Specifications')
+            Forms\Components\Section::make('مواصفات الوحدة')
                 ->schema([
                     Forms\Components\TextInput::make('unit_area')
+                        ->label('مساحة الوحدة')
                         ->required()
                         ->numeric()
                         ->columnSpan(1),
                     Forms\Components\TextInput::make('unit_price')
+                        ->label('سعر الوحدة')
                         ->numeric()
                         ->columnSpan(1),
                     Forms\Components\TextInput::make('living_rooms')
+                        ->label('غرف المعيشة')
                         ->required()
                         ->numeric()
                         ->columnSpan(1),
                     Forms\Components\TextInput::make('beadrooms')
+                        ->label('غرف النوم')
                         ->required()
                         ->numeric()
                         ->columnSpan(1),
                     Forms\Components\TextInput::make('bathrooms')
+                        ->label('الحمامات')
                         ->required()
                         ->numeric()
                         ->columnSpan(1),
                     Forms\Components\TextInput::make('kitchen')
+                        ->label('المطبخ')
                         ->required()
                         ->numeric()
                         ->columnSpan(1),
                     Forms\Components\Select::make('features')
+                        ->label('مميزات الوحدة')
                         ->multiple()
                         ->relationship('features', 'name')
                         ->preload()
@@ -153,66 +160,21 @@ class UnitResource extends Resource
                                 ->url(FeatureResource::getUrl('create'))
                                 ->openUrlInNewTab()
                         )
-                        ->label('Unit Feature')
                 ])
                 ->columns(3),
 
             // Location Section
-            Forms\Components\Section::make('Location')
+            Forms\Components\Section::make('الموقع')
                 ->schema([
-                    // Forms\Components\TextInput::make('latitude')
-                    //     ->dehydrated()
-                    //     ->nullable(),
-
-                    // Forms\Components\TextInput::make('longitude')
-                    //     ->dehydrated()
-                    //     ->nullable(),
-
-                    // Map::make('location')
-                    //     ->label('Location')
-                    //     ->columnSpanFull()
-                    //     ->defaultLocation(latitude: 24.7136, longitude: 46.6753)
-                    //     ->afterStateHydrated(function ($state, $record, Set $set): void {
-                    //         if ($record) {
-                    //             $set('location', [
-                    //                 'lat' => floatval($record->latitude),
-                    //                 'lng' => floatval($record->longitude)
-                    //             ]);
-                    //             $set('latitude', $record->latitude);
-                    //             $set('longitude', $record->longitude);
-                    //         }
-                    //     })
-                    //     ->afterStateUpdated(function ($state, callable $set) {
-                    //         $set('latitude', $state['lat']);
-                    //         $set('longitude', $state['lng']);
-                    //     })
-                    //     ->extraStyles([
-                    //         'min-height: 50vh',
-                    //         'border-radius: 7px'
-                    //     ])
-                    //     ->liveLocation(true, true, 1000)
-                    //     ->showMarker()
-                    //     ->markerColor("#000000")
-                    //     ->showFullscreenControl()
-                    //     ->showZoomControl()
-                    //     ->draggable()
-                    //     ->tilesUrl("https://tile.openstreetmap.de/{z}/{x}/{y}.png/")
-                    //     ->zoom(12)
-                    //     ->detectRetina()
-                    //     ->showMyLocationButton()
-                    //     ->extraTileControl([])
-                    //     ->extraControl([
-                    //         'zoomDelta'           => 1,
-                    //         'zoomSnap'            => 2,
-
-                    //     ])
+                    // Location fields
                 ])
                 ->columns(2),
 
             // Media Section
-            Forms\Components\Section::make('Media')
+            Forms\Components\Section::make('الوسائط')
                 ->schema([
                     Forms\Components\FileUpload::make('image')
+                        ->label('الصورة')
                         ->image()
                         ->imageEditor()
                         ->imageEditorAspectRatios([
@@ -223,6 +185,7 @@ class UnitResource extends Resource
                         ->directory('units/images')
                         ->columnSpan(2),
                     Forms\Components\FileUpload::make('floor_plan')
+                        ->label('مخطط الطابق')
                         ->image()
                         ->imageEditor()
                         ->imageEditorAspectRatios([
@@ -236,29 +199,32 @@ class UnitResource extends Resource
                 ->columns(2),
 
             // Status Section
-            Forms\Components\Section::make('Status')
+            Forms\Components\Section::make('الحالة')
                 ->schema([
                     Forms\Components\Toggle::make('show_price')
+                        ->label('عرض السعر')
                         ->offColor('danger')
                         ->onColor('success')
                         ->default(true)
                         ->columnSpan(1),
                     Forms\Components\Toggle::make('status')
+                        ->label('الحالة')
                         ->offColor('danger')
                         ->onColor('success')
                         ->default(true)
                         ->columnSpan(1),
-
-                    // // user_id
-                    // Forms\Components\Select::make('user_id')
-                    //     ->relationship('user', 'name')
-                    //     ->label('User')
-                    //     ->disabled()
-                    //     ->nullable()
-                    //     ->default(auth()->id())
-                    //     ->columnSpan(1),
                 ])
                 ->columns(2),
+
+                // // user_id
+                // Forms\Components\Select::make('user_id')
+                //     ->relationship('user', 'name')
+                //     ->label('User')
+                //     ->disabled()
+                //     ->nullable()
+                //     ->default(auth()->id())
+                //     ->columnSpan(1),
+                // ])                ->columns(2),
         ])
         ->columns(1);
     }
@@ -304,27 +270,27 @@ class UnitResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('project_id')
-                    ->label('Filter by Project')
+                    ->label('تصفية حسب المشروع')
                     ->relationship('project', 'name')
                     ->preload()
                     ->searchable(),
 
                 // Filter by unit type
                 SelectFilter::make('unit_type')
-                    ->label('Filter by Unit Type')
+                    ->label('تصفية حسب نوع الوحدة')
                     ->options([
-                        'apartment' => 'Apartment',
-                        'villa' => 'Villa',
-                        'studio' => 'Studio',
+                        'apartment' => 'شقة',
+                        'villa' => 'فيلا',
+                        'studio' => 'استوديو',
                     ])
                     ->searchable(),
 
                 // Filter by price range
                 Filter::make('unit_price')
-                    ->label('Filter by Price Range')
+                    ->label('تصفية حسب نطاق السعر')
                     ->form([
-                        Forms\Components\TextInput::make('min_price')->numeric()->label('Min Price'),
-                        Forms\Components\TextInput::make('max_price')->numeric()->label('Max Price'),
+                        Forms\Components\TextInput::make('min_price')->numeric()->label('الحد الأدنى للسعر'),
+                        Forms\Components\TextInput::make('max_price')->numeric()->label('الحد الأقصى للسعر'),
                     ])
                     ->query(function (Builder $query, array $data) {
                         return $query
@@ -334,23 +300,23 @@ class UnitResource extends Resource
 
                 // Filter by status
                 SelectFilter::make('status')
-                    ->label('Filter by Status')
+                    ->label('تصفية حسب الحالة')
                     ->options([
-                        0 => 'Available',
-                        1 => 'Reserved',
-                        2 => 'Sold',
+                        0 => 'متاحة',
+                        1 => 'محجوزة',
+                        2 => 'مباعة',
                     ]),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()->label('تعديل'),
                 TableAction::make('duplicate')
-                    ->label('Duplicate')
+                    ->label('نسخ')
                     ->url(fn (Unit $record) => route('filament.admin.resources.units.create', ['copy' => $record->id]))
                     ->icon('heroicon-o-document-duplicate'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()->label('حذف'),
                 ]),
             ]);
     }

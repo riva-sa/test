@@ -173,7 +173,7 @@
                                     <article class="post">
 
                                         <figure class="rounded-top position-relative">
-                                            <a href="{{ route('frontend.projects.single', $project->slug) }}"> <img src="{{ asset('storage/' .$project->getMainImages()->media_url) }}" style="max-height: 200px" alt="{{ $project->name }}" /></a>
+                                            <a href="{{ route('frontend.projects.single', $project->slug) }}"> <img src="@if($project->getMainImages() !== null ) {{ asset('storage/' .$project->getMainImages()->media_url) }} @else {{ asset('storage/' .$project->projectMedia()->first()->media_url) }} @endif" style="max-height: 200px" alt="{{ $project->name }}" /></a>
                                             <figcaption class="noise-container text-right heroTop position-absolute" style="top: 6px;right: 6px;" dir="rtl">
                                                 <span class="badge badge-lg text-white d-flex align-content-center align-items-center">
                                                     <i class="uil uil-map-marker fs-15 ms-1"></i>

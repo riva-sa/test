@@ -139,7 +139,7 @@
                     <div class="d-flex gap-2">
                         <div class="">
                             <figure class="card-img-top">
-                                <img src="{{ asset('storage/' .$selectedProject->getMainImages()->media_url) }}" class="rounded" alt="" />
+                                <img src="@if($selectedProject->getMainImages() !== null ) {{ asset('storage/' .$selectedProject->getMainImages()->media_url) }} @else {{ asset('storage/' .$selectedProject->projectMedia()->first()->media_url) }} @endif" class="rounded" alt="" />
                             </figure>
                             <div class="post-header mb-5 mt-5">
                                 <h4 class="post-title">
@@ -205,9 +205,8 @@
     // Initialize map
     const map = L.map('map').setView([24.7136, 46.6753], 6);
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '©OpenStreetMap, ©CartoDB',
-        subdomains: 'abcd',
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         maxZoom: 19
     }).addTo(map);
 

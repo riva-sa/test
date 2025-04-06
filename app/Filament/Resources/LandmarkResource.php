@@ -20,20 +20,26 @@ class LandmarkResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationGroup = 'المشاريع';
+
     protected static ?string $navigationLabel = 'المعالم القريبة';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make()
+                Forms\Components\Section::make('معلومات المعلم')
                     ->schema([
-                        TextInput::make('name')->required(),
-                        TextInput::make('description')->required(),
-                        TextInput::make('distance')
-                            ->numeric()
-                            ->suffix('km')
-                            ->label('Distance from Project'),
+                        TextInput::make('name')
+                            ->label('الاسم')
+                            ->required(),
+                        TextInput::make('description')
+                            ->label('الوصف')
+                            ->required(),
+                        // TextInput::make('distance')
+                        //     ->label('المسافة من المشروع')
+                        //     ->numeric()
+                        //     ->suffix('كم'),
                     ])
             ]);
     }
@@ -50,11 +56,11 @@ class LandmarkResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()->label('تعديل'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()->label('حذف'),
                 ]),
             ]);
     }

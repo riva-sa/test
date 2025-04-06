@@ -19,7 +19,7 @@ class PartnerResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?string $navigationGroup = 'Settings';
+    protected static ?string $navigationGroup = 'الإعدادات';
     protected static ?string $navigationLabel = 'شركاء النجاح';
 
     public static function form(Form $form): Form
@@ -28,11 +28,13 @@ class PartnerResource extends Resource
             ->schema([
                 // name
                 Forms\Components\TextInput::make('name')
+                    ->label('الاسم')
                     ->required()
                     ->maxLength(255)
                     ->columnSpan(2),
                 // logo
                 Forms\Components\FileUpload::make('logo')
+                    ->label('الشعار')
                     ->image()
                     ->imageEditor()
                     ->imageEditorAspectRatios([
@@ -44,6 +46,7 @@ class PartnerResource extends Resource
                     ->columnSpan(2),
                 // status
                 Forms\Components\Toggle::make('status')
+                    ->label('الحالة')
                     ->onColor('success')
                     ->required()
                     ->default(true)
@@ -56,19 +59,22 @@ class PartnerResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('logo')->label('لوجو'),
+                Tables\Columns\ImageColumn::make('logo')->label('الشعار'),
                 Tables\Columns\TextColumn::make('name')->label('الاسم'),
-                Tables\Columns\ToggleColumn::make('status')->label('الحالة')
+                Tables\Columns\ToggleColumn::make('status')
+                    ->label('الحالة')
+                    ->onColor('success')
+                    ->offColor('danger')
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()->label('تعديل'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()->label('حذف'),
                 ]),
             ]);
     }

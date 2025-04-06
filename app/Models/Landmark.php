@@ -10,6 +10,6 @@ class Landmark extends Model
 
     public function projects()
     {
-        return $this->belongsToMany(Project::class)->withPivot('distance');
+        return $this->belongsToMany(Project::class)->withPivot('distance')->withTimestamps();
     }
 }

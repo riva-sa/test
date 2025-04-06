@@ -17,7 +17,8 @@ class UnitPopup extends Component
     public $currentStep = 1;
     public $purchaseType = 'cash'; // Default value
     public $purchasePurpose = 'living'; // Default value
-
+    public $support_type = null;
+    public $unitImages = [];
     // Purchase Type Options
     public $purchaseTypes = [
         'cash' => 'كاش',
@@ -34,7 +35,6 @@ class UnitPopup extends Component
         'name' => 'required|min:3|max:50',
         'email' => 'required|email',
         'phone' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10',
-        // 'message' => 'required|min:10|max:500',
         'purchaseType' => 'required|in:cash,bank',
         'purchasePurpose' => 'required|in:living,invest'
     ];
@@ -49,23 +49,38 @@ class UnitPopup extends Component
         'phone.required' => 'الرجاء إدخال رقم الهاتف',
         'phone.regex' => 'الرجاء إدخال رقم هاتف صحيح',
         'phone.min' => 'يجب أن يكون رقم الهاتف 10 أرقام على الأقل',
-        // 'message.required' => 'الرجاء إدخال الرسالة',
-        // 'message.min' => 'يجب أن تكون الرسالة 10 أحرف على الأقل',
-        // 'message.max' => 'يجب أن لا تتجاوز الرسالة 500 حرف',
         'purchaseType.required' => 'الرجاء اختيار طريقة الشراء',
         'purchaseType.in' => 'طريقة الشراء غير صحيحة',
         'purchasePurpose.required' => 'الرجاء اختيار الغرض من الشراء',
         'purchasePurpose.in' => 'الغرض من الشراء غير صحيح'
     ];
 
+    // Add this method to load images
+    protected function loadUnitImages()
+    {
+        $this->unitImages = [];
+
+        // First add the main unit image if exists
+        if ($this->selectedUnit->image) {
+            $this->unitImages[] = [
+                'url' => $this->selectedUnit->image,
+                'is_main' => true
+            ];
+            $this->unitImages[] = [
+                'url' => $this->selectedUnit->floor_plan,
+                'is_main' => false
+            ];
+        }
+    }
+
     public function resetForm()
     {
         $this->name = '';
         $this->email = '';
         $this->phone = '';
-        // $this->message = '';
         $this->purchaseType = 'cash';
         $this->purchasePurpose = 'living';
+        $this->support_type = null;
         $this->resetErrorBag();
     }
 
@@ -81,9 +96,9 @@ class UnitPopup extends Component
                 'name' => $this->name,
                 'email' => $this->email,
                 'phone' => $this->phone,
-                // 'message' => $this->message,
                 'PurchaseType' => $this->purchaseType,
                 'PurchasePurpose' => $this->purchasePurpose,
+                'support_type' => $this->support_type,
                 'status' => 0
             ]);
 
@@ -114,8 +129,15 @@ class UnitPopup extends Component
 
     public function loadUnit($unitId)
     {
-        $this->selectedUnit = Unit::findOrFail($unitId);
+        $this->selectedUnit = Unit::with(['features', 'project.projectMedia'])->findOrFail($unitId);
         $this->showSideSheet = true;
+        $this->currentStep = 1;
+
+        // Load unit images
+        $this->loadUnitImages();
+
+        // Dispatch event for JavaScript
+        $this->dispatch('sideSheetOpened');
     }
 
     public function closeSideSheet()

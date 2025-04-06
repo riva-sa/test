@@ -30,7 +30,7 @@ class UserResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    protected static ?string $navigationGroup = 'User Management';
+    protected static ?string $navigationGroup = 'إدارة المستخدمين';
     protected static ?string $navigationLabel = 'المستخدمين';
 
     // إخفاء القسم بالكامل بناءً على الصلاحية
@@ -57,12 +57,14 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make()
+                Forms\Components\Section::make('معلومات المستخدم')
                     ->schema([
                         Forms\Components\TextInput::make('name')
+                            ->label('الاسم')
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('email')
+                            ->label('البريد الإلكتروني')
                             ->email()
                             ->unique(ignoreRecord: true)
                             ->required()
@@ -70,13 +72,14 @@ class UserResource extends Resource
 
                         // Using Select Component
                         Forms\Components\Select::make('roles')
+                            ->label('الصلاحيات')
                             ->relationship('roles', 'name')
                             ->multiple()
                             ->preload()
                             ->searchable(),
 
                         TextInput::make('password')
-                            ->label(__('filament-panels::pages/auth/edit-profile.form.password.label'))
+                            ->label('كلمة المرور')
                             ->password()
                             ->required(fn ($livewire) => $livewire instanceof Pages\CreateUser)
                             ->revealable(filament()->arePasswordsRevealable())
@@ -90,7 +93,7 @@ class UserResource extends Resource
                                 GeneratePasswordAction::make(),
                             ]),
                         TextInput::make('passwordConfirmation')
-                            ->label(__('filament-panels::pages/auth/edit-profile.form.password_confirmation.label'))
+                            ->label('تأكيد كلمة المرور')
                             ->password()
                             ->revealable(filament()->arePasswordsRevealable())
                             ->required()
@@ -107,14 +110,14 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('name')->label('الاسم')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email')->label('البريد الالكتروني')
+                Tables\Columns\TextColumn::make('email')->label('البريد الإلكتروني')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('roles.name')->label('الصلاحية')
-                    ->label('Roles')
+                Tables\Columns\TextColumn::make('roles.name')
+                    ->label('الصلاحيات')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')->label('التاريخ')
+                Tables\Columns\TextColumn::make('created_at')->label('تاريخ الإنشاء')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -123,11 +126,11 @@ class UserResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()->label('تعديل'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()->label('حذف'),
                 ]),
             ]);
     }

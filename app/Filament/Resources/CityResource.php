@@ -19,7 +19,7 @@ class CityResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-globe-europe-africa';
 
-    protected static ?string $navigationGroup = 'Locations';
+    protected static ?string $navigationGroup = 'المواقع';
 
     protected static ?string $navigationLabel = 'المدن';
 
@@ -30,13 +30,16 @@ class CityResource extends Resource
                 Grid::make(2)
                     ->schema([
                         Forms\Components\TextInput::make('name')
+                            ->label('الاسم')
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('country')
+                            ->label('الدولة')
                             ->required()
                             ->maxLength(255)
                             ->default('SA'),
                         Forms\Components\Toggle::make('status')
+                            ->label('الحالة')
                             ->default(true)
                             ->offColor('danger')
                             ->onColor('success')
@@ -56,16 +59,18 @@ class CityResource extends Resource
                     ->label('الاسم')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('country')
-                    ->label('المدينة')
+                    ->label('الدولة')
                     ->searchable(),
                 Tables\Columns\IconColumn::make('status')
                     ->label('الحالة')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('تاريخ الإنشاء')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('تاريخ التحديث')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -74,11 +79,13 @@ class CityResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->label('تعديل'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()
+                        ->label('حذف')
                         ->requiresConfirmation()
                         ->action(function (Collection $records) {
                             $records->each->delete();
@@ -105,5 +112,4 @@ class CityResource extends Resource
             'edit' => Pages\EditCity::route('/{record}/edit'),
         ];
     }
-
 }

@@ -4,10 +4,10 @@
     {{-- @section('keywords', implode(',', $project->tags ?? [])) --}}
     @section('og:title',  $project->name . ' ' . $project->projectType->name)
     @section('og:description', Str::limit(strip_tags($project->description), 150))
-    @section('og:image', asset('storage/' .$project->getMainImages()->media_url) )
+    @section('og:image', asset('storage/' .$project->projectMedia()->first()->media_url) )
     @section('twitter:title',  $project->name . ' ' . $project->projectType->name)
     @section('twitter:description', Str::limit(strip_tags($project->description), 150))
-    @section('twitter:image', asset('storage/' .$project->getMainImages()->media_url) )
+    @section('twitter:image', asset('storage/' .$project->projectMedia()->first()->media_url) )
 
     @livewire('frontend.conponents.unit-popup')
     @livewire('frontend.conponents.unit-orderpopup')
@@ -206,29 +206,29 @@
                                 {{-- Units Grid --}}
                                 <div class="row">
                                     @forelse($units as $unit)
-                                        <div class="col-md-6 col-lg-4" wire:key="{{$unit->id}}" style="cursor: pointer">
+                                        <div class="col-md-6 col-lg-4 mb-2" wire:key="{{$unit->id}}" style="cursor: pointer">
 
                                             <article class="post rounded">
                                                 <figure class="rounded-top position-relative" wire:click="showUnitDetails({{ $unit->id }})">
                                                     @if ($unit->floor_plan)
-                                                    <img src="{{ asset('storage/' .$unit->floor_plan ) }}"
-                                                    style="max-height: 200px"
-                                                    alt="{{ $unit->title }}" />
+                                                        <img src="{{ asset('storage/' .$unit->floor_plan ) }}"
+                                                        style="max-height: 200px"
+                                                        alt="{{ $unit->title }}" />
                                                     @else
-                                                    <img src="https://placehold.co/700x400"
-                                                    style="max-height: 200px"
-                                                    alt="{{ $unit->title }}" />
+                                                        <img src="https://placehold.co/700x400"
+                                                        style="max-height: 200px"
+                                                        alt="{{ $unit->title }}" />
                                                     @endif
 
                                                     @if($unit->case == 2)
-                                                        <div class="position-absolute top-0 rounded start-0 w-100 h-100 d-flex align-items-center justify-content-center"
-                                                            style="background-color: rgba(0,0,0,0.5);">
-                                                            <span class="badge bg-danger">تم البيع</span>
+                                                        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+                                                            style="background-color: rgba(0, 0, 0, 0.587);">
+                                                            <span class="badge">تم البيع</span>
                                                         </div>
                                                     @elseif($unit->case == 1)
-                                                        <div class="position-absolute top-0 rounded start-0 w-100 h-100 d-flex align-items-center justify-content-center"
-                                                            style="background-color: rgba(0,0,0,0.5);">
-                                                            <span class="badge bg-warning">محجوزة</span>
+                                                        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+                                                            style="background-color: rgba(0, 0, 0, 0.5);">
+                                                            <span class="badge">محجوزة</span>
                                                         </div>
                                                     @endif
                                                 </figure>
@@ -244,11 +244,25 @@
                                                         </div>
                                                     </div>
                                                     @if ($unit->show_price)
-                                                    <ul class="post-meta mb-3" wire:click="showUnitDetails({{ $unit->id }})">
-                                                        <li class="post-date">
-                                                            <span class="fs-15 text-success">{{ number_format($unit->unit_price) . ' ريال' }}</span>
-                                                        </li>
-                                                    </ul>
+                                                        @if (number_format($unit->unit_price) != '0')
+                                                        <ul class="post-meta mb-1" wire:click="showUnitDetails({{ $unit->id }})">
+                                                            <li class="post-date">
+                                                                <span class="fs-15 text-success">{{ number_format($unit->unit_price) . ' ريال' }}</span>
+                                                            </li>
+                                                        </ul>
+                                                        @else
+                                                        <ul class="post-meta mb-1" wire:click="showUnitDetails({{ $unit->id }})">
+                                                            <li class="post-date">
+                                                                <span class="fs-15 text-success">تواصل معنا</span>
+                                                            </li>
+                                                        </ul>
+                                                        @endif
+                                                    @else
+                                                        <ul class="post-meta mb-1" wire:click="showUnitDetails({{ $unit->id }})">
+                                                            <li class="post-date">
+                                                                <span class="fs-15 text-success">تواصل معنا</span>
+                                                            </li>
+                                                        </ul>
                                                     @endif
                                                     <ul class="post-meta mb-0" wire:click="showUnitDetails({{ $unit->id }})">
                                                         <li class="post-date">
@@ -344,15 +358,18 @@
                             </div>
                             <div class="row">
                                 @foreach ($project->landmarks as $landmark)
-                                    <div class="d-flex flex-row col-md-4 mb-3" style="flex-wrap: wrap;" wire:key="{{$landmark->id}}">
-                                        <div class="icon-card">
-                                            <i class="uil uil-map-pin fs-25 text-dark"></i>
-                                        </div>
-                                        <div class="me-2">
-                                            <h4 class="mb-0 fs-15">{{$landmark->name}}</h4>
-                                            <p class="mb-0 fs-14">{{ $landmark->description }}</p>
-                                        </div>
+                                <div class="d-flex flex-row col-md-4 mb-3" style="flex-wrap: wrap;" wire:key="{{$landmark->id}}">
+                                    <div class="icon-card">
+                                        <i class="uil uil-map-pin fs-25 text-dark"></i>
                                     </div>
+                                    <div class="me-2">
+                                        <h4 class="mb-0 fs-15">{{$landmark->name}}</h4>
+                                        <p class="mb-0 fs-14">{{ $landmark->description }}</p>
+                                        @if($landmark->pivot->distance)
+                                            <p class="mb-0 fs-13"><span class="text-muted">المسافة:</span> {{ $landmark->pivot->distance }} كم</p>
+                                        @endif
+                                    </div>
+                                </div>
                                 @endforeach
                             </div>
                         </div>

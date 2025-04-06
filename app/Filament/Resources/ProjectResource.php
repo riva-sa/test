@@ -32,6 +32,7 @@ use Filament\Forms\Components\CheckboxList;
 use App\Models\Feature;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
+use App\Models\Landmark;
 
 class ProjectResource extends Resource
 {
@@ -39,7 +40,7 @@ class ProjectResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?string $navigationGroup = 'Projects';
+    protected static ?string $navigationGroup = 'المشاريع';
     public static function getNavigationSort(): ?int
     {
         return -2;
@@ -72,11 +73,12 @@ class ProjectResource extends Resource
                 Group::make()
                 ->schema([
                     // Section 1: Project Details
-                    Section::make('Project Details')
+                    Section::make('تفاصيل المشروع')
                     ->schema([
                         Grid::make(2) // Use a 2-column grid
                             ->schema([
                                 Forms\Components\TextInput::make('name')
+                                    ->label('الاسم')
                                     ->required()
                                     ->maxLength(255)
                                     ->columnSpan(1)
@@ -86,6 +88,7 @@ class ProjectResource extends Resource
                                     }),
 
                                 Forms\Components\TextInput::make('slug')
+                                    ->label('الرابط')
                                     ->nullable()
                                     ->maxLength(255)
                                     ->columnSpan(1)
@@ -93,26 +96,29 @@ class ProjectResource extends Resource
                                     ->unique(Project::class, 'slug', ignoreRecord: true)
                                     ->dehydrated(fn ($state) => filled($state)),
                                 Forms\Components\TextInput::make('AdLicense')
+                                    ->label('رخصة الإعلان')
                                     ->required()
                                     ->columnSpan(1)
                                     ->maxLength(255),
 
                                 TextInput::make('address')
+                                    ->label('العنوان')
                                     ->required()
                                     ->maxLength(255)
                                     ->columnSpan(1),
 
                                 TextInput::make('virtualTour')
-                                    ->label('virtual Tour Url')
+                                    ->label('رابط الجولة الافتراضية')
                                     ->columnSpan(1),
                                 Select::make('developer_id')
+                                    ->label('المطور')
                                     ->relationship('developer', 'name')
                                     ->required()
                                     ->columnSpan(1)
                                     ->searchable()
                                     ->native(true)
                                     ->preload()
-                                    ->noSearchResultsMessage('No projects found.')
+                                    ->noSearchResultsMessage('لا يوجد مطورين.')
                                     ->suffixAction(
                                         Action::make('createProject')
                                             ->icon('heroicon-m-plus')
@@ -120,6 +126,7 @@ class ProjectResource extends Resource
                                             ->openUrlInNewTab()
                                     ),
                                 Select::make('project_type_id')
+                                    ->label('نوع المشروع')
                                     ->relationship('projectType', 'name')
                                     ->required()
                                     ->columnSpan(1)
@@ -134,12 +141,14 @@ class ProjectResource extends Resource
                                     ),
 
                                 RichEditor::make('description')
+                                    ->label('الوصف')
+                                    ->required()
                                     ->columnSpan(2),
                             ]),
                     ]),
 
                 // Section 3: Pricing and Status
-                Section::make('Pricing and Status')
+                Section::make('التسعير والحالة')
                     ->schema([
                         Grid::make(2) // Use a 2-column grid
                             ->schema([
@@ -156,6 +165,7 @@ class ProjectResource extends Resource
                                 //     ->columnSpan(1)
                                 //     ->offColor('danger'),
                                 TextInput::make('bulding_style')
+                                    ->label('نمط البناء')
                                     ->required()
                                     ->maxLength(255)
                                     ->columnSpan(1),
@@ -172,7 +182,7 @@ class ProjectResource extends Resource
                                         ->url(FeatureResource::getUrl('create'))
                                         ->openUrlInNewTab()
                                 )
-                                ->label('Project features'),
+                                ->label('مميزات المشروع'),
 
                             Select::make('guarantees')
                                 ->multiple()
@@ -186,24 +196,60 @@ class ProjectResource extends Resource
                                         ->url(GuaranteeResource::getUrl('create'))
                                         ->openUrlInNewTab()
                                 )
-                                ->label('Project Guarantees'),
+                                ->label('ضمانات المشروع'),
+
+                            // Select::make('landmarks')
+                            //     ->multiple()
+                            //     ->relationship('landmarks', 'name')
+                            //     ->preload()
+                            //     ->searchable()
+                            //     ->columnSpanFull()
+                            //     ->label('المعالم القريبة')
+                            //     ->helperText('اختر المعالم القريبة ومسافاتها')
+                            //     ->createOptionForm([
+                            //         TextInput::make('name')->label('الاسم')->required(),
+                            //         TextInput::make('description')->label('الوصف')->required(),
+                            //         TextInput::make('distance')
+                            //             ->label('المسافة من المشروع')
+                            //             ->numeric()
+                            //             ->suffix('كم'),
+                            //     ]),
 
                             Select::make('landmarks')
-                                ->multiple()
-                                ->relationship('landmarks', 'name')
-                                ->preload()
-                                ->searchable()
-                                ->columnSpanFull()
-                                ->label('Project Landmarks')
-                                ->helperText('Select nearby landmarks and their distances')
-                                ->createOptionForm([
-                                    TextInput::make('name')->required(),
-                                    TextInput::make('description')->required(),
-                                    TextInput::make('distance')
-                                        ->numeric()
-                                        ->suffix('km')
-                                        ->label('Distance from Project'),
-                                ]),
+                            ->multiple()
+                            ->relationship('landmarks', 'name')
+                            ->preload()
+                            ->searchable()
+                            ->columnSpanFull()
+                            ->label('المعالم القريبة')
+                            ->helperText('اختر المعالم القريبة ومسافاتها')
+                            ->createOptionForm([
+                                TextInput::make('name')->label('الاسم')->required(),
+                                TextInput::make('description')->label('الوصف')->required(),
+                                TextInput::make('distance')
+                                    ->label('المسافة من المشروع')
+                                    ->numeric()
+                                    ->suffix('كم'),
+                            ])
+                            ->createOptionUsing(function (array $data, $livewire) {
+                                // إنشاء معلم جديد
+                                $landmark = Landmark::create([
+                                    'name' => $data['name'],
+                                    'description' => $data['description'],
+                                ]);
+
+                                // حفظ المعلومات في الجدول الوسيط يدوياً
+                                if (isset($data['distance']) && method_exists($livewire, 'getRecord')) {
+                                    $project = $livewire->getRecord();
+
+                                    // Add the relationship with pivot data
+                                    $project->landmarks()->attach($landmark->id, [
+                                        'distance' => $data['distance']
+                                    ]);
+                                }
+
+                                return $landmark->id;
+                            }),
                             // File Upload for images with repeater to upload multiple images
                             Repeater::make('projectMedia')
                                 ->relationship('projectMedia') // Relationship defined in Project model
@@ -261,8 +307,8 @@ class ProjectResource extends Resource
 
                                 // user_id
                                 // Forms\Components\Select::make('sales_manager_id')
-                                //     ->relationship('user', 'name')
-                                //     ->label('User')
+                                //     ->relationship('salesManager', 'name')  // Changed from 'user' to 'salesManager'
+                                //     ->label('مسؤل المبيعات')  // Updated label to match Arabic UI
                                 //     ->nullable()
                                 //     ->default(auth()->id())
                                 //     ->disabled(function () {
@@ -281,16 +327,18 @@ class ProjectResource extends Resource
                         ->schema([
 
                             Forms\Components\Toggle::make('status')
+                                ->label('الحالة')
                                 ->onColor('success')
                                 ->offColor('danger')
                                 ->default(true)
                                 ->required(),
                             Forms\Components\Toggle::make('is_featured')
+                                ->label('مميز')
                                 ->onColor('success')
                                 ->offColor('danger')
                                 ->required(),
                             Select::make('city_id')
-                                ->label('City')
+                                ->label('المدينة')
                                 ->native(false)
                                 ->relationship('city', 'name')
                                 ->required()
@@ -304,7 +352,7 @@ class ProjectResource extends Resource
                                         ->openUrlInNewTab()
                                 ),
                             Select::make('state_id')
-                                ->label('State')
+                                ->label('الحي')
                                 ->native(false)
                                 ->relationship('state', 'name')
                                 ->required()
@@ -318,21 +366,24 @@ class ProjectResource extends Resource
                                         ->openUrlInNewTab()
                                 ),
                             TextInput::make('country')
+                                ->label('الدولة')
                                 ->required()
                                 ->maxLength(255)
                                 ->default('المملكة العربية السعودية')
                                 ->columnSpanFull(),
 
                             Forms\Components\TextInput::make('latitude')
+                                ->label('خط العرض')
                                 ->dehydrated()
                                 ->required(),
 
                             Forms\Components\TextInput::make('longitude')
+                                ->label('خط الطول')
                                 ->dehydrated()
                                 ->required(),
 
                             Map::make('location')
-                                ->label('Location')
+                                ->label('الموقع')
                                 ->columnSpanFull()
                                 ->defaultLocation(latitude: 24.7136, longitude: 46.6753)
                                 ->afterStateHydrated(function ($state, $record, Set $set): void {
@@ -373,15 +424,24 @@ class ProjectResource extends Resource
                         ])->columns(2),
 
                         // user_id
-                        Forms\Components\Select::make('sales_manager_id')
-                        ->relationship('salesManager', 'name')
-                        ->label('مسؤل المبيعات')
-                        ->options(function () {
+                        // Forms\Components\Select::make('sales_manager_id')
+                        //     ->relationship('salesManager', 'name')
+                        //     ->label('مسؤل المبيعات')
+                        //     ->options(function () {
+                        //         return User::role('sales_manager')->pluck('name', 'id');
+                        //     })
+                        //     ->columnSpan(1)
+                        //     ->required(),
 
-                            return User::role('sales_manager')->pluck('name', 'id');
-                        })
-                        ->columnSpan(1)
-                        ->required(),
+                        Forms\Components\Select::make('sales_manager_id')
+                            ->relationship('salesManager', 'name')  // Changed from 'user' to 'salesManager'
+                            ->label('مسؤل المبيعات')  // Updated label to match Arabic UI
+                            ->nullable()
+                            ->default(auth()->id())
+                            ->disabled(function () {
+                                return auth()->user()->hasRole('sales_manager');
+                            })
+                            ->columnSpan(1),
                         // images
 
 
@@ -424,11 +484,11 @@ class ProjectResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()->label('تعديل'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()->label('حذف'),
                 ]),
             ]);
     }

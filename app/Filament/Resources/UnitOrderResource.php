@@ -27,7 +27,7 @@ class UnitOrderResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?string $navigationGroup = 'Projects';
+    protected static ?string $navigationGroup = 'المشاريع';
 
     protected static ?int $navigationSort = 3;
     protected static ?string $navigationLabel = 'طلبات الوحدات';
@@ -36,39 +36,54 @@ class UnitOrderResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Basic Information')
+                Forms\Components\Section::make('معلومات الطلب')
                     ->schema([
                         // user inputs
                         Grid::make()
                             ->columns(3)
                             ->schema([
                                 Forms\Components\TextInput::make('name')
+                                    ->label('الاسم')
                                     ->required()
                                     ->maxLength(255),
                                 Forms\Components\TextInput::make('email')
+                                    ->label('البريد الإلكتروني')
                                     ->email()
                                     ->required()
                                     ->maxLength(255),
                                 Forms\Components\TextInput::make('phone')
+                                    ->label('رقم الهاتف')
                                     ->required()
                                     ->maxLength(255),
                             ]),
 
                         Forms\Components\Toggle::make('status')
+                            ->label('الحالة')
+                            ->onColor('success')
+                            ->offColor('danger')
                             ->default(false),
                         Forms\Components\Textarea::make('message')
+                            ->label('الرسالة')
                             ->nullable(),
 
                         Grid::make()
-                            ->columns(2)
+                            ->columns(3)
                             ->schema([
                                 Forms\Components\Select::make('PurchaseType')
+                                    ->label('طريقة الشراء')
                                     ->options([
                                         'Cash' => 'كاش',
                                         'Installment' => 'بنك',
                                     ])
                                     ->required(),
+                                Forms\Components\Select::make('support_type')
+                                    ->label('نوع الدعم')
+                                    ->options([
+                                        'General' => 'عام',
+                                        'Special' => 'خاص',
+                                    ]),
                                 Forms\Components\Select::make('PurchasePurpose')
+                                    ->label('الغرض من الشراء')
                                     ->options([
                                         'Residential' => 'سكني',
                                         'Commercial' => 'استثماري',
@@ -80,12 +95,15 @@ class UnitOrderResource extends Resource
                             ->columns(3)
                             ->schema([
                                 Forms\Components\BelongsToSelect::make('unit_id')
+                                    ->label('الوحدة')
                                     ->relationship('unit', 'title')
                                     ->required(),
                                 Forms\Components\BelongsToSelect::make('user_id')
+                                    ->label('المستخدم')
                                     ->relationship('user', 'name')
                                     ->required(),
                                 Forms\Components\BelongsToSelect::make('project_id')
+                                    ->label('المشروع')
                                     ->relationship('project', 'name')
                                     ->required(),
                             ])
@@ -119,12 +137,15 @@ class UnitOrderResource extends Resource
                     ->afterStateUpdated(function ($state) {
                         // Show a success notification after state update
                         Notification::make()
-                            ->title('Status Updated')
+                            ->title('تم التحديث')
                             ->body('تم تحديث الحالة بنجاح')
                             ->success()
                             ->send();
                     }),
                 Tables\Columns\TextColumn::make('PurchaseType')->label('طريقة الشراء')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('support_type')->label('نوع الدعم')
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('PurchasePurpose')->label('الغرض من الشراء')
@@ -140,37 +161,32 @@ class UnitOrderResource extends Resource
             ->filters([
                 // advanced filters
                 Tables\Filters\SelectFilter::make('status')
+                    ->label('الحالة')
                     ->options([
-                        'Active' => 'Active',
-                        'Inactive' => 'Inactive',
+                        'Active' => 'مفعل',
+                        'Inactive' => 'غير مفعل',
                     ]),
                 Tables\Filters\SelectFilter::make('PurchaseType')
+                    ->label('طريقة الشراء')
                     ->options([
                         'Cash' => 'كاش',
                         'Installment' => 'بنك',
                     ]),
                 Tables\Filters\SelectFilter::make('PurchasePurpose')
+                    ->label('الغرض من الشراء')
                     ->options([
                         'Residential' => 'سكني',
                         'Commercial' => 'استثماري',
                     ]),
 
                 Tables\Filters\SelectFilter::make('unit_id')
-                    ->label('Unit')
+                    ->label('الوحدة')
                     ->relationship('unit', 'title')
                     ->options(fn (): Builder => Unit::query()->orderBy('title')->pluck('title', 'id')->toArray()),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()->label('تعديل'),
             ])
-            // ->headerActions([
-            //     ExportAction::make('export')
-            //         ->label('تصدير إلى Excel')
-            //         ->icon('heroicon-o-document')
-            //         ->action(function () {
-            //             return Excel::download(new UnitOrdersExport, 'unit-orders.xlsx');
-            //         }),
-            // ])
             ->bulkActions([
                 BulkAction::make('exportSelected')
                     ->label('تصدير المحدد إلى Excel')
@@ -178,7 +194,7 @@ class UnitOrderResource extends Resource
                     ->action(function (Collection $records) {
                         return Excel::download(new UnitOrdersExport($records), 'selected-unit-orders.xlsx');
                     }),
-                Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\DeleteBulkAction::make()->label('حذف'),
             ]);
     }
 
@@ -221,5 +237,4 @@ class UnitOrderResource extends Resource
 
         return $query;
     }
-
 }

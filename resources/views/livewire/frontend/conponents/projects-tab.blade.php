@@ -43,7 +43,7 @@
                             <a href="{{ route('frontend.projects.single', $project->slug) }}" class="noise-container arrowToSingle"><i class="uil uil-arrow-up-left"></i></a>
                         </div>
                         <a href="{{ route('frontend.projects.single', $project->slug) }}"
-                            style="height: 500px; background:url('@if($project->getMainImages()) {{ asset('storage/' .$project->getMainImages()->media_url) }} @else {{ asset('storage/' .$project->projectMedia->first()->media_url) }} @endif');background-size: cover;background-position: center;"></a>
+                            style="height: 500px; background:url('@if($project->getMainImages() !== null ) {{ asset('storage/' .$project->getMainImages()->media_url) }} @else {{ asset('storage/' .$project->projectMedia()->first()->media_url) }} @endif');background-size: cover;background-position: center;"></a>
                         <figcaption class="noise-container text-right tap" dir="rtl">
 
                             <div class="d-flex align-content-start justify-content-between w-100">
