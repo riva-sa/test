@@ -213,8 +213,18 @@ class UnitResource extends Resource
                         ->onColor('success')
                         ->default(true)
                         ->columnSpan(1),
+
+                    Forms\Components\Select::make('case')
+                        ->label('حالة البيع')
+                        ->options([
+                            0 => 'متاحة',
+                            1 => 'محجوزة',
+                            2 => 'مباعة',
+                        ])
+                        ->default(0)
+                        ->columnSpan(1),
                 ])
-                ->columns(2),
+                ->columns(3),
 
                 // // user_id
                 // Forms\Components\Select::make('user_id')
