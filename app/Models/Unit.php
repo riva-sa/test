@@ -34,6 +34,7 @@ class Unit extends Model
         'show_price',
         'status',
         'location',
+        'case'
     ];
 
     protected $casts =
