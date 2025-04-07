@@ -5,22 +5,9 @@
 /public/storage
 /storage/*.key
 /storage/debugbar/
-/storage/framework/cache/*
-/storage/framework/sessions/*
-/storage/framework/testing/*
-/storage/framework/views/*
-/storage/logs/*
-/storage/app/public/*
-/storage/app/*
-
-# Keep the directory structure
-!storage/app/public/.gitkeep
-!storage/framework/cache/.gitkeep
-!storage/framework/sessions/.gitkeep
-!storage/framework/testing/.gitkeep
-!storage/framework/views/.gitkeep
-!storage/logs/.gitkeep
-
+/storage/app/
+/storage
+/vendor
 .env
 .env.backup
 .env.production
