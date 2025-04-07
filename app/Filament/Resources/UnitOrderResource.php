@@ -211,6 +211,7 @@ class UnitOrderResource extends Resource
             'index' => Pages\ListUnitOrders::route('/'),
             'create' => Pages\CreateUnitOrder::route('/create'),
             'edit' => Pages\EditUnitOrder::route('/{record}/edit'),
+            'users' => Pages\ListUserOrders::route('/users'),  // Add this line
         ];
     }
 

@@ -15,6 +15,11 @@ class ListUnitOrders extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
+            Actions\Action::make('viewUserOrders')
+            ->label('عرض طلبات المستخدمين')
+            ->icon('heroicon-o-users')
+            ->color('secondary')
+            ->url(fn () => static::getResource()::getUrl('users')),
         ];
     }
     protected function getHeaderWidgets(): array
