@@ -7,7 +7,7 @@
         {{-- <title>{{ $title ?? 'ريفا العقارية' }}</title> --}}
 
         <title>@yield('title', $title ?? 'ريفا العقارية')</title>
-
+        <link rel="stylesheet" href="https://sets.hugeicons.com/YOUR-SET-ID.css" crossorigin="anonymous">
         <!-- SEO Meta Tags -->
         <meta name="description" content="@yield('description', 'ريفا العقارية')">
         <meta name="keywords" content="@yield('keywords', 'ريفا العقارية')">
