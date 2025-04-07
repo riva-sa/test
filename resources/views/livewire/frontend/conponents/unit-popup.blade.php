@@ -70,7 +70,7 @@
                                             </li>
                                             <li class="post-comments">
                                                 {{-- <img src="{{ asset('frontend/img/icons/pan-03(1).png') }}" class="dark-image" style="width: 17px;" alt="Riva - ريفا"> --}}
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="#808080" fill="none">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="19" height="19" color="#808080" fill="none">
                                                     <path d="M21 17C18.2386 17 16 14.7614 16 12C16 9.23858 18.2386 7 21 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
                                                     <path d="M21 21C16.0294 21 12 16.9706 12 12C12 7.02944 16.0294 3 21 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
                                                     <path d="M6 3L6 8M6 21L6 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
