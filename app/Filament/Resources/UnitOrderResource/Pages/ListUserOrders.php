@@ -24,11 +24,17 @@ class ListUserOrders extends Page implements HasTable
     {
         return $table
             ->query(
+                // UnitOrder::query()
+                //     ->select('phone')
+                //     ->selectRaw('MIN(id) as id')
+                //     ->selectRaw('GROUP_CONCAT(DISTINCT name SEPARATOR "||") as names')
+                //     ->selectRaw('GROUP_CONCAT(DISTINCT email SEPARATOR "||") as emails')
+                //     ->selectRaw('COUNT(*) as total_orders')
+                //     ->selectRaw('MAX(created_at) as last_order')
+                //     ->groupBy('phone')
                 UnitOrder::query()
                     ->select('phone')
                     ->selectRaw('MIN(id) as id')
-                    ->selectRaw('GROUP_CONCAT(DISTINCT name SEPARATOR "||") as names')
-                    ->selectRaw('GROUP_CONCAT(DISTINCT email SEPARATOR "||") as emails')
                     ->selectRaw('COUNT(*) as total_orders')
                     ->selectRaw('MAX(created_at) as last_order')
                     ->groupBy('phone')
@@ -41,30 +47,7 @@ class ListUserOrders extends Page implements HasTable
                     ->copyable()
                     ->extraAttributes(['class' => 'font-medium']),
 
-                Tables\Columns\TextColumn::make('names')
-                    ->label('الأسماء')
-                    ->searchable()
-                    ->formatStateUsing(function ($state) {
-                        $names = explode('||', $state);
-                        $namesHtml = collect($names)->map(function ($name) {
-                            return "<div class='px-2 py-1 mb-1 text-sm rounded-lg'>{$name}</div>";
-                        })->join('');
 
-                        return new HtmlString($namesHtml);
-                    }),
-
-                Tables\Columns\TextColumn::make('emails')
-                    ->label('البريد الإلكتروني')
-                    ->searchable()
-                    ->icon('heroicon-o-envelope')
-                    ->formatStateUsing(function ($state) {
-                        $emails = explode('||', $state);
-                        $emailsHtml = collect($emails)->map(function ($email) {
-                            return "<div class='px-2 py-1 mb-1 text-sm bg-blue-100 rounded-lg'>{$email}</div>";
-                        })->join('');
-
-                        return new HtmlString($emailsHtml);
-                    }),
 
                 Tables\Columns\TextColumn::make('total_orders')
                     ->label('عدد الطلبات')
