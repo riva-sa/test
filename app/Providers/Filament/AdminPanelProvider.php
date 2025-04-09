@@ -24,7 +24,7 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Illuminate\Support\Facades\Storage;
 use Filament\FontProviders\GoogleFontProvider;
-use Firefly\FilamentBlog\Blog;
+// use Firefly\FilamentBlog\Blog;
 use Illuminate\Support\HtmlString;
 
 class AdminPanelProvider extends PanelProvider
@@ -78,7 +78,7 @@ class AdminPanelProvider extends PanelProvider
                 \TomatoPHP\FilamentSettingsHub\FilamentSettingsHubPlugin::make()
                 ->allowSiteSettings()
                 ->allowSocialMenuSettings(),
-                Blog::make(),
+                // Blog::make(),
             ])
             ->authMiddleware([
                 Authenticate::class,
