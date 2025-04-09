@@ -21,10 +21,10 @@
                                         <div class="swiper-wrapper">
                                             @foreach($unitImages as $index => $image)
                                             <div class="swiper-slide">
-                                                <a href="{{ asset('storage/' . $image['url']) }}" class="unit-lightbox-item"
-                                                data-glightbox="type: image; title: {{ $selectedUnit->title }}; description: {{ $selectedUnit->unit_type }};"
-                                                data-gallery="unit-gallery">
-                                                    <figure class="card-img-top rounded" style="background-image: url('{{ asset('storage/' . $image['url']) }}'); background-size: cover; height: 240px;"></figure>
+                                                <a href="{{ App\Helpers\MediaHelper::getUrl($image['url']) }}" class="unit-lightbox-item"
+                                                   data-glightbox="type: image; title: {{ $selectedUnit->title }}; description: {{ $selectedUnit->unit_type }};"
+                                                   data-gallery="unit-gallery">
+                                                    <figure class="card-img-top rounded" style="background-image: url('{{ App\Helpers\MediaHelper::getUrl($image['url']) }}'); background-size: cover; height: 240px;"></figure>
                                                 </a>
                                             </div>
                                             @endforeach

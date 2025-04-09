@@ -18,7 +18,8 @@
                     @foreach($clients as $client)
                         <div class="swiper-slide px-10" wire:key="{{$client->id}}">
                             <div class="logo-wrapper">
-                                <img src="{{ asset('storage/' . $client->logo) }}"
+
+                                <img src="{{ App\Helpers\MediaHelper::getUrl($client->logo) }}"
                                      alt="{{ $client->name }}"
                                      class="client-logo"/>
                             </div>
@@ -28,7 +29,7 @@
                     @foreach($clients as $client)
                         <div class="swiper-slide px-10" wire:key="repeat-{{$client->id}}">
                             <div class="logo-wrapper">
-                                <img src="{{ asset('storage/' . $client->logo) }}"
+                                <img src="{{ App\Helpers\MediaHelper::getUrl($client->logo) }}"
                                      alt="{{ $client->name }}"
                                      class="client-logo"/>
                             </div>

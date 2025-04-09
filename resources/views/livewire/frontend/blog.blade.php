@@ -21,7 +21,7 @@
                             @foreach($posts as $post)
                                 <article class="col-md-6">
                                     <div class="card">
-                                        <figure class="card-img-top overlay overlay-1 hover-scale"><a href="{{ route('frontend.blog.single', $post->slug) }}"> <img src="{{ asset('storage/' . $post->cover_photo_path) }}" alt="" /></a>
+                                        <figure class="card-img-top overlay overlay-1 hover-scale"><a href="{{ route('frontend.blog.single', $post->slug) }}"> <img src="{{ App\Helpers\MediaHelper::getUrl($post->cover_photo_path) }}" alt="" /></a>
                                             <figcaption>
                                                 <h5 class="from-top mb-0">تابع</h5>
                                             </figcaption>

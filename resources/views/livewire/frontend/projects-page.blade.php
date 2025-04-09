@@ -173,7 +173,7 @@
                                     <article class="post">
 
                                         <figure class="rounded-top position-relative">
-                                            <a href="{{ route('frontend.projects.single', $project->slug) }}"> <img src="@if($project->getMainImages() !== null ) {{ asset('storage/' .$project->getMainImages()->media_url) }} @else {{ asset('storage/' .$project->projectMedia()->first()->media_url) }} @endif" style="max-height: 200px" alt="{{ $project->name }}" /></a>
+                                            <a href="{{ route('frontend.projects.single', $project->slug) }}"> <img src="@if($project->getMainImages() !== null ) {{ App\Helpers\MediaHelper::getUrl($project->getMainImages()->media_url) }} @else {{ App\Helpers\MediaHelper::getUrl($project->projectMedia()->first()->media_url) }} @endif" style="max-height: 200px" alt="{{ $project->name }}" /></a>
                                             <figcaption class="noise-container text-right heroTop position-absolute" style="top: 6px;right: 6px;" dir="rtl">
                                                 <span class="badge badge-lg text-white d-flex align-content-center align-items-center">
                                                     <i class="uil uil-map-marker fs-15 ms-1"></i>
@@ -247,9 +247,9 @@
                                         <figure class="rounded-top position-relative">
                                             <a wire:click="showUnitDetails({{ $unit->id }})">
                                                 @if ($unit->floor_plan)
-                                                    <img src="{{ asset('storage/' .$unit->floor_plan ) }}" style="max-height: 200px" alt="{{ $unit->title }}" />
+                                                    <img src="{{ App\Helpers\MediaHelper::getUrl($unit->floor_plan ) }}" style="max-height: 200px" alt="{{ $unit->title }}" />
                                                 @else
-                                                    <img src="{{ asset('storage/' .$unit->project->getMainImages()->media_url ) }}" style="max-height: 200px" alt="{{ $unit->title }}" />
+                                                    <img src="{{ App\Helpers\MediaHelper::getUrl($unit->project->getMainImages()->media_url ) }}" style="max-height: 200px" alt="{{ $unit->title }}" />
                                                 @endif
                                             </a>
                                             <figcaption class="glass-white-card text-right heroTop position-absolute" style="top: 6px;right: 6px;" dir="rtl">
@@ -467,7 +467,7 @@
                                     <label class="form-check-label bg-white p-2 mb-1 border rounded {{ in_array($developer->id, $selected_developer) ? 'border-primary' : '' }}" for="dev-{{ $developer->id }}">
                                         <!-- Developer Logo -->
                                         @if($developer->logo)
-                                            <img src="{{ asset('storage/' . $developer->logo) }}" alt="{{ $developer->name }} logo" class="developer-logo" style="height: 30px; object-fit: cover;">
+                                            <img src="{{ App\Helpers\MediaHelper::getUrl($developer->logo) }}" alt="{{ $developer->name }} logo" class="developer-logo" style="height: 30px; object-fit: cover;">
                                         @endif
                                         <span class="fs-14 fw-light me-2">{{ $developer->name }}</span>
                                     </label>

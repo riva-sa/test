@@ -9,15 +9,16 @@
                             <a class="wrapper image-wrapper bg-image bg-cover bg-overlay"
                                style="height: 700px"
                                href="{{ route('frontend.projects.single', $project->slug) }}"
-                               data-image-src="@if($project->getMainImages()) {{ asset('storage/' .$project->getMainImages()->media_url) }} @else {{ asset('storage/' .$project->projectMedia->first()->media_url) }} @endif">
+                               data-image-src="@if($project->getMainImages()) {{ App\Helpers\MediaHelper::getUrl($project->getMainImages()->media_url) }} @else {{ App\Helpers\MediaHelper::getUrl($project->projectMedia->first()->media_url) }} @endif">
                             </a>
+
                             <figcaption class="noise-container text-right hero" dir="rtl">
                                 <div class="d-flex align-content-start justify-content-between w-100">
                                     <h2 class="post-title h3 mt-1 mb-3">
                                         <a href="{{ route('frontend.projects.single', $project->slug) }}">{{ $project->name }}</a>
                                     </h2>
                                     <div>
-                                        <img src="{{ asset('storage/'. $project->developer->logo) }}"
+                                        <img src="{{ App\Helpers\MediaHelper::getUrl($project->developer->logo) }}"
                                              style="width: 50px !important;max-height:50px"
                                              alt="Logo">
                                     </div>

@@ -11,3 +11,5 @@ if (! function_exists('example')) {
         return 'This is an example function you can use in your project.';
     }
 }
+
+//

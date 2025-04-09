@@ -139,7 +139,7 @@
                     <div class="d-flex gap-2">
                         <div class="">
                             <figure class="card-img-top">
-                                <img src="@if($selectedProject->getMainImages() !== null ) {{ asset('storage/' .$selectedProject->getMainImages()->media_url) }} @else {{ asset('storage/' .$selectedProject->projectMedia()->first()->media_url) }} @endif" class="rounded" alt="" />
+                                <img src="@if($selectedProject->getMainImages() !== null ) {{ App\Helpers\MediaHelper::getUrl($selectedProject->getMainImages()->media_url) }} @else {{ App\Helpers\MediaHelper::getUrl($selectedProject->projectMedia()->first()->media_url) }} @endif" class="rounded" alt="" />
                             </figure>
                             <div class="post-header mb-5 mt-5">
                                 <h4 class="post-title">

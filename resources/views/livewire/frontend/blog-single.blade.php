@@ -30,7 +30,10 @@
             <div class="col-lg-10 mx-auto">
                 <div class="blog single mt-n17">
                 <div class="card">
-                    <figure class="card-img-top"><img src="{{ asset('storage/' . $post->cover_photo_path) }}" alt="" /></figure>
+                    <figure class="card-img-top">
+                        {{-- <img src="{{ asset('storage/' . $post->cover_photo_path) }}" alt="" /> --}}
+                        <img src="{{ App\Helpers\MediaHelper::getUrl($post->cover_photo_path) }}" alt="">
+                    </figure>
                     <div class="card-body">
                     <div class="classic-view">
                         <article class="post">

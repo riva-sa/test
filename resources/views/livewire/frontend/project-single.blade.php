@@ -4,10 +4,10 @@
     {{-- @section('keywords', implode(',', $project->tags ?? [])) --}}
     @section('og:title',  $project->name . ' ' . $project->projectType->name)
     @section('og:description', Str::limit(strip_tags($project->description), 150))
-    @section('og:image', asset('storage/' .$project->projectMedia()->first()->media_url) )
+    @section('og:image', App\Helpers\MediaHelper::getUrl($project->projectMedia()->first()->media_url))
     @section('twitter:title',  $project->name . ' ' . $project->projectType->name)
     @section('twitter:description', Str::limit(strip_tags($project->description), 150))
-    @section('twitter:image', asset('storage/' .$project->projectMedia()->first()->media_url) )
+    @section('twitter:image', App\Helpers\MediaHelper::getUrl($project->projectMedia()->first()->media_url) )
 
     @livewire('frontend.conponents.unit-popup')
     @livewire('frontend.conponents.unit-orderpopup')
@@ -39,7 +39,8 @@
                                 </h2>
                             </div>
                             <div>
-                                <img src="{{ asset('storage/'. $project->developer->logo) }}" style="height: auto !important;max-width:100px" alt="Riva - ريفا">
+                                {{-- <img src="{{ asset('storage/'. $project->developer->logo) }}" style="height: auto !important;max-width:100px" alt="Riva - ريفا"> --}}
+                                <img src="{{ App\Helpers\MediaHelper::getUrl($project->developer->logo) }}" style="height: auto!important;max-width:100px" alt="Riva - ريفا">
                             </div>
                         </div>
                     </figcaption>
@@ -141,9 +142,9 @@
                                 @foreach ($project->projectMedia->where('media_type', 'image') as $media)
 
                                     <div class="swiper-slide">
-                                        <a class="item-link" href="{{ asset('storage/' .$media->media_url) }}" data-glightbox data-gallery="product-group">
+                                        <a class="item-link" href="{{ App\Helpers\MediaHelper::getUrl($media->media_url) }}" data-glightbox data-gallery="product-group">
                                             <figure class="rounded">
-                                                <img src="{{ asset('storage/' .$media->media_url) }}" class="rounded" style="max-height:550px" srcset="{{ asset('storage/' .$media->media_url) }} 2x" alt="Riva - ريفا" />
+                                                <img src="{{ App\Helpers\MediaHelper::getUrl($media->media_url) }}" class="rounded" style="max-height:550px" srcset="{{ App\Helpers\MediaHelper::getUrl($media->media_url) }} 2x" alt="Riva - ريفا" />
                                             </figure>
 
                                         </a>
@@ -218,7 +219,7 @@
                                             <article class="post rounded">
                                                 <figure class="rounded-top position-relative" wire:click="showUnitDetails({{ $unit->id }})">
                                                     @if ($unit->floor_plan)
-                                                        <img src="{{ asset('storage/' .$unit->floor_plan ) }}"
+                                                        <img src="{{ App\Helpers\MediaHelper::getUrl($unit->floor_plan ) }}"
                                                         style="max-height: 200px"
                                                         alt="{{ $unit->title }}" />
                                                     @else
@@ -316,7 +317,7 @@
 
                                                 <div>
                                                 @if ($features->icon)
-                                                    <img src="{{ asset('storage/' . $features->icon) }}" class="svg-inject icon-svg icon-svg-sm text-purple" alt="Riva - ريفا" />
+                                                    <img src="{{ App\Helpers\MediaHelper::getUrl($features->icon) }}" class="svg-inject icon-svg icon-svg-sm text-purple" alt="Riva - ريفا" />
 
                                                 @else
                                                     <img src="https://placehold.co/30x30" alt="" />
@@ -340,7 +341,7 @@
                                             <div class="d-flex flex-row col-md-4 mb-3" wire:key="{{$guarante->id}}">
                                                 <div>
                                                     @if ($features->icon)
-                                                        <img src="{{ asset('storage/' . $guarante->icon) }}" class="svg-inject icon-svg icon-svg-sm text-purple" alt="Riva - ريفا" />
+                                                        <img src="{{ App\Helpers\MediaHelper::getUrl($guarante->icon) }}" class="svg-inject icon-svg icon-svg-sm text-purple" alt="Riva - ريفا" />
                                                     @else
                                                         <img src="https://placehold.co/30x30" alt="" />
                                                     @endif

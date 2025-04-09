@@ -43,7 +43,9 @@
                             <a href="{{ route('frontend.projects.single', $project->slug) }}" class="noise-container arrowToSingle"><i class="uil uil-arrow-up-left"></i></a>
                         </div>
                         <a href="{{ route('frontend.projects.single', $project->slug) }}"
-                            style="height: 500px; background:url('@if($project->getMainImages() !== null ) {{ Storage::disk('public')->url($project->getMainImages()->media_url) }} @else {{ Storage::disk('public')->url($project->projectMedia()->first()->media_url) }} @endif');background-size: cover;background-position: center;"></a>
+                            style="height: 500px; background:url('@if($project->getMainImages() !== null ) {{ App\Helpers\MediaHelper::getUrl($project->getMainImages()->media_url) }} @else {{ App\Helpers\MediaHelper::getUrl($project->projectMedia()->first()->media_url) }} @endif');background-size: cover;background-position: center;"></a>
+                        {{-- <a href="{{ route('frontend.projects.single', $project->slug) }}"
+                            style="height: 500px; background:url('@if($project->getMainImages() !== null ) {{ Storage::disk('public')->url($project->getMainImages()->media_url) }} @else {{ Storage::disk('public')->url($project->projectMedia()->first()->media_url) }} @endif');background-size: cover;background-position: center;"></a> --}}
                             <figcaption class="noise-container text-right tap" dir="rtl">
 
                             <div class="d-flex align-content-start justify-content-between w-100">
@@ -51,9 +53,7 @@
                                     <a href="{{ route('frontend.projects.single', $project->slug) }}">نطرة عامة</a>
                                 </h2>
                                 <div>
-                                    <img src="{{ Storage::disk('public')->url($project->developer->logo) }}"
-                                    style="width: 50px !important;max-height:50px"
-                                    alt="Logo">
+                                    <img src="{{ App\Helpers\MediaHelper::getUrl($project->developer->logo) }}" style="width: 50px !important;max-height:50px" alt="Logo">
                                 </div>
                             </div>
                             <ul class="post-meta text-white mb-3">
