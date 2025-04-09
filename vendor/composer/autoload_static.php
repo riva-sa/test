@@ -239,6 +239,7 @@ class ComposerStaticInit3968173178e657e4f2172a0d6426295a
         array (
             'Fruitcake\\Cors\\' => 15,
             'Firefly\\FilamentBlog\\Database\\Factories\\' => 40,
+            'Firefly\\FilamentBlog\\Components\\' => 32,
             'Firefly\\FilamentBlog\\' => 21,
             'Filament\\Widgets\\' => 17,
             'Filament\\Tables\\' => 16,
@@ -793,6 +794,10 @@ class ComposerStaticInit3968173178e657e4f2172a0d6426295a
         array (
             0 => __DIR__ . '/..' . '/firefly/filament-blog/database/factories',
         ),
+        'Firefly\\FilamentBlog\\Components\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/app/View/Components/vendor/filament-blog',
+        ),
         'Firefly\\FilamentBlog\\' => 
         array (
             0 => __DIR__ . '/..' . '/firefly/filament-blog/src',
@@ -1087,6 +1092,7 @@ class ComposerStaticInit3968173178e657e4f2172a0d6426295a
         'App\\Filament\\Resources\\UserResource\\Pages\\EditUser' => __DIR__ . '/../..' . '/app/Filament/Resources/UserResource/Pages/EditUser.php',
         'App\\Filament\\Resources\\UserResource\\Pages\\ListUsers' => __DIR__ . '/../..' . '/app/Filament/Resources/UserResource/Pages/ListUsers.php',
         'App\\Filament\\Widgets\\LatestUnitOrders' => __DIR__ . '/../..' . '/app/Filament/Widgets/LatestUnitOrders.php',
+        'App\\Helpers\\MediaHelper' => __DIR__ . '/../..' . '/app/Helpers/MediaHelper.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
         'App\\Http\\Controllers\\HelperController' => __DIR__ . '/../..' . '/app/Http/Controllers/HelperController.php',
         'App\\Http\\Middleware\\AdminaPanelMiddleware' => __DIR__ . '/../..' . '/app/Http/Middleware/AdminaPanelMiddleware.php',
@@ -4591,13 +4597,13 @@ class ComposerStaticInit3968173178e657e4f2172a0d6426295a
         'Filament\\Widgets\\WidgetConfiguration' => __DIR__ . '/..' . '/filament/widgets/src/WidgetConfiguration.php',
         'Filament\\Widgets\\WidgetsServiceProvider' => __DIR__ . '/..' . '/filament/widgets/src/WidgetsServiceProvider.php',
         'Firefly\\FilamentBlog\\Blog' => __DIR__ . '/..' . '/firefly/filament-blog/src/Blog.php',
-        'Firefly\\FilamentBlog\\Components\\Card' => __DIR__ . '/..' . '/firefly/filament-blog/src/Components/Card.php',
-        'Firefly\\FilamentBlog\\Components\\Comment' => __DIR__ . '/..' . '/firefly/filament-blog/src/Components/Comment.php',
-        'Firefly\\FilamentBlog\\Components\\FeatureCard' => __DIR__ . '/..' . '/firefly/filament-blog/src/Components/FeatureCard.php',
-        'Firefly\\FilamentBlog\\Components\\Header' => __DIR__ . '/..' . '/firefly/filament-blog/src/Components/Header.php',
-        'Firefly\\FilamentBlog\\Components\\HeaderCategory' => __DIR__ . '/..' . '/firefly/filament-blog/src/Components/HeaderCategory.php',
-        'Firefly\\FilamentBlog\\Components\\Layout' => __DIR__ . '/..' . '/firefly/filament-blog/src/Components/Layout.php',
-        'Firefly\\FilamentBlog\\Components\\RecentPost' => __DIR__ . '/..' . '/firefly/filament-blog/src/Components/RecentPost.php',
+        'Firefly\\FilamentBlog\\Components\\Card' => __DIR__ . '/../..' . '/app/View/Components/vendor/filament-blog/Card.php',
+        'Firefly\\FilamentBlog\\Components\\Comment' => __DIR__ . '/../..' . '/app/View/Components/vendor/filament-blog/Comment.php',
+        'Firefly\\FilamentBlog\\Components\\FeatureCard' => __DIR__ . '/../..' . '/app/View/Components/vendor/filament-blog/FeatureCard.php',
+        'Firefly\\FilamentBlog\\Components\\Header' => __DIR__ . '/../..' . '/app/View/Components/vendor/filament-blog/Header.php',
+        'Firefly\\FilamentBlog\\Components\\HeaderCategory' => __DIR__ . '/../..' . '/app/View/Components/vendor/filament-blog/HeaderCategory.php',
+        'Firefly\\FilamentBlog\\Components\\Layout' => __DIR__ . '/../..' . '/app/View/Components/vendor/filament-blog/Layout.php',
+        'Firefly\\FilamentBlog\\Components\\RecentPost' => __DIR__ . '/../..' . '/app/View/Components/vendor/filament-blog/RecentPost.php',
         'Firefly\\FilamentBlog\\Concerns\\HasCategories' => __DIR__ . '/..' . '/firefly/filament-blog/src/Concerns/HasCategories.php',
         'Firefly\\FilamentBlog\\Console\\Commands\\RenameTablesCommand' => __DIR__ . '/..' . '/firefly/filament-blog/src/Console/Commands/RenameTablesCommand.php',
         'Firefly\\FilamentBlog\\Database\\Factories\\CategoryFactory' => __DIR__ . '/..' . '/firefly/filament-blog/database/factories/CategoryFactory.php',

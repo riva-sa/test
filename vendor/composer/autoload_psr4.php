@@ -127,6 +127,7 @@ return array(
     'GeneaLabs\\LaravelModelCaching\\' => array($vendorDir . '/genealabs/laravel-model-caching/src'),
     'Fruitcake\\Cors\\' => array($vendorDir . '/fruitcake/php-cors/src'),
     'Firefly\\FilamentBlog\\Database\\Factories\\' => array($vendorDir . '/firefly/filament-blog/database/factories'),
+    'Firefly\\FilamentBlog\\Components\\' => array($baseDir . '/app/View/Components/vendor/filament-blog'),
     'Firefly\\FilamentBlog\\' => array($vendorDir . '/firefly/filament-blog/src'),
     'Filament\\Widgets\\' => array($vendorDir . '/filament/widgets/src'),
     'Filament\\Tables\\' => array($vendorDir . '/filament/tables/src'),
