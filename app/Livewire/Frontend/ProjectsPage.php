@@ -14,6 +14,7 @@ use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Attributes\Url;
 use Livewire\WithPagination;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 #[Title('المشاريع')]
 class ProjectsPage extends Component
@@ -309,31 +310,26 @@ class ProjectsPage extends Component
             $items = $query->paginate(18, ['*'], 'projects_page');
         } else {
             $query = Unit::with(['project', 'project.developer'])
-            ->whereHas('project', function ($q) {
-                $q->where('status', 1);
-            })
-            ->whereHas('project.units', function ($q) {
-                $q->whereIn('case', ['0', '1', '2']);
-            })
-            ->withCount([
-                'project as available_units_count' => function (Builder $q) {
-                    $q->whereHas('units', function ($unitQuery) {
-                        $unitQuery->where('case', '0');
-                    });
-                },
-                'project as reserved_units_count' => function (Builder $q) {
-                    $q->whereHas('units', function ($unitQuery) {
-                        $unitQuery->where('case', '1');
-                    });
-                },
-            ])
-            ->orderByRaw("
-                CASE
-                    WHEN available_units_count > 0 THEN 1
-                    WHEN reserved_units_count > 0 THEN 2
-                    ELSE 3
-                END
-            ");
+                ->whereHas('project', function ($q) {
+                    $q->where('status', 1);
+                })
+                ->addSelect([
+                    'available_units_count' => Unit::selectRaw('count(*)')
+                        ->whereColumn('project_id', 'units.project_id')
+                        ->where('case', '0')
+                        ->limit(1),
+                    'reserved_units_count' => Unit::selectRaw('count(*)')
+                        ->whereColumn('project_id', 'units.project_id')
+                        ->where('case', '1')
+                        ->limit(1),
+                ])
+                ->orderByRaw("
+                    CASE
+                        WHEN (select count(*) from units u where u.project_id = units.project_id and u.case = '0') > 0 THEN 1
+                        WHEN (select count(*) from units u where u.project_id = units.project_id and u.case = '1') > 0 THEN 2
+                        ELSE 3
+                    END
+                ");
 
 
             if (!empty($this->selected_projectTypes)) {
