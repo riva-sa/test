@@ -20,7 +20,7 @@
         <div class="container">
             <div class="text-center mb-5">
                 <h2 class="display-5 fw-bold text-dark">
-                    {{ \App\Helpers\ContentHelper::get('services_title', 'خدماتنا') }}
+                    {!! \App\Helpers\ContentHelper::get('services_title', 'خدماتنا') !!}
                 </h2>
                 <p class="lead text-muted">
                     {{ \App\Helpers\ContentHelper::get('services_subtitle', 'نقدم حلولاً عقارية متكاملة بمعايير عالمية') }}
