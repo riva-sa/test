@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\ContentBlock;
+use Illuminate\Support\Facades\DB;
+
 class ContentBlockSeeder extends Seeder
 {
     /**
@@ -12,7 +14,9 @@ class ContentBlockSeeder extends Seeder
      */
     public function run()
     {
-        // php artisan db:seed --class=ContentBlockSeeder
+        // Disable foreign key checks for PostgreSQL
+        DB::statement('SET CONSTRAINTS ALL DEFERRED');
+
         $contentBlocks = [
             [
                 'key' => 'main_heading',
@@ -91,22 +95,42 @@ class ContentBlockSeeder extends Seeder
             [
                 'key' => 'services_content',
                 'description' => 'Services content',
-                'content' => '<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-white p-6 rounded-lg shadow">
-                        <h3 class="text-xl font-bold mb-3">إدارة المبيعات العقارية</h3>
-                        <p>نقدم حلولاً متكاملة لإدارة عمليات البيع العقاري باحترافية وكفاءة عالية</p>
+                'content' => '<div class="row g-4">
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card h-100 shadow-sm border-0">
+                            <div class="card-body text-center py-4">
+                                <i class="fas fa-home fs-1 text-primary mb-3"></i>
+                                <h4 class="card-title">إدارة المبيعات العقارية</h4>
+                                <p class="card-text">نقدم حلولاً متكاملة لإدارة عمليات البيع العقاري باحترافية وكفاءة عالية</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="bg-white p-6 rounded-lg shadow">
-                        <h3 class="text-xl font-bold mb-3">التسويق العقاري</h3>
-                        <p>استراتيجيات تسويقية مبتكرة تصل إلى الجمهور المستهدف وتحقق أعلى العوائد</p>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card h-100 shadow-sm border-0">
+                            <div class="card-body text-center py-4">
+                                <i class="fas fa-bullhorn fs-1 text-primary mb-3"></i>
+                                <h4 class="card-title">التسويق العقاري</h4>
+                                <p class="card-text">استراتيجيات تسويقية مبتكرة تصل إلى الجمهور المستهدف وتحقق أعلى العوائد</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="bg-white p-6 rounded-lg shadow">
-                        <h3 class="text-xl font-bold mb-3">الاستشارات العقارية</h3>
-                        <p>خبراؤنا يقدمون النصائح والتحليلات لمساعدتك في اتخاذ القرارات الاستثمارية الصائبة</p>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card h-100 shadow-sm border-0">
+                            <div class="card-body text-center py-4">
+                                <i class="fas fa-chart-line fs-1 text-primary mb-3"></i>
+                                <h4 class="card-title">الاستشارات العقارية</h4>
+                                <p class="card-text">خبراؤنا يقدمون النصائح والتحليلات لمساعدتك في اتخاذ القرارات الاستثمارية الصائبة</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="bg-white p-6 rounded-lg shadow">
-                        <h3 class="text-xl font-bold mb-3">إدارة المشاريع</h3>
-                        <p>إدارة متكاملة للمشاريع العقارية منذ التخطيط وحتى التسليم النهائي</p>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card h-100 shadow-sm border-0">
+                            <div class="card-body text-center py-4">
+                                <i class="fas fa-building fs-1 text-primary mb-3"></i>
+                                <h4 class="card-title">إدارة المشاريع</h4>
+                                <p class="card-text">إدارة متكاملة للمشاريع العقارية منذ التخطيط وحتى التسليم النهائي</p>
+                            </div>
+                        </div>
                     </div>
                 </div>'
             ],
@@ -158,6 +182,9 @@ class ContentBlockSeeder extends Seeder
                 $block
             );
         }
+
+        // Re-enable foreign key checks
+        DB::statement('SET CONSTRAINTS ALL IMMEDIATE');
 
         $this->command->info('Successfully seeded content blocks with keys for Riva Real Estate!');
     }
