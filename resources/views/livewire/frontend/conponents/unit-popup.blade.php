@@ -20,15 +20,18 @@
                                     <div class="swiper">
                                         <div class="swiper-wrapper">
                                             @foreach($unitImages as $index => $image)
-                                            <div class="swiper-slide">
-                                                <a href="{{ App\Helpers\MediaHelper::getUrl($image['url']) }}" class="unit-lightbox-item"
-                                                   data-glightbox="type: image; title: {{ $selectedUnit->title }}; description: {{ $selectedUnit->unit_type }};"
-                                                   data-gallery="unit-gallery">
-                                                    <figure class="card-img-top rounded" style="background-image: url('{{ App\Helpers\MediaHelper::getUrl($image['url']) }}'); background-size: cover; height: 240px;"></figure>
-                                                </a>
-                                            </div>
+                                                <div class="swiper-slide">
+                                                    <a href="{{ $image['url'] }}" class="unit-lightbox-item"
+                                                       data-glightbox="type: image; title: {{ $selectedUnit->title }}; description: {{ $selectedUnit->unit_type }};"
+                                                       data-gallery="unit-gallery">
+                                                        <figure class="card-img-top rounded"
+                                                                style="background-image: url('{{ $image['url'] }}'); background-size: cover; height: 240px;">
+                                                        </figure>
+                                                    </a>
+                                                </div>
                                             @endforeach
                                         </div>
+
                                         <!-- Add Navigation -->
                                         <div class="swiper-navigation d-flex">
                                             <div class="swiper-button-prev"></div>
