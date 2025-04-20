@@ -215,25 +215,21 @@ class ProjectsPage extends Component
 
         if ($this->view_type === 'projects') {
             $query = Project::with(['projectType', 'developer', 'units'])
-            ->withCount([
-                'units as available_units_count' => function ($query) {
-                    $query->where('case', '0');
-                },
-                'units as reserved_units_count' => function ($query) {
-                    $query->where('case', '1');
-                },
-                'units as sold_units_count' => function ($query) {
-                    $query->where('case', '2');
-                },
+            ->select([
+                'projects.*',
+                DB::raw('(SELECT COUNT(*) FROM units WHERE units.project_id = projects.id AND units.case = 0) AS available_units_count'),
+                DB::raw('(SELECT COUNT(*) FROM units WHERE units.project_id = projects.id AND units.case = 1) AS reserved_units_count'),
+                DB::raw('(SELECT COUNT(*) FROM units WHERE units.project_id = projects.id AND units.case = 2) AS sold_units_count'),
             ])
             ->where('status', 1)
             ->orderByRaw("
                 CASE
-                    WHEN available_units_count > 0 THEN 1
-                    WHEN reserved_units_count > 0 THEN 2
+                    WHEN (SELECT COUNT(*) FROM units WHERE units.project_id = projects.id AND units.case = 0) > 0 THEN 1
+                    WHEN (SELECT COUNT(*) FROM units WHERE units.project_id = projects.id AND units.case = 1) > 0 THEN 2
                     ELSE 3
                 END
             ");
+
 
             if (!empty($this->selected_projectTypes)) {
                 $query->whereIn('project_type_id', $this->selected_projectTypes);
