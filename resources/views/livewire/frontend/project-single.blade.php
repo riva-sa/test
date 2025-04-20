@@ -231,12 +231,12 @@
                                                     @if($unit->case == 2)
                                                         <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
                                                             style="background-color: rgba(0, 0, 0, 0.587);">
-                                                            <span class="badge">تم البيع</span>
+                                                            <span class="badge bg-danger">تم البيع</span>
                                                         </div>
                                                     @elseif($unit->case == 1)
                                                         <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
                                                             style="background-color: rgba(0, 0, 0, 0.5);">
-                                                            <span class="badge">محجوزة</span>
+                                                            <span class="badge bg-warning">محجوزة</span>
                                                         </div>
                                                     @endif
                                                 </figure>

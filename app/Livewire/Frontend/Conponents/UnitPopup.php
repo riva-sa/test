@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Frontend\Conponents;
 
+use App\Helpers\MediaHelper;
 use App\Models\Unit;
 use App\Models\UnitOrder;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
@@ -63,14 +64,14 @@ class UnitPopup extends Component
 
         if ($this->selectedUnit->image) {
             $this->unitImages[] = [
-                'url' => Storage::url($this->selectedUnit->image),
+                'url' => MediaHelper::getUrl($this->selectedUnit->image),
                 'is_main' => true,
             ];
         }
 
         if ($this->selectedUnit->floor_plan) {
             $this->unitImages[] = [
-                'url' => Storage::url($this->selectedUnit->floor_plan),
+                'url' => MediaHelper::getUrl($this->selectedUnit->floor_plan),
                 'is_main' => false,
             ];
         }
