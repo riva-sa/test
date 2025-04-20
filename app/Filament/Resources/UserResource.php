@@ -44,6 +44,7 @@ class UserResource extends Resource
         return [
             'name',
             'email',
+            'phone',
         ];
     }
 
@@ -69,7 +70,11 @@ class UserResource extends Resource
                             ->unique(ignoreRecord: true)
                             ->required()
                             ->maxLength(255),
-
+                        Forms\Components\TextInput::make('phone')
+                            ->label('الهاتف')
+                            ->tel()
+                            ->required()
+                            ->maxLength(255),
                         // Using Select Component
                         Forms\Components\Select::make('roles')
                             ->label('الصلاحيات')
@@ -111,6 +116,9 @@ class UserResource extends Resource
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')->label('البريد الإلكتروني')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('phone')->label('الهاتف')
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('roles.name')

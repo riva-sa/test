@@ -13,12 +13,16 @@ use Livewire\Attributes\Title;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Attributes\Url;
 use Livewire\WithPagination;
+use Illuminate\Database\Eloquent\Builder;
 
 #[Title('المشاريع')]
 class ProjectsPage extends Component
 {
     use LivewireAlert;
     use WithPagination;
+
+    // Pagination theme
+    protected $paginationTheme = 'bootstrap';
 
     #[Url]
     public $view_type = 'projects'; // Default view
@@ -209,7 +213,26 @@ class ProjectsPage extends Component
         $query = null;
 
         if ($this->view_type === 'projects') {
-            $query = Project::with('projectType', 'developer', 'units')->where('status', 1);
+            $query = Project::with(['projectType', 'developer', 'units'])
+            ->withCount([
+                'units as available_units_count' => function ($query) {
+                    $query->where('case', '0');
+                },
+                'units as reserved_units_count' => function ($query) {
+                    $query->where('case', '1');
+                },
+                'units as sold_units_count' => function ($query) {
+                    $query->where('case', '2');
+                },
+            ])
+            ->where('status', 1)
+            ->orderByRaw("
+                CASE
+                    WHEN available_units_count > 0 THEN 1
+                    WHEN reserved_units_count > 0 THEN 2
+                    ELSE 3
+                END
+            ");
 
             if (!empty($this->selected_projectTypes)) {
                 $query->whereIn('project_type_id', $this->selected_projectTypes);
@@ -269,23 +292,49 @@ class ProjectsPage extends Component
                 });
             }
 
-            if ($this->sort_by === 'unit_price') {
-                $query->addSelect([
-                    'min_unit_price' => Unit::selectRaw('MIN(unit_price)')
-                        ->whereColumn('units.project_id', 'projects.id')
-                        ->limit(1)
-                ])->orderBy('min_unit_price', $this->sort_direction);
-            } else {
-                $query->orderBy($this->sort_by, $this->sort_direction);
-            }
+            // Custom ordering by unit case priority
+            // if ($this->sort_by === 'unit_case_priority') {
+            //     $query->orderByRaw('case_0_count DESC, case_1_count DESC, case_2_count DESC');
+            // } elseif ($this->sort_by === 'unit_price') {
+            //     $query->addSelect([
+            //         'min_unit_price' => Unit::selectRaw('MIN(unit_price)')
+            //             ->whereColumn('units.project_id', 'projects.id')
+            //             ->limit(1)
+            //     ])->orderBy('min_unit_price', $this->sort_direction);
+            // } else {
+            //     $query->orderBy($this->sort_by, $this->sort_direction);
+            // }
 
             // Use projects_page for pagination
             $items = $query->paginate(18, ['*'], 'projects_page');
         } else {
-            // Units view
-            $query = Unit::with('project', 'project.developer')->whereHas('project', function($q) {
+            $query = Unit::with(['project', 'project.developer'])
+            ->whereHas('project', function ($q) {
                 $q->where('status', 1);
-            });
+            })
+            ->whereHas('project.units', function ($q) {
+                $q->whereIn('case', ['0', '1', '2']);
+            })
+            ->withCount([
+                'project as available_units_count' => function (Builder $q) {
+                    $q->whereHas('units', function ($unitQuery) {
+                        $unitQuery->where('case', '0');
+                    });
+                },
+                'project as reserved_units_count' => function (Builder $q) {
+                    $q->whereHas('units', function ($unitQuery) {
+                        $unitQuery->where('case', '1');
+                    });
+                },
+            ])
+            ->orderByRaw("
+                CASE
+                    WHEN available_units_count > 0 THEN 1
+                    WHEN reserved_units_count > 0 THEN 2
+                    ELSE 3
+                END
+            ");
+
 
             if (!empty($this->selected_projectTypes)) {
                 $query->whereHas('project', function($q) {

@@ -1,6 +1,16 @@
 @push('styles')
 
 <style>
+    .pagination .page-item.active .page-link {
+        background-color: #122818;
+        color: #FFF;
+        border-color: #122818;
+    }
+
+    .pagination .page-item.active:hover .page-link {
+        background-color: #122818;
+        color: #FFF;
+    }
     /* Filter Sidebar Specific Styles */
     .filter-sidebar__toggle-btn {
         position: fixed;
@@ -33,7 +43,7 @@
         width: 85%;
         max-width: 400px;
         background-color: white;
-        z-index: 1050;
+        z-index: 1019;
     }
 
     /* Mobile Styles */

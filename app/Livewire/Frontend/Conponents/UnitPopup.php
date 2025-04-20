@@ -6,6 +6,7 @@ use App\Models\Unit;
 use App\Models\UnitOrder;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
+use Illuminate\Support\Facades\Storage;
 
 class UnitPopup extends Component
 {
@@ -60,15 +61,17 @@ class UnitPopup extends Component
     {
         $this->unitImages = [];
 
-        // First add the main unit image if exists
         if ($this->selectedUnit->image) {
             $this->unitImages[] = [
-                'url' => $this->selectedUnit->image,
-                'is_main' => true
+                'url' => Storage::url($this->selectedUnit->image),
+                'is_main' => true,
             ];
+        }
+
+        if ($this->selectedUnit->floor_plan) {
             $this->unitImages[] = [
-                'url' => $this->selectedUnit->floor_plan,
-                'is_main' => false
+                'url' => Storage::url($this->selectedUnit->floor_plan),
+                'is_main' => false,
             ];
         }
     }

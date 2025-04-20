@@ -399,5 +399,12 @@
 
     </section>
 
+    <!-- WhatsApp Fixed Icon -->
+    <a href="https://wa.me/{{ isset($project) && $project->sales_manager_id ?
+        App\Models\User::find($project->sales_manager_id)->phone ?? setting('site_phone') :
+        setting('site_phone')
+    }}" class="whatsapp-float glass-card" target="_blank">
+        <i class="uil uil-whatsapp"></i>
+    </a>
 
 </div>

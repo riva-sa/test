@@ -115,7 +115,7 @@
                 }
             }
         </script> --}}
-        <script>
+        {{-- <script>
             document.getElementById('fullscreen-btn').addEventListener('click', function () {
                 if (!document.fullscreenElement) {
                     document.documentElement.requestFullscreen();
@@ -136,12 +136,19 @@
                 }
             });
 
-        </script>
+        </script> --}}
         @stack('scripts')
 
         <!-- WhatsApp Fixed Icon -->
-        <a href="https://wa.me/{{ setting('site_phone') }}" class="whatsapp-float glass-card" target="_blank">
+        {{-- <a href="https://wa.me/{{ setting('site_phone') }}" class="whatsapp-float glass-card" target="_blank">
             <i class="uil uil-whatsapp"></i>
-        </a>
+        </a> --}}
+
+        <!-- WhatsApp Fixed Icon -->
+        @if(!Request::is('project/*'))
+            <a href="https://wa.me/{{ setting('site_phone') }}" class="whatsapp-float glass-card" target="_blank">
+                <i class="uil uil-whatsapp"></i>
+            </a>
+        @endif
     </body>
 </html>
