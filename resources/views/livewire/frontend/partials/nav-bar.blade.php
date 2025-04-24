@@ -122,6 +122,11 @@
                                 خريطة مشاريعُنا
                             </a>
                         </li>
+                        <li class="nav-item border-right">
+                            <a href="{{ route('frontend.projects') }}" class="nav-link">
+                                تصفح المشاريع
+                            </a>
+                        </li>
                     </ul>
                     <!-- /.navbar-nav -->
                     <div class="d-lg-none mt-auto pt-6 pb-6 order-4">

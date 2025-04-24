@@ -399,12 +399,19 @@
 
     </section>
 
-    <!-- WhatsApp Fixed Icon -->
+    {{-- <!-- WhatsApp Fixed Icon -->
     <a href="https://wa.me/{{ isset($project) && $project->sales_manager_id ?
         App\Models\User::find($project->sales_manager_id)->phone ?? setting('site_phone') :
         setting('site_phone')
     }}" class="whatsapp-float glass-card" target="_blank">
         <i class="uil uil-whatsapp"></i>
-    </a>
+    </a> --}}
 
+    <!-- WhatsApp Fixed Icon -->
+    <a href="https://wa.me/{{ isset($project) && $project->sales_manager_id ?
+        App\Models\User::find($project->sales_manager_id)->phone ?? setting('site_phone') :
+    setting('site_phone')
+    }}?text=انا مهتم بهذا المشروع {{ isset($project) ? $project->name : '' }} {{ isset($project) ? route('frontend.projects.single', $project->slug) : '' }}" class="whatsapp-float glass-card" target="_blank">
+    <i class="uil uil-whatsapp"></i>
+    </a>
 </div>
