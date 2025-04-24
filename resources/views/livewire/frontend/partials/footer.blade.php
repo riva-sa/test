@@ -3,7 +3,7 @@
         <div class="d-md-flex align-items-center justify-content-between">
             <img class="mb-4" src="{{asset('frontend/img/logoyy.png')}}" width="50px" srcset="{{asset('frontend/img/logoyy.png')}} 2x" alt="Riva - ريفا">
 
-            <p class="mb-2 mb-lg-0">© 2025 جميع الحقوق محفوطة ريفا.</p>
+            <p class="mb-2 mb-lg-0">© 2025 جميع الحقوق محفوظة لشركة ريفا العقارية.</p>
             <nav class="nav social social-muted mb-0 text-md-end">
                 <a href="https://twitter.com/riva_aqar" target="_blank" >
                     {{-- <i class="uil uil-twitter"></i> --}}

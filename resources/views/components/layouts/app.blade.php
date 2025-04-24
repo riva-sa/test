@@ -35,6 +35,7 @@
         <link rel="stylesheet" href="{{ asset('frontend/css/custom.css') }}">
         <link rel="stylesheet" href="{{ asset('frontend/css/colors/navy.css') }}">
         <link rel="preload" href="{{ asset('frontend/css/fonts/urbanist.css') }}" as="style" onload="this.rel='stylesheet'">
+        <script src="https://cdn.jsdelivr.net/npm/progressbar.js"></script>
 
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

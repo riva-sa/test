@@ -178,7 +178,6 @@
                         <div class="row">
 
                             @forelse($items as $project)
-
                                 <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 mb-3" wire:key="{{ $project->id }}">
                                     <article class="post">
 
@@ -198,7 +197,7 @@
                                                 <h2 class="post-title h6 mt-0">
                                                     <a href="{{ route('frontend.projects.single', $project->slug) }}">
                                                         {{ $project->name }}
-                                                        <span class="badge rounded-pill  @if($project->dynamic_project_status == 'متاح') bg-pale-leaf text-leaf @else bg-pale-yellow text-yellow @endif">{{ $project->dynamic_project_status }}</span>
+                                                        <span class="badge rounded-pill  @if($project->dynamic_project_status == 'متاح') bg-pale-leaf text-leaf @elseif ($project->dynamic_project_status == 'تحت الانشاء') bg-pale-red text-danger @else bg-pale-yellow text-yellow @endif">{{ $project->dynamic_project_status }}</span>
                                                     </a>
 
                                                 </h2>
@@ -285,12 +284,16 @@
                                                     <span class="badge bg-pale-ash text-dark rounded-pill">{{ $unit->unit_type }}</span>
                                                 </div>
                                             </div>
-                                            @if ($unit->show_price)
+                                            @if ($unit->show_price && $unit->unit_price)
                                                 <ul class="post-meta mb-3">
                                                     <li class="post-date">
-                                                        <span class="fs-15 text-success"> {{ number_format($unit->unit_price) . ' ريال';  }}</span>
+                                                        <span class="fs-15 text-success">
+                                                            {{ number_format($unit->unit_price) . ' ريال';  }}
+                                                        </span>
                                                     </li>
                                                 </ul>
+                                            @else
+                                                <span>---</span>
                                             @endif
                                             <ul class="post-meta mb-0  @if (!$unit->show_price) mt-4 @endif">
                                                 <li class="post-date">

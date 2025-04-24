@@ -309,6 +309,9 @@ class ProjectsPage extends Component
                 ->whereHas('project', function ($q) {
                     $q->where('status', 1);
                 })
+                ->where('status', 1)
+                ->where('case', 0)
+                ->OrWhere('case', 1)
                 ->addSelect([
                     'available_units_count' => Unit::selectRaw('count(*)')
                         ->whereColumn('project_id', 'units.project_id')

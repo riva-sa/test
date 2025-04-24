@@ -372,7 +372,7 @@
                                     </div>
                                     <div class="me-2">
                                         <h4 class="mb-0 fs-15">{{$landmark->name}}</h4>
-                                        <p class="mb-0 fs-14">{{ $landmark->description }}</p>
+                                        {{-- <p class="mb-0 fs-14">{{ $landmark->description }}</p> --}}
                                         @if($landmark->pivot->distance)
                                             <p class="mb-0 fs-13"><span class="text-muted">المسافة:</span> {{ $landmark->pivot->distance }} كم</p>
                                         @endif

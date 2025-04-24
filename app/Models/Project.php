@@ -173,18 +173,26 @@ class Project extends Model
     {
         return $this->belongsTo(User::class, 'sales_manager_id');
     }
-
     public function getDynamicProjectStatusAttribute()
     {
-        $unitCases = $this->units()->pluck('case');
+        // Check if the project has any units
+        if ($this->units()->count() == 0) {
+            return 'تحت الانشاء';
+        }
 
+        $unitCases = $this->units()->pluck('case');
         if ($unitCases->every(fn($case) => $case == 2)) {
             return 'مباع بالكامل';
+        }
+        if ($unitCases->every(fn($case) => $case == 1)) {
+            return 'محجوز بالكامل';
+        }
+        if ($unitCases->every(fn($case) => $case == 3)) { // تحت الانشاء
+            return 'تحت الانشاء';
         }
 
         return 'متاح';
     }
-
 
 
     // public function getFirstPdfUrl()
@@ -216,7 +224,10 @@ class Project extends Model
         $maxPrice = $this->units()->max('unit_price');
 
         if ($minPrice === $maxPrice) {
-            return number_format($minPrice) . ' ريال';
+            if ($this->show_price) {
+                return number_format($minPrice) . ' ريال';
+            }
+            // return number_format($minPrice) . ' ريال';
         }
 
         return number_format($minPrice) . ' الي ' . number_format($maxPrice) . ' ريال';

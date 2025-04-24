@@ -260,11 +260,6 @@ class ProjectResource extends Resource
                                         ->visibility('public') // Set the visibility (public or private)
                                         ->required()
                                         ->imageEditor()  // This enables the built-in image editor
-                                        ->imageEditorAspectRatios([
-                                            '16:9',
-                                            '4:3',
-                                            '1:1',
-                                        ])
                                         ->maxSize(1000000)
                                         ->columnSpanFull(),
 

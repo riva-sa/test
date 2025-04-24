@@ -120,16 +120,39 @@
                                 @endif
                                 @if ($selectedUnit->case == 0)
                                     <div class="mb-4">
-                                        <a wire:click="goToFormStep" class="btn btn-primary btn-icon btn-sm btn-icon-start rounded w-100">تسجيل اهتمام بالوحدة <i class="uil uil-fire"></i></a>
+                                        <a wire:click="goToFormStep" class="btn btn-primary btn-icon btn-sm btn-icon-start rounded w-100 mb-2">تسجيل اهتمام بالوحدة <i class="uil uil-fire"></i></a>
+                                        <div class=" d-flex gap-2">
+                                            <a target="_blanck" href="https://wa.me/{{ isset($selectedUnit->project) && $selectedUnit->project->sales_manager_id ?
+                                                App\Models\User::where('id',$selectedUnit->project->sales_manager_id)->first()->phone ?? setting('site_phone') :
+                                            setting('site_phone')
+                                            }}?text=انا مهتم بهذا المشروع {{ isset($selectedUnit->project) ? $selectedUnit->project->name : '' }} {{ isset($selectedUnit->project) ? route('frontend.projects.single', $selectedUnit->project->slug) : '' }}"
+                                             class="btn btn-soft-primary btn-icon btn-sm btn-icon-start rounded w-100">
+                                                تواصل واتس اب
+                                                <i class="uil uil-whatsapp"></i>
+                                            </a>
+                                            <a href="tel:{{ isset($selectedUnit->project) && $selectedUnit->project->sales_manager_id ?
+                                                App\Models\User::where('id',$selectedUnit->project->sales_manager_id)->first()->phone : setting('site_phone') }}"
+                                                class="btn btn-soft-primary btn-icon btn-sm btn-icon-start rounded w-100 text-dark">
+                                                اتصال
+                                                <i class="uil uil-phone"></i>
+                                            </a>
+                                        </div>
                                     </div>
                                 @else
-                                    <div class="mb-4">
-                                        <a class="btn btn-soft-orange btn-icon btn-sm btn-icon-start rounded w-100 disabled" disabled>
+                                    <div class="mb-4 d-flex gap-2">
+                                        <a class="btn btn-soft-orange btn-icon btn-sm btn-icon-start rounded w-50 disabled" disabled>
                                             @if ($selectedUnit->case == 0)
                                                 الوحدة محجوزة
                                             @else
                                                 الوحدة مباعة
                                             @endif
+                                        </a>
+                                        <a target="_blanck" href="https://wa.me/{{ isset($unit->project) && $unit->project->sales_manager_id ?
+                                            App\Models\User::where('id',$unit->project->sales_manager_id)->first()->phone ?? setting('site_phone') :
+                                        setting('site_phone')
+                                        }}?text=انا مهتم بهذا المشروع {{ isset($unit->project) ? $unit->project->name : '' }} {{ isset($unit->project) ? route('frontend.projects.single', $unit->project->slug) : '' }}" class="btn btn-primary btn-icon btn-sm btn-icon-start rounded w-50">
+                                            تواصل واتس اب
+                                            <i class="uil uil-whatsapp"></i>
                                         </a>
                                     </div>
                                 @endif
@@ -269,6 +292,7 @@
                                                 جاري الإرسال...
                                             </div>
                                         </button>
+
                                     </form>
                                 </div>
                             @endif

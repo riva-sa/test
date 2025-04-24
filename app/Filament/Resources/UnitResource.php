@@ -220,6 +220,7 @@ class UnitResource extends Resource
                             0 => 'متاحة',
                             1 => 'محجوزة',
                             2 => 'مباعة',
+                            3 => 'تحت الانشاء',
                         ])
                         ->default(0)
                         ->columnSpan(1),
@@ -254,6 +255,7 @@ class UnitResource extends Resource
                         0 => 'متاحة',
                         1 => 'محجوزة',
                         2 => 'مباعة',
+                        3 => 'تحت الانشاء',
                     ])
                     ->searchable()
                     ->afterStateUpdated(function ($state) {
@@ -309,12 +311,13 @@ class UnitResource extends Resource
                     }),
 
                 // Filter by status
-                SelectFilter::make('status')
+                SelectFilter::make('case')
                     ->label('تصفية حسب الحالة')
                     ->options([
                         0 => 'متاحة',
                         1 => 'محجوزة',
                         2 => 'مباعة',
+                        3 => 'تحت الانشاء',
                     ]),
             ])
             ->actions([
