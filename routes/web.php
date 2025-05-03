@@ -13,6 +13,7 @@ use App\Livewire\Frontend\Blog;
 use App\Livewire\Frontend\BlogSingle;
 use App\Livewire\Frontend\ContactUs;
 use App\Livewire\Frontend\Services;
+use App\Models\Project;
 
 Route::get('/', HomePage::class)->name('frontend.home');
 // Route::get('/units/create', [CreateUnit::class, 'render'])->name('filament.resources.units.create');
@@ -27,6 +28,24 @@ Route::get('/blog/{slug}', BlogSingle::class)->name('frontend.blog.single');
 Route::get('/services', Services::class)->name('frontend.services');
 Route::get('/contact-us', ContactUs::class)->name('frontend.contactus');
 
+Route::get('/single/{slug}', function ($slug) {
+    $projects = Project::all();
+    $bestMatch = null;
+    $highestSimilarity = 0;
+
+    foreach ($projects as $project) {
+        similar_text($slug, $project->slug, $percent);
+        if ($percent > $highestSimilarity) {
+            $highestSimilarity = $percent;
+            $bestMatch = $project;
+        }
+    }
+    if ($bestMatch && $highestSimilarity > 60) { // نسبة تقارب 60% كحد أدنى
+        return redirect('project/' . $bestMatch->slug);
+    }
+
+    abort(404);
+});
 
 // Route::get('/project/download/{project}/{file}', [HelperController::class, 'downloadPdf'])
 //     ->name('project.download');
