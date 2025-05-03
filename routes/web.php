@@ -28,24 +28,37 @@ Route::get('/blog/{slug}', BlogSingle::class)->name('frontend.blog.single');
 Route::get('/services', Services::class)->name('frontend.services');
 Route::get('/contact-us', ContactUs::class)->name('frontend.contactus');
 
+// Route::get('/single/{slug}', function ($slug) {
+//     $projects = Project::all();
+//     $bestMatch = null;
+//     $highestSimilarity = 0;
+
+//     foreach ($projects as $project) {
+//         similar_text($slug, $project->slug, $percent);
+//         if ($percent > $highestSimilarity) {
+//             $highestSimilarity = $percent;
+//             $bestMatch = $project;
+//         }
+//     }
+//     if ($bestMatch && $highestSimilarity > 60) { // نسبة تقارب 60% كحد أدنى
+//         return redirect('project/' . $bestMatch->slug);
+//     }
+
+//     abort(404);
+// });
+
 Route::get('/single/{slug}', function ($slug) {
-    $projects = Project::all();
-    $bestMatch = null;
-    $highestSimilarity = 0;
+    $slugMap = [
+        'جادة-الياسمين-36' => 'gad-alyasmyn-36',
+    ];
 
-    foreach ($projects as $project) {
-        similar_text($slug, $project->slug, $percent);
-        if ($percent > $highestSimilarity) {
-            $highestSimilarity = $percent;
-            $bestMatch = $project;
-        }
-    }
-    if ($bestMatch && $highestSimilarity > 60) { // نسبة تقارب 60% كحد أدنى
-        return redirect('project/' . $bestMatch->slug);
+    if (!array_key_exists($slug, $slugMap)) {
+        abort(404);
     }
 
-    abort(404);
+    return redirect('project/' . $slugMap[$slug]);
 });
+
 
 // Route::get('/project/download/{project}/{file}', [HelperController::class, 'downloadPdf'])
 //     ->name('project.download');
