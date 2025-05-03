@@ -50,6 +50,17 @@ Route::get('/contact-us', ContactUs::class)->name('frontend.contactus');
 Route::get('/single/{slug}', function ($slug) {
     $slugMap = [
         'جادة-الياسمين-36' => 'gad-alyasmyn-36',
+        'اصال-فيلا' => 'asal-fyla',
+        'شقق-فال-العارض' => 'shkk-fal-alaaard',
+        'فلل-رسوخ-النرجس' => 'fll-rsokh-alnrgs',
+        'تاون-هاوس-يمام-8' => 'taon-haos-ymam-8',
+        'ادوار-يمام-7' => 'adoar-ymam-7',
+        'صحار-النرجس' => 'shar-alnrgs',
+        'زنك-4-و-5' => 'znk-4-o-5',
+        'اي-كورت-النرجس' => 'ay-kort-alnrgs',
+        'عزوم-النرجس' => 'aazom-alnrgs',
+        'شقق-شادو-ريزيدنس' => 'shkk-shado-ryzydns',
+        'اصال-اليرموك' => 'asal-alyrmok',
     ];
 
     if (!array_key_exists($slug, $slugMap)) {
