@@ -26032,12 +26032,12 @@ article .post-meta li.ms-auto:before {
 @media (max-width: 767px) {
   .card-footer .post-meta li.post-author,
   .card-footer .post-meta li.post-comments span {
-    display: none;
+    /* display: none; */
   }
   .post-header .post-meta li.post-author,
   .post-header .post-meta li.post-comments span,
   .post-header .post-meta li.post-likes span {
-    display: none;
+    /* display: none; */
   }
 }
 .glyphs {

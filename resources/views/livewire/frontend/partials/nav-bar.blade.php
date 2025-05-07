@@ -33,12 +33,12 @@
                         </li>
                         <div class="d-lg-none text-end">
                             <ul class="list-unstyled pe-0">
-                                <li><a class="dropdown-item" href="{{ route('frontend.about') }}">تعرف على ريڤا</a></li>
-                                <li><a class="dropdown-item" href="{{ route('frontend.projects') }}">مشاريعنا</a></li>
+                                <li><a class="dropdown-item mb-2" href="{{ route('frontend.about') }}">تعرف على ريڤا</a></li>
+                                <li><a class="dropdown-item mb-2" href="{{ route('frontend.projects') }}">مشاريعنا</a></li>
                                 {{-- <li><a class="dropdown-item" href="{{ route('frontend.about') }}">ماذا نُقدم؟</a></li> --}}
                                 {{-- <li><a class="dropdown-item" href="{{ route('frontend.home') }}">اطلب عقارك</a></li> --}}
-                                <li><a class="dropdown-item" href="{{ route('frontend.contactus') }}">تواصل معنا</a></li>
-                                <li><a class="dropdown-item" href="{{ route('frontend.blog') }}">الأحداث العقارية</a></li>
+                                <li><a class="dropdown-item mb-2" href="{{ route('frontend.contactus') }}">تواصل معنا</a></li>
+                                <li><a class="dropdown-item mb-2" href="{{ route('frontend.blog') }}">الأحداث العقارية</a></li>
                             </ul>
                         </div>
                         <li class="nav-item dropdown dropdown-mega d-md-block d-none"><a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">اكتشف المزيد</a>

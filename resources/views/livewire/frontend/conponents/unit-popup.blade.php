@@ -1,5 +1,5 @@
 <div class="unit-sheet">
-    <div class="side-sheet border {{ $showSideSheet ? 'active' : '' }}" style="max-width: 96% !important;max-height: 100vh;overflow-y: scroll;">
+    <div class="side-sheet border {{ $showSideSheet ? 'active' : '' }}" style="max-width: 91% !important;max-height: 92vh;overflow-y: scroll;">
         @if($selectedUnit)
             <div class="d-lg-flex flex-row align-items-lg-center p-4">
                 <a class="btn btn-circle btn-soft-primary closeSideSheet side-sheet-close" wire:click="closeSideSheet"><i class="uil uil-multiply"></i></a>

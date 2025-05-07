@@ -126,7 +126,7 @@
     <!-- Map Container -->
     <div wire:ignore id="map" style="height: calc(100vh - 76.15px); width: 100%;"></div>
 
-    <div class="side-sheet {{ $showSideSheet ? 'active' : '' }}" style="max-width: 96% !important;">
+    <div class="side-sheet {{ $showSideSheet ? 'active' : '' }}" style="max-width: 91% !important;max-height: 92vh;overflow-y: scroll;">
 
         @if($selectedProject)
             <div class="d-lg-flex flex-row align-items-lg-center p-4">

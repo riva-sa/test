@@ -179,7 +179,7 @@
                     </div>
 
                     <div class="card mb-6">
-                        <div class="card-body p-5" dir="rtl">
+                        <div class="card-body p-0" dir="rtl">
 
                             <ul class="nav nav-tabs nav-pills tab-box w-fit" dir="rtl">
                                 <li class="nav-item">
@@ -203,7 +203,7 @@
                                 <li class="nav-item">
                                     <a wire:click="$set('case', '2')"
                                        class="nav-link px-4 cursor-pointer {{ $case === '2' ? 'active noise-container bg-danger text-white' : '' }}">
-                                       <i class="uil uil-bill ms-2 fs-15"></i> تم البيع
+                                       <i class="uil uil-bill ms-2 fs-15"></i> مباع
                                     </a>
                                 </li>
                             </ul>
