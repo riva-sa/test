@@ -43,7 +43,7 @@
         width: 85%;
         max-width: 400px;
         background-color: white;
-        z-index: 1019;
+        z-index: 1069 !important;
     }
 
     /* Mobile Styles */
