@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
         {{-- <title>{{ $title ?? 'ريفا العقارية' }}</title> --}}
 
@@ -11,7 +11,6 @@
         <!-- SEO Meta Tags -->
         <meta name="description" content="@yield('description', 'ريفا العقارية')">
         <meta name="keywords" content="@yield('keywords', 'ريفا العقارية')">
-
         <!-- Open Graph Tags -->
         <meta property="og:title" content="@yield('og:title', 'ريفا')" />
         <meta property="og:description" content="@yield('og:description', 'ريفا العقارية')" />
@@ -63,19 +62,20 @@
             {!! $settings->google_tag_code !!}
         @endif
 
-            <!-- Google Tag Manager -->
+        <!-- Google Tag Manager -->
         <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-            })(window,document,'script','dataLayer','GTM-THCCWX7G');</script>
-            <!-- End Google Tag Manager -->
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-THCCWX7G');</script>
+        <!-- End Google Tag Manager -->
+
     </head>
     <body>
-    <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-THCCWX7G"
-        height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-        <!-- End Google Tag Manager (noscript) -->
+        <!-- Google Tag Manager (noscript) -->
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-THCCWX7G"
+            height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+            <!-- End Google Tag Manager (noscript) -->
         <div class="content-wrapper">
 
             @livewire('frontend.partials.nav-bar')
@@ -110,44 +110,7 @@
 
         <x-livewire-alert::flash />
         <x-livewire-alert::scripts />
-        {{-- <script>
-            function toggleSidebar() {
-                const sidebar = document.querySelector('.sidebar');
-                sidebar.classList.toggle('show');
 
-                if (sidebar.classList.contains('show')) {
-                    sidebar.classList.remove('d-none');
-                    document.body.style.overflow = 'hidden';
-                } else {
-                    setTimeout(() => {
-                        sidebar.classList.add('d-none');
-                        document.body.style.overflow = 'auto';
-                    }, 300);
-                }
-            }
-        </script> --}}
-        {{-- <script>
-            document.getElementById('fullscreen-btn').addEventListener('click', function () {
-                if (!document.fullscreenElement) {
-                    document.documentElement.requestFullscreen();
-                    localStorage.setItem('isFullScreen', 'true');
-                } else {
-                    if (document.exitFullscreen) {
-                        document.exitFullscreen();
-                        localStorage.setItem('isFullScreen', 'false');
-                    }
-                }
-            });
-
-            // تحقق من حالة الشاشة الكاملة عند تحميل الصفحة
-            window.addEventListener('load', function () {
-                if (localStorage.getItem('isFullScreen') === 'true') {
-                    document.documentElement.requestFullscreen();
-                    document.getElementById('fullscreen-btn').innerText = "Exit Full Screen";
-                }
-            });
-
-        </script> --}}
         @stack('scripts')
 
         <!-- WhatsApp Fixed Icon -->
