@@ -11,14 +11,14 @@
                     <div class="px-md-15 px-lg-3">
                         <figure class="mb-6"><img class="noise-container" src="{{ asset('frontend/img/PNG/tag.png') }}" style="width: 60px !important" srcset="{{ asset('frontend/img/PNG/tag.png') }} 2x" alt="Riva - ريفا" /></figure>
                         <h3>الاحترافية</h3>
-                        <p class="mb-2">نسعى دائما الى خلق بيئة احترافية لنجعل مخرجتنا لها صدى طويل في القطاع العقاري.</p>
+                        {{-- <p class="mb-2">نسعى دائما الى خلق بيئة احترافية لنجعل مخرجتنا لها صدى طويل في القطاع العقاري.</p> --}}
                     </div>
                 </div>
                     <div class="col-lg-4">
                     <div class="px-md-15 px-lg-3">
                         <figure class="mb-6"><img class="noise-container" src="{{ asset('frontend/img/PNG/lamba.png') }}" style="width: 60px !important" srcset="{{ asset('frontend/img/PNG/lamba.png') }} 2x" alt="Riva - ريفا" /></figure>
                         <h3>الإبداع</h3>
-                        <p class="mb-2">نسعى دائما الى خلق بيئة احترافية لنجعل مخرجتنا لها صدى طويل في القطاع العقاري.</p>
+                        {{-- <p class="mb-2">نسعى دائما الى خلق بيئة احترافية لنجعل مخرجتنا لها صدى طويل في القطاع العقاري.</p> --}}
                     </div>
                 </div>
 
@@ -26,7 +26,7 @@
                     <div class="px-md-15 px-lg-3">
                         <figure class="mb-6"><img class="noise-container" src="{{ asset('frontend/img/PNG/Button(8).png') }}" style="width: 60px !important" srcset="{{ asset('frontend/img/PNG/Button(8).png') }} 2x" alt="Riva - ريفا" /></figure>
                         <h3>الالتزام</h3>
-                        <p class="mb-2">نسعى دائما الى خلق بيئة احترافية لنجعل مخرجتنا لها صدى طويل في القطاع العقاري.</p>
+                        {{-- <p class="mb-2">نسعى دائما الى خلق بيئة احترافية لنجعل مخرجتنا لها صدى طويل في القطاع العقاري.</p> --}}
                     </div>
                 </div>
             </div>

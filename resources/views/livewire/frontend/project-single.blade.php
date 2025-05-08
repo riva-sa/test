@@ -35,7 +35,7 @@
                             <div>
                                 <p class="small text-muted mb-1">المطور</p>
                                 <h2 class="post-title h3 mt-1 mb-3">
-                                    {{ $project->developer->name }}
+                                    مواصفات المشروع
                                 </h2>
                             </div>
                             <div>
