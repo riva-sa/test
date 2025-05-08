@@ -9,17 +9,17 @@
         <title>@yield('title', $title ?? 'ريفا العقارية')</title>
         <link rel="stylesheet" href="https://sets.hugeicons.com/YOUR-SET-ID.css" crossorigin="anonymous">
         <!-- SEO Meta Tags -->
-        <meta name="description" content="@yield('description', 'ريفا العقارية')">
+        <meta name="description" content="@yield('description', 'رحلة سكن')">
         <meta name="keywords" content="@yield('keywords', 'ريفا العقارية')">
         <!-- Open Graph Tags -->
-        <meta property="og:title" content="@yield('og:title', 'ريفا')" />
-        <meta property="og:description" content="@yield('og:description', 'ريفا العقارية')" />
+        <meta property="og:title" content="@yield('og:title', 'ريفا العقارية')" />
+        <meta property="og:description" content="@yield('og:description', 'رحلة سكن')" />
         <meta property="og:image" content="@yield('og:image', asset('frontend/img/riva2.jpg'))" />
 
         <!-- Twitter Card Tags -->
         <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:title" content="@yield('twitter:title', 'ريفا')">
-        <meta name="twitter:description" content="@yield('twitter:description', 'ريفا العقارية')">
+        <meta name="twitter:title" content="@yield('twitter:title', 'ريفا العقارية')">
+        <meta name="twitter:description" content="@yield('twitter:description', 'رحلة سكن')">
         <meta name="twitter:image" content="@yield('twitter:image', asset('frontend/img/riva2.jpg'))">
 
         @vite('resources/css/app.css')
