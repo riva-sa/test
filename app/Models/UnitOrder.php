@@ -25,7 +25,7 @@ class UnitOrder extends Model
         return $this->belongsTo(Unit::class);
     }
 
-    function project() {
+    public function project() {
         return $this->belongsTo(Project::class);
     }
 

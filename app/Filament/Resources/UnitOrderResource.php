@@ -20,6 +20,7 @@ use Filament\Tables\Actions\ExportAction;
 use Maatwebsite\Excel\Facades\Excel;
 use Filament\Tables\Actions\BulkAction;
 use Illuminate\Support\Collection;
+use Filament\Forms\Components\Select;
 
 class UnitOrderResource extends Resource
 {
@@ -78,34 +79,32 @@ class UnitOrderResource extends Resource
                                 Forms\Components\Select::make('PurchaseType')
                                     ->label('طريقة الشراء')
                                     ->options([
-                                        'Cash' => 'كاش',
-                                        'Installment' => 'بنك',
+                                        'cash' => 'كاش',
+                                        'bank' => 'بنك',
                                     ]),
-                                Forms\Components\Select::make('support_type')
-                                    ->label('نوع الدعم')
-                                    ->options([
-                                        'General' => 'عام',
-                                        'Special' => 'خاص',
-                                    ]),
+                                Forms\Components\Textarea::make('support_type')
+                                    ->label('نوع الدعم'),
                                 Forms\Components\Select::make('PurchasePurpose')
                                     ->label('الغرض من الشراء')
                                     ->options([
-                                        'Residential' => 'سكني',
-                                        'Commercial' => 'استثماري',
+                                        'living' => 'سكني',
+                                        'invest' => 'استثماري',
                                     ]),
                             ]),
 
                         Grid::make()
                             ->columns(3)
                             ->schema([
-                                Forms\Components\BelongsToSelect::make('unit_id')
+                                Select::make('unit_id')
                                     ->label('الوحدة')
                                     ->relationship('unit', 'title')
                                     ->required(),
-                                Forms\Components\BelongsToSelect::make('user_id')
+
+                                Select::make('user_id')
                                     ->label('المستخدم')
                                     ->relationship('user', 'name'),
-                                Forms\Components\BelongsToSelect::make('project_id')
+
+                                Select::make('project_id')
                                     ->label('المشروع')
                                     ->relationship('project', 'name')
                                     ->required(),
