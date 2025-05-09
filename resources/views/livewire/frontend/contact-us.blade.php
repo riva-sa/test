@@ -34,7 +34,7 @@
                         </div>
                         <div class="align-self-start justify-content-start">
                           <h5 class="mb-1">العنوان</h5>
-                          <address>{{ setting('site_address') }}</address>
+                          <address>{!! \App\Helpers\ContentHelper::get('address', '') !!}</address>
                         </div>
                       </div>
                       <!--/div -->
