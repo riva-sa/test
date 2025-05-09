@@ -26040,6 +26040,11 @@ article .post-meta li.ms-auto:before {
     /* display: none; */
   }
 }
+@media (max-width: 991.98px) {
+    .mobile-hidden {
+        display: none !important;
+    }
+}
 .glyphs {
   padding: 0;
 }

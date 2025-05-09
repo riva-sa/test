@@ -29,23 +29,37 @@
         <div class="container-fluid py-10 py-md-8 pb-md-15 px-md-9">
             <div class="row d-flex align-items-start gy-10">
 
-                <div class="card col-lg-3 position-lg-sticky p-4 " style="top: 5rem;" wire:ignore>
+                <div class="card col-lg-3 position-lg-sticky p-4 mobile-hidden" style="top: 5rem;" wire:ignore>
                     <figcaption class="text-right" dir="rtl">
                         <div class="d-flex align-content-start justify-content-between w-100">
                             <div>
-                                <p class="small text-muted mb-1">المطور</p>
-                                <h2 class="post-title h3 mt-1 mb-3">
-                                    مواصفات المشروع
-                                </h2>
+                                <p class="small mb-1">المطور</p>
                             </div>
                             <div>
-                                {{-- <img src="{{ asset('storage/'. $project->developer->logo) }}" style="height: auto !important;max-width:100px" alt="Riva - ريفا"> --}}
                                 <img src="{{ App\Helpers\MediaHelper::getUrl($project->developer->logo) }}" style="height: auto!important;max-width:100px" alt="Riva - ريفا">
                             </div>
                         </div>
                     </figcaption>
                     <div class="p-2 py-3 shadow mt-2 rounded" dir="rtl" style="background: #f1f1f19e !important;">
                         <ul class="post-meta row mb-2">
+                            <p class="mb-1 text-gray-800">مواصفات المشروع</p>
+
+                            <li class="col-md-6">
+                                <img src="{{ asset('frontend/img/icons/move.png') }}" class="dark-image" style="width: 20px;" alt="Riva - ريفا">
+                                <span class="me-1 text-dark fs-14">{{ $project->space_range }}</span>
+                            </li>
+                            <li class="col-md-6">
+                                <img src="{{ asset('frontend/img/icons/bed.png') }}" class="dark-image" style="width: 20px;" alt="Riva - ريفا">
+                                <span class="me-1 text-dark fs-14">{{ $project->bedroom_range }}</span>
+                            </li>
+                        </ul>
+                        <ul class="post-meta row">
+
+                            <li class="col-md-6">
+                                <img src="{{ asset('frontend/img/icons/bathtub-01.png') }}" class="dark-image" style="width: 20px;" alt="Riva - ريفا">
+                                <span class="me-1 text-dark fs-14">{{ $project->bathroom_range }}</span>
+                            </li>
+
                             <li class="col-md-6">
                                 {{-- <img src="{{ asset('frontend/img/icons/pan-03.png') }}" class="" style="width: 20px;" alt="Riva - ريفا"> --}}
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="19" height="19" color="#808080" fill="none">
@@ -57,21 +71,6 @@
                                 </svg>
                                 <span class="me-1 text-dark fs-14">{{ $project->kitchen_range }}</span>
                             </li>
-                            <li class="col-md-6">
-                                <img src="{{ asset('frontend/img/icons/bathtub-01.png') }}" class="dark-image" style="width: 20px;" alt="Riva - ريفا">
-                                <span class="me-1 text-dark fs-14">{{ $project->bathroom_range }}</span>
-                            </li>
-                        </ul>
-                        <ul class="post-meta row">
-                            <li class="col-md-6">
-                                <img src="{{ asset('frontend/img/icons/bed.png') }}" class="dark-image" style="width: 20px;" alt="Riva - ريفا">
-                                <span class="me-1 text-dark fs-14">{{ $project->bedroom_range }}</span>
-                            </li>
-                            <li class="col-md-6">
-                                <img src="{{ asset('frontend/img/icons/move.png') }}" class="dark-image" style="width: 20px;" alt="Riva - ريفا">
-                                <span class="me-1 text-dark fs-14">{{ $project->space_range }}</span>
-                            </li>
-
                         </ul>
                     </div>
                     <div class="p-2 py-3 shadow mt-2 rounded" dir="rtl" style="background: #f1f1f19e !important;">
@@ -156,6 +155,93 @@
                             </div>
                         </div>
 
+                    </div>
+                    <div class="card col-lg-3 position-lg-sticky p-4 d-block d-lg-none" style="top: 5rem;" wire:ignore>
+                        <figcaption class="text-right" dir="rtl">
+                            <div class="d-flex align-content-start justify-content-between w-100">
+                                <div>
+                                    <p class="small mb-1">المطور</p>
+                                </div>
+                                <div>
+                                    <img src="{{ App\Helpers\MediaHelper::getUrl($project->developer->logo) }}" style="height: auto!important;max-width:100px" alt="Riva - ريفا">
+                                </div>
+                            </div>
+                        </figcaption>
+                        <div class="p-2 py-3 shadow mt-2 rounded" dir="rtl" style="background: #f1f1f19e !important;">
+                            <ul class="post-meta row mb-2">
+                                <p class="mb-1 text-gray-800">مواصفات المشروع</p>
+
+                                <li class="col-md-6">
+                                    <img src="{{ asset('frontend/img/icons/move.png') }}" class="dark-image" style="width: 20px;" alt="Riva - ريفا">
+                                    <span class="me-1 text-dark fs-14">{{ $project->space_range }}</span>
+                                </li>
+                                <li class="col-md-6">
+                                    <img src="{{ asset('frontend/img/icons/bed.png') }}" class="dark-image" style="width: 20px;" alt="Riva - ريفا">
+                                    <span class="me-1 text-dark fs-14">{{ $project->bedroom_range }}</span>
+                                </li>
+                            </ul>
+                            <ul class="post-meta row">
+
+                                <li class="col-md-6">
+                                    <img src="{{ asset('frontend/img/icons/bathtub-01.png') }}" class="dark-image" style="width: 20px;" alt="Riva - ريفا">
+                                    <span class="me-1 text-dark fs-14">{{ $project->bathroom_range }}</span>
+                                </li>
+
+                                <li class="col-md-6">
+                                    {{-- <img src="{{ asset('frontend/img/icons/pan-03.png') }}" class="" style="width: 20px;" alt="Riva - ريفا"> --}}
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="19" height="19" color="#808080" fill="none">
+                                        <path d="M21 17C18.2386 17 16 14.7614 16 12C16 9.23858 18.2386 7 21 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                        <path d="M21 21C16.0294 21 12 16.9706 12 12C12 7.02944 16.0294 3 21 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                        <path d="M6 3L6 8M6 21L6 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                        <path d="M3.5 8H8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                        <path d="M9 3L9 7.35224C9 12.216 3 12.2159 3 7.35207L3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                    <span class="me-1 text-dark fs-14">{{ $project->kitchen_range }}</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="p-2 py-3 shadow mt-2 rounded" dir="rtl" style="background: #f1f1f19e !important;">
+                            <ul class="post-meta row mb-4">
+                                <li class="col-md-6">
+                                    <p class="mb-1 text-gray-800">رخصة الاعلان</p>
+                                    <span class="text-dark fs-14">{{ $project->AdLicense }}</span>
+                                </li>
+                                <li class="col-md-6">
+                                    <p class="mb-1 text-gray-800">تاريخ النشر</p>
+                                    <span class="text-dark fs-14">{{ $project->created_at->format('y-m-d') }}</span>
+                                </li>
+                            </ul>
+                            <ul class="post-meta row">
+                                <li class="col-md-12">
+                                    <p class="mb-1 text-gray-800">السعر</p>
+                                    <span class="text-success fs-14">{{ $project->price_range }}</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="mt-4 d-flex gap-2 actions">
+                            @if($pdfUrl)
+                                <button wire:click="dispatch('showPdf', ['{{ $pdfUrl }}'])" class="btn btn-soft-ash btn-sm btn-icon-end rounded w-50">
+                                    <i class="uil uil-eye me-1"></i> عرض ملف المشروع
+                                </button>
+                            @endif
+
+                            <button
+                                wire:click="showOrderPopup({{ $project->id }})"
+                                wire:loading.attr="disabled"
+                                wire:target="showOrderPopup"
+                                class="btn btn-primary btn-sm btn-icon-end rounded w-50 @if($pdfUrl) w-50 @else w-100 @endif">
+
+                                <span wire:loading.remove wire:target="showOrderPopup">
+                                    <i class="uil uil-fire me-1"></i> تسجيل اهتمام
+                                </span>
+
+                                <span wire:loading wire:target="showOrderPopup">
+                                    <i class="uil uil-spinner-alt fa-spin me-1"></i> جاري التحميل...
+                                </span>
+
+                            </button>
+                        </div>
                     </div>
                     <!-- /.card -->
                     <div class="card mb-6">
@@ -273,17 +359,17 @@
                                                         </ul>
                                                     @endif
                                                     <ul class="post-meta mb-0" wire:click="showUnitDetails({{ $unit->id }})">
-                                                        <li class="post-date">
-                                                            <img src="{{ asset('frontend/img/icons/bathtub-01.png') }}" class="dark-image" style="width: 20px;" alt="Riva - ريفا">
-                                                            <span class="me-1 fs-15 text-gray-800">{{ $unit->bathrooms }}</span>
+                                                        <li class="post-comments">
+                                                            <img src="{{ asset('frontend/img/icons/move.png') }}" class="dark-image" style="width: 20px;" alt="Riva - ريفا">
+                                                            <span class="me-1 fs-15 text-gray-800">{{ $unit->unit_area . ' م²' }}</span>
                                                         </li>
                                                         <li class="post-author">
                                                             <img src="{{ asset('frontend/img/icons/bed.png') }}" class="dark-image" style="width: 20px;" alt="Riva - ريفا">
                                                             <span class="me-1 fs-15 text-gray-800">{{ $unit->beadrooms }}</span>
                                                         </li>
-                                                        <li class="post-comments">
-                                                            <img src="{{ asset('frontend/img/icons/move.png') }}" class="dark-image" style="width: 20px;" alt="Riva - ريفا">
-                                                            <span class="me-1 fs-15 text-gray-800">{{ $unit->unit_area . ' م²' }}</span>
+                                                        <li class="post-date">
+                                                            <img src="{{ asset('frontend/img/icons/bathtub-01.png') }}" class="dark-image" style="width: 20px;" alt="Riva - ريفا">
+                                                            <span class="me-1 fs-15 text-gray-800">{{ $unit->bathrooms }}</span>
                                                         </li>
                                                     </ul>
                                                 </div>
