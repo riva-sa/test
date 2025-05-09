@@ -20,11 +20,6 @@ class UnitOrder extends Model
         'support_type'
     ];
 
-    protected $casts =
-    [
-        'status' => 'boolean',
-    ];
-
     public function unit()
     {
         return $this->belongsTo(Unit::class);

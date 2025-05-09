@@ -57,11 +57,17 @@ class UnitOrderResource extends Resource
                                     ->maxLength(255),
                             ]),
 
-                        Forms\Components\Toggle::make('status')
+                            Forms\Components\Select::make('status')
                             ->label('الحالة')
-                            ->onColor('success')
-                            ->offColor('danger')
-                            ->default(false),
+                            ->options([
+                                0 => 'جديد',
+                                1 => 'قيد المعالجة',
+                                2 => 'مكتمل',
+                                3 => 'ملغي',
+                            ])
+                            ->required()
+                            ->native(false),
+
                         Forms\Components\Textarea::make('message')
                             ->label('الرسالة')
                             ->nullable(),
@@ -74,8 +80,7 @@ class UnitOrderResource extends Resource
                                     ->options([
                                         'Cash' => 'كاش',
                                         'Installment' => 'بنك',
-                                    ])
-                                    ->required(),
+                                    ]),
                                 Forms\Components\Select::make('support_type')
                                     ->label('نوع الدعم')
                                     ->options([
@@ -87,8 +92,7 @@ class UnitOrderResource extends Resource
                                     ->options([
                                         'Residential' => 'سكني',
                                         'Commercial' => 'استثماري',
-                                    ])
-                                    ->required(),
+                                    ]),
                             ]),
 
                         Grid::make()
@@ -100,8 +104,7 @@ class UnitOrderResource extends Resource
                                     ->required(),
                                 Forms\Components\BelongsToSelect::make('user_id')
                                     ->label('المستخدم')
-                                    ->relationship('user', 'name')
-                                    ->required(),
+                                    ->relationship('user', 'name'),
                                 Forms\Components\BelongsToSelect::make('project_id')
                                     ->label('المشروع')
                                     ->relationship('project', 'name')
