@@ -216,15 +216,15 @@
                                     @forelse($units as $unit)
                                         <div class="col-md-6 col-lg-4 mb-2" wire:key="{{$unit->id}}" style="cursor: pointer">
 
-                                            <article class="post rounded">
+                                            <article class="post rounded border">
                                                 <figure class="rounded-top position-relative" wire:click="showUnitDetails({{ $unit->id }})">
                                                     @if ($unit->floor_plan)
                                                         <img src="{{ App\Helpers\MediaHelper::getUrl($unit->floor_plan ) }}"
-                                                        style="max-height: 200px"
+                                                        style="max-height: 207px;"
                                                         alt="{{ $unit->title }}" />
                                                     @else
                                                         <img src="https://placehold.co/700x400"
-                                                        style="max-height: 200px"
+                                                        style="max-height: 207px;"
                                                         alt="{{ $unit->title }}" />
                                                     @endif
 
