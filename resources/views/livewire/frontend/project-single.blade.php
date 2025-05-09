@@ -179,7 +179,7 @@
                     </div>
 
                     <div class="card mb-6">
-                        <div class="card-body p-0" dir="rtl">
+                        <div class="card-body p-0 p-lg-3" dir="rtl">
 
                             <ul class="nav nav-tabs nav-pills tab-box w-fit" dir="rtl">
                                 <li class="nav-item">

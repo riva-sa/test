@@ -72,50 +72,69 @@
           <!-- /.row -->
           <div class="row">
             <div class="col-lg-10 offset-lg-1 col-xl-8 offset-xl-2" dir="rtl">
-              <h2 class="display-4 mb-3 text-center">أرسل لنا رسالة</h2>
-              <p class="lead text-center mb-10">تواصل معنا من خلال نموذج الاتصال الخاص بنا وسنقوم بالرد عليك قريبًا.</p>
-              <form class="contact-form needs-validation" novalidate>
-                <div class="messages"></div>
-                <div class="row gx-4">
-                  <div class="col-md-4">
-                    <div class="form-floating mb-4">
-                      <input id="form_name" type="text" name="name" class="form-control" placeholder="" required>
-                      <label for="form_name">الاسم *</label>
+                <h2 class="display-4 mb-3 text-center">أرسل لنا رسالة</h2>
+                <p class="lead text-center mb-10">تواصل معنا من خلال نموذج الاتصال الخاص بنا وسنقوم بالرد عليك قريبًا.</p>
+                @if ($success)
+                    <div class="alert alert-success text-center mb-4" role="alert">
+                        تم إرسال رسالتك بنجاح. سنتواصل معك قريباً.
                     </div>
-                  </div>
-                  <div class="col-md-4">
-                    <div class="form-floating mb-4">
-                      <input id="form_email" type="email" name="email" class="form-control" placeholder="" required>
-                      <label for="form_email">البريد الالكتروني *</label>
-                    </div>
-                  </div>
-                  <!-- /column -->
-                  <div class="col-md-4">
-                    <div class="form-select-wrapper mb-4">
-                      <select class="form-select" id="form-select" name="department" required>
-                        <option selected disabled value="">حدد القسم</option>
-                        <option value="Sales">مبيعات</option>
-                        <option value="Marketing">تسويق</option>
-                        <option value="Customer Support">خدمة عملاء</option>
-                      </select>
-                    </div>
-                  </div>
-                  <!-- /column -->
-                  <div class="col-12">
-                    <div class="form-floating mb-4">
-                      <textarea id="form_message" name="message" class="form-control" placeholder="Your message" style="height: 150px" required></textarea>
-                      <label for="form_message">الرسالة *</label>
+                @endif
 
+                <form wire:submit.prevent="submit">
+                    <div class="messages">
+                        @if ($errors->any())
+                            <div class="alert alert-danger">
+                                <ul class="mb-0">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
                     </div>
-                  </div>
-                  <!-- /column -->
-                  <div class="col-12 text-center">
-                    <input type="submit" class="btn btn-primary rounded-pill btn-send mb-3" value="ارسال">
-                  </div>
-                  <!-- /column -->
-                </div>
-                <!-- /.row -->
-              </form>
+
+                    <div class="row gx-4">
+                        <div class="col-md-4">
+                            <div class="form-floating mb-4">
+                                <input id="form_name" type="text" wire:model="name" class="form-control" placeholder="">
+                                <label for="form_name">الاسم *</label>
+                                @error('name') <div class="text-danger mt-1">{{ $message }}</div> @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-floating mb-4">
+                                <input id="form_email" type="email" wire:model="email" class="form-control" placeholder="">
+                                <label for="form_email">البريد الالكتروني *</label>
+                                @error('email') <div class="text-danger mt-1">{{ $message }}</div> @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-select-wrapper mb-4">
+                                <select class="form-select" id="form-select" wire:model="department">
+                                    <option selected disabled value="">حدد القسم</option>
+                                    <option value="Sales">مبيعات</option>
+                                    <option value="Marketing">تسويق</option>
+                                    <option value="Customer Support">خدمة عملاء</option>
+                                </select>
+                                @error('department') <div class="text-danger mt-1">{{ $message }}</div> @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-floating mb-4">
+                                <textarea id="form_message" wire:model="message" class="form-control" placeholder="Your message" style="height: 150px"></textarea>
+                                <label for="form_message">الرسالة *</label>
+                                @error('message') <div class="text-danger mt-1">{{ $message }}</div> @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-12 text-center">
+                            <button type="submit" class="btn btn-primary rounded-pill btn-send mb-3">ارسال</button>
+                        </div>
+                    </div>
+                </form>
               <!-- /form -->
             </div>
             <!-- /column -->

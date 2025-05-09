@@ -173,6 +173,27 @@ class Project extends Model
     {
         return $this->belongsTo(User::class, 'sales_manager_id');
     }
+    // public function getDynamicProjectStatusAttribute()
+    // {
+    //     // Check if the project has any units
+    //     if ($this->units()->count() == 0) {
+    //         return 'تحت الانشاء';
+    //     }
+
+    //     $unitCases = $this->units()->pluck('case');
+    //     if ($unitCases->every(fn($case) => $case == 2)) {
+    //         return 'مباع بالكامل';
+    //     }
+    //     if ($unitCases->every(fn($case) => $case == 1)) {
+    //         return 'محجوز بالكامل';
+    //     }
+    //     if ($unitCases->every(fn($case) => $case == 3)) { // تحت الانشاء
+    //         return 'تحت الانشاء';
+    //     }
+
+    //     return 'متاح';
+    // }
+
     public function getDynamicProjectStatusAttribute()
     {
         // Check if the project has any units
@@ -181,18 +202,31 @@ class Project extends Model
         }
 
         $unitCases = $this->units()->pluck('case');
+
+        // If there's at least one unit available (case == 0)
+        if ($unitCases->contains(0)) {
+            return 'متاح';
+        }
+
+        // If all units are sold (case == 2)
         if ($unitCases->every(fn($case) => $case == 2)) {
             return 'مباع بالكامل';
         }
+
+        // If all units are reserved (case == 1)
         if ($unitCases->every(fn($case) => $case == 1)) {
             return 'محجوز بالكامل';
         }
-        if ($unitCases->every(fn($case) => $case == 3)) { // تحت الانشاء
+
+        // If all units are under construction (case == 3)
+        if ($unitCases->every(fn($case) => $case == 3)) {
             return 'تحت الانشاء';
         }
 
-        return 'متاح';
+        // Otherwise, mixed statuses but no available units
+        return 'مباع بالكامل';
     }
+
 
 
     // public function getFirstPdfUrl()
