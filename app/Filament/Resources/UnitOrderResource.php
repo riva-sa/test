@@ -82,7 +82,7 @@ class UnitOrderResource extends Resource
                                         'cash' => 'كاش',
                                         'bank' => 'بنك',
                                     ]),
-                                Forms\Components\Textarea::make('support_type')
+                                Forms\Components\TextInput::make('support_type')
                                     ->label('نوع الدعم'),
                                 Forms\Components\Select::make('PurchasePurpose')
                                     ->label('الغرض من الشراء')

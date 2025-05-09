@@ -12,7 +12,9 @@ use App\Livewire\Frontend\About;
 use App\Livewire\Frontend\Blog;
 use App\Livewire\Frontend\BlogSingle;
 use App\Livewire\Frontend\ContactUs;
+use App\Livewire\Frontend\Privacy;
 use App\Livewire\Frontend\Services;
+use App\Livewire\Frontend\Terms;
 use App\Models\Project;
 
 Route::get('/', HomePage::class)->name('frontend.home');
@@ -21,6 +23,9 @@ Route::get('/', HomePage::class)->name('frontend.home');
 Route::get('/projects', ProjectsPage::class)->name('frontend.projects');
 Route::get('/projects-map', ProjectsMap::class)->name('frontend.projects.map');
 Route::get('/project/{slug}', ProjectSingle::class)->name('frontend.projects.single');
+
+Route::get('/privacy', Privacy::class)->name('frontend.privacy');
+Route::get('/terms', Terms::class)->name('frontend.terms');
 
 Route::get('/about', About::class)->name('frontend.about');
 Route::get('/blog', Blog::class)->name('frontend.blog');
