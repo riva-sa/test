@@ -159,6 +159,11 @@ class UnitOrderResource extends Resource
                 Tables\Columns\TextColumn::make('unit.title')->label('الوحدة')
                     ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('تاريخ الطلب')
+                    ->dateTime()
+                    ->sortable()
+                    ->searchable(),
             ])
             ->filters([
                 // advanced filters

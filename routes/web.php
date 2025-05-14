@@ -33,6 +33,8 @@ Route::get('/blog/{slug}', BlogSingle::class)->name('frontend.blog.single');
 Route::get('/services', Services::class)->name('frontend.services');
 Route::get('/contact-us', ContactUs::class)->name('frontend.contactus');
 
+
+
 // Route::get('/single/{slug}', function ($slug) {
 //     $projects = Project::all();
 //     $bestMatch = null;
