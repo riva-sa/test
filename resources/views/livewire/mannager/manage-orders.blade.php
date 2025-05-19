@@ -172,7 +172,8 @@
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @php
                                     $user = auth()->user();
-
+                                    $source = '';
+                                    $sourceColor = 'bg-gray-100 text-gray-800';
                                     if ($order->user_id == $user->id) {
                                         $source = 'تم إنشاؤه بواسطتي';
                                         $sourceColor = 'bg-indigo-100 text-indigo-800';
