@@ -62,9 +62,9 @@ class UnitOrderResource extends Resource
                             ->label('الحالة')
                             ->options([
                                 0 => 'جديد',
-                                1 => 'قيد المعالجة',
-                                2 => 'مكتمل',
-                                3 => 'ملغي',
+                                1 => 'طلب مفتوح',
+                                2 => 'معاملات بيعية',
+                                3 => 'مغلق',
                             ])
                             ->required()
                             ->native(false),
@@ -130,9 +130,9 @@ class UnitOrderResource extends Resource
                     ->label('الحالة')
                     ->options([
                         0 => 'جديد',
-                        1 => 'قيد المعالجة',
-                        2 => 'مكتمل',
-                        3 => 'ملغي',
+                        1 => 'طلب مفتوح',
+                        2 => 'معاملات بيعية',
+                        3 => 'مغلق',
                     ])
                     ->default(fn ($record) => $record->status) // Set the default value based on the current status
                     ->searchable()
@@ -170,8 +170,10 @@ class UnitOrderResource extends Resource
                 Tables\Filters\SelectFilter::make('status')
                     ->label('الحالة')
                     ->options([
-                        'Active' => 'مفعل',
-                        'Inactive' => 'غير مفعل',
+                        0 => 'جديد',
+                        1 => 'طلب مفتوح',
+                        2 => 'معاملات بيعية',
+                        3 => 'مغلق',
                     ]),
                 Tables\Filters\SelectFilter::make('PurchaseType')
                     ->label('طريقة الشراء')

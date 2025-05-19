@@ -399,7 +399,7 @@
                                     </div>
                                     <div class="row">
                                         @foreach ($project->features as $features)
-                                            <div class="d-flex flex-row col-md-4 mb-3" style="flex-wrap: wrap;" wire:key="{{$features->id}}">
+                                            <div class="d-flex flex-row col-6 col-md-4 mb-3" style="flex-wrap: wrap;" wire:key="{{$features->id}}">
 
                                                 <div>
                                                 @if ($features->icon)
@@ -424,7 +424,7 @@
                                     </div>
                                     <div class="row">
                                         @foreach ($project->guarantees as $guarante)
-                                            <div class="d-flex flex-row col-md-4 mb-3" wire:key="{{$guarante->id}}">
+                                            <div class="d-flex flex-row col-6 col-md-4 mb-3" wire:key="{{$guarante->id}}">
                                                 <div>
                                                     @if ($features->icon)
                                                         <img src="{{ App\Helpers\MediaHelper::getUrl($guarante->icon) }}" class="svg-inject icon-svg icon-svg-sm text-purple" alt="Riva - ريفا" />
@@ -452,7 +452,7 @@
                             </div>
                             <div class="row">
                                 @foreach ($project->landmarks as $landmark)
-                                <div class="d-flex flex-row col-md-4 mb-3" style="flex-wrap: wrap;" wire:key="{{$landmark->id}}">
+                                <div class="d-flex flex-row col-6 col-md-4 mb-3" style="flex-wrap: wrap;" wire:key="{{$landmark->id}}">
                                     <div class="icon-card">
                                         <i class="uil uil-map-pin fs-25 text-dark"></i>
                                     </div>

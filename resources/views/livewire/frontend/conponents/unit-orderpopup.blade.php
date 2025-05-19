@@ -96,7 +96,6 @@
                                         <div class="col-12 mb-3">
                                             <label for="support_type" class="form-label text-gray-900">نوع الدعم</label>
                                             <select wire:model="support_type" class="form-select" id="support_type">
-                                                <option value="">اختر نوع الدعم</option>
                                                 <option value="مدعوم">مدعوم</option>
                                                 <option value="غير مدعوم">غير مدعوم</option>
                                             </select>

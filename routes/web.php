@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use App\Http\Controllers\HelperController;
+use App\Http\Controllers\Manager\ManagerAuthController;
 use App\Livewire\Frontend\About;
 use App\Livewire\Frontend\Blog;
 use App\Livewire\Frontend\BlogSingle;
@@ -15,7 +16,15 @@ use App\Livewire\Frontend\ContactUs;
 use App\Livewire\Frontend\Privacy;
 use App\Livewire\Frontend\Services;
 use App\Livewire\Frontend\Terms;
+use App\Livewire\Mannager\CreateOrder;
+use App\Livewire\Mannager\CustomersList;
+use App\Livewire\Mannager\ManageOrders;
+use App\Livewire\Mannager\ManagerDashboard;
+use App\Livewire\Mannager\OrderDetails;
+use App\Livewire\Mannager\OrderPermissions;
+use App\Livewire\Mannager\SalesManagers;
 use App\Models\Project;
+
 
 Route::get('/', HomePage::class)->name('frontend.home');
 // Route::get('/units/create', [CreateUnit::class, 'render'])->name('filament.resources.units.create');
@@ -34,6 +43,27 @@ Route::get('/services', Services::class)->name('frontend.services');
 Route::get('/contact-us', ContactUs::class)->name('frontend.contactus');
 
 
+// Manager routes protected by the 'manager' role
+Route::middleware(['auth', 'role:sales_manager'])->group(function () {
+    Route::get('/crm', ManagerDashboard::class)->name('manager.dashboard');
+    Route::get('/crm/orders', ManageOrders::class)->name('manager.orders');
+    Route::get('/crm/orders/{id}', OrderDetails::class)->name('manager.order-details');
+    // customerlist
+    Route::get('/crm/customerlist', CustomersList::class)->name('manager.customerlist');
+    Route::get('/crm/sales-managers', SalesManagers::class)->name('manager.sales-managers');
+    Route::get('/crm/{order}/permissions', OrderPermissions::class)->name('manager.permissions');
+
+    Route::get('crm/create-order', CreateOrder::class)->name('manager.create-order');
+});
+
+// Route::middleware(['auth', 'permission:view_dashboard'])->group(function () {
+//     // Route::get('/restricted-dashboard', CustomDashboard::class)->name('restricted.dashboard');
+//     Route::get('/manager-dashboard', ManagerDashboard::class)->name('manager.dashboard');
+// });
+
+Route::get('crm/login', [ManagerAuthController::class, 'showLoginForm'])->name('login');
+Route::post('crm/login', [ManagerAuthController::class, 'login']);
+Route::post('/logout', [ManagerAuthController::class, 'logout'])->name('logout');
 
 // Route::get('/single/{slug}', function ($slug) {
 //     $projects = Project::all();
@@ -112,5 +142,4 @@ Route::get('/run-storage-link', function () {
         return 'Error: ' . $e->getMessage();
     }
 });
-
 

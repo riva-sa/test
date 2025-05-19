@@ -25,6 +25,7 @@ class AdminaPanelMiddleware
         if (Auth::check() && Auth::user()->hasRole('suprt_admin')) {
             return $next($request);
         }
+
         // If the user does not have access, redirect them to a different page
         return abort(404);
     }

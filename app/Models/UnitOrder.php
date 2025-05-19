@@ -33,4 +33,15 @@ class UnitOrder extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function notes()
+    {
+        return $this->hasMany(OrderNote::class, 'unit_order_id');
+    }
+
+    public function permissions()
+    {
+        return $this->hasMany(OrderPermission::class, 'unit_order_id');
+    }
+
 }
