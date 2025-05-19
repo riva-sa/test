@@ -172,6 +172,7 @@
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @php
                                     $user = auth()->user();
+
                                     if ($order->user_id == $user->id) {
                                         $source = 'تم إنشاؤه بواسطتي';
                                         $sourceColor = 'bg-indigo-100 text-indigo-800';
@@ -183,15 +184,12 @@
                                             $source = 'طلب تحت الإدارة';
                                             $sourceColor = 'bg-green-100 text-green-800';
                                         }
-                                    }
-
-                                    if ($user->hasOrderPermission($order->id, 'manage')) {
+                                    } elseif ($user->hasOrderPermission($order->id, 'manage')) {
                                         $source = 'طلب تحت المتابعة';
                                         $sourceColor = 'bg-green-100 text-green-800';
                                     }
-
                                 @endphp
-                                <span class="px-2 py-1 text-xs font-medium rounded-full {{ $sourceColor }}">
+                                <span class="px-2 py-1 text-xs font-medium rounded-full {{ $sourceColor }} ">
                                     {{ $source }}
                                 </span>
                             </td>
