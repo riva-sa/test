@@ -1130,3 +1130,22 @@ body
     color: #fff;
     transform: scale(1.1);
 }
+
+
+.input-group:not(.has-validation) > :not(:last-child):not(.dropdown-toggle):not(.dropdown-menu):not(.form-floating), .input-group:not(.has-validation) > .dropdown-toggle:nth-last-child(n+3), .input-group:not(.has-validation) > .form-floating:not(:last-child) > .form-control, .input-group:not(.has-validation) > .form-floating:not(:last-child) > .form-select {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 9px;
+    border-bottom-right-radius: 9px;
+}
+.input-group > :not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback) {
+    margin-right: calc(1px * -1);
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    margin-left: unset;
+    border-top-left-radius: 9px;
+    border-bottom-left-radius: 9px;
+}
+.input-group-text {
+    padding: 0.4rem 1rem;
+}
