@@ -32,7 +32,7 @@
         @endif
 
         <!-- Order Info -->
-        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-lg mb-6 border border-blue-100 shadow-sm">
+        <div class="bg-white border border-gray-200 p-6 rounded-lg mb-8 shadow-sm">
             <h3 class="text-sm font-medium text-gray-500 mb-2">بيانات الطلب</h3>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-700">
                 <div>
@@ -83,7 +83,7 @@
                         </svg>
                         المستخدم
                     </label>
-                    <select wire:model.defer="user_id" class="w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200 focus:border-blue-500">
+                    <select wire:model.defer="user_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
                         <option value="">اختر المستخدم</option>
                         @foreach($users as $user)
                             <option value="{{ $user->id }}">
@@ -106,7 +106,7 @@
                         </svg>
                         نوع الصلاحية
                     </label>
-                    <select wire:model.defer="permission_type" class="w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200 focus:border-blue-500">
+                    <select wire:model.defer="permission_type" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
                         <option value="">اختر نوع الصلاحية</option>
                         <option value="view">عرض فقط</option>
                         <option value="edit">تعديل</option>
@@ -123,7 +123,7 @@
                         </svg>
                         تاريخ الانتهاء (اختياري)
                     </label>
-                    <input type="date" wire:model.defer="expires_at" class="w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200 focus:border-blue-500">
+                    <input type="date" wire:model.defer="expires_at" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full  p-2.5">
                     @error('expires_at') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
 

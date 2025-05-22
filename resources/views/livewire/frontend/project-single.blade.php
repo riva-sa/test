@@ -87,7 +87,7 @@
                         <ul class="post-meta row">
                             <li class="col-md-12">
                                 <p class="mb-1 text-gray-800">السعر</p>
-                                <span class="text-success fs-14">{{ $project->price_range }}</span>
+                                <span class="text-success fs-14">{{ $project->price_range }}  <img src="{{ asset('frontend/img/SaudiRiyal.svg') }}" width="14px" alt=""></span>
                             </li>
                         </ul>
                     </div>
@@ -341,7 +341,7 @@
                                                         @if (number_format($unit->unit_price) != '0')
                                                         <ul class="post-meta mb-1" wire:click="showUnitDetails({{ $unit->id }})">
                                                             <li class="post-date">
-                                                                <span class="fs-15 text-success">{{ number_format($unit->unit_price) . ' ريال' }}</span>
+                                                                <span class="fs-15 text-success">{{ number_format($unit->unit_price) }} <img src="{{ asset('frontend/img/SaudiRiyal.svg') }}" width="14px" alt=""></span>
                                                             </li>
                                                         </ul>
                                                         @else

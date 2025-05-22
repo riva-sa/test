@@ -194,39 +194,166 @@ class Project extends Model
     //     return 'متاح';
     // }
 
+    // public function getDynamicProjectStatusAttribute()
+    // {
+    //     // Check if the project has any units
+    //     if ($this->units()->count() == 0) {
+    //         return 'تحت الانشاء';
+    //     }
+
+    //     $unitCases = $this->units()->pluck('case');
+
+    //     // If there's at least one unit available (case == 0)
+    //     if ($unitCases->contains(0)) {
+    //         return 'متاح';
+    //     }
+
+    //     // If all units are sold (case == 2)
+    //     if ($unitCases->every(fn($case) => $case == 2)) {
+    //         return 'مباع بالكامل';
+    //     }
+
+    //     // If all units are reserved (case == 1)
+    //     if ($unitCases->every(fn($case) => $case == 1)) {
+    //         return 'محجوز بالكامل';
+    //     }
+
+    //     // If all units are under construction (case == 3)
+    //     if ($unitCases->every(fn($case) => $case == 3)) {
+    //         return 'تحت الانشاء';
+    //     }
+
+    //     // Otherwise, mixed statuses but no available units
+    //     return 'مباع بالكامل';
+    // }
+
     public function getDynamicProjectStatusAttribute()
     {
-        // Check if the project has any units
+        // التحقق من وجود وحدات في المشروع
         if ($this->units()->count() == 0) {
             return 'تحت الانشاء';
         }
 
+        // الحصول على جميع حالات الوحدات
         $unitCases = $this->units()->pluck('case');
 
-        // If there's at least one unit available (case == 0)
-        if ($unitCases->contains(0)) {
-            return 'متاح';
+        // إحصائيات الحالات
+        $availableCount = $unitCases->filter(fn($case) => $case == 0)->count();
+        $reservedCount = $unitCases->filter(fn($case) => $case == 1)->count();
+        $soldCount = $unitCases->filter(fn($case) => $case == 2)->count();
+        $underConstructionCount = $unitCases->filter(fn($case) => $case == 3)->count();
+
+        $totalUnits = $unitCases->count();
+
+        // الحالات الأساسية (كل الوحدات لها نفس الحالة)
+        if ($availableCount == $totalUnits) {
+            return "متاح ($totalUnits وحدة)";
         }
 
-        // If all units are sold (case == 2)
-        if ($unitCases->every(fn($case) => $case == 2)) {
-            return 'مباع بالكامل';
+        if ($soldCount == $totalUnits) {
+            return "مباع بالكامل ($totalUnits وحدة)";
         }
 
-        // If all units are reserved (case == 1)
-        if ($unitCases->every(fn($case) => $case == 1)) {
-            return 'محجوز بالكامل';
+        if ($reservedCount == $totalUnits) {
+            return "محجوز بالكامل ($totalUnits وحدة)";
         }
 
-        // If all units are under construction (case == 3)
-        if ($unitCases->every(fn($case) => $case == 3)) {
-            return 'تحت الانشاء';
+        if ($underConstructionCount == $totalUnits) {
+            return "تحت الانشاء ($totalUnits وحدة)";
         }
 
-        // Otherwise, mixed statuses but no available units
-        return 'مباع بالكامل';
+        // الحالات المختلطة مع التفاصيل
+        if ($availableCount > 0) {
+            $statusParts = [];
+            $statusParts[] = "متاح $availableCount";
+
+            if ($reservedCount > 0) {
+                $statusParts[] = "محجوز $reservedCount";
+            }
+            if ($soldCount > 0) {
+                $statusParts[] = "مباع $soldCount";
+            }
+            if ($underConstructionCount > 0) {
+                $statusParts[] = "تحت الإنشاء $underConstructionCount";
+            }
+
+            return implode(' | ', $statusParts);
+        }
+
+        // إذا لم يكن هناك وحدات متاحة
+        if ($availableCount == 0) {
+            $statusParts = [];
+
+            if ($reservedCount > 0) {
+                $statusParts[] = "محجوز $reservedCount";
+            }
+            if ($soldCount > 0) {
+                $statusParts[] = "مباع $soldCount";
+            }
+            if ($underConstructionCount > 0) {
+                $statusParts[] = "تحت الإنشاء $underConstructionCount";
+            }
+
+            return implode(' | ', $statusParts);
+        }
+
+        // الحالة الافتراضية
+        return "المجموع $totalUnits وحدة";
     }
 
+    // دالة مساعدة للحصول على معلومات مفصلة
+    public function getProjectStatusDetailsAttribute()
+    {
+        if ($this->units()->count() == 0) {
+            return [
+                'status' => 'تحت الانشاء',
+                'available' => 0,
+                'reserved' => 0,
+                'sold' => 0,
+                'under_construction' => 0,
+                'total' => 0,
+                'availability_percentage' => 0
+            ];
+        }
+
+        $unitCases = $this->units()->pluck('case');
+
+        $available = $unitCases->filter(fn($case) => $case == 0)->count();
+        $reserved = $unitCases->filter(fn($case) => $case == 1)->count();
+        $sold = $unitCases->filter(fn($case) => $case == 2)->count();
+        $underConstruction = $unitCases->filter(fn($case) => $case == 3)->count();
+        $total = $unitCases->count();
+
+        $availabilityPercentage = $total > 0 ? round(($available / $total) * 100, 1) : 0;
+
+        return [
+            'status' => $this->dynamic_project_status,
+            'available' => $available,
+            'reserved' => $reserved,
+            'sold' => $sold,
+            'under_construction' => $underConstruction,
+            'total' => $total,
+            'availability_percentage' => $availabilityPercentage
+        ];
+    }
+
+    // دالة للحصول على حالة مبسطة للألوان
+    public function getProjectStatusTypeAttribute()
+    {
+        $details = $this->project_status_details;
+
+        if ($details['available'] > 0) {
+            return 'available';
+        } elseif ($details['total'] == $details['sold']) {
+            return 'sold_out';
+        } elseif ($details['total'] == $details['reserved']) {
+            return 'fully_reserved';
+        } elseif ($details['total'] == $details['under_construction']) {
+            return 'under_construction';
+        } else {
+            return 'mixed';
+        }
+    }
 
 
     // public function getFirstPdfUrl()
@@ -259,12 +386,12 @@ class Project extends Model
 
         if ($minPrice === $maxPrice) {
             if ($this->show_price) {
-                return number_format($minPrice) . ' ريال';
+                return number_format($minPrice);
             }
-            // return number_format($minPrice) . ' ريال';
+            // return number_format($minPrice);
         }
 
-        return number_format($minPrice) . ' الي ' . number_format($maxPrice) . ' ريال';
+        return number_format($minPrice) . ' الي ' . number_format($maxPrice);
     }
 
     public function getSpaceRangeAttribute()

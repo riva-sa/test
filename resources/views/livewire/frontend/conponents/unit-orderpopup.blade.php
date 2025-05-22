@@ -25,26 +25,52 @@
                                         </div>
                                     @enderror
                                 </div>
-                                <div class=" mb-4">
-                                    <label for="name" class="form-label text-gray-900">اسمك</label>
-                                    <input type="text"
-                                            id="name"
-                                            class="form-control @error('name') is-invalid @enderror"
-                                            wire:model="name">
-                                    @error('name')
-                                        <div class="invalid-feedback">
-                                            {{ $message }}
-                                        </div>
-                                    @enderror
-                                </div>
-                                <div class="row mb-3">
 
+                                <div class="row mb-3">
+                                    <div class="col-6 mb-4">
+                                        <label for="firstName" class="form-label text-gray-900">اسمك الاول</label>
+                                        <input type="text"
+                                                id="firstName"
+                                                class="form-control @error('firstName') is-invalid @enderror"
+                                                wire:model="firstName">
+                                        @error('firstName')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                    <div class="col-6 mb-4">
+                                        <label for="lastName" class="form-label text-gray-900">الاسم الاخير</label>
+                                        <input type="text"
+                                                id="lastName"
+                                                class="form-control @error('lastName') is-invalid @enderror"
+                                                wire:model="lastName">
+                                        @error('lastName')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
                                     <div class="col-md-6">
                                         <label for="phone" class="form-label text-gray-900">رقم الهاتف</label>
-                                        <input type="text"
+                                        {{-- <input type="text"
                                                 id="phone"
                                                 class="form-control @error('phone') is-invalid @enderror"
-                                                wire:model="phone">
+                                                wire:model="phone"> --}}
+                                            <div class="input-group" dir="rtl">
+                                                <input type="text"
+                                                    id="phone"
+                                                    name="phone"
+                                                    class="form-control @error('phone') is-invalid @enderror"
+                                                    wire:model="phone"
+                                                    placeholder="5xxxxxxxx"
+                                                    maxlength="9"
+                                                    pattern="5[0-9]{8}"
+                                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/^[^5]/, '5')">
+                                                <span class="input-group-text">+966</span>
+
+                                            </div>
+                                            <small class="text-muted">أدخل رقم الجوال بدون رمز الدولة (يبدأ بـ 5)</small>
                                         @error('phone')
                                             <div class="invalid-feedback">
                                                 {{ $message }}

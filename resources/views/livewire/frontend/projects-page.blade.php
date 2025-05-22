@@ -197,7 +197,21 @@
                                                 <h2 class="post-title h6 mt-0">
                                                     <a href="{{ route('frontend.projects.single', $project->slug) }}">
                                                         {{ $project->name }}
-                                                        <span class="badge rounded-pill  @if($project->dynamic_project_status == 'متاح') bg-pale-leaf text-leaf @elseif ($project->dynamic_project_status == 'تحت الانشاء') bg-pale-red text-danger @else bg-pale-yellow text-yellow @endif">{{ $project->dynamic_project_status }}</span>
+                                                        {{-- <span class="badge rounded-pill  @if($project->dynamic_project_status == 'متاح') bg-pale-leaf text-leaf @elseif ($project->dynamic_project_status == 'تحت الانشاء') bg-pale-red text-danger @else bg-pale-yellow text-yellow @endif">{{ $project->dynamic_project_status }}</span> --}}
+                                                        <span class="badge rounded-pill
+                                                            @if($project->project_status_type == 'available')
+                                                                bg-pale-leaf text-leaf
+                                                            @elseif($project->project_status_type == 'under_construction')
+                                                                bg-pale-orange text-orange
+                                                            @elseif($project->project_status_type == 'sold_out')
+                                                                bg-pale-red text-danger
+                                                            @elseif($project->project_status_type == 'fully_reserved')
+                                                                bg-pale-blue text-primary
+                                                            @else
+                                                                bg-pale-purple text-purple
+                                                            @endif">
+                                                            {{ $project->dynamic_project_status }}
+                                                        </span>
                                                     </a>
 
                                                 </h2>
@@ -208,7 +222,7 @@
 
                                             <ul class="post-meta mb-3">
                                                 <li class="post-date">
-                                                    <span class="me-1 fs-15 text-gray-800">{{ $project->price_range }}</span>
+                                                    <span class="me-1 fs-15 text-gray-800">{{ $project->price_range }}  <img src="{{ asset('frontend/img/SaudiRiyal.svg') }}" width="14px" alt=""></span>
                                                 </li>
                                             </ul>
                                             <ul class="post-meta mb-0">
@@ -288,7 +302,7 @@
                                                 <ul class="post-meta mb-3">
                                                     <li class="post-date">
                                                         <span class="fs-15 text-success">
-                                                            {{ number_format($unit->unit_price) . ' ريال';  }}
+                                                            {{ number_format($unit->unit_price) }} <img src="{{ asset('frontend/img/SaudiRiyal.svg') }}" width="14px" alt="">
                                                         </span>
                                                     </li>
                                                 </ul>

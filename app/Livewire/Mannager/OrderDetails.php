@@ -20,13 +20,85 @@ class OrderDetails extends Component
     public $isEditingClient = false;
     public $clientData = [];
     public $permissions = [];
+
+    // إضافة هذه الخصائص في بداية الكلاس
+    public $isEditingMessage = false;
+    public $orderMessage = '';
+
+    // إضافة هذه الوظائف في الكلاس OrderDetails
+
+    /**
+     * بدء تعديل ملاحظة الطلب
+     */
+    public function startEditMessage()
+    {
+        $this->isEditingMessage = true;
+        $this->orderMessage = $this->order->message ?? '';
+    }
+
+    /**
+     * إلغاء تعديل ملاحظة الطلب
+     */
+    public function cancelEditMessage()
+    {
+        $this->isEditingMessage = false;
+        $this->orderMessage = '';
+        $this->resetErrorBag('orderMessage');
+    }
+
+    /**
+     * حفظ ملاحظة الطلب
+     */
+    public function saveOrderMessage()
+    {
+        $this->validate([
+            'orderMessage' => 'nullable|string|max:1000',
+        ], [
+            'orderMessage.max' => 'الملاحظة يجب أن تكون أقل من 1000 حرف',
+        ]);
+
+        $this->order->update([
+            'message' => $this->orderMessage
+        ]);
+
+        $this->isEditingMessage = false;
+        $this->orderMessage = '';
+
+        // إعادة تحميل البيانات
+        $this->loadOrder();
+
+        session()->flash('message', 'تم تحديث ملاحظة الطلب بنجاح');
+    }
+
+    /**
+     * حذف ملاحظة الطلب
+     */
+    public function deleteOrderMessage()
+    {
+        $this->order->update([
+            'message' => null
+        ]);
+
+        $this->isEditingMessage = false;
+        $this->orderMessage = '';
+
+        // إعادة تحميل البيانات
+        $this->loadOrder();
+
+        session()->flash('message', 'تم حذف ملاحظة الطلب بنجاح');
+    }
+
     public function mount($id)
     {
         $this->orderId = $id;
         $this->loadOrder();
         $this->permissions = OrderPermission::with(['user', 'grantedBy'])
-        ->where('unit_order_id', $this->order->id)
-        ->get();
+            ->where('unit_order_id', $this->order->id)
+            ->get();
+
+        // إعداد المتغيرات الجديدة
+        $this->isEditingMessage = false;
+        $this->orderMessage = '';
     }
 
     public function startEditClient()

@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Storage;
 class UnitPopup extends Component
 {
     use LivewireAlert;
-    public $name, $email, $phone;
+    public $firstName, $lastName, $email, $phone;
             // $message;
     public $selectedUnit;
     public $showSideSheet = false;
@@ -34,22 +34,27 @@ class UnitPopup extends Component
     ];
     // Validation Rules
     protected $rules = [
-        'name' => 'required|min:3|max:50',
+        'firstName' => 'required|min:3|max:50',
+        'lastName' => 'required|min:3|max:50',
         'email' => 'required|email',
-        'phone' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10',
+        'phone' => 'required|regex:/^5[0-9]{8}$/|size:9',
         'purchaseType' => 'required|in:cash,bank',
         'purchasePurpose' => 'required|in:living,invest'
     ];
 
     // Custom Error Messages
     protected $messages = [
-        'name.required' => 'الرجاء إدخال الاسم',
-        'name.min' => 'يجب أن يكون الاسم 3 أحرف على الأقل',
-        'name.max' => 'يجب أن لا يتجاوز الاسم 50 حرفاً',
+        'firstName.required' => 'الرجاء إدخال الاسم',
+        'firstName.min' => 'يجب أن يكون الاسم 3 أحرف على الأقل',
+        'firstName.max' => 'يجب أن لا يتجاوز الاسم 50 حرفاً',
+        'lastName.required' => 'الرجاء إدخال الاسم',
+        'lastName.min' => 'يجب أن يكون الاسم 3 أحرف على الأقل',
+        'lastName.max' => 'يجب أن لا يتجاوز الاسم 50 حرفاً',
         'email.required' => 'الرجاء إدخال البريد الإلكتروني',
         'email.email' => 'الرجاء إدخال بريد إلكتروني صحيح',
         'phone.required' => 'الرجاء إدخال رقم الهاتف',
-        'phone.regex' => 'الرجاء إدخال رقم هاتف صحيح',
+        'phone.regex' => 'رقم الجوال يجب أن يبدأ بالرقم 5 ويكون 9 أرقام',
+        'phone.size' => 'رقم الجوال يجب أن يكون 9 أرقام بالضبط',
         'phone.min' => 'يجب أن يكون رقم الهاتف 10 أرقام على الأقل',
         'purchaseType.required' => 'الرجاء اختيار طريقة الشراء',
         'purchaseType.in' => 'طريقة الشراء غير صحيحة',
@@ -79,7 +84,8 @@ class UnitPopup extends Component
 
     public function resetForm()
     {
-        $this->name = '';
+        $this->firstName = '';
+        $this->lastName = '';
         $this->email = '';
         $this->phone = '';
         $this->purchaseType = 'cash';
@@ -94,12 +100,13 @@ class UnitPopup extends Component
 
         try {
             // Save the interest to database
+            $fullPhone = '+966' . $this->phone;
             UnitOrder::create([
                 'unit_id' => $this->selectedUnit->id,
                 'project_id' => $this->selectedUnit->project->id,
-                'name' => $this->name,
+                'name' => $this->firstName . ' ' . $this->lastName,
                 'email' => $this->email,
-                'phone' => $this->phone,
+                'phone' => $fullPhone,
                 'PurchaseType' => $this->purchaseType,
                 'PurchasePurpose' => $this->purchasePurpose,
                 'support_type' => $this->support_type,
