@@ -410,7 +410,7 @@
                                                 @endif
                                                 </div>
                                                 <div class="me-2">
-                                                    <h4 class="mb-0 fs-10">{{$features->name}}</h4>
+                                                    <h4 class="mb-0 fs-12">{{$features->name}}</h4>
                                                     <p class="mb-0 fs-9">{{ $features->description }}</p>
                                                 </div>
                                             </div>
@@ -433,7 +433,7 @@
                                                     @endif
                                                 </div>
                                                 <div class="me-2">
-                                                    <h4 class="mb-0 fs-10">{{$guarante->name}}</h4>
+                                                    <h4 class="mb-0 fs-12">{{$guarante->name}}</h4>
                                                     <p class="mb-0 fs-9">{{ $guarante->description }}</p>
                                                 </div>
                                             </div>
@@ -444,6 +444,47 @@
 
                         </div>
                     </div>
+
+                    <!-- Add this card after the landmarks card and before the virtual tour card -->
+                    <div class="card mb-6" wire:ignore>
+                        <div class="card-body p-5" dir="rtl">
+                            <div class="text-right mb-4">
+                                <h2 class="text-uppercase fs-20 mb-1">موقع المشروع</h2>
+                                <p class="text-muted mb-0">{{ $project->address }}</p>
+                            </div>
+
+                            <!-- Map Container -->
+                            <div class="position-relative">
+                                <div id="projectMap" style="height: 400px; border-radius: 8px; overflow: hidden;"></div>
+
+                                <!-- Google Maps Button Overlay -->
+                                <div class="position-absolute" style="top: 10px; left: 10px; z-index: 1000;">
+                                    <a href="https://www.google.com/maps?q={{ $project->latitude }},{{ $project->longitude }}"
+                                    target="_blank"
+                                    class="btn btn-primary btn-sm d-flex align-items-center">
+                                        <i class="uil uil-external-link-alt ms-1"></i>
+                                        فتح في خرائط google
+                                    </a>
+                                </div>
+
+                                <!-- Directions Button -->
+                                <div class="position-absolute" style="top: 10px; right: 10px; z-index: 1000;">
+                                    <a href="https://www.google.com/maps/dir/?api=1&destination={{ $project->latitude }},{{ $project->longitude }}"
+                                    target="_blank"
+                                    class="btn btn-primary btn-sm d-flex align-items-center">
+                                        <i class="uil uil-directions ms-1"></i>
+                                        الاتجاهات
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Add Leaflet CSS and JS -->
+                    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+                        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+                        crossorigin=""/>
+
 
                     <div class="card mb-6" wire:ignore>
                         <div class="card-body p-5" dir="rtl">
@@ -457,7 +498,7 @@
                                         <i class="uil uil-map-pin fs-25 text-dark"></i>
                                     </div>
                                     <div class="me-2">
-                                        <h4 class="mb-0 fs-10">{{$landmark->name}}</h4>
+                                        <h4 class="mb-0 fs-12">{{$landmark->name}}</h4>
                                         {{-- <p class="mb-0 fs-14">{{ $landmark->description }}</p> --}}
                                         @if($landmark->pivot->distance)
                                             <p class="mb-0 fs-11"><span class="text-muted">المسافة:</span> {{ $landmark->pivot->distance }} كم</p>
@@ -501,3 +542,55 @@
     <i class="uil uil-whatsapp"></i>
     </a>
 </div>
+
+
+@push('scripts')
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+crossorigin=""></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    // Initialize the map
+    const map = L.map('projectMap').setView([{{ $project->latitude }}, {{ $project->longitude }}], 15);
+
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: ' <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 19
+    }).addTo(map);
+
+    // Custom marker icon (optional - using default if not needed)
+    const customIcon = L.icon({
+        iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+    });
+
+    // Add marker for the project
+    const marker = L.marker([{{ $project->latitude }}, {{ $project->longitude }}], {
+        icon: customIcon
+    }).addTo(map);
+
+    // Add popup to marker
+    marker.bindPopup(`
+        <div class="text-center" dir="rtl">
+            <h5 class="mb-2">{{ $project->name }}</h5>
+            <span class="mb-2">{{ $project->address }}</span>
+        </div>
+    `).openPopup();
+
+    // Add circle to highlight the area
+    L.circle([{{ $project->latitude }}, {{ $project->longitude }}], {
+        color: '#007bff',
+        fillColor: '#007bff',
+        fillOpacity: 0.1,
+        radius: 500
+        }).addTo(map);
+    });
+    </script>
+@endpush
