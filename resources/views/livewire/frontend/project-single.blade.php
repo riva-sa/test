@@ -410,8 +410,8 @@
                                                 @endif
                                                 </div>
                                                 <div class="me-2">
-                                                    <h4 class="mb-0 fs-15">{{$features->name}}</h4>
-                                                    <p class="mb-0 fs-14">{{ $features->description }}</p>
+                                                    <h4 class="mb-0 fs-10">{{$features->name}}</h4>
+                                                    <p class="mb-0 fs-9">{{ $features->description }}</p>
                                                 </div>
                                             </div>
                                         @endforeach
@@ -433,8 +433,8 @@
                                                     @endif
                                                 </div>
                                                 <div class="me-2">
-                                                    <h4 class="mb-0 fs-15">{{$guarante->name}}</h4>
-                                                    <p class="mb-0 fs-14">{{ $guarante->description }}</p>
+                                                    <h4 class="mb-0 fs-10">{{$guarante->name}}</h4>
+                                                    <p class="mb-0 fs-9">{{ $guarante->description }}</p>
                                                 </div>
                                             </div>
                                         @endforeach
@@ -457,10 +457,10 @@
                                         <i class="uil uil-map-pin fs-25 text-dark"></i>
                                     </div>
                                     <div class="me-2">
-                                        <h4 class="mb-0 fs-15">{{$landmark->name}}</h4>
+                                        <h4 class="mb-0 fs-10">{{$landmark->name}}</h4>
                                         {{-- <p class="mb-0 fs-14">{{ $landmark->description }}</p> --}}
                                         @if($landmark->pivot->distance)
-                                            <p class="mb-0 fs-13"><span class="text-muted">المسافة:</span> {{ $landmark->pivot->distance }} كم</p>
+                                            <p class="mb-0 fs-11"><span class="text-muted">المسافة:</span> {{ $landmark->pivot->distance }} كم</p>
                                         @endif
                                     </div>
                                 </div>
