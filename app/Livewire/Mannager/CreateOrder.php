@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\UnitOrder;
 use App\Models\Project;
 use App\Models\Unit;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class CreateOrder extends Component
@@ -75,11 +76,18 @@ class CreateOrder extends Component
     public function updatedProjectId($value)
     {
         if (!empty($value)) {
-            // تحديث قائمة الوحدات المتاحة حسب المشروع المختار
-            $this->units = Unit::where('project_id', $value)
+            if (User::where('id', Auth::id())->first()->hasRole('sales_manager') || User::where('id', Auth::id())->first()->hasRole('follow_up')) {
+                // تحديث قائمة الوحدات المتاحة حسب المشروع المختار
+                $this->units = Unit::where('project_id', $value)
+                ->select('id', 'title')
+                ->get();
+            } else {
+                // تحديث قائمة الوحدات المتاحة حسب المشروع المختار
+                $this->units = Unit::where('project_id', $value)
                 ->where('case', '0')
                 ->select('id', 'title')
                 ->get();
+            }
         } else {
             $this->units = [];
         }

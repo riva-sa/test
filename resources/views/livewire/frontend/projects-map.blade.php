@@ -316,7 +316,7 @@
     // Listen for side-sheet-updated event using Livewire v3 syntax
     document.addEventListener('livewire:initialized', () => {
         Livewire.on('side-sheet-updated', () => {
-            console.log('Side sheet state updated');
+            // console.log('Side sheet state updated');
         });
     });
 
