@@ -40,6 +40,7 @@ class LatestUnitOrders extends BaseWidget
                         1 => 'قيد المعالجة',
                         2 => 'مكتمل',
                         3 => 'ملغي',
+                        4 => 'مكتمل'
                     ])
                     ->default(fn ($record) => $record->status) // Set the default value based on the current status
                     ->searchable()

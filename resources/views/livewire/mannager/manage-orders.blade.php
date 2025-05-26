@@ -150,7 +150,7 @@
                         <tr class="hover:bg-gray-50 transition-colors">
                             <!-- Customer Info -->
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex flex-col">
+                                <a href="{{ route('manager.order-details', $order->id) }}" class="flex flex-col">
                                     <span class="font-medium text-gray-900">{{ $order->name }}</span>
                                     <div class="flex flex-col sm:flex-row sm:gap-2 text-sm text-gray-500 mt-1">
                                         <span>{{ $order->phone }}</span>
@@ -159,7 +159,7 @@
                                         <span>{{ $order->email }}</span>
                                         @endif
                                     </div>
-                                </div>
+                                </a>
                             </td>
 
                             <!-- Unit Info -->
@@ -203,7 +203,8 @@
                                             0 => 'bg-blue-100 text-blue-800',
                                             1 => 'bg-yellow-100 text-yellow-800',
                                             2 => 'bg-green-100 text-green-800',
-                                            3 => 'bg-gray-100 text-gray-800'
+                                            3 => 'bg-gray-100 text-gray-800',
+                                            4 => 'bg-green-100 text-green-800',
                                         ];
                                     @endphp
                                     <span class="px-2 py-1 text-xs font-medium rounded-full {{ $statusColors[$order->status] ?? 'bg-gray-100 text-gray-800' }}">

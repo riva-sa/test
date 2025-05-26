@@ -136,6 +136,7 @@ class ManageOrders extends Component
                 1 => 'طلب مفتوح',
                 2 => 'معاملات بيعية',
                 3 => 'مغلق',
+                4 => 'مكتمل'
             ],
             'purchaseTypes' => [
                 'cash' => 'كاش',

@@ -65,6 +65,7 @@ class UnitOrderResource extends Resource
                                 1 => 'طلب مفتوح',
                                 2 => 'معاملات بيعية',
                                 3 => 'مغلق',
+                                4 => 'مكتمل'
                             ])
                             ->required()
                             ->native(false),
@@ -133,6 +134,7 @@ class UnitOrderResource extends Resource
                         1 => 'طلب مفتوح',
                         2 => 'معاملات بيعية',
                         3 => 'مغلق',
+                        4 => 'مكتمل'
                     ])
                     ->default(fn ($record) => $record->status) // Set the default value based on the current status
                     ->searchable()
@@ -174,6 +176,7 @@ class UnitOrderResource extends Resource
                         1 => 'طلب مفتوح',
                         2 => 'معاملات بيعية',
                         3 => 'مغلق',
+                        4 => 'مكتمل'
                     ]),
                 Tables\Filters\SelectFilter::make('PurchaseType')
                     ->label('طريقة الشراء')

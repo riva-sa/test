@@ -10,6 +10,7 @@
                             @elseif($order->status == 1) طلب مفتوح
                             @elseif($order->status == 2) معاملات بيعية
                             @elseif($order->status == 3) مغلق
+                            @elseif($order->status == 4) مكتمل
                             @endif
                         </span>
                         @if ($this->isDelayed())
@@ -44,12 +45,12 @@
                         رجوع للقائمة
                     </a>
 
-                    <button class="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                    <a href="{{ route('manager.create-order') }}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
                         <svg class="w-5 h-5 ml-1 -mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                         </svg>
                         انشاء طلب
-                    </button>
+                    </a>
                 </div>
             </div>
 
@@ -269,6 +270,59 @@
                         <div class="bg-gray-50 p-4 rounded-lg">
                             <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">الوحدة</p>
                             <p class="text-sm font-medium text-gray-900">{{ $order->unit?->title ?? '-' }}</p>
+                        </div>
+
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">حالة الوحدة</p>
+
+                            @if($isEditingUnitCase)
+                                <div class="mt-1">
+                                    <select wire:model="unitCase"
+                                            class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                        <option value="">اختر حالة الوحدة</option>
+                                        <option value="0">متاح</option>
+                                        <option value="1">محجوزة</option>
+                                        <option value="2">مباعة</option>
+                                    </select>
+                                    @error('unitCase') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                                </div>
+                            @else
+                                <p class="text-sm font-medium text-gray-900">
+                                    @if ($this->order->unit->case == 0 )
+                                    متاح
+                                    @elseif ($this->order->unit->case == 1)
+                                    محجوزة
+                                    @elseif ($this->order->unit->case == 2)
+                                    مباعة
+                                    @endif
+                                </p>
+                            @endif
+
+                            <div class="mt-3 flex justify-end">
+                                @if(!$isEditingUnitCase)
+                                    <button wire:click="startEditUnitCase"
+                                            type="button"
+                                            class="inline-flex items-center px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-md transition duration-150 ease-in-out">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                        تعديل
+                                    </button>
+                                @else
+                                    <div class="flex space-x-2 space-x-reverse">
+                                        <button wire:click="$set('isEditingUnitCase', false)"
+                                                type="button"
+                                                class="inline-flex items-center px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white text-xs rounded-md transition duration-150 ease-in-out">
+                                            إلغاء
+                                        </button>
+                                        <button wire:click="saveUnitCase"
+                                                type="button"
+                                                class="inline-flex items-center px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded-md transition duration-150 ease-in-out">
+                                            حفظ
+                                        </button>
+                                    </div>
+                                @endif
+                            </div>
                         </div>
 
                         <div class="bg-gray-50 p-4 rounded-lg">

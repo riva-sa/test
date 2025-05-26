@@ -94,12 +94,14 @@ class ManagerDashboard extends Component
                 1 => 'طلب مفتوح',
                 2 => 'معاملات بيعية',
                 3 => 'مغلق',
+                4 => 'مكتمل'
             ],
             'statusColors' => [
                 0 => 'blue',
                 1 => 'yellow',
                 2 => 'green',
                 3 => 'gray',
+                4 => 'green'
             ],
         ])->layout('layouts.custom');
     }

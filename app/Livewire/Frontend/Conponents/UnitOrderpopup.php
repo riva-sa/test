@@ -2,9 +2,14 @@
 
 namespace App\Livewire\Frontend\Conponents;
 
+use App\Mail\UnitOrderNotification as MailUnitOrderNotification;
+use App\Models\OrderPermission;
 use Livewire\Component;
 use App\Models\Unit;
 use App\Models\UnitOrder;
+use App\Models\User;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 
 class UnitOrderpopup extends Component
@@ -101,7 +106,7 @@ class UnitOrderpopup extends Component
                 $project = $unit->project;
                 $fullPhone = '+966' . $this->phone;
                 // Save the interest to database
-                UnitOrder::create([
+                $unitOrder = UnitOrder::create([
                     'unit_id' => $this->unit_id,
                     'project_id' => $project->id,
                     'name' => $this->firstName . ' ' . $this->lastName,
@@ -112,6 +117,8 @@ class UnitOrderpopup extends Component
                     'support_type' => $this->support_type,
                     'status' => 0
                 ]);
+
+                $this->sendEmailNotifications($unitOrder, $project, $unit);
 
                 $this->alert('success', 'تم تسجيل اهتمامك بنجاح', [
                     'position' => 'bottom',
@@ -128,6 +135,57 @@ class UnitOrderpopup extends Component
                 'position' => 'bottom',
                 'timer' => 5000,
             ]);
+        }
+    }
+
+    /**
+     * Send email notifications to relevant users
+     */
+    private function sendEmailNotifications($unitOrder, $project, $unit)
+    {
+        try {
+            $emailData = [
+                'unit_order' => $unitOrder,
+                'project' => $project,
+                'unit' => $unit,
+                'customer_name' => $unitOrder->name,
+                'customer_email' => $unitOrder->email,
+                'customer_phone' => $unitOrder->phone,
+                'purchase_type' => $this->purchaseTypes[$unitOrder->PurchaseType] ?? $unitOrder->PurchaseType,
+                'purchase_purpose' => $this->purchasePurposes[$unitOrder->PurchasePurpose] ?? $unitOrder->PurchasePurpose,
+            ];
+            // dd($emailData);
+            // 1. Send to Sales Manager (project's assigned sales manager with 'sales' role)
+            if ($project->sales_manager_id) {
+                $salesManager = User::find($project->sales_manager_id);
+                // if ($salesManager && $salesManager->email && $salesManager->role === 'sales') {
+                    Mail::to($salesManager->email)->send(new MailUnitOrderNotification($emailData, 'sales'));
+                // }
+            }
+
+            // 2. Send to General Managers (users with 'sales_manager' role)
+            // $generalManagers = User::where('role', 'sales_manager')->get();
+
+            // foreach ($generalManagers as $generalManager) {
+            //     if ($generalManager->email) {
+            //         Mail::to($generalManager->email)->send(new MailUnitOrderNotification($emailData, 'sales_manager'));
+            //     }
+            // }
+
+            // // 3. Send to users with order permissions
+            // $permissionUsers = OrderPermission::where('unit_order_id', $unitOrder->id)
+            //                                  ->with('user')
+            //                                  ->get();
+
+            // foreach ($permissionUsers as $permission) {
+            //     if ($permission->user && $permission->user->email) {
+            //         Mail::to($permission->user->email)->send(new MailUnitOrderNotification($emailData, 'permission_user'));
+            //     }
+            // }
+
+        } catch (\Exception $e) {
+            // Log email sending errors but don't fail the order creation
+            Log::error('Failed to send unit order notification emails: ' . $e->getMessage());
         }
     }
 

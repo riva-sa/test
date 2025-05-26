@@ -21,6 +21,9 @@ class OrderDetails extends Component
     public $clientData = [];
     public $permissions = [];
 
+    public $isEditingUnitCase = false;
+    public $unitCase = '';
+
     // إضافة هذه الخصائص في بداية الكلاس
     public $isEditingMessage = false;
     public $orderMessage = '';
@@ -44,6 +47,33 @@ class OrderDetails extends Component
         $this->isEditingMessage = false;
         $this->orderMessage = '';
         $this->resetErrorBag('orderMessage');
+    }
+
+    public function startEditUnitCase()
+    {
+        $this->unitCase = $this->order->unit?->case ?? '';
+        $this->isEditingUnitCase = true;
+    }
+
+    public function saveUnitCase()
+    {
+        $this->validate([
+            'unitCase' => 'required|integer|between:0,3',
+        ]);
+
+        if ($this->order->unit) {
+            $this->order->unit->update([
+                'case' => $this->unitCase,
+            ]);
+        }
+
+        $this->isEditingUnitCase = false;
+        session()->flash('message', 'تم تحديث حالة الوحدة بنجاح');
+
+        // 👇 Update the order's updated_at timestamp
+        $this->order->touch();
+
+        $this->loadOrder(); // Reload order data
     }
 
     /**
@@ -180,6 +210,7 @@ class OrderDetails extends Component
                 1 => 'طلب مفتوح',
                 2 => 'معاملات بيعية',
                 3 => 'مغلق',
+                4 => 'مكتمل'
             ],
             'purchaseTypes' => [
                 'cash' => 'كاش',
