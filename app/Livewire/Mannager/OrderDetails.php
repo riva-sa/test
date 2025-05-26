@@ -96,6 +96,8 @@ class OrderDetails extends Component
 
         // إعادة تحميل البيانات
         $this->loadOrder();
+        // 👇 Update the order's updated_at timestamp
+        $this->order->touch();
 
         session()->flash('message', 'تم تحديث ملاحظة الطلب بنجاح');
     }
@@ -187,6 +189,8 @@ class OrderDetails extends Component
             'note' => $this->note,
             'user_id' => Auth::id(),
         ]);
+        // 👇 Update the order's updated_at timestamp
+        $this->order->touch();
 
         $this->note = '';
         session()->flash('message', 'تمت إضافة الملاحظة بنجاح');
@@ -198,6 +202,7 @@ class OrderDetails extends Component
         $this->order->status = $status;
         $this->order->save();
         $this->loadOrder();
+
         session()->flash('messageStatus', 'تم التعديل بنجاح');
 
     }
