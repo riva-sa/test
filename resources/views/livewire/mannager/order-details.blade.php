@@ -243,6 +243,7 @@
 
         <!-- معلومات الطلب -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+
             <!-- معلومات الوحدة -->
             <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div class="px-5 py-4 border-b border-gray-100 bg-gray-50">
@@ -253,94 +254,192 @@
                         معلومات الوحدة
                     </h3>
                 </div>
-                <div class="px-5 py-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">المشروع</p>
-                            <div class="flex items-center justify-between">
-                                <p class="text-sm font-medium text-gray-900">{{ $order->project?->name ?? '-' }}</p>
-                                <a href="{{ route('frontend.projects.single', $order->project?->slug) }}" target="_blanck" class="text-primary-600 hover:text-primary-800">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                    </svg>
-                                </a>
+
+                @if ($isEditingUnitInfo)
+                    <form wire:submit.prevent="saveUnitInfo" class="px-5 py-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <!-- المشروع -->
+                            <div>
+                                <label for="project_id" class="block text-sm font-medium text-gray-700 mb-1">المشروع</label>
+                                <select id="project_id" wire:model.live="unitData.project_id"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
+                                    <option value="">اختر المشروع</option>
+                                    @foreach($projects as $project)
+                                        <option value="{{ $project->id }}" {{ $unitData['project_id'] == $project->id ? 'selected' : '' }}>
+                                            {{ $project->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('unitData.project_id') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
-                        </div>
 
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">الوحدة</p>
-                            <p class="text-sm font-medium text-gray-900">{{ $order->unit?->title ?? '-' }}</p>
-                        </div>
-
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">حالة الوحدة</p>
-
-                            @if($isEditingUnitCase)
-                                <div class="mt-1">
-                                    <select wire:model="unitCase"
-                                            class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
-                                        <option value="">اختر حالة الوحدة</option>
-                                        <option value="0">متاح</option>
-                                        <option value="1">محجوزة</option>
-                                        <option value="2">مباعة</option>
-                                    </select>
-                                    @error('unitCase') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
-                                </div>
-                            @else
-                                <p class="text-sm font-medium text-gray-900">
-                                    @if ($this->order->unit->case == 0 )
-                                    متاح
-                                    @elseif ($this->order->unit->case == 1)
-                                    محجوزة
-                                    @elseif ($this->order->unit->case == 2)
-                                    مباعة
+                            <!-- الوحدة -->
+                            <div>
+                                <label for="unit_id" class="block text-sm font-medium text-gray-700 mb-1">الوحدة</label>
+                                <select id="unit_id" wire:model.live="unitData.unit_id"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
+                                    <option value="">اختر الوحدة</option>
+                                    @if($unitData['project_id'])
+                                        @foreach($units as $unit)
+                                            <option value="{{ $unit->id }}" {{ $unitData['unit_id'] == $unit->id ? 'selected' : '' }}>
+                                                {{ $unit->title }}
+                                            </option>
+                                        @endforeach
                                     @endif
-                                </p>
-                            @endif
+                                </select>
+                                @error('unitData.unit_id') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                            </div>
 
-                            <div class="mt-3 flex justify-end">
-                                @if(!$isEditingUnitCase)
-                                    <button wire:click="startEditUnitCase"
-                                            type="button"
-                                            class="inline-flex items-center px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-md transition duration-150 ease-in-out">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                        </svg>
-                                        تعديل
-                                    </button>
-                                @else
-                                    <div class="flex space-x-2 space-x-reverse">
-                                        <button wire:click="$set('isEditingUnitCase', false)"
-                                                type="button"
-                                                class="inline-flex items-center px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white text-xs rounded-md transition duration-150 ease-in-out">
-                                            إلغاء
-                                        </button>
-                                        <button wire:click="saveUnitCase"
-                                                type="button"
-                                                class="inline-flex items-center px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded-md transition duration-150 ease-in-out">
-                                            حفظ
-                                        </button>
-                                    </div>
-                                @endif
+                            <!-- نوع الشراء -->
+                            <div>
+                                <label for="purchase_type" class="block text-sm font-medium text-gray-700 mb-1">نوع الشراء</label>
+                                <select id="purchase_type" wire:model="unitData.purchase_type"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
+                                    <option value="">اختر نوع الشراء</option>
+                                    <option value="cash" {{ $unitData['purchase_type'] == 'cash' ? 'selected' : '' }}>كاش</option>
+                                    <option value="installment" {{ $unitData['purchase_type'] == 'installment' ? 'selected' : '' }}>تقسيط</option>
+                                </select>
+                                @error('unitData.purchase_type') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                            </div>
+
+                            <!-- الغرض من الشراء -->
+                            <div>
+                                <label for="purchase_purpose" class="block text-sm font-medium text-gray-700 mb-1">الغرض من الشراء</label>
+                                <select id="purchase_purpose" wire:model="unitData.purchase_purpose"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
+                                    <option value="">اختر الغرض من الشراء</option>
+                                    <option value="investment" {{ $unitData['purchase_purpose'] == 'investment' ? 'selected' : '' }}>استثمار</option>
+                                    <option value="personal" {{ $unitData['purchase_purpose'] == 'personal' ? 'selected' : '' }}>سكنى</option>
+                                </select>
+                                @error('unitData.purchase_purpose') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                            </div>
+
+                            <!-- نوع الدعم المطلوب -->
+                            <div>
+                                <label for="support_type" class="block text-sm font-medium text-gray-700 mb-1">نوع الدعم المطلوب</label>
+                                <select id="support_type" wire:model="unitData.support_type"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
+                                    <option value="">اختر نوع الدعم</option>
+                                    <option value="مدعوم" {{ $unitData['support_type'] == 'مدعوم' ? 'مدعوم' : '' }}>مدعوم</option>
+                                    <option value="غير مدعوم" {{ $unitData['support_type'] == 'غير مدعوم' ? 'غير مدعوم' : '' }}>غير مدعوم</option>
+                                </select>
+                                @error('unitData.support_type') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                         </div>
 
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">نوع الشراء</p>
-                            <p class="text-sm font-medium text-gray-900">{{ $purchaseTypes[$order->PurchaseType] ?? $order->PurchaseType }}</p>
+                        <div class="mt-4 flex justify-end space-x-3 space-x-reverse">
+                            <button type="button" wire:click="$set('isEditingUnitInfo', false)"
+                                    class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                                إلغاء التعديل
+                            </button>
+                            <button type="submit"
+                                    class="px-4 py-2 border border-transparent rounded-lg text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+                                حفظ التغييرات
+                            </button>
+                        </div>
+                    </form>
+                @else
+                    <div class="px-5 py-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">المشروع</p>
+                                <div class="flex items-center justify-between">
+                                    <p class="text-sm font-medium text-gray-900">{{ $order->project?->name ?? '-' }}</p>
+                                    <a href="{{ route('frontend.projects.single', $order->project?->slug) }}" target="_blank" class="text-primary-600 hover:text-primary-800">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">الوحدة</p>
+                                <p class="text-sm font-medium text-gray-900">{{ $order->unit?->title ?? '-' }}</p>
+                            </div>
+
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">حالة الوحدة</p>
+
+                                @if($isEditingUnitCase)
+                                    <div class="mt-1">
+                                        <select wire:model="unitCase"
+                                                class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                            <option value="">اختر حالة الوحدة</option>
+                                            <option value="0">متاح</option>
+                                            <option value="1">محجوزة</option>
+                                            <option value="2">مباعة</option>
+                                        </select>
+                                        @error('unitCase') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                                    </div>
+                                @else
+                                    <p class="text-sm font-medium text-gray-900">
+                                        @if ($this->order->unit->case == 0 )
+                                        متاح
+                                        @elseif ($this->order->unit->case == 1)
+                                        محجوزة
+                                        @elseif ($this->order->unit->case == 2)
+                                        مباعة
+                                        @endif
+                                    </p>
+                                @endif
+
+                                <div class="mt-3 flex justify-end">
+                                    @if(!$isEditingUnitCase)
+                                        <button wire:click="startEditUnitCase"
+                                                type="button"
+                                                class="inline-flex items-center px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-md transition duration-150 ease-in-out">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                            تعديل
+                                        </button>
+                                    @else
+                                        <div class="flex space-x-2 space-x-reverse">
+                                            <button wire:click="$set('isEditingUnitCase', false)"
+                                                    type="button"
+                                                    class="inline-flex items-center px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white text-xs rounded-md transition duration-150 ease-in-out">
+                                                إلغاء
+                                            </button>
+                                            <button wire:click="saveUnitCase"
+                                                    type="button"
+                                                    class="inline-flex items-center px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded-md transition duration-150 ease-in-out">
+                                                حفظ
+                                            </button>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">نوع الشراء</p>
+                                <p class="text-sm font-medium text-gray-900">{{ $purchaseTypes[$order->PurchaseType] ?? $order->PurchaseType }}</p>
+                            </div>
+
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">الغرض من الشراء</p>
+                                <p class="text-sm font-medium text-gray-900">{{ $purchasePurposes[$order->PurchasePurpose] ?? $order->PurchasePurpose }}</p>
+                            </div>
+
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">نوع الدعم المطلوب</p>
+                                <p class="text-sm font-medium text-gray-900">{{ $supportTypes[$order->support_type] ?? $order->support_type }}</p>
+                            </div>
                         </div>
 
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">الغرض من الشراء</p>
-                            <p class="text-sm font-medium text-gray-900">{{ $purchasePurposes[$order->PurchasePurpose] ?? $order->PurchasePurpose }}</p>
-                        </div>
-
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">نوع الدعم المطلوب</p>
-                            <p class="text-sm font-medium text-gray-900">{{ $supportTypes[$order->support_type] ?? $order->support_type }}</p>
-                        </div>
+                        @if (auth()->user()->hasRole('sales_manager') || auth()->user()->hasRole('follow_up'))
+                            <div class="mt-4 flex justify-end">
+                                <button wire:click="startEditUnitInfo" type="button"
+                                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                    تعديل معلومات الطلب
+                                </button>
+                            </div>
+                        @endif
                     </div>
-                </div>
+                @endif
             </div>
 
             <!-- حالة الطلب -->

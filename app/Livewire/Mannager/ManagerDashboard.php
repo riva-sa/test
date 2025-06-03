@@ -31,6 +31,14 @@ class ManagerDashboard extends Component
             }
         };
 
+        // All orders count
+        $allOrders = UnitOrder::whereHas('project', $filterByManager)
+            ->count();
+
+        // Completed orders count (status 4)
+        $completedOrders = UnitOrder::whereHas('project', $filterByManager)
+            ->where('status', 4)
+            ->count();
         // Customer stats (unique customers by phone)
         $customersCount = UnitOrder::whereHas('project', $filterByManager)
             ->distinct('phone')
@@ -89,6 +97,8 @@ class ManagerDashboard extends Component
             'SalesTransactions' => $SalesTransactions,
             'closedOrders' => $closedOrders,
             'recentOrders' => $recentOrders,
+            'allOrders' => $allOrders,
+            'completedOrders' => $completedOrders,
             'statusLabels' => [
                 0 => 'جديد',
                 1 => 'طلب مفتوح',

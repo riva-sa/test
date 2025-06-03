@@ -16,7 +16,7 @@
     <!-- Main Content -->
     <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <!-- Stats Cards -->
-        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-6 mb-8">
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
             <!-- Customers Card -->
             <div class="bg-white overflow-hidden shadow rounded-xl border border-gray-100 hover:shadow-md transition-shadow duration-200">
                 <div class="px-4 py-5 sm:p-6">
@@ -30,6 +30,25 @@
                             <dt class="text-sm font-medium text-gray-500 truncate">العملاء</dt>
                             <dd class="mt-1 text-2xl font-semibold text-gray-900">
                                 {{ number_format($customersCount) }}
+                            </dd>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- All Orders Card -->
+            <div class="bg-white overflow-hidden shadow rounded-xl border border-gray-100 hover:shadow-md transition-shadow duration-200">
+                <div class="px-4 py-5 sm:p-6">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 bg-purple-100 rounded-xl p-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                            </svg>
+                        </div>
+                        <div class="mr-4 flex-1">
+                            <dt class="text-sm font-medium text-gray-500 truncate">جميع الطلبات</dt>
+                            <dd class="mt-1 text-2xl font-semibold text-gray-900">
+                                {{ number_format($allOrders) }}
                             </dd>
                         </div>
                     </div>
@@ -73,6 +92,8 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
 
             <!-- Delayed Orders Card -->
             <div class="bg-white overflow-hidden shadow rounded-xl border border-gray-100 hover:shadow-md transition-shadow duration-200">
@@ -125,6 +146,25 @@
                             <dt class="text-sm font-medium text-gray-500 truncate">طلبات مغلقة</dt>
                             <dd class="mt-1 text-2xl font-semibold text-gray-900">
                                 {{ number_format($closedOrders) }}
+                            </dd>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Completed Orders Card -->
+            <div class="bg-white overflow-hidden shadow rounded-xl border border-gray-100 hover:shadow-md transition-shadow duration-200">
+                <div class="px-4 py-5 sm:p-6">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 bg-teal-100 rounded-xl p-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                        <div class="mr-4 flex-1">
+                            <dt class="text-sm font-medium text-gray-500 truncate">طلبات مكتملة</dt>
+                            <dd class="mt-1 text-2xl font-semibold text-gray-900">
+                                {{ number_format($completedOrders) }}
                             </dd>
                         </div>
                     </div>

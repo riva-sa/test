@@ -28,6 +28,8 @@ class OrderDetails extends Component
     public $isEditingMessage = false;
     public $orderMessage = '';
 
+    public $isEditingUnitInfo = false;
+    public $unitData = [];
     // إضافة هذه الوظائف في الكلاس OrderDetails
 
     /**
@@ -157,6 +159,41 @@ class OrderDetails extends Component
         session()->flash('message', 'تم تحديث بيانات العميل بنجاح');
     }
 
+    public function startEditUnitInfo()
+    {
+        $this->isEditingUnitInfo = true;
+        $this->unitData = [
+            'project_id' => $this->order->project_id,
+            'unit_id' => $this->order->unit_id,
+            'purchase_type' => $this->order->PurchaseType,
+            'purchase_purpose' => $this->order->PurchasePurpose,
+            'support_type' => $this->order->support_type,
+        ];
+    }
+
+    public function saveUnitInfo()
+    {
+        $this->validate([
+            'unitData.project_id' => 'required|exists:projects,id',
+            'unitData.unit_id' => 'required|exists:units,id',
+            'unitData.purchase_type' => 'required|in:cash,installment',
+            'unitData.purchase_purpose' => 'required|in:investment,personal',
+            'unitData.support_type' => 'required',
+        ]);
+
+        $this->order->update([
+            'project_id' => $this->unitData['project_id'],
+            'unit_id' => $this->unitData['unit_id'],
+            'PurchaseType' => $this->unitData['purchase_type'],
+            'PurchasePurpose' => $this->unitData['purchase_purpose'],
+            'support_type' => $this->unitData['support_type'],
+        ]);
+
+        $this->isEditingUnitInfo = false;
+        session()->flash('message', 'تم تحديث معلومات الوحدة بنجاح');
+        $this->loadOrder();
+    }
+
     public function isDelayed()
     {
         // إذا لم يكن هناك طلب أو لم يتم تحديثه مطلقًا
@@ -209,6 +246,7 @@ class OrderDetails extends Component
 
     public function render()
     {
+
         return view('livewire.mannager.order-details', [
             'statusLabels' => [
                 0 => 'جديد',
@@ -226,10 +264,13 @@ class OrderDetails extends Component
                 'personal' => 'سكنى'
             ],
             'supportTypes' => [
-                'technical' => 'فنى',
-                'financial' => 'مالى',
-                'general' => 'عام'
-            ]
+                'مدعوم' => 'مدعوم',
+                'غير مدعوم' => 'غير مدعوم'
+            ],
+            'projects' => Project::all(),
+            'units' => $this->isEditingUnitInfo && isset($this->unitData['project_id'])
+                ? Unit::where('project_id', $this->unitData['project_id'])->get()
+                : collect(),
         ])->layout('layouts.custom');
     }
     public function logout()
