@@ -50,7 +50,7 @@
 
                             <div class="d-flex align-content-start justify-content-between w-100">
                                 <h2 class="post-title h4 mt-1 mb-3">
-                                    <a href="{{ route('frontend.projects.single', $project->slug) }}">نطرة عامة</a>
+                                    <a href="{{ route('frontend.projects.single', $project->slug) }}">نظرة عامة</a>
                                 </h2>
                                 <div>
                                     <img src="{{ App\Helpers\MediaHelper::getUrl($project->developer->logo) }}" style="width: 50px !important;max-height:50px" alt="Logo">
