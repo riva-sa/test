@@ -7,7 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'voku\\' => array($vendorDir . '/voku/portable-ascii/src/voku'),
-    'phpDocumentor\\Reflection\\' => array($vendorDir . '/phpdocumentor/reflection-common/src', $vendorDir . '/phpdocumentor/reflection-docblock/src', $vendorDir . '/phpdocumentor/type-resolver/src'),
+    'phpDocumentor\\Reflection\\' => array($vendorDir . '/phpdocumentor/reflection-docblock/src', $vendorDir . '/phpdocumentor/type-resolver/src', $vendorDir . '/phpdocumentor/reflection-common/src'),
     'ZipStream\\' => array($vendorDir . '/maennchen/zipstream-php/src'),
     'Whoops\\' => array($vendorDir . '/filp/whoops/src/Whoops'),
     'Webmozart\\Assert\\' => array($vendorDir . '/webmozart/assert/src'),
@@ -136,7 +136,7 @@ return array(
     'Filament\\Infolists\\' => array($vendorDir . '/filament/infolists/src'),
     'Filament\\Forms\\' => array($vendorDir . '/filament/forms/src'),
     'Filament\\Actions\\' => array($vendorDir . '/filament/actions/src'),
-    'Filament\\' => array($vendorDir . '/filament/filament/src', $vendorDir . '/filament/spatie-laravel-settings-plugin/src'),
+    'Filament\\' => array($vendorDir . '/filament/spatie-laravel-settings-plugin/src', $vendorDir . '/filament/filament/src'),
     'FilamentTiptapEditor\\Tests\\Database\\Factories\\' => array($vendorDir . '/awcodes/filament-tiptap-editor/tests/database/factories'),
     'FilamentTiptapEditor\\Tests\\' => array($vendorDir . '/awcodes/filament-tiptap-editor/tests/src'),
     'FilamentTiptapEditor\\' => array($vendorDir . '/awcodes/filament-tiptap-editor/src'),

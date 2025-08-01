@@ -99,7 +99,7 @@
                 </div>
 
                 <!-- Permission Type -->
-                <div>
+                <div class="hidden">
                     <label class="block text-sm font-medium text-gray-600 mb-1 flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
@@ -108,8 +108,8 @@
                     </label>
                     <select wire:model.defer="permission_type" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
                         <option value="">اختر نوع الصلاحية</option>
-                        <option value="view">عرض فقط</option>
-                        <option value="edit">تعديل</option>
+                        {{-- <option value="view">عرض فقط</option>
+                        <option value="edit">تعديل</option> --}}
                         <option value="manage">إدارة كاملة</option>
                     </select>
                     @error('permission_type') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror

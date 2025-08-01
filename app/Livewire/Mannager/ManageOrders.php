@@ -22,7 +22,8 @@ class ManageOrders extends Component
     public $sortDirection = 'desc';
     public $perPage = 10;
     public $salesManagerFilter = '';
-
+    public $delayedFilter = '';
+    
     protected $queryString = [
         'search' => ['except' => ''],
         'statusFilter' => ['except' => ''],
@@ -30,7 +31,8 @@ class ManageOrders extends Component
         'salesManagerFilter' => ['except' => ''],
         'sortField' => ['except' => 'created_at'],
         'sortDirection' => ['except' => 'desc'],
-        'perPage' => ['except' => 10]
+        'perPage' => ['except' => 10],
+        'delayedFilter' => ['except' => ''],
     ];
 
     public function updatingSearch()
@@ -48,21 +50,49 @@ class ManageOrders extends Component
         $this->resetPage();
     }
 
+    public function updatingDelayedFilter()
+    {
+        $this->resetPage();
+    }
+
     public function isDelayed($order)
     {
-        // إذا لم يكن هناك طلب أو لم يتم تحديثه مطلقًا
         if (!$order || !$order->updated_at) {
             return false;
         }
 
-        // إذا كان الطلب مغلقًا فلا نعرض التأخير
-        if ($order->status == 3) {
+        // الطلب مكتمل أو مغلق؟ مش متأخر
+        if (in_array($order->status, [3, 4])) {
             return false;
         }
 
-        // التحقق مما إذا كان آخر تعديل يزيد عن 3 أيام
-        return $order->updated_at->lt(Carbon::now()->subDays(3));
+        $lastActorId = $order->last_action_by_user_id;
+        $salesManagerId = $order->project->sales_manager_id ?? null;
+
+        // لو آخر من تعامل هو المسؤول المباشر → مش متأخر
+        if ($lastActorId == $salesManagerId) {
+            return false;
+        }
+
+        // هل الشخص عنده صلاحية إدارة للطلب من نفس المسؤول؟
+        $hasDelegatedPermission = $order->permissions()
+            ->where('user_id', $lastActorId)
+            ->where('permission_type', 'manage') // أو 'edit' حسب منطقك
+            ->where('granted_by', $salesManagerId) // فقط من المسؤول المباشر
+            ->where(function ($q) {
+                $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
+            })
+            ->exists();
+
+        if ($hasDelegatedPermission) {
+            return false;
+        }
+
+        // ما عدا ذلك، إذا مر أكثر من 3 أيام → متأخر
+        return $order->updated_at->lt(now()->subDays(3));
     }
+
+
 
     public function sortBy($field)
     {
@@ -119,6 +149,10 @@ class ManageOrders extends Component
         })
         ->when($this->projectFilter !== '', function ($query) {
             $query->where('project_id', $this->projectFilter);
+        })
+        ->when($this->delayedFilter == '1', function ($query) {
+            $query->where('status', '!=', 3)
+                ->where('updated_at', '<', now()->subDays(3));
         })
         ->when($this->salesManagerFilter, function ($query) {
             $query->whereHas('project', function ($q) {

@@ -58,8 +58,8 @@ class ManagerDashboard extends Component
             ->count();
 
         $delayedOrders = UnitOrder::whereHas('project', $filterByManager)
-            ->whereIn('status', [0, 1])
-            ->where('created_at', '<', now()->subDays(3)) // مثال: الطلب له أكثر من 3 أيام
+            ->whereIn('status', [0, 1, 2, 3]) // أي حالة غير مكتملة
+            ->where('created_at', '<', now()->subDays(3)) // له أكثر من 3 أيام
             ->count();
 
         $closedOrders = UnitOrder::whereHas('project', $filterByManager)

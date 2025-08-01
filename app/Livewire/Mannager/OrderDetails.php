@@ -73,7 +73,9 @@ class OrderDetails extends Component
         session()->flash('message', 'تم تحديث حالة الوحدة بنجاح');
 
         // 👇 Update the order's updated_at timestamp
+        $this->order->last_action_by_user_id = auth()->id();
         $this->order->touch();
+        $this->order->save();
 
         $this->loadOrder(); // Reload order data
     }
@@ -100,7 +102,8 @@ class OrderDetails extends Component
         $this->loadOrder();
         // 👇 Update the order's updated_at timestamp
         $this->order->touch();
-
+        $this->order->last_action_by_user_id = auth()->id();
+        $this->order->save();
         session()->flash('message', 'تم تحديث ملاحظة الطلب بنجاح');
     }
 
@@ -115,7 +118,10 @@ class OrderDetails extends Component
 
         $this->isEditingMessage = false;
         $this->orderMessage = '';
-
+        // 👇 Update the order's updated_at timestamp
+        $this->order->last_action_by_user_id = auth()->id();
+        $this->order->touch();
+        $this->order->save();
         // إعادة تحميل البيانات
         $this->loadOrder();
 
@@ -154,7 +160,10 @@ class OrderDetails extends Component
         ]);
 
         $this->order->update($this->clientData);
-
+        // 👇 Update the order's updated_at timestamp
+        $this->order->last_action_by_user_id = auth()->id();
+        $this->order->touch();
+        $this->order->save();
         $this->isEditingClient = false;
         session()->flash('message', 'تم تحديث بيانات العميل بنجاح');
     }
@@ -189,6 +198,11 @@ class OrderDetails extends Component
             'support_type' => $this->unitData['support_type'],
         ]);
 
+        // 👇 Update the order's updated_at timestamp
+        $this->order->last_action_by_user_id = auth()->id();
+        $this->order->touch();
+        $this->order->save();
+
         $this->isEditingUnitInfo = false;
         session()->flash('message', 'تم تحديث معلومات الوحدة بنجاح');
         $this->loadOrder();
@@ -196,18 +210,40 @@ class OrderDetails extends Component
 
     public function isDelayed()
     {
-        // إذا لم يكن هناك طلب أو لم يتم تحديثه مطلقًا
+        
         if (!$this->order || !$this->order->updated_at) {
             return false;
         }
 
-        // إذا كان الطلب مغلقًا فلا نعرض التأخير
-        if ($this->order->status == 3) {
+        // الطلب مكتمل أو مغلق؟ مش متأخر
+        if (in_array($this->order->status, [3, 4])) {
             return false;
         }
 
-        // التحقق مما إذا كان آخر تعديل يزيد عن 3 أيام
-        return $this->order->updated_at->lt(Carbon::now()->subDays(3));
+        $lastActorId = $this->order->last_action_by_user_id;
+        $salesManagerId = $this->order->project->sales_manager_id ?? null;
+
+        // لو آخر من تعامل هو المسؤول المباشر → مش متأخر
+        if ($lastActorId == $salesManagerId) {
+            return false;
+        }
+
+        // هل الشخص عنده صلاحية إدارة للطلب من نفس المسؤول؟
+        $hasDelegatedPermission = $this->order->permissions()
+            ->where('user_id', $lastActorId)
+            ->where('permission_type', 'manage') // أو 'edit' حسب منطقك
+            ->where('granted_by', $salesManagerId) // فقط من المسؤول المباشر
+            ->where(function ($q) {
+                $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
+            })
+            ->exists();
+
+        if ($hasDelegatedPermission) {
+            return false;
+        }
+
+        // ما عدا ذلك، إذا مر أكثر من 3 أيام → متأخر
+        return $this->order->updated_at->lt(now()->subDays(3));
     }
 
     public function loadOrder()
@@ -228,8 +264,10 @@ class OrderDetails extends Component
         ]);
         // 👇 Update the order's updated_at timestamp
         $this->order->touch();
-
+        $this->order->last_action_by_user_id = auth()->id();
         $this->note = '';
+        $this->order->save();
+
         session()->flash('message', 'تمت إضافة الملاحظة بنجاح');
         $this->loadOrder();
     }
@@ -237,6 +275,10 @@ class OrderDetails extends Component
     public function updateStatus($status)
     {
         $this->order->status = $status;
+        // 👇 Update the order's updated_at timestamp
+        $this->order->last_action_by_user_id = auth()->id();
+        $this->order->touch();
+        $this->order->save();
         $this->order->save();
         $this->loadOrder();
 
@@ -247,6 +289,8 @@ class OrderDetails extends Component
     public function render()
     {
 
+        $previousOrder = \App\Models\UnitOrder::where('id', '<', $this->order->id)->orderBy('id', 'desc')->first();
+        $nextOrder = \App\Models\UnitOrder::where('id', '>', $this->order->id)->orderBy('id')->first();
         return view('livewire.mannager.order-details', [
             'statusLabels' => [
                 0 => 'جديد',
@@ -271,6 +315,8 @@ class OrderDetails extends Component
             'units' => $this->isEditingUnitInfo && isset($this->unitData['project_id'])
                 ? Unit::where('project_id', $this->unitData['project_id'])->get()
                 : collect(),
+            'previousOrder' => $previousOrder,
+            'nextOrder' => $nextOrder,
         ])->layout('layouts.custom');
     }
     public function logout()

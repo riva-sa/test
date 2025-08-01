@@ -38,7 +38,7 @@ class LatestUnitOrders extends BaseWidget
                     ->options([
                         0 => 'جديد',
                         1 => 'قيد المعالجة',
-                        2 => 'مكتمل',
+                        2 => 'معاملات بيعية',
                         3 => 'ملغي',
                         4 => 'مكتمل'
                     ])

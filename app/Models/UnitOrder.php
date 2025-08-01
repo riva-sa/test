@@ -17,7 +17,8 @@ class UnitOrder extends Model
         'unit_id',
         'user_id',
         'project_id',
-        'support_type'
+        'support_type',
+        'last_action_by_user_id'
     ];
 
     public function unit()
@@ -44,4 +45,9 @@ class UnitOrder extends Model
         return $this->hasMany(OrderPermission::class, 'unit_order_id');
     }
 
+    // last_action_by_user_id
+    public function lastActionByUser()
+    {
+        return $this->belongsTo(User::class, 'last_action_by_user_id');
+    }
 }

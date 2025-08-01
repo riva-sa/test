@@ -17,7 +17,7 @@
         <div class="bg-white rounded-xl shadow-sm p-4 mb-6 border border-gray-100">
             <h2 class="text-lg font-semibold text-gray-700 mb-4">تصفية النتائج</h2>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5">
                 <!-- Search Field -->
                 <div>
                     <label for="search" class="block text-sm font-medium text-gray-700 mb-1">بحث</label>
@@ -63,6 +63,14 @@
                         @foreach($projects as $project)
                             <option value="{{ $project->id }}">{{ $project->name }}</option>
                         @endforeach
+                    </select>
+                </div>
+                <!-- Delayed Filter -->
+                <div>
+                    <label for="delayedFilter" class="block text-sm font-medium text-gray-700 mb-1">الطلبات المتأخرة</label>
+                    <select wire:model.live="delayedFilter" id="delayedFilter" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
+                        <option value="">الكل</option>
+                        <option value="1">عرض المتأخرة فقط</option>
                     </select>
                 </div>
             </div>

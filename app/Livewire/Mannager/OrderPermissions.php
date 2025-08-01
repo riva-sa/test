@@ -22,7 +22,11 @@ class OrderPermissions extends Component
     public function mount(UnitOrder $order)
     {
         $this->order = $order;
-
+        // if order status is not 4, redirect to order details
+        if ($this->order->status == 4) {
+            session()->flash('error', 'لا يمكن إدارة الصلاحيات لطلب مكتمل');
+            return redirect()->route('manager.order-details', $this->order->id);
+        }
         $this->users = User::whereHas('roles', function($query) {
             $query->whereIn('name', ['sales']);
         })->get();

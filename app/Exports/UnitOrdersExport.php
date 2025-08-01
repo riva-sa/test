@@ -1,13 +1,15 @@
 <?php
-
 namespace App\Exports;
 
 use App\Models\UnitOrder;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
 use Illuminate\Support\Collection;
 
-class UnitOrdersExport implements FromCollection
+class UnitOrdersExport implements FromCollection, WithHeadings, WithMapping
 {
+    private $records;
 
     public function __construct(Collection $records = null)
     {
@@ -15,11 +17,10 @@ class UnitOrdersExport implements FromCollection
     }
 
     /**
-    * @return \Illuminate\Support\Collection
-    */
+     * @return \Illuminate\Support\Collection
+     */
     public function collection()
     {
-        // return UnitOrder::all();
         return $this->records;
     }
 
@@ -35,7 +36,6 @@ class UnitOrdersExport implements FromCollection
             'Purchase Type',
             'Purchase Purpose',
             'Unit Title',
-            'User Name',
             'Project Name',
             'Created At',
             'Updated At',
@@ -53,11 +53,10 @@ class UnitOrdersExport implements FromCollection
             $unitOrder->message,
             $unitOrder->PurchaseType,
             $unitOrder->PurchasePurpose,
-            $unitOrder->unit->title,
-            $unitOrder->user->name,
-            $unitOrder->project->name,
-            $unitOrder->created_at->format('Y-m-d H:i:s'),
-            $unitOrder->updated_at->format('Y-m-d H:i:s'),
+            $unitOrder->unit ? $unitOrder->unit->title : 'N/A',
+            $unitOrder->project ? $unitOrder->project->name : 'N/A',
+            $unitOrder->created_at ? $unitOrder->created_at->format('Y-m-d H:i:s') : 'N/A',
+            $unitOrder->updated_at ? $unitOrder->updated_at->format('Y-m-d H:i:s') : 'N/A',
         ];
     }
 }

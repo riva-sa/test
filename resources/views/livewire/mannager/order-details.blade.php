@@ -1,6 +1,29 @@
 <div>
     <div class="px-4 py-6 sm:px-6">
         <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 mb-6">
+            @if($previousOrder || $nextOrder)
+                <div class="flex justify-between items-center mb-4" dir="ltr">
+                    @if($previousOrder)
+                        <a href="{{ route('manager.order-details', $previousOrder->id) }}"
+                        class="inline-flex items-center px-3 py-2 bg-gray-100 text-gray-700 text-sm rounded-md hover:bg-gray-200">
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                            </svg>
+                            السابق
+                        </a>
+                    @endif
+
+                    @if($nextOrder)
+                        <a href="{{ route('manager.order-details', $nextOrder->id) }}"
+                        class="inline-flex items-center px-3 py-2 bg-gray-100 text-gray-700 text-sm rounded-md hover:bg-gray-200">
+                            التالي
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </a>
+                    @endif
+                </div>
+            @endif
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
                 <div>
                     <div class="flex items-center gap-3">
@@ -56,7 +79,17 @@
 
             @if (auth()->user()->hasRole('sales_manager') || auth()->user()->hasRole('follow_up'))
             <div class="mt-4 pt-4 border-t border-gray-100">
-                <h3 class="text-sm font-medium text-gray-700 mb-2">فريق المبيعات</h3>
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-medium text-gray-700 mb-2">فريق المبيعات </h3>
+                    <p>
+                        <a href="{{ route('manager.permissions', $order) }}" class="text-purple-600 hover:text-purple-900 flex items-center gap-1" title="الصلاحيات">
+                            اضافة الصلاحيات
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                        </a>
+                    </p>
+                </div>
                 <div class="flex flex-wrap gap-3">
                     @if($order->project->salesManager)
                     <div class="flex items-center">
@@ -206,6 +239,44 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="pt-2">
+                                <p class="text-xs text-gray-500 mb-1">آخر تحديث</p>
+                                <div class="flex flex-wrap gap-3">
+                                    {{ $order->updated_at->format('Y-m-d H:i') }}
+                                    <div class="flex items-center">
+                                        <span class="text-xs text-gray-500">بواسطة</span>
+                                    </div>
+                                    @if ($order->lastActionByUser)
+                                        <div class="flex items-center">
+                                            <div class="relative">
+                                                <span class="inline-block h-8 w-8 rounded-full bg-gray-100 text-gray-800 flex items-center justify-center font-medium">
+                                                    {{ substr($order->lastActionByUser->name, 0, 1) }}
+                                                </span>
+                                                @if($order->lastActionByUser->hasRole('sales_manager'))
+                                                <span class="absolute -bottom-1 -right-1 bg-blue-500 rounded-full p-1 border-2 border-white"></span>
+                                                @elseif($order->lastActionByUser->hasRole('sales'))
+                                                <span class="absolute -bottom-1 -right-1 bg-green-500 rounded-full p-1 border-2 border-white"></span>
+                                                @elseif($order->lastActionByUser->hasRole('follow_up'))
+                                                <span class="absolute -bottom-1 -right-1 bg-yellow-500 rounded-full p-1 border-2 border-white"></span>
+                                                @endif
+                                            </div>
+                                            <div class="mr-2">
+                                                <p class="text-sm font-medium text-gray-900">{{ $order->lastActionByUser->name }}</p>
+                                                <span class="text-xs text-gray-500">
+                                                    @if($order->lastActionByUser->hasRole('sales_manager')) مدير مبيعات
+                                                    @elseif($order->lastActionByUser->hasRole('sales')) مندوب مبيعات
+                                                    @elseif($order->lastActionByUser->hasRole('follow_up')) متابعة
+                                                    @endif
+                                                    له صلاحية الوصول
+                                                </span>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <span class="text-gray-500">غير معروف</span>
+                                    @endif
+                                    
+                                </div>
+                            </div>
                         </div>
 
                         <div class="mt-4 flex justify-end">
@@ -218,6 +289,7 @@
                             </button>
                         </div>
                     </div>
+                    
                 @endif
             @else
                 <div class="px-5 py-4">
@@ -488,6 +560,8 @@
                             <p class="text-xs text-gray-500 mb-1">آخر تحديث للحالة</p>
                             <p class="text-sm font-medium text-gray-900">
                                 {{ $order->updated_at->format('Y-m-d H:i') }}
+                                من قبل 
+                                <span class="text-primary-600">{{ $order->lastActionByUser->name ?? 'غير معروف' }}</span>
                             </p>
                         </div>
                     </div>

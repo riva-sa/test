@@ -3,7 +3,7 @@
         'name' => 'codewithdennis/larament',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'd01f5e6a2507dcc6b0b9b481af9ab6d76ce3ede4',
+        'reference' => 'f01f08abf158e756ed275304fa2b67cc62d02963',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -130,7 +130,7 @@
         'codewithdennis/larament' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'd01f5e6a2507dcc6b0b9b481af9ab6d76ce3ede4',
+            'reference' => 'f01f08abf158e756ed275304fa2b67cc62d02963',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

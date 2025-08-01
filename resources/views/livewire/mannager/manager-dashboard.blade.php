@@ -333,30 +333,31 @@
                                         @case(1) {{ $openOrders }} @break
                                         @case(2) {{ $SalesTransactions }} @break
                                         @case(3) {{ $closedOrders }} @break
+                                        @case(4) {{ $completedOrders }} @break
                                     @endswitch
                                 </span>
                             </div>
                             <div class="w-full bg-gray-200 rounded-full h-2">
                                 <div class="bg-{{ $statusColors[$key] }}-500 h-2 rounded-full" style="width:
                                     @php
-                                        $total = $newOrders + $openOrders + $SalesTransactions + $closedOrders;
+                                        $total = $newOrders + $openOrders + $SalesTransactions + $closedOrders + $completedOrders;
                                     @endphp
 
                                     @switch($key)
                                         @case(0)
                                             {{ $total > 0 ? round(($newOrders / $total) * 100, 2) : 0 }}%
                                             @break
-
                                         @case(1)
                                             {{ $total > 0 ? round(($openOrders / $total) * 100, 2) : 0 }}%
                                             @break
-
                                         @case(2)
                                             {{ $total > 0 ? round(($SalesTransactions / $total) * 100, 2) : 0 }}%
                                             @break
-
                                         @case(3)
                                             {{ $total > 0 ? round(($closedOrders / $total) * 100, 2) : 0 }}%
+                                            @break
+                                        @case(4)
+                                            {{ $total > 0 ? round(($completedOrders / $total) * 100, 2) : 0 }}%
                                             @break
                                     @endswitch
                                 "></div>
@@ -379,19 +380,21 @@
         new Chart(ctx, {
             type: 'doughnut',
             data: {
-                labels: ['طلبات جديدة', 'طلبات مفتوحة', 'معاملات بيعية', 'طلبات مغلقة'],
+                labels: ['طلبات جديدة', 'طلبات مفتوحة', 'معاملات بيعية', 'طلبات مغلقة', 'طلبات مكتملة'],
                 datasets: [{
                     data: [
                         {{ $newOrders }},
                         {{ $openOrders }},
                         {{ $SalesTransactions }},
-                        {{ $closedOrders }}
+                        {{ $closedOrders }},
+                        {{ $completedOrders }}
                     ],
                     backgroundColor: [
-                        'rgb(59, 130, 246)', // blue-500
-                        'rgb(234, 179, 8)',  // yellow-500
-                        'rgb(34, 197, 94)',  // green-500
-                        'rgb(107, 114, 128)' // gray-500
+                        'rgb(59, 130, 246)',   // blue-500 - طلبات جديدة
+                        'rgb(251, 191, 36)',   // amber-400 - طلبات مفتوحة
+                        'rgb(34, 197, 94)',    // green-500 - معاملات بيعية
+                        'rgb(100, 116, 139)',
+                        'rgb(16, 185, 129)',
                     ],
                     borderWidth: 0,
                 }]
