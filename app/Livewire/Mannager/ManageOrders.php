@@ -10,10 +10,13 @@ use App\Models\Project;
 use App\Models\Unit;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Collection;
+use App\Traits\DelayedOrderLogic;
 
 class ManageOrders extends Component
 {
     use WithPagination;
+    use DelayedOrderLogic;
 
     public $search = '';
     public $statusFilter = '';
@@ -119,29 +122,30 @@ class ManageOrders extends Component
 
     public function render()
     {
-        $query = UnitOrder::with(['notes', 'unit', 'project.salesManager', 'user']);
+        $query = UnitOrder::with(['notes', 'unit', 'project.salesManager', 'user', 'permissions']);
+
         if (auth()->user()->hasRole('sales')) {
             $query->where(function ($q) {
-                // الطلبات التي المشروع الخاص بها تحت إدارة المستخدم
+                // الطلبات التي يكون المستخدم هو مدير المبيعات المسؤول عن مشروعها
                 $q->whereHas('project', function($subQ) {
                     $subQ->where('sales_manager_id', auth()->id());
                 })
-                // أو الطلبات التي تم منح المستخدم صلاحية عليها
+                // أو الطلبات التي مُنح المستخدم صلاحية للوصول إليها
                 ->orWhereHas('permissions', function($subQ) {
                     $subQ->where('user_id', auth()->id());
                 });
             });
         }
 
-        // Apply other filters...
-        $orders = $query->when($this->search, function ($query) {
+        // الخطوة 3: تطبيق فلاتر الواجهة (البحث، الحالة، المشروع، إلخ)
+        $query->when($this->search, function ($query) {
             $query->where(function ($q) {
                 $q->where('name', 'like', '%'.$this->search.'%')
-                  ->orWhere('email', 'like', '%'.$this->search.'%')
-                  ->orWhere('phone', 'like', '%'.$this->search.'%')
-                  ->orWhereHas('unit', function($q) {
-                      $q->where('title', 'like', '%'.$this->search.'%');
-                  });
+                ->orWhere('email', 'like', '%'.$this->search.'%')
+                ->orWhere('phone', 'like', '%'.$this->search.'%')
+                ->orWhereHas('unit', function($q) {
+                    $q->where('title', 'like', '%'.$this->search.'%');
+                });
             });
         })
         ->when($this->statusFilter !== '', function ($query) {
@@ -150,21 +154,42 @@ class ManageOrders extends Component
         ->when($this->projectFilter !== '', function ($query) {
             $query->where('project_id', $this->projectFilter);
         })
-        ->when($this->delayedFilter == '1', function ($query) {
-            $query->where('status', '!=', 3)
-                ->where('updated_at', '<', now()->subDays(3));
-        })
         ->when($this->salesManagerFilter, function ($query) {
             $query->whereHas('project', function ($q) {
                 $q->where('sales_manager_id', $this->salesManagerFilter);
             });
-        })
-        ->orderBy($this->sortField, $this->sortDirection)
-        ->paginate($this->perPage);
+        });
 
+        if ($this->delayedFilter == '1') {
+            $query->whereNotIn('status', [3, 4]) // استبعاد الطلبات المغلقة والمكتملة
+                ->where('updated_at', '<', now()->subDays(3)); // التي لم تحدث منذ 3 أيام
+        }
 
+        $allFilteredOrders = $query->orderBy($this->sortField, $this->sortDirection)->get();
+
+        if ($this->delayedFilter == '1') {
+            $finalOrders = $allFilteredOrders->filter(function ($order) {
+                return $this->isOrderDelayed($order);
+            });
+        } else {
+            $finalOrders = $allFilteredOrders;
+        }
+
+        $delayedOrdersCount = $this->getDelayedOrdersCount(auth()->user());
+
+        $currentPage = \Illuminate\Pagination\Paginator::resolveCurrentPage('page');
+        $pagedOrders = new \Illuminate\Pagination\LengthAwarePaginator(
+            $finalOrders->forPage($currentPage, $this->perPage),
+            $finalOrders->count(),
+            $this->perPage,
+            $currentPage,
+            ['path' => \Illuminate\Pagination\Paginator::resolveCurrentPath()]
+        );
+
+        // الخطوة 9: إرجاع العرض مع كل البيانات المطلوبة
         return view('livewire.mannager.manage-orders', [
-            'orders' => $orders,
+            'orders' => $pagedOrders,
+            'delayedOrdersCount' => $delayedOrdersCount,
             'statusLabels' => [
                 0 => 'جديد',
                 1 => 'طلب مفتوح',
@@ -190,5 +215,30 @@ class ManageOrders extends Component
                 $q->where('name', 'sales');
             })->get()
         ])->layout('layouts.custom');
+    }
+
+
+    private function getDelayedOrdersCount($user)
+    {
+        $query = UnitOrder::with(['project', 'permissions'])
+            ->whereNotIn('status', [3, 4]);
+
+        if ($user->hasRole('sales')) {
+            $query->where(function ($q) use ($user) {
+                $q->whereHas('project', function($subQ) use ($user) {
+                    $subQ->where('sales_manager_id', $user->id);
+                })
+                ->orWhereHas('permissions', function($subQ) use ($user) {
+                    $subQ->where('user_id', $user->id);
+                });
+            });
+        }
+
+        // جلب كل الطلبات المحتملة وفلترتها
+        $potentialDelayed = $query->get();
+        
+        return $potentialDelayed->filter(function ($order) {
+            return $this->isOrderDelayed($order);
+        })->count();
     }
 }

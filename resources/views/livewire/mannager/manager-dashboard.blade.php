@@ -29,7 +29,7 @@
                         <div class="mr-4 flex-1">
                             <dt class="text-sm font-medium text-gray-500 truncate">العملاء</dt>
                             <dd class="mt-1 text-2xl font-semibold text-gray-900">
-                                {{ number_format($customersCount) }}
+                                {{ number_format($customersCount ) }}
                             </dd>
                         </div>
                     </div>
@@ -48,7 +48,7 @@
                         <div class="mr-4 flex-1">
                             <dt class="text-sm font-medium text-gray-500 truncate">جميع الطلبات</dt>
                             <dd class="mt-1 text-2xl font-semibold text-gray-900">
-                                {{ number_format($allOrders) }}
+                                {{ number_format($allOrders ) }}
                             </dd>
                         </div>
                     </div>
@@ -67,7 +67,7 @@
                         <div class="mr-4 flex-1">
                             <dt class="text-sm font-medium text-gray-500 truncate">طلبات جديدة</dt>
                             <dd class="mt-1 text-2xl font-semibold text-gray-900">
-                                {{ number_format($newOrders) }}
+                                {{ number_format($newOrders ) }}
                             </dd>
                         </div>
                     </div>
@@ -86,7 +86,7 @@
                         <div class="mr-4 flex-1">
                             <dt class="text-sm font-medium text-gray-500 truncate">طلبات مفتوحة</dt>
                             <dd class="mt-1 text-2xl font-semibold text-gray-900">
-                                {{ number_format($openOrders) }}
+                                {{ number_format($openOrders ) }}
                             </dd>
                         </div>
                     </div>
@@ -107,7 +107,7 @@
                         <div class="mr-4 flex-1">
                             <dt class="text-sm font-medium text-gray-500 truncate">طلبات متأخرة</dt>
                             <dd class="mt-1 text-2xl font-semibold text-gray-900">
-                                {{ number_format($delayedOrders) }}
+                                {{ number_format($delayedOrders ) }}
                             </dd>
                         </div>
                     </div>
@@ -126,7 +126,7 @@
                         <div class="mr-4 flex-1">
                             <dt class="text-sm font-medium text-gray-500 truncate">عمليات بيعية</dt>
                             <dd class="mt-1 text-2xl font-semibold text-gray-900">
-                                {{ number_format($SalesTransactions) }}
+                                {{ number_format($SalesTransactions ) }}
                             </dd>
                         </div>
                     </div>
@@ -145,7 +145,7 @@
                         <div class="mr-4 flex-1">
                             <dt class="text-sm font-medium text-gray-500 truncate">طلبات مغلقة</dt>
                             <dd class="mt-1 text-2xl font-semibold text-gray-900">
-                                {{ number_format($closedOrders) }}
+                                {{ number_format($closedOrders ) }}
                             </dd>
                         </div>
                     </div>
@@ -164,7 +164,7 @@
                         <div class="mr-4 flex-1">
                             <dt class="text-sm font-medium text-gray-500 truncate">طلبات مكتملة</dt>
                             <dd class="mt-1 text-2xl font-semibold text-gray-900">
-                                {{ number_format($completedOrders) }}
+                                {{ number_format($completedOrders ) }}
                             </dd>
                         </div>
                     </div>
@@ -184,7 +184,7 @@
                             </svg>
                             الطلبات الحديثة
                         </h3>
-                        <a href="{{ route('manager.orders') }}" class="text-sm font-medium text-primary-600 hover:text-primary-800">
+                        <a href="{{ route('manager.orders' ) }}" class="text-sm font-medium text-primary-600 hover:text-primary-800">
                             عرض الكل
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -202,7 +202,7 @@
                                 <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     المشروع
                                 </th>
-                                @if (auth()->user()->hasRole('sales'))
+                                @if (auth( )->user()->hasRole('sales'))
                                 <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     مصدر الطلب
                                 </th>
@@ -242,31 +242,29 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @php
                                         $user = auth()->user();
+                                        $source = '';
+                                        $sourceColor = 'gray';
                                         if ($order->user_id == $user->id) {
-                                            $source = 'تم إنشاؤه بواسطة';
+                                            $source = 'تم إنشاؤه بواسطتي';
                                             $sourceColor = 'indigo';
                                         } elseif ($order->project && $order->project->sales_manager_id == $user->id) {
-                                            if (!$user->hasRole('sales')) {
-                                                $source = 'طلب تحت المتابعة';
-                                                $sourceColor = 'green';
-                                            } else {
-                                                $source = 'طلب تحت الإدارة';
-                                                $sourceColor = 'green';
-                                            }
-                                        }
-                                        if ($user->hasOrderPermission($order->id, 'manage')) {
+                                            $source = 'طلب تحت الإدارة';
+                                            $sourceColor = 'green';
+                                        } elseif ($user->hasOrderPermission($order->id, 'manage')) {
                                             $source = 'طلب تحت المتابعة';
                                             $sourceColor = 'green';
                                         }
                                     @endphp
+                                    @if($source)
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-{{ $sourceColor }}-100 text-{{ $sourceColor }}-800">
                                         {{ $source }}
                                     </span>
+                                    @endif
                                 </td>
                                 @endif
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-{{ $statusColors[$order->status] }}-100 text-{{ $statusColors[$order->status] }}-800">
-                                        {{ $statusLabels[$order->status] }}
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-{{ $statusConfig[$order->status]['color'] ?? 'gray' }}-100 text-{{ $statusConfig[$order->status]['color'] ?? 'gray' }}-800">
+                                        {{ $statusConfig[$order->status]['label'] ?? 'غير معروف' }}
                                     </span>
                                 </td>
                                 @if (auth()->user()->hasRole('sales_manager') || auth()->user()->hasRole('follow_up'))
@@ -323,46 +321,24 @@
                         </h3>
                     </div>
                     <div class="px-5 py-5 space-y-4">
-                        @foreach($statusLabels as $key => $label)
-                        <div>
-                            <div class="flex justify-between items-center mb-1">
-                                <span class="text-sm font-medium text-gray-700">{{ $label }}</span>
-                                <span class="text-xs font-medium text-gray-500">
-                                    @switch($key)
-                                        @case(0) {{ $newOrders }} @break
-                                        @case(1) {{ $openOrders }} @break
-                                        @case(2) {{ $SalesTransactions }} @break
-                                        @case(3) {{ $closedOrders }} @break
-                                        @case(4) {{ $completedOrders }} @break
-                                    @endswitch
-                                </span>
+                        @php $total = $allOrders > 0 ? $allOrders : 1; @endphp
+                        @foreach($statusConfig as $key => $config )
+                            @php
+                                $count = match($key) {
+                                    0 => $newOrders, 1 => $openOrders, 2 => $SalesTransactions,
+                                    3 => $closedOrders, 4 => $completedOrders, default => 0
+                                };
+                                $percentage = round(($count / $total) * 100, 2);
+                            @endphp
+                            <div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-sm font-medium text-gray-700">{{ $config['label'] }}</span>
+                                    <span class="text-xs font-medium text-gray-500">{{ $count }}</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                    <div class="bg-{{ $config['color'] }}-500 h-2.5 rounded-full" style="width: {{ $percentage }}%"></div>
+                                </div>
                             </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-{{ $statusColors[$key] }}-500 h-2 rounded-full" style="width:
-                                    @php
-                                        $total = $newOrders + $openOrders + $SalesTransactions + $closedOrders + $completedOrders;
-                                    @endphp
-
-                                    @switch($key)
-                                        @case(0)
-                                            {{ $total > 0 ? round(($newOrders / $total) * 100, 2) : 0 }}%
-                                            @break
-                                        @case(1)
-                                            {{ $total > 0 ? round(($openOrders / $total) * 100, 2) : 0 }}%
-                                            @break
-                                        @case(2)
-                                            {{ $total > 0 ? round(($SalesTransactions / $total) * 100, 2) : 0 }}%
-                                            @break
-                                        @case(3)
-                                            {{ $total > 0 ? round(($closedOrders / $total) * 100, 2) : 0 }}%
-                                            @break
-                                        @case(4)
-                                            {{ $total > 0 ? round(($completedOrders / $total) * 100, 2) : 0 }}%
-                                            @break
-                                    @endswitch
-                                "></div>
-                            </div>
-                        </div>
                         @endforeach
                     </div>
                 </div>
@@ -370,33 +346,41 @@
         </div>
     </div>
 </div>
-
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Pie Chart
+    document.addEventListener('DOMContentLoaded', function ( ) {
+        // *** التعديل الرئيسي هنا: استخدام الإعدادات الجديدة ***
+
+        // 1. قراءة إعدادات الحالة والألوان التي تم تمريرها من PHP
+        const statusConfig = @json($statusConfig);
+        
+        // 2. تحويل الإعدادات إلى صيغة يفهمها Chart.js
+        const chartLabels = Object.values(statusConfig).map(config => config.label);
+        const chartColors = Object.values(statusConfig).map(config => config.hex);
+
+        // 3. تجميع بيانات الرسم البياني
+        const chartData = [
+            {{ $newOrders }},
+            {{ $openOrders }},
+            {{ $SalesTransactions }},
+            {{ $closedOrders }},
+            {{ $completedOrders }}
+        ];
+
+        // 4. إنشاء الرسم البياني مع الإعدادات المحسّنة
         const ctx = document.getElementById('orderStatusChart').getContext('2d');
         new Chart(ctx, {
             type: 'doughnut',
             data: {
-                labels: ['طلبات جديدة', 'طلبات مفتوحة', 'معاملات بيعية', 'طلبات مغلقة', 'طلبات مكتملة'],
+                labels: chartLabels,
                 datasets: [{
-                    data: [
-                        {{ $newOrders }},
-                        {{ $openOrders }},
-                        {{ $SalesTransactions }},
-                        {{ $closedOrders }},
-                        {{ $completedOrders }}
-                    ],
-                    backgroundColor: [
-                        'rgb(59, 130, 246)',   // blue-500 - طلبات جديدة
-                        'rgb(251, 191, 36)',   // amber-400 - طلبات مفتوحة
-                        'rgb(34, 197, 94)',    // green-500 - معاملات بيعية
-                        'rgb(100, 116, 139)',
-                        'rgb(16, 185, 129)',
-                    ],
-                    borderWidth: 0,
+                    label: 'عدد الطلبات',
+                    data: chartData,
+                    backgroundColor: chartColors,
+                    borderColor: '#ffffff', // لون أبيض للحدود بين الشرائح لمظهر أنظف
+                    borderWidth: 2,
+                    hoverOffset: 8 // تأثير بسيط عند مرور الماوس
                 }]
             },
             options: {
@@ -410,24 +394,33 @@
                             usePointStyle: true,
                             padding: 20,
                             font: {
-                                family: 'Tajawal, sans-serif'
+                                family: 'Tajawal, sans-serif', // تأكد من أن الخط مستخدم في الموقع
+                                size: 12
                             }
                         }
                     },
                     tooltip: {
                         rtl: true,
+                        bodyFont: { family: 'Tajawal, sans-serif' },
+                        titleFont: { family: 'Tajawal, sans-serif' },
                         callbacks: {
                             label: function(context) {
                                 let label = context.label || '';
                                 let value = context.raw || 0;
                                 let total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                
+                                // تجنب القسمة على صفر إذا لم تكن هناك بيانات
+                                if (total === 0) {
+                                    return ` ${label}: 0 (0%)`;
+                                }
+                                
                                 let percentage = Math.round((value / total) * 100);
                                 return ` ${label}: ${value} (${percentage}%)`;
                             }
                         }
                     }
                 },
-                cutout: '70%'
+                cutout: '70%' // يجعل الرسم البياني أنحف وأكثر حداثة
             }
         });
     });

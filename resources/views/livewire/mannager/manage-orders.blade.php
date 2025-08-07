@@ -263,12 +263,12 @@
                                         </svg>
                                     </a>
 
-                                    @if (!auth()->user()->hasRole('sales'))
-                                    <a href="{{ route('manager.permissions', $order) }}" class="text-purple-600 hover:text-purple-900 flex items-center gap-1" title="الصلاحيات">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                        </svg>
-                                    </a>
+                                    @if (!auth()->user()->hasRole('sales') && $order->status != 3 && $order->status != 4)
+                                        <a href="{{ route('manager.permissions', $order) }}" class="text-purple-600 hover:text-purple-900 flex items-center gap-1" title="الصلاحيات">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                            </svg>
+                                        </a>
                                     @endif
                                 </div>
                             </td>
