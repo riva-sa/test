@@ -7,10 +7,12 @@ use App\Models\Unit;
 use App\Models\TrackingEvent;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
+use App\Helpers\DatabaseHelper;
+use Illuminate\Support\Facades\DB;
 
 class TrackingService
 {
-    /**
+/**
      * Track project visit
      */
     public function trackProjectVisit(Project $project)
@@ -90,43 +92,7 @@ class TrackingService
     }
 
     /**
-     * Get popular units based on tracking data
-     */
-    // public function getPopularUnits($limit = 10, $days = 30)
-    // {
-    //     $cacheKey = "popular_units_{$limit}_{$days}";
-        
-    //     return Cache::remember($cacheKey, 3600, function () use ($limit, $days) {
-    //         return Unit::select('units.*')
-    //             ->selectRaw('(visits_count + views_count * 2 + shows_count * 3 + orders_count * 10) as popularity_score')
-    //             ->where('status', 1)
-    //             ->where('last_visited_at', '>', Carbon::now()->subDays($days))
-    //             ->orderBy('popularity_score', 'desc')
-    //             ->limit($limit)
-    //             ->get();
-    //     });
-    // }
-
-    // /**
-    //  * Get popular projects based on tracking data
-    //  */
-    // public function getPopularProjects($limit = 10, $days = 30)
-    // {
-    //     $cacheKey = "popular_projects_{$limit}_{$days}";
-        
-    //     return Cache::remember($cacheKey, 3600, function () use ($limit, $days) {
-    //         return Project::select('projects.*')
-    //             ->selectRaw('(visits_count + views_count * 2 + shows_count * 3 + orders_count * 10) as popularity_score')
-    //             ->where('status', 1)
-    //             ->where('last_visited_at', '>', Carbon::now()->subDays($days))
-    //             ->orderBy('popularity_score', 'desc')
-    //             ->limit($limit)
-    //             ->get();
-    //     });
-    // }
-
-    /**
-     * Get popular units based on tracking data
+     * Get popular units based on tracking data - PostgreSQL Compatible
      */
     public function getPopularUnits($limit = 10, $days = 30)
     {
@@ -138,12 +104,12 @@ class TrackingService
                 ->where('status', 1)
                 ->where(function($query) use ($days) {
                     $query->where('last_visited_at', '>', Carbon::now()->subDays($days))
-                        ->orWhere('visits_count', '>', 0)
-                        ->orWhere('views_count', '>', 0)
-                        ->orWhere('shows_count', '>', 0)
-                        ->orWhere('orders_count', '>', 0);
+                          ->orWhere('visits_count', '>', 0)
+                          ->orWhere('views_count', '>', 0)
+                          ->orWhere('shows_count', '>', 0)
+                          ->orWhere('orders_count', '>', 0);
                 })
-                ->with('project:id,name') // تحميل علاقة المشروع
+                ->with('project:id,name')
                 ->orderBy('popularity_score', 'desc')
                 ->limit($limit)
                 ->get();
@@ -151,7 +117,7 @@ class TrackingService
     }
 
     /**
-     * Get popular projects based on tracking data
+     * Get popular projects based on tracking data - PostgreSQL Compatible
      */
     public function getPopularProjects($limit = 10, $days = 30)
     {
@@ -163,10 +129,10 @@ class TrackingService
                 ->where('status', 1)
                 ->where(function($query) use ($days) {
                     $query->where('last_visited_at', '>', Carbon::now()->subDays($days))
-                        ->orWhere('visits_count', '>', 0)
-                        ->orWhere('views_count', '>', 0)
-                        ->orWhere('shows_count', '>', 0)
-                        ->orWhere('orders_count', '>', 0);
+                          ->orWhere('visits_count', '>', 0)
+                          ->orWhere('views_count', '>', 0)
+                          ->orWhere('shows_count', '>', 0)
+                          ->orWhere('orders_count', '>', 0);
                 })
                 ->orderBy('popularity_score', 'desc')
                 ->limit($limit)
@@ -175,7 +141,7 @@ class TrackingService
     }
 
     /**
-     * Get tracking analytics for dashboard
+     * Get tracking analytics for dashboard - Cross-DB Compatible
      */
     public function getAnalytics($dateRange = null)
     {
@@ -184,7 +150,7 @@ class TrackingService
 
         $query = TrackingEvent::whereBetween('created_at', [$startDate, $endDate]);
 
-        return [
+        $analytics = [
             'overview' => [
                 'total_events' => $query->count(),
                 'total_visits' => $query->clone()->eventType('visit')->count(),
@@ -198,22 +164,52 @@ class TrackingService
                 'projects' => $query->clone()->trackableType('project')->count(),
             ],
             'daily_stats' => $query->clone()
-                ->selectRaw('DATE(created_at) as date, event_type, COUNT(*) as count')
+                ->selectRaw(DatabaseHelper::dateFormat('created_at') . ' as date, event_type, COUNT(*) as count')
                 ->groupBy('date', 'event_type')
                 ->orderBy('date')
                 ->get()
                 ->groupBy('date'),
-            'device_stats' => $query->clone()
-                ->selectRaw('JSON_EXTRACT(metadata, "$.device_type") as device_type, COUNT(*) as count')
-                ->whereNotNull('metadata')
-                ->groupBy('device_type')
-                ->get(),
-            'browser_stats' => $query->clone()
-                ->selectRaw('JSON_EXTRACT(metadata, "$.browser") as browser, COUNT(*) as count')
-                ->whereNotNull('metadata')
-                ->groupBy('browser')
-                ->get(),
         ];
+
+        // Get device and browser stats with cross-database compatibility
+        try {
+            if (DatabaseHelper::isPostgreSQL()) {
+                $analytics['device_stats'] = $query->clone()
+                    ->selectRaw("metadata->>'device_type' as device_type, COUNT(*) as count")
+                    ->whereNotNull('metadata')
+                    ->whereRaw("metadata->>'device_type' IS NOT NULL")
+                    ->groupBy(DB::raw("metadata->>'device_type'"))
+                    ->get();
+
+                $analytics['browser_stats'] = $query->clone()
+                    ->selectRaw("metadata->>'browser' as browser, COUNT(*) as count")
+                    ->whereNotNull('metadata')
+                    ->whereRaw("metadata->>'browser' IS NOT NULL")
+                    ->groupBy(DB::raw("metadata->>'browser'"))
+                    ->get();
+            } else {
+                // MySQL/SQLite
+                $analytics['device_stats'] = $query->clone()
+                    ->selectRaw("JSON_EXTRACT(metadata, '$.device_type') as device_type, COUNT(*) as count")
+                    ->whereNotNull('metadata')
+                    ->whereRaw("JSON_EXTRACT(metadata, '$.device_type') IS NOT NULL")
+                    ->groupBy(DB::raw("JSON_EXTRACT(metadata, '$.device_type')"))
+                    ->get();
+
+                $analytics['browser_stats'] = $query->clone()
+                    ->selectRaw("JSON_EXTRACT(metadata, '$.browser') as browser, COUNT(*) as count")
+                    ->whereNotNull('metadata')
+                    ->whereRaw("JSON_EXTRACT(metadata, '$.browser') IS NOT NULL")
+                    ->groupBy(DB::raw("JSON_EXTRACT(metadata, '$.browser')"))
+                    ->get();
+            }
+        } catch (\Exception $e) {
+            // Fallback if JSON extraction fails
+            $analytics['device_stats'] = collect();
+            $analytics['browser_stats'] = collect();
+        }
+
+        return $analytics;
     }
 
     /**
@@ -238,41 +234,40 @@ class TrackingService
             'visit_to_order' => $visits > 0 ? round(($orders / $visits) * 100, 2) : 0,
         ];
     }
-    
+
     /**
-     * Get top performing content (units and projects) - محسن
+     * Get top performing content (units and projects) - PostgreSQL Compatible
      */
     public function getTopPerformingContent(array $dateRange = null, int $limit = 5)
     {
         $startDate = $dateRange ? $dateRange[0] : Carbon::now()->subDays(30);
         $endDate = $dateRange ? $dateRange[1] : Carbon::now();
 
-        // استعلام للوحدات مع تحسين
+        // Units query with better compatibility
         $units = Unit::select('units.*', 'projects.name as project_name')
             ->join('projects', 'units.project_id', '=', 'projects.id')
             ->where('units.status', 1)
             ->where(function($query) use ($startDate, $endDate) {
                 $query->whereBetween('units.last_visited_at', [$startDate, $endDate])
-                    ->orWhereBetween('units.last_ordered_at', [$startDate, $endDate])
-                    ->orWhere(function($subQuery) {
-                        $subQuery->where('units.orders_count', '>', 0)
-                                ->orWhere('units.shows_count', '>', 0);
-                    });
+                      ->orWhereBetween('units.last_ordered_at', [$startDate, $endDate])
+                      ->orWhere(function($subQuery) {
+                          $subQuery->where('units.orders_count', '>', 0)
+                                   ->orWhere('units.shows_count', '>', 0);
+                      });
             })
             ->orderByDesc('units.orders_count')
             ->orderByDesc('units.shows_count')
             ->limit($limit)
             ->get();
 
-        // استعلام للمشاريع مع تحسين
         $projects = Project::where('status', 1)
             ->where(function($query) use ($startDate, $endDate) {
                 $query->whereBetween('last_visited_at', [$startDate, $endDate])
-                    ->orWhereBetween('last_ordered_at', [$startDate, $endDate])
-                    ->orWhere(function($subQuery) {
-                        $subQuery->where('orders_count', '>', 0)
-                                ->orWhere('shows_count', '>', 0);
-                    });
+                      ->orWhereBetween('last_ordered_at', [$startDate, $endDate])
+                      ->orWhere(function($subQuery) {
+                          $subQuery->where('orders_count', '>', 0)
+                                   ->orWhere('shows_count', '>', 0);
+                      });
             })
             ->orderByDesc('orders_count')
             ->orderByDesc('shows_count')
@@ -286,7 +281,7 @@ class TrackingService
     }
 
     /**
-     * Get traffic sources breakdown
+     * Get traffic sources breakdown - PostgreSQL Compatible
      */
     public function getTrafficSources(array $dateRange = null)
     {
@@ -294,20 +289,21 @@ class TrackingService
         $endDate = $dateRange ? $dateRange[1] : Carbon::now();
 
         return TrackingEvent::whereBetween('created_at', [$startDate, $endDate])
-            ->selectRaw('
+            ->selectRaw("
                 CASE 
-                    WHEN referrer IS NULL OR referrer = "" THEN "Direct"
-                    WHEN referrer LIKE "%google.%" THEN "Google"
-                    WHEN referrer LIKE "%facebook.%" THEN "Facebook"
-                    WHEN referrer LIKE "%instagram.%" THEN "Instagram"
-                    WHEN referrer LIKE "%twitter.%" THEN "Twitter"
-                    WHEN referrer LIKE "%linkedin.%" THEN "LinkedIn"
-                    ELSE "Other"
+                    WHEN referrer IS NULL OR referrer = '' THEN 'Direct'
+                    WHEN referrer LIKE '%google.%' THEN 'Google'
+                    WHEN referrer LIKE '%facebook.%' THEN 'Facebook'
+                    WHEN referrer LIKE '%instagram.%' THEN 'Instagram'
+                    WHEN referrer LIKE '%twitter.%' THEN 'Twitter'
+                    WHEN referrer LIKE '%linkedin.%' THEN 'LinkedIn'
+                    ELSE 'Other'
                 END as source,
                 COUNT(*) as count
-            ')
+            ")
             ->groupBy('source')
             ->orderBy('count', 'desc')
             ->get();
     }
+
 }

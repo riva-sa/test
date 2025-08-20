@@ -1,11 +1,9 @@
-<!-- resources/views/livewire/analytics-dashboard.blade.php -->
 <div class="p-6 bg-white min-h-screen" dir="rtl">
     <!-- Header -->
     <div class="mb-8">
         <div class="flex justify-between items-center mb-4">
             <div>
-                <h1 class="text-3xl font-bold text-black">لوحة التحكم - الإحصائيات</h1>
-                <p class="text-gray-500 mt-1">تتبع أداء منصتك العقارية والمشاريع والوحدات</p>
+                <h2 class="text-2xl font-bold text-black">لوحة التحكم - الإحصائيات</h2>
             </div>
             
             <!-- Date Range Filter -->
