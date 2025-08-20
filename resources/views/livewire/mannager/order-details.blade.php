@@ -2,7 +2,7 @@
     <div class="px-4 py-6 sm:px-6">
         <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 mb-6">
             @if($previousOrder || $nextOrder)
-                <div class="flex justify-between items-center mb-4">
+                <div class="flex justify-between items-center mb-4" dir="ltr">
 
 
                     @if($previousOrder)
@@ -10,7 +10,7 @@
                         class="inline-flex items-center px-3 py-2 bg-gray-100 text-gray-700 text-sm rounded-md hover:bg-gray-200">
                             
                             <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                             </svg>
                             التالي
                         </a>
@@ -20,8 +20,9 @@
                         <a href="{{ route('manager.order-details', $nextOrder->id) }}"
                         class="inline-flex items-center px-3 py-2 bg-gray-100 text-gray-700 text-sm rounded-md hover:bg-gray-200">
                             السابق
+
                             <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                             </svg>
                         </a>
                     @endif
