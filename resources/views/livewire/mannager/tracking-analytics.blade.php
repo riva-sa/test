@@ -153,9 +153,7 @@
                     <div class="flex-1">
                         <h4 class="font-semibold text-black">وحدة {{ $unit->unit_number ?? $unit->id }}</h4>
                         <p class="text-sm text-gray-500">{{ $unit->project->name ?? 'مشروع غير محدد' }}</p>
-                        @if(isset($unit->price))
-                        <p class="text-sm text-black font-medium">{{ number_format($unit->price) }} ج.م</p>
-                        @endif
+
                     </div>
                     <div class="text-left">
                         <div class="flex space-x-4">
@@ -246,6 +244,81 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+        <!-- Traffic Sources & Popular Content -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <!-- Traffic Sources -->
+        <div class="border border-gray-200 rounded-lg p-6">
+            <h3 class="text-xl font-bold text-black mb-6">مصادر الزيارات</h3>
+            <div class="space-y-4">
+                @php $totalTraffic = $this->trafficSources->sum('count'); @endphp
+                @forelse($this->trafficSources as $source)
+                @php $percentage = $totalTraffic > 0 ? ($source->count / $totalTraffic) * 100 : 0; @endphp
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center flex-1"><div class="w-4 h-4 bg-black rounded ml-3"></div><span class="font-medium text-black">{{ $source->source }}</span></div>
+                    <div class="flex items-center space-x-3"><div class="text-left ml-2"><span class="text-sm text-gray-600">{{ number_format($source->count) }}</span><span class="text-xs text-gray-400">({{ number_format($percentage, 1) }}%)</span></div><div class="w-24 bg-gray-200 rounded-full h-2"><div class="bg-black h-2 rounded-full" style="width: {{ $percentage }}%"></div></div></div>
+                </div>
+                @empty
+                <div class="text-center py-8 text-gray-500"><p>لا توجد بيانات زيارات</p></div>
+                @endforelse
+            </div>
+        </div>
+
+        <!-- Popular Content Summary -->
+        <div class="border border-gray-200 rounded-lg p-6">
+            <h3 class="text-xl font-bold text-black mb-6">المحتوى الشائع (حسب نقاط التفاعل)</h3>
+            <div class="space-y-6">
+                <div>
+                    <h4 class="font-semibold text-gray-700 mb-3">الوحدات الأكثر شعبية</h4>
+                    <div class="space-y-2">
+                        @forelse($this->popularUnits->take(3) as $unit)
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg"><span class="text-sm font-medium text-black">وحدة {{ $unit->unit_number ?? $unit->id }}</span><span class="text-sm text-gray-600 font-semibold">{{ $unit->popularity_score }} نقطة</span></div>
+                        @empty
+                        <p class="text-sm text-gray-500">لا توجد وحدات</p>
+                        @endforelse
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-700 mb-3">المشاريع الأكثر شعبية</h4>
+                    <div class="space-y-2">
+                        @forelse($this->popularProjects->take(3) as $project)
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg"><span class="text-sm font-medium text-black">{{ $project->name }}</span><span class="text-sm text-gray-600 font-semibold">{{ $project->popularity_score }} نقطة</span></div>
+                        @empty
+                        <p class="text-sm text-gray-500">لا توجد مشاريع</p>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- (NEW) Device & Browser Stats -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <div class="border border-gray-200 rounded-lg p-6">
+            <h3 class="text-xl font-bold text-black mb-6">إحصائيات الأجهزة</h3>
+            @php $totalDevices = $this->analytics['device_stats']->sum('count'); @endphp
+            @if($totalDevices > 0)
+                @foreach($this->analytics['device_stats'] as $device)
+                    @php $percentage = ($device->count / $totalDevices) * 100; @endphp
+                    <div class="mb-2"><div class="flex justify-between mb-1"><span class="text-base font-medium text-black">{{ $device->device_type ?: 'غير معروف' }}</span><span class="text-sm font-medium text-gray-600">{{ number_format($percentage, 1) }}%</span></div><div class="w-full bg-gray-200 rounded-full h-2.5"><div class="bg-gray-700 h-2.5 rounded-full" style="width: {{ $percentage }}%"></div></div></div>
+                @endforeach
+            @else
+                <div class="text-center py-8 text-gray-500"><p>لا توجد بيانات</p></div>
+            @endif
+        </div>
+        <div class="border border-gray-200 rounded-lg p-6">
+            <h3 class="text-xl font-bold text-black mb-6">إحصائيات المتصفحات</h3>
+            @php $totalBrowsers = $this->analytics['browser_stats']->sum('count'); @endphp
+            @if($totalBrowsers > 0)
+                @foreach($this->analytics['browser_stats'] as $browser)
+                    @php $percentage = ($browser->count / $totalBrowsers) * 100; @endphp
+                    <div class="mb-2"><div class="flex justify-between mb-1"><span class="text-base font-medium text-black">{{ $browser->browser ?: 'غير معروف' }}</span><span class="text-sm font-medium text-gray-600">{{ number_format($percentage, 1) }}%</span></div><div class="w-full bg-gray-200 rounded-full h-2.5"><div class="bg-gray-700 h-2.5 rounded-full" style="width: {{ $percentage }}%"></div></div></div>
+                @endforeach
+            @else
+                <div class="text-center py-8 text-gray-500"><p>لا توجد بيانات</p></div>
+            @endif
         </div>
     </div>
 

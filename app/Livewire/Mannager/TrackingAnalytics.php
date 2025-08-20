@@ -67,6 +67,7 @@ class TrackingAnalytics extends Component
     public function getPopularUnitsProperty()
     {
         return $this->trackingService->getPopularUnits(10, (int)$this->dateRange);
+
     }
     
     public function getPopularProjectsProperty()
