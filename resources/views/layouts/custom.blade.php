@@ -154,6 +154,7 @@
                 min-height: 300px;
             }
         </style>
+        @stack('styles')
 </head>
 <body class="font-sans antialiased bg-gray-50 text-gray-900">
     <div class="flex h-screen overflow-hidden">
