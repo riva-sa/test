@@ -7,8 +7,8 @@
             </div>
             
             <!-- Date Range Filter -->
-            <div class="border border-gray-200 rounded-lg px-4 py-2">
-                <label class="text-sm font-medium text-gray-700 mb-2 block">الفترة الزمنية</label>
+            <div class="border border-gray-200 rounded-lg px-4 py-2 flex items-center justify-between">
+                <label class="text-sm font-medium text-gray-700 me-4 block">الفترة الزمنية</label>
                 <select wire:model.live="dateRange" class="border-0 bg-transparent focus:outline-none text-sm">
                     <option value="1">آخر يوم</option>
                     <option value="7">آخر 7 أيام</option>
@@ -22,13 +22,13 @@
 
     <!-- Overview Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div class="border border-gray-200 rounded-lg p-6">
+        <div class="border border-gray-200 rounded-lg p-5">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-gray-600">إجمالي الأحداث</p>
-                    <p class="text-3xl font-bold text-black">{{ number_format($this->analytics['overview']['total_events']) }}</p>
+                    <p class="text-2xl font-bold text-black">{{ number_format($this->analytics['overview']['total_events']) }}</p>
                 </div>
-                <div class="bg-gray-100 p-3 rounded-lg">
+                <div class="bg-gray-100 p-2 rounded-lg">
                     <svg class="w-8 h-8 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                     </svg>
@@ -36,13 +36,13 @@
             </div>
         </div>
 
-        <div class="border border-gray-200 rounded-lg p-6">
+        <div class="border border-gray-200 rounded-lg p-5">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-gray-600">الزيارات</p>
                     <p class="text-3xl font-bold text-black">{{ number_format($this->analytics['overview']['total_visits']) }}</p>
                 </div>
-                <div class="bg-gray-100 p-3 rounded-lg">
+                <div class="bg-gray-100 p-2 rounded-lg">
                     <svg class="w-8 h-8 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -51,13 +51,13 @@
             </div>
         </div>
 
-        <div class="border border-gray-200 rounded-lg p-6">
+        <div class="border border-gray-200 rounded-lg p-5">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-gray-600">(الوحدة) العروض المعروضة</p>
                     <p class="text-3xl font-bold text-black">{{ number_format($this->analytics['overview']['total_shows']) }}</p>
                 </div>
-                <div class="bg-gray-100 p-3 rounded-lg">
+                <div class="bg-gray-100 p-2 rounded-lg">
                     <svg class="w-8 h-8 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
@@ -65,13 +65,13 @@
             </div>
         </div>
 
-        <div class="border border-gray-200 rounded-lg p-6">
+        <div class="border border-gray-200 rounded-lg p-5">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-gray-600">الطلبات</p>
                     <p class="text-3xl font-bold text-black">{{ number_format($this->analytics['overview']['total_orders']) }}</p>
                 </div>
-                <div class="bg-gray-100 p-3 rounded-lg">
+                <div class="bg-gray-100 p-2 rounded-lg">
                     <svg class="w-8 h-8 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 12H6L5 9z"></path>
                     </svg>
@@ -81,30 +81,30 @@
     </div>
 
     <!-- Conversion Rates -->
-    <div class="border border-gray-200 rounded-lg p-6 mb-8">
+    <div class="border border-gray-200 rounded-lg p-4 mb-8">
         <h3 class="text-xl font-bold text-black mb-6">معدلات التحويل</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div class="text-center">
-                <div class="bg-black text-white rounded-lg p-4">
-                    <p class="text-2xl font-bold">{{ $this->conversionRates['visit_to_view'] }}%</p>
+                <div class="bg-black text-white rounded-lg p-3">
+                    <p class="text-2xl font-bold">{{ $this->conversionRates['visit_to_view'] }} %</p>
                     <p class="text-sm opacity-80">من الزيارة للعرض</p>
                 </div>
             </div>
             <div class="text-center">
-                <div class="bg-gray-900 text-white rounded-lg p-4">
-                    <p class="text-2xl font-bold">{{ $this->conversionRates['view_to_show'] }}%</p>
+                <div class="bg-gray-900 text-white rounded-lg p-3">
+                    <p class="text-2xl font-bold">{{ $this->conversionRates['view_to_show'] }} %</p>
                     <p class="text-sm opacity-80">من العرض للتفصيل</p>
                 </div>
             </div>
             <div class="text-center">
-                <div class="bg-gray-800 text-white rounded-lg p-4">
-                    <p class="text-2xl font-bold">{{ $this->conversionRates['show_to_order'] }}%</p>
+                <div class="bg-gray-800 text-white rounded-lg p-3">
+                    <p class="text-2xl font-bold">{{ $this->conversionRates['show_to_order'] }} %</p>
                     <p class="text-sm opacity-80">من التفصيل للطلب</p>
                 </div>
             </div>
             <div class="text-center">
-                <div class="bg-gray-700 text-white rounded-lg p-4">
-                    <p class="text-2xl font-bold">{{ $this->conversionRates['visit_to_order'] }}%</p>
+                <div class="bg-gray-700 text-white rounded-lg p-3">
+                    <p class="text-2xl font-bold">{{ $this->conversionRates['visit_to_order'] }} %</p>
                     <p class="text-sm opacity-80">من الزيارة للطلب</p>
                 </div>
             </div>
