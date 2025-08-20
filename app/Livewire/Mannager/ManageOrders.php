@@ -60,42 +60,8 @@ class ManageOrders extends Component
 
     public function isDelayed($order)
     {
-        if (!$order || !$order->updated_at) {
-            return false;
-        }
-
-        // الطلب مكتمل أو مغلق؟ مش متأخر
-        if (in_array($order->status, [3, 4])) {
-            return false;
-        }
-
-        $lastActorId = $order->last_action_by_user_id;
-        $salesManagerId = $order->project->sales_manager_id ?? null;
-
-        // لو آخر من تعامل هو المسؤول المباشر → مش متأخر
-        if ($lastActorId == $salesManagerId) {
-            return false;
-        }
-
-        // هل الشخص عنده صلاحية إدارة للطلب من نفس المسؤول؟
-        $hasDelegatedPermission = $order->permissions()
-            ->where('user_id', $lastActorId)
-            ->where('permission_type', 'manage') // أو 'edit' حسب منطقك
-            ->where('granted_by', $salesManagerId) // فقط من المسؤول المباشر
-            ->where(function ($q) {
-                $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
-            })
-            ->exists();
-
-        if ($hasDelegatedPermission) {
-            return false;
-        }
-
-        // ما عدا ذلك، إذا مر أكثر من 3 أيام → متأخر
-        return $order->updated_at->lt(now()->subDays(3));
+        return $this->isOrderDelayed($order);
     }
-
-
 
     public function sortBy($field)
     {

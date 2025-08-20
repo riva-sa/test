@@ -163,7 +163,7 @@
                             @if($currentStep == 2)
                                 <div class="post-header mb-5 mt-5">
                                     <h4 class="post-title">تقديم اهتمام لشراء الوحدة</h4>
-                                    <form wire:submit.prevent="submitInterest">
+                                    <form wire:submit.prevent="submitInterest" data-unit-order-form data-unit-id="{{ $selectedUnit->id }}">
                                         <div class="row mb-3">
                                             <div class="col-md-6">
                                                 <label for="firstName" class="form-label text-gray-900">الاسم الاول</label>

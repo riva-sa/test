@@ -83,7 +83,7 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" wire:click="sortBy('name')">
-                                <div class="flex items-center justify-end gap-1">
+                                <div class="flex items-center justify-start gap-1">
                                     <span>العميل</span>
                                     @if($sortField === 'name')
                                         @if($sortDirection === 'asc')
@@ -98,17 +98,19 @@
                                     @endif
                                 </div>
                             </th>
-
                             <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 الوحدة
                             </th>
 
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                مصدر الطلب
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">
+                                <span>التحديثات</span>
                             </th>
+                            {{-- <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                مصدر الطلب
+                            </th> --}}
 
                             <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" wire:click="sortBy('status')">
-                                <div class="flex items-center justify-end gap-1">
+                                <div class="flex items-center justify-start gap-1">
                                     <span>الحالة</span>
                                     @if($sortField === 'status')
                                         @if($sortDirection === 'asc')
@@ -125,7 +127,7 @@
                             </th>
 
                             <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" wire:click="sortBy('created_at')">
-                                <div class="flex items-center justify-end gap-1">
+                                <div class="flex items-center justify-start gap-1">
                                     <span>التاريخ</span>
                                     @if($sortField === 'created_at')
                                         @if($sortDirection === 'asc')
@@ -162,10 +164,10 @@
                                     <span class="font-medium text-gray-900">{{ $order->name }}</span>
                                     <div class="flex flex-col sm:flex-row sm:gap-2 text-sm text-gray-500 mt-1">
                                         <span>{{ $order->phone }}</span>
-                                        @if($order->email)
+                                        {{-- @if($order->email)
                                         <span class="hidden sm:inline">•</span>
                                         <span>{{ $order->email }}</span>
-                                        @endif
+                                        @endif --}}
                                     </div>
                                 </a>
                             </td>
@@ -175,9 +177,112 @@
                                 <div class="text-sm text-gray-900 font-medium">{{ $order->unit?->title ?? '-' }}</div>
                                 <div class="text-sm text-gray-500">{{ $order->project?->name ?? '-' }}</div>
                             </td>
-
-                            <!-- Order Source -->
                             <td class="px-6 py-4 whitespace-nowrap">
+                                @if($last = $order->lastActivity())
+                                    <div class="flex items-start gap-3 max-w-sm">
+                                        {{-- أيقونة النشاط --}}
+                                        <div class="flex-shrink-0 relative">
+                                            <span class="w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium
+                                                @if($last['type'] === 'note') bg-blue-50 text-blue-600 border border-blue-200
+                                                @elseif($last['type'] === 'permission') bg-green-50 text-green-600 border border-green-200
+                                                @elseif($last['type'] === 'status') bg-amber-50 text-amber-600 border border-amber-200
+                                                @else bg-gray-50 text-gray-600 border border-gray-200 @endif
+                                            ">
+                                                @if($last['type'] === 'note') 
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                                    </svg>
+                                                @elseif($last['type'] === 'permission')
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a1 1 0 100 2 2 2 0 012 2 1 1 0 102 0 4 4 0 00-4-4z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                @elseif($last['type'] === 'status')
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                @else
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                @endif
+                                            </span>
+                                            
+                                            {{-- نقطة حالة صغيرة --}}
+                                            <span class="absolute -top-1 -right-1 w-3 h-3 rounded-full
+                                                @if($last['type'] === 'note') bg-blue-400
+                                                @elseif($last['type'] === 'permission') bg-green-400
+                                                @elseif($last['type'] === 'status') bg-amber-400
+                                                @else bg-gray-400 @endif
+                                            "></span>
+                                        </div>
+                                        
+                                        {{-- محتوى النشاط --}}
+                                        <div class="min-w-0 flex-1">
+                                            {{-- نوع النشاط --}}
+                                            <div class="flex items-center gap-2 mb-1">
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+                                                    @if($last['type'] === 'note') bg-blue-100 text-blue-700
+                                                    @elseif($last['type'] === 'permission') bg-green-100 text-green-700
+                                                    @elseif($last['type'] === 'status') bg-amber-100 text-amber-700
+                                                    @else bg-gray-100 text-gray-700 @endif
+                                                ">
+                                                    @if($last['type'] === 'note') ملاحظة
+                                                    @elseif($last['type'] === 'permission') صلاحية
+                                                    @elseif($last['type'] === 'status') حالة
+                                                    @else نشاط @endif
+                                                </span>
+
+                                                @if ($this->isDelayed($order))
+                                                <span class="text-red-500 text-xs flex items-center gap-1">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                    متأخر
+                                                </span>
+                                                @endif
+                                            </div>
+                                            
+                                            {{-- رسالة النشاط --}}
+                                            <p class="text-sm text-gray-800 leading-relaxed font-medium mb-2" 
+                                            title="{{ $last['message'] }}"
+                                            x-data="{ expanded: false }">
+                                                <span x-show="!expanded">{{ Str::limit($last['message'], 50) }}</span>
+                                                <span x-show="expanded" x-text="'{{ addslashes($last['message']) }}'"></span>
+                                                {{-- @if(strlen($last['message']) > 50)
+                                                    <button @click="expanded = !expanded" 
+                                                            class="text-blue-600 hover:text-blue-800 text-xs mr-1 focus:outline-none">
+                                                        <span x-show="!expanded">المزيد</span>
+                                                        <span x-show="expanded">أقل</span>
+                                                    </button>
+                                                @endif --}}
+                                            </p>
+                                        </div>
+                                    </div>
+                                @else
+
+                                    @if ($this->isDelayed($order))
+                                        <span class="text-red-500 text-xs flex items-center gap-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            متأخر
+                                        </span>
+                                    @else
+
+                                    {{-- في حالة عدم وجود نشاط --}}
+                                    <div class="flex items-center justify-start h-16">
+                                        <div class="text-center">
+                                            <svg class="w-6 h-6 text-gray-300 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            <span class="text-xs text-gray-400 font-medium">لا يوجد نشاط</span>
+                                        </div>
+                                    </div>
+                                    @endif
+                                @endif
+                            </td>
+                            <!-- Order Source -->
+                            {{-- <td class="px-6 py-4 whitespace-nowrap">
                                 @php
                                     $user = auth()->user();
                                     $source = '';
@@ -201,7 +306,7 @@
                                 <span class="px-2 py-1 text-xs font-medium rounded-full {{ $sourceColor }} ">
                                     {{ $source }}
                                 </span>
-                            </td>
+                            </td> --}}
 
                             <!-- Status -->
                             <td class="px-6 py-4 whitespace-nowrap">
@@ -218,14 +323,6 @@
                                     <span class="px-2 py-1 text-xs font-medium rounded-full {{ $statusColors[$order->status] ?? 'bg-gray-100 text-gray-800' }}">
                                         {{ $statusLabels[$order->status] ?? $order->status }}
                                     </span>
-                                    @if ($this->isDelayed($order))
-                                    <span class="text-red-500 text-xs flex items-center gap-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                        متأخر
-                                    </span>
-                                    @endif
                                 </div>
                             </td>
 

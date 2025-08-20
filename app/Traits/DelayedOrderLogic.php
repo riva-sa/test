@@ -45,9 +45,6 @@ trait DelayedOrderLogic
             return $order->updated_at->lt(now()->subDays(3));
         }
 
-        // إذا كان آخر من عدّل ليس المسؤول ولا يملك صلاحية،
-        // فإننا نتجاهل تعديله ونحسب التأخير من آخر إجراء معتمد.
-        // إذا لم يكن هناك إجراء معتمد سابقاً، نستخدم تاريخ إنشاء الطلب.
         $lastValidActionDate = $order->last_action_at ?? $order->created_at;
 
         return Carbon::parse($lastValidActionDate)->lt(now()->subDays(3));

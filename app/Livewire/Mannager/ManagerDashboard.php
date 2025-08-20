@@ -35,6 +35,7 @@ class ManagerDashboard extends Component
         // جلب كل الطلبات ذات الصلة مرة واحدة لتحسين الأداء
         $relevantOrders = UnitOrder::with(['project', 'permissions'])
             ->whereHas('project', $filterByManager)
+            ->latest()
             ->get();
 
         // حساب الإحصائيات من البيانات التي تم جلبها
@@ -71,7 +72,6 @@ class ManagerDashboard extends Component
             ->take(10)
             ->get();
 
-        // *** التعديل الثاني: مركزية إعدادات الألوان للرسم البياني ***
         $statusConfig = [
             0 => ['label' => 'جديد', 'color' => 'blue', 'hex' => '#3b82f6'],
             1 => ['label' => 'طلب مفتوح', 'color' => 'yellow', 'hex' => '#f59e0b'],

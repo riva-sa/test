@@ -9,9 +9,14 @@ use App\Models\OrderPermission;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Project;
 use App\Models\Unit;
+use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
 use App\Traits\DelayedOrderLogic;
+use App\Notifications\UnitOrderUpdated;
+use Illuminate\Support\Facades\Log;
+use App\Services\NotificationService;
+
 class OrderDetails extends Component
 {
     use DelayedOrderLogic;
@@ -99,12 +104,10 @@ class OrderDetails extends Component
             'message' => $this->orderMessage
         ]);
 
-        $this->isEditingMessage = false;
-        $this->orderMessage = '';
-
         $this->updateOrderWithDelayControl($this->order, ['message' => $this->orderMessage]);
         $this->loadOrder();
-
+        $this->isEditingMessage = false;
+        $this->orderMessage = '';
         session()->flash('message', 'تم تحديث ملاحظة الطلب بنجاح');
     }
 
@@ -228,9 +231,20 @@ class OrderDetails extends Component
 
     public function updateStatus($status)
     {
+        $oldStatus = $this->order->status;
         $this->order->status = $status;
+
+        // إشعار المهتمين بتحديث الحالة
+        app(NotificationService::class)
+            ->notifyStatusUpdate($this->order, $oldStatus, $this->order->status, auth()->id());
+        
         $this->updateOrderWithDelayControl($this->order, ['status' => $status]);
         $this->loadOrder();
+
+        return response()->json([
+            'message' => 'تم تحديث حالة الطلب بنجاح',
+            'new_status' => $status
+        ]);
 
         session()->flash('messageStatus', 'تم التعديل بنجاح');
 
@@ -265,7 +279,7 @@ class OrderDetails extends Component
             'units' => $this->isEditingUnitInfo && isset($this->unitData['project_id'])
                 ? Unit::where('project_id', $this->unitData['project_id'])->get()
                 : collect(),
-            'previousOrder' => $previousOrder,
+            'previousOrder' => $previousOrder ,
             'nextOrder' => $nextOrder,
         ])->layout('layouts.custom');
     }

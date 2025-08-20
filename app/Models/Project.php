@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
-
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Traits\Trackable;
 class Project extends Model
 {
+    use HasFactory, Trackable;
     protected $fillable = [
         'name',
         'slug',
@@ -28,7 +30,15 @@ class Project extends Model
         'AdLicense',
         'location',
         'virtualTour',
-        'sales_manager_id'
+        'sales_manager_id',
+        'visits_count',
+        'views_count',
+        'shows_count',
+        'orders_count',
+        'last_visited_at',
+        'last_viewed_at',
+        'last_shown_at',
+        'last_ordered_at',
     ];
 
     protected $casts =
@@ -36,6 +46,10 @@ class Project extends Model
         'status' => 'boolean',
         'show_price' => 'boolean',
         'location' => 'array',
+        'last_visited_at' => 'datetime',
+        'last_viewed_at' => 'datetime',
+        'last_shown_at' => 'datetime',
+        'last_ordered_at' => 'datetime',
     ];
 
 
@@ -440,6 +454,60 @@ class Project extends Model
         }
 
         return $minKitchens . ' - ' . $maxKitchens;
+    }
+
+    // tracking methods
+    // Scope for popular projects
+    public function scopePopular($query, $days = 30)
+    {
+        return $query->selectRaw('*, (visits_count + views_count * 2 + shows_count * 3 + orders_count * 10) as popularity_score')
+            ->where('last_visited_at', '>', now()->subDays($days))
+            ->orderBy('popularity_score', 'desc');
+    }
+
+    // Scope for most visited projects
+    public function scopeMostVisited($query, $days = 30)
+    {
+        return $query->where('last_visited_at', '>', now()->subDays($days))
+            ->orderBy('visits_count', 'desc');
+    }
+
+    // Get total tracking stats including units
+    public function getTotalTrackingStats()
+    {
+        $projectStats = [
+            'visits' => $this->visits_count,
+            'views' => $this->views_count,
+            'shows' => $this->shows_count,
+            'orders' => $this->orders_count,
+        ];
+
+        $unitStats = $this->units->reduce(function ($carry, $unit) {
+            $carry['visits'] += $unit->visits_count;
+            $carry['views'] += $unit->views_count;
+            $carry['shows'] += $unit->shows_count;
+            $carry['orders'] += $unit->orders_count;
+            return $carry;
+        }, ['visits' => 0, 'views' => 0, 'shows' => 0, 'orders' => 0]);
+
+        return [
+            'project_stats' => $projectStats,
+            'units_stats' => $unitStats,
+            'total_stats' => [
+                'visits' => $projectStats['visits'] + $unitStats['visits'],
+                'views' => $projectStats['views'] + $unitStats['views'],
+                'shows' => $projectStats['shows'] + $unitStats['shows'],
+                'orders' => $projectStats['orders'] + $unitStats['orders'],
+            ]
+        ];
+    }
+
+    // Get project conversion rate
+    public function getConversionRate()
+    {
+        $totalStats = $this->getTotalTrackingStats()['total_stats'];
+        if ($totalStats['visits'] == 0) return 0;
+        return round(($totalStats['orders'] / $totalStats['visits']) * 100, 2);
     }
 
 }

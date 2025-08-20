@@ -13,11 +13,13 @@ use App\Models\OrderPermission;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use App\Services\TrackingService;
+use App\Notifications\UnitOrderUpdated;
 class UnitPopup extends Component
 {
     use LivewireAlert;
     public $firstName, $lastName, $email, $phone;
-            // $message;
+    // $message;
     public $selectedUnit;
     public $showSideSheet = false;
     public $currentStep = 1;
@@ -66,6 +68,12 @@ class UnitPopup extends Component
         'purchasePurpose.in' => 'الغرض من الشراء غير صحيح'
     ];
 
+    protected $trackingService;
+    public function boot(TrackingService $trackingService)
+    {
+        $this->trackingService = $trackingService;
+    }
+    
     // Add this method to load images
     protected function loadUnitImages()
     {
@@ -120,6 +128,14 @@ class UnitPopup extends Component
                 'status' => 0
             ]);
 
+            // Track unit order
+            $this->trackingService->trackUnitOrder($unit, [
+                'purchase_type' => $this->purchaseType,
+                'purchase_purpose' => $this->purchasePurpose,
+                'customer_name' => $this->firstName . ' ' . $this->lastName,
+                'order_id' => $unitOrder->id,
+            ]);
+
             $this->sendEmailNotifications($unitOrder, $project, $unit);
 
             $this->alert('success', 'تم تسجيل اهتمامك بنجاح', [
@@ -138,8 +154,8 @@ class UnitPopup extends Component
         }
     }
 
-        /**
-     * Send email notifications to relevant users
+    /**
+     * إرسال الإشعارات والبريد الإلكتروني للمستخدمين المعنيين
      */
     private function sendEmailNotifications($unitOrder, $project, $unit)
     {
@@ -154,16 +170,55 @@ class UnitPopup extends Component
                 'purchase_type' => $this->purchaseTypes[$unitOrder->PurchaseType] ?? $unitOrder->PurchaseType,
                 'purchase_purpose' => $this->purchasePurposes[$unitOrder->PurchasePurpose] ?? $unitOrder->PurchasePurpose,
             ];
-            // dd($emailData);
-            // 1. Send to Sales Manager (project's assigned sales manager with 'sales' role)
-            if ($project->sales_manager_id) {
-                $salesManager = User::find($project->sales_manager_id);
-                Mail::to($salesManager->email)->send(new MailUnitOrderNotification($emailData, 'sales'));
+
+            // 1. معالجة مدير المبيعات المسؤول عن المشروع
+            $salesManager = $project->sales_manager_id ? User::with('roles')->find($project->sales_manager_id) : null;
+            // 2. الحصول على جميع المدراء المعنيين (بدون تكرار)
+            $managers = User::whereHas('roles', function($query) {
+                $query->whereIn('name', ['sales_manager', 'follow_up']);
+            })->get();
+
+            // 3. إنشاء مجموعة مستخدمين فريدة لتجنب التكرار
+            $usersToNotify = collect();
+
+            if ($salesManager && ($salesManager->hasRole('sales') || $salesManager->hasRole('sales_manager'))) {
+                $usersToNotify->push($salesManager);
             }
 
+            $usersToNotify = $usersToNotify->merge($managers)->unique('id');
+            // 4. إرسال الإشعارات للمستخدمين المحددين
+            foreach ($usersToNotify as $user) {
+                $notificationData = [
+                    'customer_name' => $unitOrder->name,
+                    'unit_type' => $unit->type ?? 'غير محدد',
+                    'project_name' => $project->name
+                ];
+
+                // إرسال إشعار النظام
+                $user->notify(new UnitOrderUpdated($unitOrder, 'new_order', $notificationData));
+
+                Mail::to($user->email)->send(new MailUnitOrderNotification($emailData, 'sales_manager'));
+                
+            }
+
+            // 5. معالجة المستخدمين ذوي الصلاحيات المخصصة
+            OrderPermission::where('unit_order_id', $unitOrder->id)
+                ->with('user')
+                ->get()
+                ->each(function ($permission) use ($unitOrder, $emailData) {
+                    if ($permission->user && $permission->user->email) {
+                        $permission->user->notify(new UnitOrderUpdated($unitOrder, 'new_order', [
+                            'customer_name' => $unitOrder->name,
+                            'unit_type' => $emailData['unit']->type ?? 'غير محدد'
+                        ]));
+                        
+                        Mail::to($permission->user->email)
+                            ->send(new MailUnitOrderNotification($emailData, 'permission_user'));
+                    }
+                });
+
         } catch (\Exception $e) {
-            // Log email sending errors but don't fail the order creation
-            Log::error('Failed to send unit order notification emails: ' . $e->getMessage());
+            Log::error('فشل إرسال الإشعارات: ' . $e->getMessage());
         }
     }
 
@@ -182,6 +237,8 @@ class UnitPopup extends Component
         $this->showSideSheet = true;
         $this->currentStep = 1;
 
+        // Track unit view when popup is loaded
+        $this->trackingService->trackUnitView($this->selectedUnit);
         // Load unit images
         $this->loadUnitImages();
 

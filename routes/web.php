@@ -24,7 +24,8 @@ use App\Livewire\Mannager\OrderDetails;
 use App\Livewire\Mannager\OrderPermissions;
 use App\Livewire\Mannager\SalesManagers;
 use App\Models\Project;
-
+use App\Livewire\Mannager\TrackingAnalytics;
+use App\Http\Controllers\Manager\TrackingController;
 
 Route::get('/', HomePage::class)->name('frontend.home');
 // Route::get('/units/create', [CreateUnit::class, 'render'])->name('filament.resources.units.create');
@@ -42,7 +43,6 @@ Route::get('/blog/{slug}', BlogSingle::class)->name('frontend.blog.single');
 Route::get('/services', Services::class)->name('frontend.services');
 Route::get('/contact-us', ContactUs::class)->name('frontend.contactus');
 
-
 // Manager routes protected by the 'manager' role
 Route::middleware(['auth', 'role:sales_manager'])->group(function () {
     Route::get('/crm', ManagerDashboard::class)->name('manager.dashboard');
@@ -54,6 +54,26 @@ Route::middleware(['auth', 'role:sales_manager'])->group(function () {
     Route::get('/crm/{order}/permissions', OrderPermissions::class)->name('manager.permissions');
 
     Route::get('crm/create-order', CreateOrder::class)->name('manager.create-order');
+
+    Route::get('/crm/analytics', TrackingAnalytics::class)->name('manager.analytics');
+
+    Route::prefix('crm/tracking')->group(function () {
+    
+    // Public tracking endpoints (no authentication required)
+    Route::post('/track', [TrackingController::class, 'track']);
+    Route::post('/units/{unit}/track', [TrackingController::class, 'trackUnit']);
+    Route::post('/projects/{project}/track', [TrackingController::class, 'trackProject']);
+    
+    // Analytics endpoints (require authentication)
+    Route::middleware('auth')->group(function () {
+        Route::get('/analytics', [TrackingController::class, 'getAnalytics']);
+        Route::get('/analytics/units', [TrackingController::class, 'getUnitAnalytics']);
+        Route::get('/analytics/projects', [TrackingController::class, 'getProjectAnalytics']);
+        Route::get('/analytics/conversion-rates', [TrackingController::class, 'getConversionRates']);
+        Route::get('/popular/units', [TrackingController::class, 'getPopularUnits']);
+        Route::get('/popular/projects', [TrackingController::class, 'getPopularProjects']);
+    });
+});
 });
 
 // Route::middleware(['auth', 'permission:view_dashboard'])->group(function () {

@@ -193,7 +193,7 @@
                     </div>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
+                    <table class="min-w-full divide-y divide-gray-200 responsive-table">
                         <thead class="bg-gray-50">
                             <tr>
                                 <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -202,11 +202,9 @@
                                 <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     المشروع
                                 </th>
-                                @if (auth( )->user()->hasRole('sales'))
                                 <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    مصدر الطلب
+                                    اخر تحديث
                                 </th>
-                                @endif
                                 <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     الحالة
                                 </th>
@@ -215,6 +213,9 @@
                                     مندوب المبيعات
                                 </th>
                                 @endif
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <span class="">التاريخ</span>
+                                </th>
                                 <th scope="col" class="relative px-6 py-3">
                                     <span class="sr-only">تفاصيل</span>
                                 </th>
@@ -237,31 +238,135 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {{ $order->project->name ?? '-' }}
                                 </td>
-                                @if (auth()->user()->hasRole('sales'))
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{-- <div class="bg-white shadow rounded-2xl p-4 mt-6">
+                                        <h3 class="text-lg font-bold mb-4">📜 سجل الأنشطة</h3>
 
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    @php
-                                        $user = auth()->user();
-                                        $source = '';
-                                        $sourceColor = 'gray';
-                                        if ($order->user_id == $user->id) {
-                                            $source = 'تم إنشاؤه بواسطتي';
-                                            $sourceColor = 'indigo';
-                                        } elseif ($order->project && $order->project->sales_manager_id == $user->id) {
-                                            $source = 'طلب تحت الإدارة';
-                                            $sourceColor = 'green';
-                                        } elseif ($user->hasOrderPermission($order->id, 'manage')) {
-                                            $source = 'طلب تحت المتابعة';
-                                            $sourceColor = 'green';
-                                        }
-                                    @endphp
-                                    @if($source)
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-{{ $sourceColor }}-100 text-{{ $sourceColor }}-800">
-                                        {{ $source }}
-                                    </span>
-                                    @endif
-                                </td>
+                                        <div class="overflow-x-auto">
+                                            <table class="min-w-full border border-gray-200 divide-y divide-gray-200">
+                                                <thead class="bg-gray-50">
+                                                    <tr>
+                                                        <th class="px-4 py-2 text-right text-sm font-semibold text-gray-600">النوع</th>
+                                                        <th class="px-4 py-2 text-right text-sm font-semibold text-gray-600">التفاصيل</th>
+                                                        <th class="px-4 py-2 text-right text-sm font-semibold text-gray-600">التاريخ</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="divide-y divide-gray-100">
+                                                    @forelse($order->activities() as $activity)
+                                                        <tr class="hover:bg-gray-50">
+                                                            <td class="px-4 py-2 whitespace-nowrap">
+                                                                @if($activity['type'] === 'note')
+                                                                    <span class="text-blue-600">📝 ملاحظة</span>
+                                                                @elseif($activity['type'] === 'permission')
+                                                                    <span class="text-green-600">🔑 صلاحية</span>
+                                                                @elseif($activity['type'] === 'status')
+                                                                    <span class="text-purple-600">📌 حالة</span>
+                                                                @else
+                                                                    <span class="text-gray-600">ℹ️ آخر</span>
+                                                                @endif
+                                                            </td>
+                                                            <td class="px-4 py-2 text-gray-800 text-sm">
+                                                                {{ $activity['message'] }}
+                                                            </td>
+                                                            <td class="px-4 py-2 text-gray-500 text-sm whitespace-nowrap">
+                                                                {{ \Carbon\Carbon::parse($activity['created_at'])->diffForHumans() }}
+                                                            </td>
+                                                        </tr>
+                                                    @empty
+                                                        <tr>
+                                                            <td colspan="3" class="px-4 py-4 text-center text-gray-500">
+                                                                لا توجد أنشطة مسجلة بعد.
+                                                            </td>
+                                                        </tr>
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div> --}}
+                                    @if($last = $order->lastActivity())
+                                    <div class="flex items-start gap-3 max-w-sm">
+                                        {{-- أيقونة النشاط --}}
+                                        <div class="flex-shrink-0 relative">
+                                            <span class="w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium
+                                                @if($last['type'] === 'note') bg-blue-50 text-blue-600 border border-blue-200
+                                                @elseif($last['type'] === 'permission') bg-green-50 text-green-600 border border-green-200
+                                                @elseif($last['type'] === 'status') bg-amber-50 text-amber-600 border border-amber-200
+                                                @else bg-gray-50 text-gray-600 border border-gray-200 @endif
+                                            ">
+                                                @if($last['type'] === 'note') 
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                                    </svg>
+                                                @elseif($last['type'] === 'permission')
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a1 1 0 100 2 2 2 0 012 2 1 1 0 102 0 4 4 0 00-4-4z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                @elseif($last['type'] === 'status')
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                @else
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                @endif
+                                            </span>
+                                            
+                                            {{-- نقطة حالة صغيرة --}}
+                                            <span class="absolute -top-1 -right-1 w-3 h-3 rounded-full
+                                                @if($last['type'] === 'note') bg-blue-400
+                                                @elseif($last['type'] === 'permission') bg-green-400
+                                                @elseif($last['type'] === 'status') bg-amber-400
+                                                @else bg-gray-400 @endif
+                                            "></span>
+                                        </div>
+                                        
+                                        {{-- محتوى النشاط --}}
+                                        <div class="min-w-0 flex-1">
+                                            {{-- نوع النشاط --}}
+                                            <div class="flex items-center gap-2 mb-1">
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+                                                    @if($last['type'] === 'note') bg-blue-100 text-blue-700
+                                                    @elseif($last['type'] === 'permission') bg-green-100 text-green-700
+                                                    @elseif($last['type'] === 'status') bg-amber-100 text-amber-700
+                                                    @else bg-gray-100 text-gray-700 @endif
+                                                ">
+                                                    @if($last['type'] === 'note') ملاحظة
+                                                    @elseif($last['type'] === 'permission') صلاحية
+                                                    @elseif($last['type'] === 'status') حالة
+                                                    @else نشاط @endif
+                                                </span>
+                                            </div>
+                                            
+                                            {{-- رسالة النشاط --}}
+                                            <p class="text-sm text-gray-800 leading-relaxed font-medium mb-2" 
+                                            title="{{ $last['message'] }}"
+                                            x-data="{ expanded: false }">
+                                                <span x-show="!expanded">{{ Str::limit($last['message'], 50) }}</span>
+                                                <span x-show="expanded" x-text="'{{ addslashes($last['message']) }}'"></span>
+                                                {{-- @if(strlen($last['message']) > 50)
+                                                    <button @click="expanded = !expanded" 
+                                                            class="text-blue-600 hover:text-blue-800 text-xs mr-1 focus:outline-none">
+                                                        <span x-show="!expanded">المزيد</span>
+                                                        <span x-show="expanded">أقل</span>
+                                                    </button>
+                                                @endif --}}
+                                            </p>
+                                        </div>
+                                    </div>
+                                @else
+                                    {{-- في حالة عدم وجود نشاط --}}
+                                    <div class="flex items-center justify-start h-16">
+                                        <div class="text-center">
+                                            <svg class="w-6 h-6 text-gray-300 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            <span class="text-xs text-gray-400 font-medium">لا يوجد نشاط</span>
+                                        </div>
+                                    </div>
                                 @endif
+                                </td>
+                         
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-{{ $statusConfig[$order->status]['color'] ?? 'gray' }}-100 text-{{ $statusConfig[$order->status]['color'] ?? 'gray' }}-800">
                                         {{ $statusConfig[$order->status]['label'] ?? 'غير معروف' }}
@@ -272,6 +377,10 @@
                                     {{ $order->project->salesManager->name ?? '-' }}
                                 </td>
                                 @endif
+
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ $order->created_at->format('Y-m-d H:i') }}
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <a href="{{ route('manager.order-details', $order->id) }}" class="text-primary-600 hover:text-primary-900 flex items-center">
                                         التفاصيل

@@ -8,6 +8,7 @@ use App\Models\UnitOrder;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use App\Notifications\UnitOrderUpdated;
 
 class OrderPermissions extends Component
 {
@@ -49,6 +50,8 @@ class OrderPermissions extends Component
             'expires_at' => ['nullable', 'date', 'after:now'],
         ]);
 
+        $order = UnitOrder::findOrFail($this->order->id);
+        $user = User::findOrFail($this->user_id);
 
         OrderPermission::updateOrCreate(
             [
@@ -61,6 +64,23 @@ class OrderPermissions extends Component
                 'expires_at' => $this->expires_at,
             ]
         );
+
+        $user->notify(new UnitOrderUpdated($order, 'permission_granted', [
+            'user_name' => $user->name,
+            'granted_by' => auth()->user()->name
+        ]));
+
+        // إشعار المدراء أيضاً
+        $managers = User::whereHas('roles', function($query) {
+            $query->whereIn('name', ['sales_manager', 'super_admin']);
+        })->where('id', '!=', auth()->id())->get();
+
+        foreach ($managers as $manager) {
+            $manager->notify(new UnitOrderUpdated($order, 'permission_granted', [
+                'user_name' => $user->name,
+                'granted_by' => auth()->user()->name
+            ]));
+        }
 
         $this->reset(['user_id', 'permission_type', 'expires_at']);
 

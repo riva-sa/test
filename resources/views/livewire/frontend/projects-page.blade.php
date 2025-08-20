@@ -178,7 +178,7 @@
                         <div class="row">
 
                             @forelse($items as $project)
-                                <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 mb-3" wire:key="{{ $project->id }}">
+                                <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 mb-3" wire:key="{{ $project->id }}" data-tracking='{"type":"project","id":{{ $project->id }}}' data-project-id="{{ $project->id }}">
                                     <article class="post">
 
                                         <figure class="rounded-top position-relative">
@@ -268,7 +268,7 @@
                                     <article class="post">
 
                                         <figure class="rounded-top position-relative">
-                                            <a wire:click="showUnitDetails({{ $unit->id }})">
+                                            <a wire:click="showUnitDetails({{ $unit->id }})" data-unit-id="{{ $unit->id }}">
                                                 @if ($unit->floor_plan)
                                                     <img src="{{ App\Helpers\MediaHelper::getUrl($unit->floor_plan ) }}" style="max-height: 200px" alt="{{ $unit->title }}" />
                                                 @else
@@ -287,7 +287,7 @@
                                         <div class="post-header project-data-card rounded-bottom bg-white">
                                             <div class="d-flex align-content-start justify-content-between w-100">
                                                 <h2 class="post-title h6 mt-0 mb-0">
-                                                    <a wire:click="showUnitDetails({{ $unit->id }})">
+                                                    <a wire:click="showUnitDetails({{ $unit->id }})" data-unit-id="{{ $unit->id }}">
                                                         {{ $unit->title }}
                                                         <span class="badge rounded-pill  @if($unit->case == 1) bg-pale-yellow text-yellow @elseif($unit->case == 2) bg-pale-red text-red @else bg-pale-leaf text-leaf @endif">
                                                             @if($unit->case == 1) محجوزة @elseif($unit->case == 2) مباعة @else متاحة @endif

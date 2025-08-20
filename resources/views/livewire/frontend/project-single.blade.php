@@ -101,6 +101,7 @@
 
                         <button
                             wire:click="showOrderPopup({{ $project->id }})"
+                            data-project-order="{{ $project->id }}"
                             wire:loading.attr="disabled"
                             wire:target="showOrderPopup"
                             class="btn btn-primary btn-sm btn-icon-end rounded w-50 @if($pdfUrl) w-50 @else w-100 @endif">
@@ -228,6 +229,7 @@
 
                             <button
                                 wire:click="showOrderPopup({{ $project->id }})"
+                                data-project-order="{{ $project->id }}"
                                 wire:loading.attr="disabled"
                                 wire:target="showOrderPopup"
                                 class="btn btn-primary btn-sm btn-icon-end rounded w-50 @if($pdfUrl) w-50 @else w-100 @endif">
@@ -303,7 +305,7 @@
                                         <div class="col-md-6 col-lg-4 mb-2" wire:key="{{$unit->id}}" style="cursor: pointer">
 
                                             <article class="post rounded border">
-                                                <figure class="rounded-top position-relative" wire:click="showUnitDetails({{ $unit->id }})">
+                                                <figure class="rounded-top position-relative" data-unit-id="{{ $unit->id }}" wire:click="showUnitDetails({{ $unit->id }})">
                                                     @if ($unit->floor_plan)
                                                         <img src="{{ App\Helpers\MediaHelper::getUrl($unit->floor_plan ) }}"
                                                         style="max-height: 207px;"
@@ -329,7 +331,7 @@
 
                                                 <div class="post-header project-data-card rounded-bottom bg-white">
                                                     <div class="d-flex align-content-start justify-content-between w-100">
-                                                        <h2 class="post-title h6 mt-0 mb-0" wire:click="showUnitDetails({{ $unit->id }})">
+                                                        <h2 class="post-title h6 mt-0 mb-0" data-unit-id="{{ $unit->id }}" wire:click="showUnitDetails({{ $unit->id }})">
                                                             {{ $unit->title }} <span class="badge bg-pale-ash text-dark rounded-pill">عرض بيانات الوحدة</span>
                                                             <div class="spinner-border spinner-border-sm me-1" wire:loading wire:target="showUnitDetails({{ $unit->id }})" role="status"></div>
                                                         </h2>
@@ -339,26 +341,26 @@
                                                     </div>
                                                     @if ($unit->show_price)
                                                         @if (number_format($unit->unit_price) != '0')
-                                                        <ul class="post-meta mb-1" wire:click="showUnitDetails({{ $unit->id }})">
+                                                        <ul class="post-meta mb-1" data-unit-id="{{ $unit->id }}" wire:click="showUnitDetails({{ $unit->id }})">
                                                             <li class="post-date">
                                                                 <span class="fs-15 text-success">{{ number_format($unit->unit_price) }} <img src="{{ asset('frontend/img/SaudiRiyal.svg') }}" width="14px" alt=""></span>
                                                             </li>
                                                         </ul>
                                                         @else
-                                                        <ul class="post-meta mb-1" wire:click="showUnitDetails({{ $unit->id }})">
+                                                        <ul class="post-meta mb-1" data-unit-id="{{ $unit->id }}" wire:click="showUnitDetails({{ $unit->id }})">
                                                             <li class="post-date">
                                                                 <span class="fs-15 text-success">تواصل معنا</span>
                                                             </li>
                                                         </ul>
                                                         @endif
                                                     @else
-                                                        <ul class="post-meta mb-1" wire:click="showUnitDetails({{ $unit->id }})">
+                                                        <ul class="post-meta mb-1" data-unit-id="{{ $unit->id }}" wire:click="showUnitDetails({{ $unit->id }})">
                                                             <li class="post-date">
                                                                 <span class="fs-15 text-success">تواصل معنا</span>
                                                             </li>
                                                         </ul>
                                                     @endif
-                                                    <ul class="post-meta mb-0" wire:click="showUnitDetails({{ $unit->id }})">
+                                                    <ul class="post-meta mb-0" data-unit-id="{{ $unit->id }}" wire:click="showUnitDetails({{ $unit->id }})">
                                                         <li class="post-comments">
                                                             <img src="{{ asset('frontend/img/icons/move.png') }}" class="dark-image" style="width: 20px;" alt="Riva - ريفا">
                                                             <span class="me-1 fs-15 text-gray-800">{{ $unit->unit_area . ' م²' }}</span>
