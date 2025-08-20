@@ -35,6 +35,9 @@ class TrackingAnalytics extends Component
     private function updateDateRange()
     {
         switch ($this->dateRange) {
+            case '1':
+                $this->startDate = Carbon::now()->subDay();
+                break;
             case '7':
                 $this->startDate = Carbon::now()->subDays(7);
                 break;

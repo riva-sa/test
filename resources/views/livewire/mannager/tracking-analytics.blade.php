@@ -9,7 +9,8 @@
             <!-- Date Range Filter -->
             <div class="border border-gray-200 rounded-lg px-4 py-2">
                 <label class="text-sm font-medium text-gray-700 mb-2 block">الفترة الزمنية</label>
-                <select wire:model="dateRange" class="border-0 bg-transparent focus:outline-none text-sm">
+                <select wire:model.live="dateRange" class="border-0 bg-transparent focus:outline-none text-sm">
+                    <option value="1">آخر يوم</option>
                     <option value="7">آخر 7 أيام</option>
                     <option value="30">آخر 30 يوم</option>
                     <option value="90">آخر 90 يوم</option>
@@ -53,7 +54,7 @@
         <div class="border border-gray-200 rounded-lg p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-gray-600">العروض المعروضة</p>
+                    <p class="text-sm font-medium text-gray-600">(الوحدة) العروض المعروضة</p>
                     <p class="text-3xl font-bold text-black">{{ number_format($this->analytics['overview']['total_shows']) }}</p>
                 </div>
                 <div class="bg-gray-100 p-3 rounded-lg">
@@ -244,27 +245,6 @@
                         @endforelse
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Activity Summary -->
-    <div class="border border-gray-200 rounded-lg p-6">
-        <h3 class="text-xl font-bold text-black mb-6">ملخص النشاط</h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="text-center p-4 bg-black text-white rounded-lg">
-                <p class="text-sm opacity-80">جلسات فريدة</p>
-                <p class="text-2xl font-bold">{{ number_format($this->analytics['overview']['unique_sessions']) }}</p>
-            </div>
-            
-            <div class="text-center p-4 bg-gray-800 text-white rounded-lg">
-                <p class="text-sm opacity-80">أحداث الوحدات</p>
-                <p class="text-2xl font-bold">{{ number_format($this->analytics['by_type']['units']) }}</p>
-            </div>
-            
-            <div class="text-center p-4 bg-gray-600 text-white rounded-lg">
-                <p class="text-sm opacity-80">أحداث المشاريع</p>
-                <p class="text-2xl font-bold">{{ number_format($this->analytics['by_type']['projects']) }}</p>
             </div>
         </div>
     </div>
