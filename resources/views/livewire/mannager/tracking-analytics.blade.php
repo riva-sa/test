@@ -90,15 +90,15 @@
         <div class="bg-white border border-gray-200 rounded-lg p-4 flex items-center">
             <div class="bg-green-100 p-3 rounded-lg me-4"><svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>
             <div>
-                <p class="text-sm font-medium text-gray-500">إجمالي التفاعلات</p>
+                <p class="text-sm font-medium text-gray-500">إجمالي التفاعلات (Leads)</p>
                 <p class="text-2xl font-bold text-gray-800">{{ number_format($this->analytics['overview']['total_whatsapp'] + $this->analytics['overview']['total_calls'] + $this->analytics['overview']['total_orders']) }}</p>
             </div>
         </div>
-        <!-- معدل التفاعل الإجمالي -->
+        <!-- معدل التحويل الإجمالي -->
         <div class="bg-white border border-gray-200 rounded-lg p-4 flex items-center">
             <div class="bg-purple-100 p-3 rounded-lg me-4"><svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg></div>
             <div>
-                <p class="text-sm font-medium text-gray-500">معدل التفاعل</p>
+                <p class="text-sm font-medium text-gray-500">معدل التحويل</p>
                 <p class="text-2xl font-bold text-gray-800">{{ $this->conversionRates['engagement_rate'] }}<span class="text-lg">%</span></p>
             </div>
         </div>
@@ -138,7 +138,7 @@
 
     <!-- 4. مسار التحويل (Conversion Funnel) -->
     <div class="bg-white border border-gray-200 rounded-lg p-6 mb-8">
-        <h3 class="text-xl font-bold text-gray-800 mb-6">مسار التحويل والتفاعل</h3>
+        <h3 class="text-xl font-bold text-gray-800 mb-6">مسار التحويل الرئيسي</h3>
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             <!-- الخطوات الأساسية -->
             <div class="text-center p-3 bg-gray-50 rounded-lg">
@@ -146,7 +146,7 @@
                 <p class="text-2xl font-bold text-gray-800">{{ number_format($this->analytics['overview']['total_visits']) }}</p>
             </div>
             <div class="text-center p-3 bg-gray-50 rounded-lg">
-                <p class="text-sm text-gray-500">العروض</p>
+                <p class="text-sm text-gray-500">عرض التفاصيل</p>
                 <p class="text-2xl font-bold text-gray-800">{{ number_format($this->analytics['overview']['total_shows']) }}</p>
                 <p class="text-xs text-blue-600 font-semibold">{{ $this->conversionRates['visit_to_view'] }}% من الزيارات</p>
             </div>
@@ -157,19 +157,19 @@
             </div>
             <!-- قنوات التفاعل -->
             <div class="text-center p-3 bg-green-50 rounded-lg border border-green-200">
-                <p class="text-sm text-green-700">واتساب</p>
+                <p class="text-sm text-green-700">تواصل واتساب</p>
                 <p class="text-2xl font-bold text-green-800">{{ number_format($this->analytics['overview']['total_whatsapp']) }}</p>
                 <p class="text-xs text-green-600 font-semibold">{{ $this->conversionRates['visit_to_whatsapp'] }}% من الزيارات</p>
             </div>
             <div class="text-center p-3 bg-blue-50 rounded-lg border border-blue-200">
-                <p class="text-sm text-blue-700">المكالمات</p>
+                <p class="text-sm text-blue-700">اتصال هاتفي</p>
                 <p class="text-2xl font-bold text-blue-800">{{ number_format($this->analytics['overview']['total_calls']) }}</p>
                 <p class="text-xs text-blue-600 font-semibold">{{ $this->conversionRates['visit_to_call'] }}% من الزيارات</p>
             </div>
             <div class="text-center p-3 bg-gray-800 text-white rounded-lg">
-                <p class="text-sm opacity-80">معدل التفاعل الكلي</p>
+                <p class="text-sm opacity-80">طلب اهتمام</p>
                 <p class="text-2xl font-bold">{{ $this->conversionRates['visit_to_order'] }}%</p>
-                <p class="text-xs opacity-60">من زيارة لطلب</p>
+                <p class="text-xs opacity-60">من زيارة إلى تفاعل</p>
             </div>
         </div>
     </div>

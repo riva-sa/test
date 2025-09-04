@@ -48,11 +48,11 @@
                 </div>
                 <div class="text-center">
                     <div class="text-2xl font-bold text-yellow-600">{{ number_format($campaignAnalytics['overview']['shows'] ?? 0) }}</div>
-                    <div class="text-sm text-gray-500">عروض</div>
+                    <div class="text-sm text-gray-500">عرض تفاصيل</div>
                 </div>
                 <div class="text-center">
                     <div class="text-2xl font-bold text-purple-600">{{ number_format($campaignAnalytics['overview']['orders'] ?? 0) }}</div>
-                    <div class="text-sm text-gray-500">طلبات</div>
+                    <div class="text-sm text-gray-500">طلب اهتمام</div>
                 </div>
                 <div class="text-center">
                     <div class="text-2xl font-bold text-green-600">{{ number_format($campaignAnalytics['overview']['whatsapp'] ?? 0) }}</div>

@@ -65,6 +65,12 @@ trait Trackable
                 $this->increment('orders_count');
                 $this->update(['last_ordered_at' => $now]);
                 break;
+            case 'whatsapp':
+                $this->increment('whatsapp_count');
+                break;
+            case 'call':
+                $this->increment('calls_count');
+                break;
         }
     }
 

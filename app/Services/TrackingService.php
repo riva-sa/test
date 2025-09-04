@@ -401,10 +401,10 @@ class TrackingService
             }
         }
 
-        $units = $unitsQuery->orderByDesc('units.orders_count')
-            ->orderByDesc('units.whatsapp_count')
-            ->orderByDesc('units.calls_count')
-            ->orderByDesc('units.shows_count')
+        $units = $unitsQuery->orderByDesc('orders_count')
+            ->orderByDesc('whatsapp_count')
+            ->orderByDesc('calls_count')
+            ->orderByDesc('shows_count')
             ->limit($limit)
             ->get();
 
