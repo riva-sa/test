@@ -26,6 +26,8 @@ use App\Livewire\Mannager\SalesManagers;
 use App\Models\Project;
 use App\Livewire\Mannager\TrackingAnalytics;
 use App\Http\Controllers\Manager\TrackingController;
+use App\Livewire\Mannager\Campaigns;
+use App\Livewire\Mannager\SessionJourneys;
 
 Route::get('/', HomePage::class)->name('frontend.home');
 // Route::get('/units/create', [CreateUnit::class, 'render'])->name('filament.resources.units.create');
@@ -56,7 +58,8 @@ Route::middleware(['auth', 'role:sales_manager'])->group(function () {
     Route::get('crm/create-order', CreateOrder::class)->name('manager.create-order');
 
     Route::get('/crm/analytics', TrackingAnalytics::class)->name('manager.analytics');
-
+    Route::get('/crm/analytics/campaigns', Campaigns::class)->name('manager.analytics.campaigns');
+    Route::get('/crm/journeys', SessionJourneys::class)->name('manager.journeys');
     Route::prefix('crm/tracking')->group(function () {
     
     // Public tracking endpoints (no authentication required)

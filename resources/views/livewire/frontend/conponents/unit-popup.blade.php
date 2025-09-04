@@ -122,7 +122,9 @@
                                     <div class="mb-4">
                                         <a wire:click="goToFormStep" class="btn btn-primary btn-icon btn-sm btn-icon-start rounded w-100 mb-2">تسجيل اهتمام بالوحدة <i class="uil uil-fire"></i></a>
                                         <div class=" d-flex gap-2">
-                                            <a target="_blanck" href="https://wa.me/{{ isset($selectedUnit->project) && $selectedUnit->project->sales_manager_id ?
+                                            <a target="_blanck" 
+                                            wire:click="trackWhatsappClick({{ $selectedUnit->id }})"
+                                            href="https://wa.me/{{ isset($selectedUnit->project) && $selectedUnit->project->sales_manager_id ?
                                                 App\Models\User::where('id',$selectedUnit->project->sales_manager_id)->first()->phone ?? setting('site_phone') :
                                             setting('site_phone')
                                             }}?text=انا مهتم بهذا المشروع {{ isset($selectedUnit->project) ? $selectedUnit->project->name : '' }} {{ isset($selectedUnit->project) ? route('frontend.projects.single', $selectedUnit->project->slug) : '' }}"
@@ -130,7 +132,8 @@
                                                 تواصل واتس اب
                                                 <i class="uil uil-whatsapp"></i>
                                             </a>
-                                            <a href="tel:{{ isset($selectedUnit->project) && $selectedUnit->project->sales_manager_id ?
+                                            <a wire:click="trackCallClick({{ $selectedUnit->id }})"
+                                                href="tel:{{ isset($selectedUnit->project) && $selectedUnit->project->sales_manager_id ?
                                                 App\Models\User::where('id',$selectedUnit->project->sales_manager_id)->first()->phone : setting('site_phone') }}"
                                                 class="btn btn-soft-primary btn-icon btn-sm btn-icon-start rounded w-100 text-dark">
                                                 اتصال

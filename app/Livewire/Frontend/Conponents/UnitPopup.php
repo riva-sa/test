@@ -231,6 +231,18 @@ class UnitPopup extends Component
         $this->loadUnit($data['unitId']);
     }
 
+    public function trackWhatsappClick($unitId)
+    {
+        $unit = Unit::findOrFail($unitId);
+        $this->trackingService->trackWhatsAppClick($unit);
+    }
+
+    public function trackCallClick($unitId)
+    {
+        $unit = Unit::findOrFail($unitId);
+        $this->trackingService->trackPhoneCall($unit);
+    }
+
     public function loadUnit($unitId)
     {
         $this->selectedUnit = Unit::with(['features', 'project.projectMedia'])->findOrFail($unitId);

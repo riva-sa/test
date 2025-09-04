@@ -4,12 +4,11 @@
             @if($previousOrder || $nextOrder)
                 <div class="flex justify-between items-center mb-4" dir="ltr">
 
-
                     @if($previousOrder)
                         <a href="{{ route('manager.order-details', $previousOrder->id) }}"
                         class="inline-flex items-center px-3 py-2 bg-gray-100 text-gray-700 text-sm rounded-md hover:bg-gray-200">
                             
-                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                             </svg>
                             التالي
@@ -26,7 +25,6 @@
                             </svg>
                         </a>
                     @endif
-
 
                 </div>
             @endif
@@ -256,49 +254,6 @@
                             </div>
 
                         </div>
-{{-- 
-                        <div class="mt-4 flex justify-between">
-
-                            <div >
-                                <div class="flex flex-wrap gap-3">
-                                    
-                                    <div class="me-3">
-                                        <span class="text-xs text-gray-500">آخر تحديث بواسطة</span>
-                                        <p>{{ $order->updated_at->format('Y-m-d H:i') }}</p>
-                                    </div>
-                                    @if ($order->lastActionByUser)
-                                        <div class="flex items-center">
-                                            <div class="relative">
-                                                <span class="inline-block h-8 w-8 rounded-full bg-gray-100 text-gray-800 flex items-center justify-center font-medium">
-                                                    {{ substr($order->lastActionByUser->name, 0, 1) }}
-                                                </span>
-                                                @if($order->lastActionByUser->hasRole('sales_manager'))
-                                                <span class="absolute -bottom-1 -right-1 bg-blue-500 rounded-full p-1 border-2 border-white"></span>
-                                                @elseif($order->lastActionByUser->hasRole('sales'))
-                                                <span class="absolute -bottom-1 -right-1 bg-green-500 rounded-full p-1 border-2 border-white"></span>
-                                                @elseif($order->lastActionByUser->hasRole('follow_up'))
-                                                <span class="absolute -bottom-1 -right-1 bg-yellow-500 rounded-full p-1 border-2 border-white"></span>
-                                                @endif
-                                            </div>
-                                            <div class="mr-2">
-                                                <p class="text-sm font-medium text-gray-900">{{ $order->lastActionByUser->name }}</p>
-                                                <span class="text-xs text-gray-500">
-                                                    @if($order->lastActionByUser->hasRole('sales_manager')) مدير مبيعات
-                                                    @elseif($order->lastActionByUser->hasRole('sales')) مندوب مبيعات
-                                                    @elseif($order->lastActionByUser->hasRole('follow_up')) متابعة
-                                                    @endif
-                                                    له صلاحية الوصول
-                                                </span>
-                                            </div>
-                                        </div>
-                                    @else
-                                        <span class="text-gray-500">غير معروف</span>
-                                    @endif
-                                    
-                                </div>
-                                
-                            </div>
-                        </div> --}}
                     </div>
                     
                 @endif

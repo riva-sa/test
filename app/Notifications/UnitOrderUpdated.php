@@ -54,14 +54,21 @@ class UnitOrderUpdated extends Notification implements ShouldQueue
      */
     protected function generateMessage()
     {
+        $orderId = $this->order->id;
+        $userName = auth()->user()?->name ?? 'النظام';
+
         return match ($this->type) {
             'new_order' => "تم إنشاء طلب جديد (#{$this->order->id}) للعميل {$this->order->name}",
-            'status_update' => "تم تغيير حالة الطلب (#{$this->order->id}) إلى {$this->statusLabel()}",
-            'message_update' => "تم تعديل رسالة/ملاحظة الطلب (#{$this->order->id})",
-            'permission_granted' => "تم منح صلاحية لمستخدم {$this->data['user_name']} على الطلب (#{$this->order->id})",
-            'permission_revoked' => "تم إلغاء صلاحية المستخدم {$this->data['user_name']} من الطلب (#{$this->order->id})",
-            default => "تم تحديث الطلب (#{$this->order->id})",
+            'status_update' => "قام {$userName} بتغيير حالة الطلب (#{$orderId}) إلى {$this->statusLabel()}",
+            'new_note' => "أضاف {$userName} ملاحظة جديدة على الطلب (#{$orderId})",
+            'client_update' => "قام {$userName} بتحديث بيانات العميل في الطلب (#{$orderId})",
+            'unit_info_update' => "قام {$userName} بتحديث معلومات الوحدة في الطلب (#{$orderId})",
+            'message_update' => "قام {$userName} بتعديل الملاحظة الرئيسية للطلب (#{$orderId})",
+            'permission_granted' => "تم منح صلاحية للمستخدم {$this->data['user_name']} على الطلب (#{$orderId})",
+            'permission_revoked' => "تم إلغاء صلاحية المستخدم {$this->data['user_name']} من الطلب (#{$orderId})",
+            default => "تم تحديث الطلب (#{$orderId}) بواسطة {$userName}",
         };
+        
     }
 
     /**

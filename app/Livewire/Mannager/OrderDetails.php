@@ -106,6 +106,9 @@ class OrderDetails extends Component
 
         $this->updateOrderWithDelayControl($this->order, ['message' => $this->orderMessage]);
         $this->loadOrder();
+
+        app(NotificationService::class)->notifyMessageUpdate($this->order);
+
         $this->isEditingMessage = false;
         $this->orderMessage = '';
         session()->flash('message', 'تم تحديث ملاحظة الطلب بنجاح');
@@ -155,7 +158,7 @@ class OrderDetails extends Component
 
     public function saveClientData()
     {
-        $this->validate([
+        $validatedData = $this->validate([
             'clientData.name' => 'required|string|max:255',
             'clientData.email' => 'required|email|max:255',
             'clientData.phone' => 'required|string|max:20',
@@ -163,6 +166,9 @@ class OrderDetails extends Component
 
         $this->order->update($this->clientData);
         $this->updateOrderWithDelayControl($this->order, $this->clientData);
+        // ** إرسال الإشعار **
+        app(NotificationService::class)->notifyClientUpdate($this->order, $validatedData['clientData']);
+
         $this->isEditingClient = false;
         session()->flash('message', 'تم تحديث بيانات العميل بنجاح');
     }
@@ -181,7 +187,7 @@ class OrderDetails extends Component
 
     public function saveUnitInfo()
     {
-        $this->validate([
+        $validatedData = $this->validate([
             'unitData.project_id' => 'required|exists:projects,id',
             'unitData.unit_id' => 'required|exists:units,id',
             'unitData.purchase_type' => 'required|in:cash,installment',
@@ -200,6 +206,8 @@ class OrderDetails extends Component
         // استخدام الدالة الجديدة من الـ Trait
         $this->updateOrderWithDelayControl($this->order, $updateData);
         $this->isEditingUnitInfo = false;
+        // ** إرسال الإشعار **
+        app(NotificationService::class)->notifyUnitInfoUpdate($this->order, $updateData);
         session()->flash('message', 'تم تحديث معلومات الوحدة بنجاح');
         $this->loadOrder();
     }
@@ -221,9 +229,13 @@ class OrderDetails extends Component
             'note' => $this->note,
             'user_id' => Auth::id(),
         ]);
+        
         // 👇 Update the order's updated_at timestamp
         $this->updateOrderWithDelayControl($this->order);
         $this->note = '';
+
+        // ** إرسال الإشعار **
+        app(NotificationService::class)->notifyNewNote($this->order, $this->note);
 
         session()->flash('message', 'تمت إضافة الملاحظة بنجاح');
         $this->loadOrder();

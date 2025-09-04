@@ -319,7 +319,7 @@ class TrackingController extends Controller
             'days' => 'nullable|integer|min:1|max:365'
         ]);
 
-        $limit = $validated['limit'] ?? 10;
+        $limit = $validated['limit'] ?? 5;
         $days = $validated['days'] ?? 30;
 
         $popularUnits = $this->trackingService->getPopularUnits($limit, $days);

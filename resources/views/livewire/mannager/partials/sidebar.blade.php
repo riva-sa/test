@@ -56,52 +56,49 @@
                     <div class="max-h-96 overflow-y-auto">
                         @forelse($notifications as $notification)
                             @php
+                                // استخلاص البيانات لسهولة القراءة
                                 $data = $notification->data;
                                 $type = $data['type'] ?? 'default';
                                 $isUnread = is_null($notification->read_at);
                             @endphp
                             
-                            <div wire:click="handleNotificationClick('{{ $notification->id }}')"
-                                 class="p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors duration-150 {{ $isUnread ? 'bg-blue-10' : '' }}">
+                            <div wire:click.prevent="handleNotificationClick('{{ $notification->id }}')"
+                                class="p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors duration-150 {{ $isUnread ? 'bg-blue-50' : '' }}">
+                                
                                 <div class="flex items-start space-x-3 space-x-reverse">
-                                    <!-- Notification Icon -->
+                                    <!-- 1. أيقونة الإشعار (الجزء المطور) -->
                                     <div class="flex-shrink-0">
-                                        <div class="w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium {{ $this->getNotificationColor($type) }} ">
+                                        <div class="w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium {{ $this->getNotificationColor($type) }}">
                                             @switch($type)
                                                 @case('new_order')
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                                    </svg>
+                                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+                                                    @break
+                                                @case('new_note')
+                                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" /></svg>
                                                     @break
                                                 @case('status_update')
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                                    </svg>
+                                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
                                                     @break
+                                                @case('client_update')
+                                                @case('unit_info_update')
                                                 @case('message_update')
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                                                    </svg>
+                                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                                                     @break
                                                 @case('permission_granted')
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                                    </svg>
+                                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
                                                     @break
                                                 @case('permission_revoked')
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728" />
-                                                    </svg>
+                                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728" /></svg>
                                                     @break
                                                 @default
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                    </svg>
+                                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                             @endswitch
                                         </div>
                                     </div>
                                     
+                                    <!-- 2. محتوى الإشعار (مدمج من التصميمين) -->
                                     <div class="flex-1 min-w-0">
+                                        <!-- السطر الأول: عنوان الطلب وعلامة "جديد" -->
                                         <div class="flex items-center justify-between">
                                             <p class="text-sm font-semibold text-gray-900">
                                                 طلب #{{ $data['order_id'] }}
@@ -111,22 +108,33 @@
                                             @endif
                                         </div>
                                         
+                                        <!-- الرسالة الرئيسية -->
                                         <p class="text-sm text-gray-700 mt-1 leading-relaxed">
-                                            {{ $data['message'] }}
+                                            {!! $data['message'] !!}
                                         </p>
                                         
+                                        <!-- [جديد] - عرض تفاصيل إضافية بناءً على نوع الإشعار -->
+                                        @if($type === 'status_update' && isset($data['data']['project_name']))
+                                            <div class="mt-2 p-2 bg-gray-100 rounded-md text-xs">
+                                                <span class="font-semibold">المشروع:</span>
+                                                <span class="text-gray-700">{{ $data['data']['project_name'] }}</span>
+                                            </div>
+                                        @endif
+                                        
+                                        <!-- [مُعاد] - معلومات "بواسطة" -->
                                         @if(isset($data['updated_by']))
                                             <p class="text-xs text-gray-500 mt-1">
                                                 بواسطة: {{ $data['updated_by'] }}
                                             </p>
                                         @endif
                                         
+                                        <!-- السطر الأخير: الوقت ونوع الإشعار -->
                                         <div class="flex items-center justify-between mt-2">
                                             <p class="text-xs text-gray-400">
                                                 {{ $notification->created_at->diffForHumans() }}
                                             </p>
                                             
-                                            <!-- نوع الإشعار -->
+                                            <!-- [مُعاد] - نوع الإشعار -->
                                             @switch($type)
                                                 @case('new_order')
                                                     <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">طلب جديد</span>
@@ -134,8 +142,13 @@
                                                 @case('status_update')
                                                     <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">تحديث حالة</span>
                                                     @break
+                                                @case('new_note')
                                                 @case('message_update')
                                                     <span class="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">تحديث رسالة</span>
+                                                    @break
+                                                @case('client_update')
+                                                @case('unit_info_update')
+                                                    <span class="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded-full">تحديث بيانات</span>
                                                     @break
                                                 @case('permission_granted')
                                                     <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">صلاحية ممنوحة</span>
@@ -158,6 +171,7 @@
                             </div>
                         @endforelse
                     </div>
+
 
                     @if($notifications->count() >= 10)
                         <div class="p-4 border-t border-gray-200 text-center bg-gray-50 rounded-b-lg">
@@ -212,6 +226,14 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                     </svg>
                     الاحصائيات
+                </a>
+
+                <!-- Analytics link with custom SVG icon -->
+                <a href="{{ route('manager.analytics.campaigns') }}" class="group flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-50 transition-all duration-200 text-gray-700 hover:text-primary-500 sidebar-item {{ request()->routeIs('manager.analytics') ? 'bg-gray-50 text-primary-500 ' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-3 text-gray-500 group-hover:text-primary-500 {{ request()->routeIs('manager.analytics') ? 'text-primary-500' : '' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    الحملات
                 </a>
                 @endif
 
