@@ -52,6 +52,6 @@
             </div>
         </div>
     </section> --}}
-    {{-- @livewire('frontend.conponents.client-logos') --}}
+    @livewire('frontend.conponents.client-logos')
 
 </div>
