@@ -23,6 +23,7 @@
         "firefly/filament-blog": "^2.0",
         "jantinnerezo/livewire-alert": "^3.0",
         "laravel/framework": "^11.9",
+        "laravel/nightwatch": "^1.15",
         "laravel/pail": "^1.2",
         "laravel/tinker": "^2.9",
         "league/flysystem-aws-s3-v3": "^3.0",
