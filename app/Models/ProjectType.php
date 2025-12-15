@@ -11,5 +11,4 @@ class ProjectType extends Model
         'status',
         'slug',
     ];
-
 }

@@ -3,18 +3,14 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\FeatureResource\Pages;
-use App\Filament\Resources\FeatureResource\RelationManagers;
 use App\Models\Feature;
+use App\Models\Project;
 use Filament\Forms;
-use Filament\Forms\Components\Section;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Models\Project;
-use Filament\Forms\Components\CheckboxList;
 
 class FeatureResource extends Resource
 {
@@ -54,7 +50,7 @@ class FeatureResource extends Resource
                             ->relationship('projects', 'name') // Uses the relationship
                             ->columns(4)
                             ->options(Project::all()->pluck('name', 'id')->toArray()),
-                    ])
+                    ]),
             ]);
     }
 
@@ -65,10 +61,10 @@ class FeatureResource extends Resource
                 Tables\Columns\TextColumn::make('name')->label('الاسم'),
                 Tables\Columns\TextColumn::make('description')->label('الوصف'),
                 Tables\Columns\ToggleColumn::make('is_active')
-                                ->label('الحالة')
-                                ->onColor('success')
-                                ->offColor('danger'),
-                            ])
+                    ->label('الحالة')
+                    ->onColor('success')
+                    ->offColor('danger'),
+            ])
             ->filters([
                 //
             ])

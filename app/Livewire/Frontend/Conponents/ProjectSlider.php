@@ -2,13 +2,13 @@
 
 namespace App\Livewire\Frontend\Conponents;
 
-use Livewire\Component;
 use App\Models\Project;
+use Livewire\Component;
 
 class ProjectSlider extends Component
 {
-
     public $projects;
+
     public $type = null; // Optional parameter with default value
 
     public function mount($type = null)

@@ -159,11 +159,11 @@
                                     </div>
                                 </div>
 
-                                <button type="submit" class="btn btn-primary btn-icon btn-sm btn-icon-start rounded w-100" wire:loading.attr="disabled">
-                                    <span wire:loading.remove wire:target="submitInterest">
+                                <button type="submit" class="btn btn-primary btn-icon btn-sm btn-icon-start rounded w-100" wire:loading.attr="disabled" wire:target="submitOrderUnit">
+                                    <span wire:loading.remove wire:target="submitOrderUnit">
                                         إرسال
                                     </span>
-                                    <div wire:loading wire:target="submitInterest">
+                                    <div wire:loading wire:target="submitOrderUnit">
                                         <div class="spinner-border spinner-border-sm me-4 mb-2" role="status">
                                             <span class="visually-hidden">جاري الإرسال...</span>
                                         </div>

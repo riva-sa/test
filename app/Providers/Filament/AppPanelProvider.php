@@ -2,6 +2,11 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\App\Profile;
+use App\Filament\Pages\Auth\Login;
+use App\Filament\Resources\UnitOrderResource\Widgets\UnitOrderStats;
+use App\Filament\Widgets\LatestUnitOrders;
+use Filament\FontProviders\GoogleFontProvider;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -10,21 +15,13 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
-use Illuminate\View\Middleware\ShareErrorsFromSession;
-use App\Filament\Pages\App\Profile;
-use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
-use App\Filament\Pages\Auth\Login;
-use App\Filament\Resources\UnitOrderResource\Widgets\UnitOrderStats;
-use App\Filament\Widgets\LatestUnitOrders;
 use Illuminate\Support\Facades\Storage;
-use Filament\FontProviders\GoogleFontProvider;
-use Illuminate\Support\HtmlString;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class AppPanelProvider extends PanelProvider
 {
@@ -43,9 +40,9 @@ class AppPanelProvider extends PanelProvider
                 'primary' => Color::Zinc,
             ])
             ->font('IBM Plex Sans Arabic', provider: GoogleFontProvider::class)
-            ->favicon( Storage::url(Setting('site_favicon')) )
+            ->favicon(Storage::url(Setting('site_favicon')))
             ->brandName(Setting('site_name'))
-            ->brandLogo( Storage::url(Setting('site_logo')) )
+            ->brandLogo(Storage::url(Setting('site_logo')))
 
             ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
             ->globalSearchFieldKeyBindingSuffix()
@@ -59,7 +56,7 @@ class AppPanelProvider extends PanelProvider
             ])
             ->widgets([
                 LatestUnitOrders::class,
-                UnitOrderStats::class
+                UnitOrderStats::class,
             ])
             ->middleware([
                 EncryptCookies::class,

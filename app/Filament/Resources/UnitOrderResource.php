@@ -2,25 +2,23 @@
 
 namespace App\Filament\Resources;
 
+use App\Exports\UnitOrdersExport;
 use App\Filament\Resources\UnitOrderResource\Pages;
+use App\Filament\Resources\UnitOrderResource\Widgets\UnitOrderStats;
+use App\Models\Unit;
 use App\Models\UnitOrder;
 use Filament\Forms;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use App\Models\Unit;
-use App\Filament\Resources\UnitOrderResource\Widgets\UnitOrderStats;
-use Filament\Notifications\Notification;
-
-use App\Exports\UnitOrdersExport;
-use Filament\Tables\Actions\ExportAction;
-use Maatwebsite\Excel\Facades\Excel;
-use Filament\Tables\Actions\BulkAction;
 use Illuminate\Support\Collection;
-use Filament\Forms\Components\Select;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UnitOrderResource extends Resource
 {
@@ -31,6 +29,7 @@ class UnitOrderResource extends Resource
     protected static ?string $navigationGroup = 'المشاريع';
 
     protected static ?int $navigationSort = 3;
+
     protected static ?string $navigationLabel = 'طلبات الوحدات';
 
     public static function form(Form $form): Form
@@ -58,14 +57,14 @@ class UnitOrderResource extends Resource
                                     ->maxLength(255),
                             ]),
 
-                            Forms\Components\Select::make('status')
+                        Forms\Components\Select::make('status')
                             ->label('الحالة')
                             ->options([
                                 0 => 'جديد',
                                 1 => 'طلب مفتوح',
                                 2 => 'معاملات بيعية',
                                 3 => 'مغلق',
-                                4 => 'مكتمل'
+                                4 => 'مكتمل',
                             ])
                             ->required()
                             ->native(false),
@@ -109,7 +108,7 @@ class UnitOrderResource extends Resource
                                     ->label('المشروع')
                                     ->relationship('project', 'name')
                                     ->required(),
-                            ])
+                            ]),
                     ]),
             ]);
     }
@@ -134,7 +133,7 @@ class UnitOrderResource extends Resource
                         1 => 'طلب مفتوح',
                         2 => 'معاملات بيعية',
                         3 => 'مغلق',
-                        4 => 'مكتمل'
+                        4 => 'مكتمل',
                     ])
                     ->default(fn ($record) => $record->status) // Set the default value based on the current status
                     ->searchable()
@@ -176,7 +175,7 @@ class UnitOrderResource extends Resource
                         1 => 'طلب مفتوح',
                         2 => 'معاملات بيعية',
                         3 => 'مغلق',
-                        4 => 'مكتمل'
+                        4 => 'مكتمل',
                     ]),
                 Tables\Filters\SelectFilter::make('PurchaseType')
                     ->label('طريقة الشراء')

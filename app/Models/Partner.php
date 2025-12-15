@@ -14,7 +14,7 @@ class Partner extends Model
     ];
 
     protected $casts =
-    [
-        'status' => 'boolean',
-    ];
+        [
+            'status' => 'boolean',
+        ];
 }

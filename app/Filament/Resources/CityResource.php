@@ -3,14 +3,14 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CityResource\Pages;
+use App\Filament\Resources\CityResource\RelationManagers\StatesRelationManager;
 use App\Models\City;
 use Filament\Forms;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Forms\Components\Grid;
-use App\Filament\Resources\CityResource\RelationManagers\StatesRelationManager;
 use Illuminate\Support\Collection;
 
 class CityResource extends Resource

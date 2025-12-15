@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 
 class Feature extends Model
 {
@@ -13,9 +12,9 @@ class Feature extends Model
     {
         return $this->belongsToMany(Unit::class);
     }
+
     public function projects()
     {
         return $this->belongsToMany(Project::class);
     }
-
 }

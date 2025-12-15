@@ -2,8 +2,6 @@
 
 namespace App\Helpers;
 
-use Illuminate\Support\Facades\DB;
-
 class DatabaseHelper
 {
     /**
@@ -13,7 +11,7 @@ class DatabaseHelper
     {
         return config('database.default');
     }
-    
+
     /**
      * Check if using PostgreSQL
      */
@@ -21,7 +19,7 @@ class DatabaseHelper
     {
         return self::getDriver() === 'pgsql';
     }
-    
+
     /**
      * Check if using MySQL
      */
@@ -29,7 +27,7 @@ class DatabaseHelper
     {
         return in_array(self::getDriver(), ['mysql', 'mariadb']);
     }
-    
+
     /**
      * Get JSON extract syntax for the current database
      */
@@ -40,11 +38,11 @@ class DatabaseHelper
         } elseif (self::isMySQL()) {
             return "JSON_EXTRACT({$column}, '$.{$path}')";
         }
-        
+
         // SQLite fallback
         return "JSON_EXTRACT({$column}, '$.{$path}')";
     }
-    
+
     /**
      * Get date format for current database
      */
@@ -55,7 +53,7 @@ class DatabaseHelper
         } elseif (self::isMySQL()) {
             return "DATE({$column})";
         }
-        
+
         return "DATE({$column})";
     }
 }

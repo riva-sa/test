@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -30,7 +29,7 @@ class ProjectSeder extends Seeder
             [
                 'name' => 'ادوار',
                 'slug' => 'ادوار',
-            ]
+            ],
         ];
 
         foreach ($projectsType as $projectType) {
@@ -41,7 +40,7 @@ class ProjectSeder extends Seeder
         // In your seeder:
         if (DB::getDriverName() === 'mysql') {
             DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        } else if (DB::getDriverName() === 'pgsql') {
+        } elseif (DB::getDriverName() === 'pgsql') {
             DB::statement('SET CONSTRAINTS ALL DEFERRED;');
         }
 
@@ -53,7 +52,7 @@ class ProjectSeder extends Seeder
         // Re-enable foreign key checks
         if (DB::getDriverName() === 'mysql') {
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-        } else if (DB::getDriverName() === 'pgsql') {
+        } elseif (DB::getDriverName() === 'pgsql') {
             DB::statement('SET CONSTRAINTS ALL IMMEDIATE;');
         }
         // Define cities with their states

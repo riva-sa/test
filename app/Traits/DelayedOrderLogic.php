@@ -1,9 +1,10 @@
 <?php
+
 namespace App\Traits;
 
 use Carbon\Carbon;
 
-trait DelayedOrderLogic 
+trait DelayedOrderLogic
 {
     /**
      * يحدد ما إذا كان الطلب متأخراً بناءً على المسؤول عنه.
@@ -11,7 +12,7 @@ trait DelayedOrderLogic
     public function isOrderDelayed($order)
     {
         // لا يوجد طلب أو تاريخ تحديث؟ إذن ليس متأخراً.
-        if (!$order || !$order->updated_at) {
+        if (! $order || ! $order->updated_at) {
             return false;
         }
 
@@ -29,15 +30,15 @@ trait DelayedOrderLogic
         // إذا كان آخر إجراء تم بواسطة المسؤول المباشر، فالطلب ليس متأخراً.
         // لكننا سنظل نتحقق من الوقت.
         if ($lastActionByUserId === $responsibleManagerId) {
-             // حتى لو كان المسؤول، إذا مر أكثر من 3 أيام، فهو متأخر.
-             return $order->updated_at->lt(now()->subDays(3));
+            // حتى لو كان المسؤول، إذا مر أكثر من 3 أيام، فهو متأخر.
+            return $order->updated_at->lt(now()->subDays(3));
         }
-        
+
         // تحقق مما إذا كان لدى المستخدم الذي قام بآخر إجراء صلاحية معتمدة من المسؤول
         $hasDelegatedPermission = $order->permissions()
             ->where('user_id', $lastActionByUserId)
             // افترض أن الصلاحية التي تسمح بتحديث الطلب هي 'manage'
-            ->where('permission_type', 'manage') 
+            ->where('permission_type', 'manage')
             ->exists();
 
         // إذا كان آخر إجراء تم بواسطة شخص لديه صلاحية، نتحقق من الوقت.
@@ -81,7 +82,7 @@ trait DelayedOrderLogic
         if ($this->canClearDelayStatus($order, $userId)) {
             $order->last_action_by_user_id = $userId;
         }
-        
+
         // نقوم بتحديث البيانات المطلوبة وتاريخ التحديث دائماً.
         $order->fill($dataToUpdate);
         $order->touch(); // هذا يضمن تحديث updated_at

@@ -3,16 +3,13 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\LandmarkResource\Pages;
-use App\Filament\Resources\LandmarkResource\RelationManagers;
 use App\Models\Landmark;
 use Filament\Forms;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Forms\Components\TextInput;
 
 class LandmarkResource extends Resource
 {
@@ -40,7 +37,7 @@ class LandmarkResource extends Resource
                         //     ->label('المسافة من المشروع')
                         //     ->numeric()
                         //     ->suffix('كم'),
-                    ])
+                    ]),
             ]);
     }
 

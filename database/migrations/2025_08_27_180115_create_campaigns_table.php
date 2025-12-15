@@ -24,7 +24,7 @@ return new class extends Migration
                 'active',
                 'paused',
                 'completed',
-                'cancelled'
+                'cancelled',
             ])->default('draft');
             $table->decimal('budget', 15, 2)->nullable();
             $table->string('target_audience')->nullable();

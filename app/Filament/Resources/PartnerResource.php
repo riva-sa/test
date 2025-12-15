@@ -3,15 +3,12 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PartnerResource\Pages;
-use App\Filament\Resources\PartnerResource\RelationManagers;
 use App\Models\Partner;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PartnerResource extends Resource
 {
@@ -20,6 +17,7 @@ class PartnerResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static ?string $navigationGroup = 'الإعدادات';
+
     protected static ?string $navigationLabel = 'شركاء النجاح';
 
     public static function form(Form $form): Form
@@ -64,7 +62,7 @@ class PartnerResource extends Resource
                 Tables\Columns\ToggleColumn::make('status')
                     ->label('الحالة')
                     ->onColor('success')
-                    ->offColor('danger')
+                    ->offColor('danger'),
             ])
             ->filters([
                 //

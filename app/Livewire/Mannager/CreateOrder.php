@@ -2,28 +2,37 @@
 
 namespace App\Livewire\Mannager;
 
-use Livewire\Component;
-use App\Models\UnitOrder;
 use App\Models\Project;
 use App\Models\Unit;
+use App\Models\UnitOrder;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
 
 class CreateOrder extends Component
 {
     // بيانات الطلب
     public $name;
+
     public $email;
+
     public $phone;
+
     public $message;
+
     public $PurchaseType;
+
     public $PurchasePurpose;
+
     public $unit_id;
+
     public $project_id;
+
     public $support_type;
 
     // القوائم المنسدلة
     public $projects = [];
+
     public $units = [];
 
     // قوائم الخيارات
@@ -75,18 +84,18 @@ class CreateOrder extends Component
 
     public function updatedProjectId($value)
     {
-        if (!empty($value)) {
+        if (! empty($value)) {
             if (User::where('id', Auth::id())->first()->hasRole('sales_manager') || User::where('id', Auth::id())->first()->hasRole('follow_up')) {
                 // تحديث قائمة الوحدات المتاحة حسب المشروع المختار
                 $this->units = Unit::where('project_id', $value)
-                ->select('id', 'title')
-                ->get();
+                    ->select('id', 'title')
+                    ->get();
             } else {
                 // تحديث قائمة الوحدات المتاحة حسب المشروع المختار
                 $this->units = Unit::where('project_id', $value)
-                ->where('case', '0')
-                ->select('id', 'title')
-                ->get();
+                    ->where('case', '0')
+                    ->select('id', 'title')
+                    ->get();
             }
         } else {
             $this->units = [];
@@ -135,7 +144,6 @@ class CreateOrder extends Component
         $this->project_id = null;
         $this->support_type = '';
     }
-
 
     public function render()
     {

@@ -2,11 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use App\Traits\Trackable;
-
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Unit extends Model
 {
@@ -48,14 +46,14 @@ class Unit extends Model
     ];
 
     protected $casts =
-    [
-        'status' => 'boolean',
-        'show_price' => 'boolean',
-        'last_visited_at' => 'datetime',
-        'last_viewed_at' => 'datetime',
-        'last_shown_at' => 'datetime',
-        'last_ordered_at' => 'datetime',
-    ];
+        [
+            'status' => 'boolean',
+            'show_price' => 'boolean',
+            'last_visited_at' => 'datetime',
+            'last_viewed_at' => 'datetime',
+            'last_shown_at' => 'datetime',
+            'last_ordered_at' => 'datetime',
+        ];
 
     public function project()
     {
@@ -102,7 +100,10 @@ class Unit extends Model
     // Get conversion rate for this unit
     public function getConversionRate()
     {
-        if ($this->shows_count == 0) return 0;
+        if ($this->shows_count == 0) {
+            return 0;
+        }
+
         return round(($this->orders_count / $this->shows_count) * 100, 2);
     }
 }

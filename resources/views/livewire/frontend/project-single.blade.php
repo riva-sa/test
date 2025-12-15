@@ -300,7 +300,7 @@
                             {{-- Tab Contents --}}
                             <div class="mt-5">
                                 {{-- Units Grid --}}
-                                <div class="row">
+                                <div class="row" wire:loading.class="opacity-50">
                                     @forelse($units as $unit)
                                         <div class="col-md-6 col-lg-4 mb-2" wire:key="{{$unit->id}}" style="cursor: pointer">
 
@@ -309,11 +309,11 @@
                                                     @if ($unit->floor_plan)
                                                         <img src="{{ App\Helpers\MediaHelper::getUrl($unit->floor_plan ) }}"
                                                         style="max-height: 207px;"
-                                                        alt="{{ $unit->title }}" />
+                                                        alt="{{ $unit->title }}" loading="lazy" />
                                                     @else
                                                         <img src="https://placehold.co/700x400"
                                                         style="max-height: 207px;"
-                                                        alt="{{ $unit->title }}" />
+                                                        alt="{{ $unit->title }}" loading="lazy" />
                                                     @endif
 
                                                     @if($unit->case == 2)
@@ -385,6 +385,10 @@
                                             <p class="text-muted fs-15">لم نتمكن من العثور على أي وحدات</p>
                                         </div>
                                     @endforelse
+                                </div>
+
+                                <div class="mt-4">
+                                    {{ $units->links() }}
                                 </div>
 
                             </div>

@@ -7,6 +7,7 @@ use Livewire\Component;
 class VirtualTourViewer extends Component
 {
     public $project;
+
     public $virtualTour;
 
     public function mount($project)

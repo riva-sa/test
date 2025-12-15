@@ -3,18 +3,18 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Mail\Mailables\Content;
+use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Mail\Mailable;
+
 class UnitOrderNotification extends Notification
 {
     use Queueable, SerializesModels;
 
     public $emailData;
+
     public $recipientType;
 
     /**
@@ -26,12 +26,12 @@ class UnitOrderNotification extends Notification
         $this->recipientType = $recipientType;
     }
 
-        /**
+    /**
      * Get the message envelope.
      */
     public function envelope(): Envelope
     {
-        $subject = 'طلب وحدة جديد - ' . $this->emailData['project']->name;
+        $subject = 'طلب وحدة جديد - '.$this->emailData['project']->name;
 
         return new Envelope(
             subject: $subject,
@@ -68,9 +68,9 @@ class UnitOrderNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->line('The introduction to the notification.')
+            ->action('Notification Action', url('/'))
+            ->line('Thank you for using our application!');
     }
 
     /**

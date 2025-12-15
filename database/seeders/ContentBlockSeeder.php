@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\ContentBlock;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
 class ContentBlockSeeder extends Seeder
@@ -21,62 +20,62 @@ class ContentBlockSeeder extends Seeder
             [
                 'key' => 'main_heading',
                 'description' => 'Main heading',
-                'content' => 'ريفا العقارية .. تفهمك'
+                'content' => 'ريفا العقارية .. تفهمك',
             ],
             [
                 'key' => 'tagline',
                 'description' => 'Tagline',
-                'content' => 'شركة ريفا العقارية متخصصة في إدارة وتسويق المبيعات العقارية'
+                'content' => 'شركة ريفا العقارية متخصصة في إدارة وتسويق المبيعات العقارية',
             ],
             [
                 'key' => 'management_title',
                 'description' => 'Management section title',
-                'content' => 'الإدارة'
+                'content' => 'الإدارة',
             ],
             [
                 'key' => 'management_content',
                 'description' => 'Management content',
-                'content' => '<p>نحن في ريفا العقارية نتميز بالاحترافية والإتقان في إدارة المبيعات العقارية. فريقنا المتمرس يقدم حلولاً مبتكرة تلبي احتياجات عملائنا بكفاءة. التزامنا بالجودة والرضا يجعلنا رواداً في القطاع العقاري</p>'
+                'content' => '<p>نحن في ريفا العقارية نتميز بالاحترافية والإتقان في إدارة المبيعات العقارية. فريقنا المتمرس يقدم حلولاً مبتكرة تلبي احتياجات عملائنا بكفاءة. التزامنا بالجودة والرضا يجعلنا رواداً في القطاع العقاري</p>',
             ],
             [
                 'key' => 'marketing_title',
                 'description' => 'Marketing section title',
-                'content' => 'التسويق'
+                'content' => 'التسويق',
             ],
             [
                 'key' => 'marketing_content',
                 'description' => 'Marketing content',
-                'content' => '<p>في ريفا العقارية، نعتز بنجاحنا وإبداعنا في مجال التسويق العقاري. نبتكر استراتيجيات فعّالة تصل إلى جمهور واسع وتحقق نتائج مبهرة. فريقنا المتخصص يعمل بجد لضمان تميز كل حملة تسويقية. التزامنا بالجودة والإبداع يجعلنا في طليعة السوق العقارية</p>'
+                'content' => '<p>في ريفا العقارية، نعتز بنجاحنا وإبداعنا في مجال التسويق العقاري. نبتكر استراتيجيات فعّالة تصل إلى جمهور واسع وتحقق نتائج مبهرة. فريقنا المتخصص يعمل بجد لضمان تميز كل حملة تسويقية. التزامنا بالجودة والإبداع يجعلنا في طليعة السوق العقارية</p>',
             ],
             [
                 'key' => 'company_footer',
                 'description' => 'Company name footer',
-                'content' => 'ريفا العقارية.'
+                'content' => 'ريفا العقارية.',
             ],
             [
                 'key' => 'mission_title',
                 'description' => 'Mission title',
-                'content' => 'رسالتنا'
+                'content' => 'رسالتنا',
             ],
             [
                 'key' => 'mission_content',
                 'description' => 'Mission content',
-                'content' => '<p>تقديم حلول تسويقية عقارية متكاملة وذات جودة عالية تلبي احتياجات وتطلعات عملائنا، من خلال الابتكار والتفاني في العمل. نهدف إلى بناء علاقات طويلة الأمد مع عملائنا وشركائنا من خلال تقديم خدمات متميزة تعتمد على الشفافية والاحترافية.</p>'
+                'content' => '<p>تقديم حلول تسويقية عقارية متكاملة وذات جودة عالية تلبي احتياجات وتطلعات عملائنا، من خلال الابتكار والتفاني في العمل. نهدف إلى بناء علاقات طويلة الأمد مع عملائنا وشركائنا من خلال تقديم خدمات متميزة تعتمد على الشفافية والاحترافية.</p>',
             ],
             [
                 'key' => 'vision_title',
                 'description' => 'Vision title',
-                'content' => 'رؤيتنا'
+                'content' => 'رؤيتنا',
             ],
             [
                 'key' => 'vision_content',
                 'description' => 'Vision content',
-                'content' => '<p>نسعى في ريفا العقارية أن نكون الشركة الرائدة في إدارة المبيعات وتسويق العقاري على مستوى المملكة العربية السعودية، متميزين بخدماتنا المبتكرة والموثوقة، مع التزامنا بتحقيق النمو المستدام والتميز في جميع مبادراتنا.</p>'
+                'content' => '<p>نسعى في ريفا العقارية أن نكون الشركة الرائدة في إدارة المبيعات وتسويق العقاري على مستوى المملكة العربية السعودية، متميزين بخدماتنا المبتكرة والموثوقة، مع التزامنا بتحقيق النمو المستدام والتميز في جميع مبادراتنا.</p>',
             ],
             [
                 'key' => 'values_title',
                 'description' => 'Values title',
-                'content' => 'قيمنا'
+                'content' => 'قيمنا',
             ],
             [
                 'key' => 'values_content',
@@ -85,12 +84,12 @@ class ContentBlockSeeder extends Seeder
                     <li><strong>الاحترافية:</strong> نلتزم بأعلى معايير العمل الاحترافي في جميع تعاملاتنا.</li>
                     <li><strong>الابتكار:</strong> نسعى دائماً لتقديم حلول مبتكرة تلبي احتياجات السوق.</li>
                     <li><strong>الشفافية:</strong> نؤمن بالوضوح والأمانة في جميع علاقاتنا المهنية.</li>
-                </ol>'
+                </ol>',
             ],
             [
                 'key' => 'services_title',
                 'description' => 'Services title',
-                'content' => 'خدماتنا'
+                'content' => 'خدماتنا',
             ],
             [
                 'key' => 'services_content',
@@ -132,48 +131,48 @@ class ContentBlockSeeder extends Seeder
                             </div>
                         </div>
                     </div>
-                </div>'
+                </div>',
             ],
             [
                 'key' => 'sales_management_title',
                 'description' => 'Sales management service title',
-                'content' => 'إدارة المبيعات العقارية'
+                'content' => 'إدارة المبيعات العقارية',
             ],
             [
                 'key' => 'sales_management_desc',
                 'description' => 'Sales management service description',
-                'content' => 'نقدم حلولاً متكاملة لإدارة عمليات البيع العقاري باحترافية وكفاءة عالية'
+                'content' => 'نقدم حلولاً متكاملة لإدارة عمليات البيع العقاري باحترافية وكفاءة عالية',
             ],
             [
                 'key' => 'marketing_service_title',
                 'description' => 'Marketing service title',
-                'content' => 'التسويق العقاري'
+                'content' => 'التسويق العقاري',
             ],
             [
                 'key' => 'marketing_service_desc',
                 'description' => 'Marketing service description',
-                'content' => 'استراتيجيات تسويقية مبتكرة تصل إلى الجمهور المستهدف وتحقق أعلى العوائد'
+                'content' => 'استراتيجيات تسويقية مبتكرة تصل إلى الجمهور المستهدف وتحقق أعلى العوائد',
             ],
             [
                 'key' => 'consultation_title',
                 'description' => 'Consultation service title',
-                'content' => 'الاستشارات العقارية'
+                'content' => 'الاستشارات العقارية',
             ],
             [
                 'key' => 'consultation_desc',
                 'description' => 'Consultation service description',
-                'content' => 'خبراؤنا يقدمون النصائح والتحليلات لمساعدتك في اتخاذ القرارات الاستثمارية الصائبة'
+                'content' => 'خبراؤنا يقدمون النصائح والتحليلات لمساعدتك في اتخاذ القرارات الاستثمارية الصائبة',
             ],
             [
                 'key' => 'project_management_title',
                 'description' => 'Project management service title',
-                'content' => 'إدارة المشاريع'
+                'content' => 'إدارة المشاريع',
             ],
             [
                 'key' => 'project_management_desc',
                 'description' => 'Project management service description',
-                'content' => 'إدارة متكاملة للمشاريع العقارية منذ التخطيط وحتى التسليم النهائي'
-            ]
+                'content' => 'إدارة متكاملة للمشاريع العقارية منذ التخطيط وحتى التسليم النهائي',
+            ],
         ];
 
         foreach ($contentBlocks as $block) {

@@ -2,20 +2,22 @@
 
 namespace App\Livewire\Frontend;
 
+use Firefly\FilamentBlog\Models\Category;
+use Firefly\FilamentBlog\Models\Post;
+use Firefly\FilamentBlog\Models\Tag;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Firefly\FilamentBlog\Models\Category;
-use Firefly\FilamentBlog\Models\Tag;
-use Firefly\FilamentBlog\Models\Comment;
-use Firefly\FilamentBlog\Models\Post;
 
 class Blog extends Component
 {
     use WithPagination;
 
     public $selectedCategory = null;
+
     public $selectedTag = null;
+
     public $searchTerm = '';
+
     public $postsPerPage = 6;
 
     public function mount()
@@ -69,8 +71,8 @@ class Blog extends Component
 
         // Apply search term if set
         if ($this->searchTerm) {
-            $query->where('title', 'like', '%' . $this->searchTerm . '%')
-                  ->orWhere('content', 'like', '%' . $this->searchTerm . '%');
+            $query->where('title', 'like', '%'.$this->searchTerm.'%')
+                ->orWhere('content', 'like', '%'.$this->searchTerm.'%');
         }
 
         // Paginate posts
@@ -83,7 +85,7 @@ class Blog extends Component
         return view('livewire.frontend.blog', [
             'posts' => $posts,
             'categories' => $categories,
-            'tags' => $tags
+            'tags' => $tags,
         ]);
     }
 }

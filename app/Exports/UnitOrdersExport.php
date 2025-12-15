@@ -1,17 +1,18 @@
 <?php
+
 namespace App\Exports;
 
 use App\Models\UnitOrder;
+use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
-use Illuminate\Support\Collection;
 
 class UnitOrdersExport implements FromCollection, WithHeadings, WithMapping
 {
     private $records;
 
-    public function __construct(Collection $records = null)
+    public function __construct(?Collection $records = null)
     {
         $this->records = $records ?? UnitOrder::with(['user', 'unit', 'project'])->get();
     }

@@ -9,12 +9,16 @@ class SessionJourneys extends Component
 {
     // خصائص لتخزين كل البيانات الجديدة
     public $journeys;
+
     public $stats = [];
+
     public $topFunnels = [];
+
     public $frictionPoints = [];
 
     // خصائص الـ Modal
     public $selectedJourneyEvents = [];
+
     public $showJourneyModal = false;
 
     public function mount(TrackingService $trackingService)

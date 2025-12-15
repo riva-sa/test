@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+
 class ContentBlock extends Model
 {
     protected $fillable = ['key', 'content', 'description'];
@@ -26,7 +27,7 @@ class ContentBlock extends Model
         $counter = 1;
 
         while (static::where('key', $key)->exists()) {
-            $key = $baseKey . '_' . $counter;
+            $key = $baseKey.'_'.$counter;
             $counter++;
         }
 

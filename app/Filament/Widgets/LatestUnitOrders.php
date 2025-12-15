@@ -2,16 +2,14 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\UnitOrder;
 use App\Filament\Resources\UnitOrderResource;
+use Filament\Notifications\Notification;
 use Filament\Tables;
 use Filament\Widgets\TableWidget as BaseWidget;
-use Filament\Tables\Actions\Action as TableAction;
-use Filament\Notifications\Notification;
 
 class LatestUnitOrders extends BaseWidget
 {
-    protected int | string | array $columnSpan = 'full'; // Full-width widget
+    protected int|string|array $columnSpan = 'full'; // Full-width widget
 
     protected static ?int $sort = 2; // Sort order in dashboard widgets
 
@@ -40,7 +38,7 @@ class LatestUnitOrders extends BaseWidget
                         1 => 'قيد المعالجة',
                         2 => 'معاملات بيعية',
                         3 => 'ملغي',
-                        4 => 'مكتمل'
+                        4 => 'مكتمل',
                     ])
                     ->default(fn ($record) => $record->status) // Set the default value based on the current status
                     ->searchable()

@@ -2,10 +2,9 @@
 
 namespace App\Livewire\Mannager;
 
-use Livewire\Component;
-use Illuminate\Support\Facades\Auth;
 use App\Models\UnitOrder;
-use App\Traits\DelayedOrderLogic; // تأكد من أن هذا السطر موجود
+use App\Traits\DelayedOrderLogic;
+use Livewire\Component; // تأكد من أن هذا السطر موجود
 
 class ManagerDashboard extends Component
 {
@@ -16,6 +15,7 @@ class ManagerDashboard extends Component
         auth()->logout();
         session()->invalidate();
         session()->regenerateToken();
+
         return redirect()->route('frontend.home');
     }
 
@@ -24,7 +24,7 @@ class ManagerDashboard extends Component
     public function render()
     {
         $user = auth()->user();
-        
+
         // فلتر أساسي بناءً على دور المستخدم
         $filterByManager = function ($query) use ($user) {
             if ($user->hasRole('sales')) {

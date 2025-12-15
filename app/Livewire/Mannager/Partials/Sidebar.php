@@ -2,18 +2,21 @@
 
 namespace App\Livewire\Mannager\Partials;
 
-use Livewire\Component;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
 use App\Notifications\UnitOrderUpdated;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Livewire\Component;
 
 class Sidebar extends Component
 {
- public $notifications;
+    public $notifications;
+
     public $unreadCount = 0;
+
     public $isLoading = false;
+
     public $lastRefresh;
 
     protected $listeners = [
@@ -36,10 +39,11 @@ class Sidebar extends Component
     {
         try {
             $this->isLoading = true;
-            
-            if (!Auth::check()) {
+
+            if (! Auth::check()) {
                 $this->notifications = collect();
                 $this->unreadCount = 0;
+
                 return;
             }
 
@@ -66,20 +70,20 @@ class Sidebar extends Component
             });
 
             $this->lastRefresh = now();
-            
+
         } catch (\Exception $e) {
-            Log::error('Error loading notifications: ' . $e->getMessage(), [
+            Log::error('Error loading notifications: '.$e->getMessage(), [
                 'user_id' => Auth::id(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
-            
+
             // Fallback to empty collections
             $this->notifications = collect();
             $this->unreadCount = 0;
-            
+
             $this->dispatch('showNotification', [
                 'type' => 'error',
-                'message' => 'حدث خطأ أثناء تحميل الإشعارات'
+                'message' => 'حدث خطأ أثناء تحميل الإشعارات',
             ]);
         } finally {
             $this->isLoading = false;
@@ -94,14 +98,14 @@ class Sidebar extends Component
         try {
             $this->clearNotificationCache();
             $this->loadNotifications();
-            
+
             Log::info('External notification read handled', [
                 'notification_id' => $notificationId,
-                'user_id' => Auth::id()
+                'user_id' => Auth::id(),
             ]);
-            
+
         } catch (\Exception $e) {
-            Log::error('Error handling external notification read: ' . $e->getMessage());
+            Log::error('Error handling external notification read: '.$e->getMessage());
         }
     }
 
@@ -113,13 +117,13 @@ class Sidebar extends Component
         try {
             $this->clearNotificationCache();
             $this->loadNotifications();
-            
+
             Log::info('All notifications read handled', [
-                'user_id' => Auth::id()
+                'user_id' => Auth::id(),
             ]);
-            
+
         } catch (\Exception $e) {
-            Log::error('Error handling all notifications read: ' . $e->getMessage());
+            Log::error('Error handling all notifications read: '.$e->getMessage());
         }
     }
 
@@ -129,29 +133,32 @@ class Sidebar extends Component
     public function markAsRead($notificationId)
     {
         try {
-            if (!Auth::check()) {
+            if (! Auth::check()) {
                 $this->dispatch('showNotification', [
                     'type' => 'error',
-                    'message' => 'يجب تسجيل الدخول أولاً'
+                    'message' => 'يجب تسجيل الدخول أولاً',
                 ]);
+
                 return;
             }
 
             if (empty($notificationId)) {
                 $this->dispatch('showNotification', [
                     'type' => 'error',
-                    'message' => 'معرف الإشعار غير صالح'
+                    'message' => 'معرف الإشعار غير صالح',
                 ]);
+
                 return;
             }
 
             $notification = Auth::user()->notifications()->find($notificationId);
-            
-            if (!$notification) {
+
+            if (! $notification) {
                 $this->dispatch('showNotification', [
                     'type' => 'warning',
-                    'message' => 'الإشعار غير موجود أو تم حذفه'
+                    'message' => 'الإشعار غير موجود أو تم حذفه',
                 ]);
+
                 return;
             }
 
@@ -161,28 +168,28 @@ class Sidebar extends Component
             }
 
             $notification->markAsRead();
-            
+
             // Clear cache and reload
             $this->clearNotificationCache();
             $this->loadNotifications();
-            
+
             // Dispatch event for other components
             $this->dispatch('notificationRead', notificationId: $notificationId);
-            
+
             Log::info('Notification marked as read', [
                 'notification_id' => $notificationId,
-                'user_id' => Auth::id()
+                'user_id' => Auth::id(),
             ]);
-            
+
         } catch (\Exception $e) {
-            Log::error('Error marking notification as read: ' . $e->getMessage(), [
+            Log::error('Error marking notification as read: '.$e->getMessage(), [
                 'notification_id' => $notificationId,
-                'user_id' => Auth::id()
+                'user_id' => Auth::id(),
             ]);
-            
+
             $this->dispatch('showNotification', [
                 'type' => 'error',
-                'message' => 'حدث خطأ أثناء تحديث الإشعار'
+                'message' => 'حدث خطأ أثناء تحديث الإشعار',
             ]);
         }
     }
@@ -193,11 +200,12 @@ class Sidebar extends Component
     public function markAllAsRead()
     {
         try {
-            if (!Auth::check()) {
+            if (! Auth::check()) {
                 $this->dispatch('showNotification', [
                     'type' => 'error',
-                    'message' => 'يجب تسجيل الدخول أولاً'
+                    'message' => 'يجب تسجيل الدخول أولاً',
                 ]);
+
                 return;
             }
 
@@ -207,45 +215,46 @@ class Sidebar extends Component
             $unreadNotifications = Auth::user()
                 ->unreadNotifications()
                 ->whereType(UnitOrderUpdated::class);
-                
+
             $unreadCount = $unreadNotifications->count();
-            
+
             if ($unreadCount === 0) {
                 $this->dispatch('showNotification', [
                     'type' => 'info',
-                    'message' => 'لا توجد إشعارات غير مقروءة'
+                    'message' => 'لا توجد إشعارات غير مقروءة',
                 ]);
+
                 return;
             }
 
             // Mark all as read with current timestamp
             $updated = $unreadNotifications->update(['read_at' => now()]);
-            
+
             // Clear cache and reload
             $this->clearNotificationCache();
             $this->loadNotifications();
-            
+
             // Dispatch event for other components
             $this->dispatch('allNotificationsRead');
-            
+
             Log::info('All notifications marked as read', [
                 'count' => $updated,
-                'user_id' => Auth::id()
+                'user_id' => Auth::id(),
             ]);
-            
+
             $this->dispatch('showNotification', [
                 'type' => 'success',
-                'message' => "تم تحديد {$unreadCount} إشعار كمقروء"
+                'message' => "تم تحديد {$unreadCount} إشعار كمقروء",
             ]);
-            
+
         } catch (\Exception $e) {
-            Log::error('Error marking all notifications as read: ' . $e->getMessage(), [
-                'user_id' => Auth::id()
+            Log::error('Error marking all notifications as read: '.$e->getMessage(), [
+                'user_id' => Auth::id(),
             ]);
-            
+
             $this->dispatch('showNotification', [
                 'type' => 'error',
-                'message' => 'حدث خطأ أثناء تحديث الإشعارات'
+                'message' => 'حدث خطأ أثناء تحديث الإشعارات',
             ]);
         } finally {
             $this->isLoading = false;
@@ -258,78 +267,84 @@ class Sidebar extends Component
     public function handleNotificationClick($notificationId)
     {
         try {
-            if (!Auth::check()) {
+            if (! Auth::check()) {
                 $this->dispatch('showNotification', [
                     'type' => 'error',
-                    'message' => 'يجب تسجيل الدخول أولاً'
+                    'message' => 'يجب تسجيل الدخول أولاً',
                 ]);
+
                 return;
             }
 
             if (empty($notificationId)) {
                 $this->dispatch('showNotification', [
                     'type' => 'error',
-                    'message' => 'معرف الإشعار غير صالح'
+                    'message' => 'معرف الإشعار غير صالح',
                 ]);
+
                 return;
             }
 
             // Mark as read first
             $this->markAsRead($notificationId);
-            
+
             $notification = Auth::user()->notifications()->find($notificationId);
-            
-            if (!$notification) {
+
+            if (! $notification) {
                 $this->dispatch('showNotification', [
                     'type' => 'warning',
-                    'message' => 'الإشعار غير موجود أو تم حذفه'
+                    'message' => 'الإشعار غير موجود أو تم حذفه',
                 ]);
+
                 return;
             }
 
             $data = $notification->data;
             // Validate notification data
-            if (!isset($data['order_id']) || empty($data['order_id'])) {
+            if (! isset($data['order_id']) || empty($data['order_id'])) {
                 $this->dispatch('showNotification', [
                     'type' => 'warning',
-                    'message' => 'بيانات الإشعار غير مكتملة'
+                    'message' => 'بيانات الإشعار غير مكتملة',
                 ]);
+
                 return;
             }
 
             // Validate order_id is numeric
-            if (!is_numeric($data['order_id'])) {
+            if (! is_numeric($data['order_id'])) {
                 $this->dispatch('showNotification', [
                     'type' => 'error',
-                    'message' => 'معرف الطلب غير صالح'
+                    'message' => 'معرف الطلب غير صالح',
                 ]);
+
                 return;
             }
 
             Log::info('Notification clicked', [
                 'notification_id' => $notificationId,
                 'order_id' => $data['order_id'],
-                'user_id' => Auth::id()
+                'user_id' => Auth::id(),
             ]);
 
             // Redirect to order details page
             // return redirect()->to(route('manager.order-details', $data['order_id']));
             return $this->redirect(route('manager.order-details', $data['order_id']), navigate: true);
-            
+
         } catch (\Exception $e) {
-            Log::error('Error handling notification click: ' . $e->getMessage(), [
+            Log::error('Error handling notification click: '.$e->getMessage(), [
                 'notification_id' => $notificationId,
-                'user_id' => Auth::id()
+                'user_id' => Auth::id(),
             ]);
-            
+
             $this->dispatch('showNotification', [
                 'type' => 'error',
-                'message' => 'حدث خطأ أثناء فتح الطلب'
+                'message' => 'حدث خطأ أثناء فتح الطلب',
             ]);
         }
-        
+
         // Fallback dispatch if redirect fails
         $this->dispatch('notification-handled');
+
         return null;
     }
 
@@ -406,33 +421,37 @@ class Sidebar extends Component
     {
         try {
             $carbon = Carbon::parse($createdAt);
-            
+
             // If less than 1 hour ago, show minutes
             if ($carbon->diffInHours(now()) < 1) {
                 $minutes = $carbon->diffInMinutes(now());
                 if ($minutes < 1) {
                     return 'الآن';
                 }
+
                 return "منذ {$minutes} دقيقة";
             }
-            
+
             // If less than 24 hours ago, show hours
             if ($carbon->diffInDays(now()) < 1) {
                 $hours = $carbon->diffInHours(now());
+
                 return "منذ {$hours} ساعة";
             }
-            
+
             // If less than 7 days ago, show days
             if ($carbon->diffInDays(now()) < 7) {
                 $days = $carbon->diffInDays(now());
+
                 return "منذ {$days} يوم";
             }
-            
+
             // Otherwise show formatted date
             return $carbon->format('Y/m/d H:i');
-            
+
         } catch (\Exception $e) {
-            Log::warning('Error formatting notification time: ' . $e->getMessage());
+            Log::warning('Error formatting notification time: '.$e->getMessage());
+
             return 'غير محدد';
         }
     }
@@ -498,44 +517,46 @@ class Sidebar extends Component
     public function deleteNotification($notificationId)
     {
         try {
-            if (!Auth::check()) {
+            if (! Auth::check()) {
                 $this->dispatch('showNotification', [
                     'type' => 'error',
-                    'message' => 'يجب تسجيل الدخول أولاً'
+                    'message' => 'يجب تسجيل الدخول أولاً',
                 ]);
+
                 return;
             }
 
             $notification = Auth::user()->notifications()->find($notificationId);
-            
-            if (!$notification) {
+
+            if (! $notification) {
                 $this->dispatch('showNotification', [
                     'type' => 'warning',
-                    'message' => 'الإشعار غير موجود'
+                    'message' => 'الإشعار غير موجود',
                 ]);
+
                 return;
             }
 
             $notification->delete();
-            
+
             $this->clearNotificationCache();
             $this->loadNotifications();
-            
+
             Log::info('Notification deleted', [
                 'notification_id' => $notificationId,
-                'user_id' => Auth::id()
+                'user_id' => Auth::id(),
             ]);
-            
+
             $this->dispatch('showNotification', [
                 'type' => 'success',
-                'message' => 'تم حذف الإشعار'
+                'message' => 'تم حذف الإشعار',
             ]);
-            
+
         } catch (\Exception $e) {
-            Log::error('Error deleting notification: ' . $e->getMessage());
+            Log::error('Error deleting notification: '.$e->getMessage());
             $this->dispatch('showNotification', [
                 'type' => 'error',
-                'message' => 'حدث خطأ أثناء حذف الإشعار'
+                'message' => 'حدث خطأ أثناء حذف الإشعار',
             ]);
         }
     }
@@ -546,40 +567,42 @@ class Sidebar extends Component
     public function getNotificationsSummary()
     {
         try {
-            if (!Auth::check()) {
+            if (! Auth::check()) {
                 return [
                     'total' => 0,
                     'unread' => 0,
                     'recent' => 0,
-                    'high_priority' => 0
+                    'high_priority' => 0,
                 ];
             }
 
             $notifications = $this->notifications ?? collect();
-            
+
             return [
                 'total' => $notifications->count(),
                 'unread' => $this->unreadCount,
-                'recent' => $notifications->filter(function($notification) {
+                'recent' => $notifications->filter(function ($notification) {
                     return $this->isRecentNotification($notification->created_at);
                 })->count(),
-                'high_priority' => $notifications->filter(function($notification) {
+                'high_priority' => $notifications->filter(function ($notification) {
                     $type = $notification->data['type'] ?? 'default';
+
                     return $this->getNotificationPriority($type) === 'high';
-                })->count()
+                })->count(),
             ];
-            
+
         } catch (\Exception $e) {
-            Log::error('Error getting notifications summary: ' . $e->getMessage());
+            Log::error('Error getting notifications summary: '.$e->getMessage());
+
             return [
                 'total' => 0,
                 'unread' => 0,
                 'recent' => 0,
-                'high_priority' => 0
+                'high_priority' => 0,
             ];
         }
     }
-                                                                                            
+
     public function render()
     {
         return view('livewire.mannager.partials.sidebar')->layout('layouts.custom');

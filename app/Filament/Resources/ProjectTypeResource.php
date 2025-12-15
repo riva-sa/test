@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProjectTypeResource\Pages;
-use App\Filament\Resources\ProjectTypeResource\RelationManagers;
 use App\Models\ProjectType;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
@@ -11,9 +10,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use phpDocumentor\Reflection\Types\Boolean;
 
 class ProjectTypeResource extends Resource
 {
@@ -22,9 +18,10 @@ class ProjectTypeResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static ?string $navigationGroup = 'المشاريع';
-    protected static ?int $navigationSort = 2;
-    protected static ?string $navigationLabel = 'نوع المشروع';
 
+    protected static ?int $navigationSort = 2;
+
+    protected static ?string $navigationLabel = 'نوع المشروع';
 
     public static function getGloballySearchableAttributes(): array
     {

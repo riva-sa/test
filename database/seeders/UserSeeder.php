@@ -1,5 +1,7 @@
 <?php
+
 namespace Database\Seeders;
+
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -27,7 +29,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'project_manager',
                 'guard_name' => 'web',
-            ]
+            ],
         ];
 
         foreach ($roles as $role) {
@@ -38,7 +40,7 @@ class UserSeeder extends Seeder
         $user = User::create([
             'email' => 'admin@riva.sa',
             'password' => Hash::make('password'),
-            'name' => "Admin",
+            'name' => 'Admin',
             // Add any other required fields for your User model
         ]);
 

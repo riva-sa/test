@@ -15,5 +15,4 @@ class Developer extends Model
         'website',
         'address',
     ];
-
 }

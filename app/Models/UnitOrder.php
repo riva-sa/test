@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
 
 class UnitOrder extends Model
 {
@@ -19,7 +18,7 @@ class UnitOrder extends Model
         'user_id',
         'project_id',
         'support_type',
-        'last_action_by_user_id'
+        'last_action_by_user_id',
     ];
 
     public function unit()
@@ -27,7 +26,8 @@ class UnitOrder extends Model
         return $this->belongsTo(Unit::class);
     }
 
-    public function project() {
+    public function project()
+    {
         return $this->belongsTo(Project::class);
     }
 
@@ -68,11 +68,11 @@ class UnitOrder extends Model
         // 🔑 الصلاحيات
         foreach ($this->permissions()->with(['user', 'grantedBy'])->get() as $permission) {
             $currentUser = auth()->user();
-            
+
             // التحقق إذا كان المستخدم الحالي ليس sales أو إذا كان sales ولديه الصلاحية
-            if (!$currentUser->hasRole('sales') || 
+            if (! $currentUser->hasRole('sales') ||
                 ($currentUser->hasRole('sales') && $permission->user_id == $currentUser->id)) {
-                
+
                 $activities->push([
                     'type' => 'permission',
                     'message' => "منح {$permission->grantedBy->name} صلاحية إلى {$permission->user->name}",
@@ -82,20 +82,21 @@ class UnitOrder extends Model
         }
 
         // 📌 التحديثات على الحالة أو الرسالة
-        if( $this->statusLabel() != 'جديد'){
+        if ($this->statusLabel() != 'جديد') {
             $activities->push([
                 'type' => 'status',
-                'message' => "تم تحديث حالة الطلب إلى: " . $this->statusLabel(),
+                'message' => 'تم تحديث حالة الطلب إلى: '.$this->statusLabel(),
                 'created_at' => $this->updated_at,
             ]);
         }
 
         return $activities->sortByDesc('created_at');
     }
+
     public function lastActivity()
     {
         $activities = collect();
-        
+
         // آخر ملاحظة
         if ($note = $this->notes()->with('user')->latest()->first()) {
             $activities->push([
@@ -105,15 +106,15 @@ class UnitOrder extends Model
                 'priority' => 3, // أولوية عالية للملاحظات
             ]);
         }
-        
+
         // آخر صلاحية
-        if ($perm = $this->permissions()->with(['user','grantedBy'])->latest()->first()) {
+        if ($perm = $this->permissions()->with(['user', 'grantedBy'])->latest()->first()) {
             $currentUser = auth()->user();
-            
+
             // التحقق إذا كان المستخدم الحالي ليس sales أو إذا كان sales ولديه الصلاحية
-            if (!$currentUser->hasRole('sales') || 
+            if (! $currentUser->hasRole('sales') ||
                 ($currentUser->hasRole('sales') && $perm->user_id == $currentUser->id)) {
-                
+
                 $activities->push([
                     'type' => 'permission',
                     'message' => "تم منح صلاحية {$perm->permission_type} للمستخدم {$perm->user->name} بواسطة {$perm->grantedBy->name}",
@@ -122,22 +123,22 @@ class UnitOrder extends Model
                 ]);
             }
         }
-        
+
         // آخر تحديث حالة
         if ($this->updated_at && $this->statusLabel() != 'جديد') {
             // if not new
             $activities->push([
                 'type' => 'status',
-                'message' => "تم تحديث حالة الطلب إلى: " . $this->statusLabel(),
+                'message' => 'تم تحديث حالة الطلب إلى: '.$this->statusLabel(),
                 'created_at' => $this->updated_at,
                 'priority' => 1,
             ]);
-            
+
         }
-        
+
         // ترتيب حسب التاريخ والأولوية
         return $activities->sortByDesc(function ($item) {
-            return $item['created_at']->timestamp . $item['priority'];
+            return $item['created_at']->timestamp.$item['priority'];
         })->first();
     }
 
@@ -145,12 +146,12 @@ class UnitOrder extends Model
     {
         $statuses = [
             0 => ['label' => 'جديد', 'color' => 'blue'],
-            1 => ['label' => 'طلب مفتوح', 'color' => 'green'], 
+            1 => ['label' => 'طلب مفتوح', 'color' => 'green'],
             2 => ['label' => 'معاملات بيعية', 'color' => 'yellow'],
             3 => ['label' => 'مغلق', 'color' => 'red'],
             4 => ['label' => 'مكتمل', 'color' => 'emerald'],
         ];
-        
+
         return $statuses[$this->status]['label'] ?? 'غير معروف';
     }
 
@@ -158,14 +159,12 @@ class UnitOrder extends Model
     {
         $statuses = [
             0 => 'blue',
-            1 => 'green', 
+            1 => 'green',
             2 => 'yellow',
             3 => 'red',
             4 => 'emerald',
         ];
-        
+
         return $statuses[$this->status] ?? 'gray';
     }
-
-
 }

@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\Manager;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Project;
 use App\Models\Unit;
 use App\Services\TrackingService;
 use Carbon\Carbon;
-use Illuminate\Validation\Rule;
+use Illuminate\Http\Request;
 
 class TrackingController extends Controller
 {
@@ -28,13 +27,13 @@ class TrackingController extends Controller
             'type' => 'required|in:unit,project',
             'id' => 'required|integer',
             'event' => 'required|in:visit,view,show,order',
-            'metadata' => 'nullable|array'
+            'metadata' => 'nullable|array',
         ]);
 
         try {
             if ($validated['type'] === 'unit') {
                 $unit = Unit::findOrFail($validated['id']);
-                
+
                 switch ($validated['event']) {
                     case 'visit':
                         $this->trackingService->trackUnitView($unit);
@@ -51,7 +50,7 @@ class TrackingController extends Controller
                 }
             } elseif ($validated['type'] === 'project') {
                 $project = Project::findOrFail($validated['id']);
-                
+
                 switch ($validated['event']) {
                     case 'visit':
                         $this->trackingService->trackProjectVisit($project);
@@ -64,13 +63,13 @@ class TrackingController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Event tracked successfully'
+                'message' => 'Event tracked successfully',
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to track event: ' . $e->getMessage()
+                'message' => 'Failed to track event: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -82,7 +81,7 @@ class TrackingController extends Controller
     {
         $validated = $request->validate([
             'event' => 'required|in:visit,view,show,order',
-            'metadata' => 'nullable|array'
+            'metadata' => 'nullable|array',
         ]);
 
         try {
@@ -102,13 +101,13 @@ class TrackingController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Unit event tracked successfully',
-                'unit_id' => $unit->id
+                'unit_id' => $unit->id,
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to track unit event: ' . $e->getMessage()
+                'message' => 'Failed to track unit event: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -120,7 +119,7 @@ class TrackingController extends Controller
     {
         $validated = $request->validate([
             'event' => 'required|in:visit,show',
-            'metadata' => 'nullable|array'
+            'metadata' => 'nullable|array',
         ]);
 
         try {
@@ -136,13 +135,13 @@ class TrackingController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Project event tracked successfully',
-                'project_id' => $project->id
+                'project_id' => $project->id,
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to track project event: ' . $e->getMessage()
+                'message' => 'Failed to track project event: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -155,19 +154,19 @@ class TrackingController extends Controller
         $validated = $request->validate([
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
-            'days' => 'nullable|integer|min:1|max:365'
+            'days' => 'nullable|integer|min:1|max:365',
         ]);
 
         $dateRange = null;
         if ($validated['start_date'] && $validated['end_date']) {
             $dateRange = [
                 Carbon::parse($validated['start_date']),
-                Carbon::parse($validated['end_date'])
+                Carbon::parse($validated['end_date']),
             ];
         } elseif ($validated['days']) {
             $dateRange = [
                 Carbon::now()->subDays($validated['days']),
-                Carbon::now()
+                Carbon::now(),
             ];
         }
 
@@ -179,8 +178,8 @@ class TrackingController extends Controller
             'conversion_rates' => $conversionRates,
             'period' => $dateRange ? [
                 'start' => $dateRange[0]->toISOString(),
-                'end' => $dateRange[1]->toISOString()
-            ] : null
+                'end' => $dateRange[1]->toISOString(),
+            ] : null,
         ]);
     }
 
@@ -192,7 +191,7 @@ class TrackingController extends Controller
         $validated = $request->validate([
             'unit_id' => 'nullable|exists:units,id',
             'project_id' => 'nullable|exists:projects,id',
-            'limit' => 'nullable|integer|min:1|max:100'
+            'limit' => 'nullable|integer|min:1|max:100',
         ]);
 
         $query = Unit::with('project');
@@ -213,7 +212,7 @@ class TrackingController extends Controller
             'units' => $units->map(function ($unit) {
                 return [
                     'id' => $unit->id,
-                    'name' => $unit->name ?? 'Unit #' . $unit->id,
+                    'name' => $unit->name ?? 'Unit #'.$unit->id,
                     'project_name' => $unit->project->name ?? 'Unknown Project',
                     'tracking_stats' => [
                         'visits_count' => $unit->visits_count,
@@ -225,9 +224,9 @@ class TrackingController extends Controller
                         'last_viewed_at' => $unit->last_viewed_at?->toISOString(),
                         'last_shown_at' => $unit->last_shown_at?->toISOString(),
                         'last_ordered_at' => $unit->last_ordered_at?->toISOString(),
-                    ]
+                    ],
                 ];
-            })
+            }),
         ]);
     }
 
@@ -238,7 +237,7 @@ class TrackingController extends Controller
     {
         $validated = $request->validate([
             'project_id' => 'nullable|exists:projects,id',
-            'limit' => 'nullable|integer|min:1|max:100'
+            'limit' => 'nullable|integer|min:1|max:100',
         ]);
 
         $query = Project::query();
@@ -268,9 +267,9 @@ class TrackingController extends Controller
                         'last_shown_at' => $project->last_shown_at?->toISOString(),
                         'last_ordered_at' => $project->last_ordered_at?->toISOString(),
                     ],
-                    'total_stats' => $project->getTotalTrackingStats()
+                    'total_stats' => $project->getTotalTrackingStats(),
                 ];
-            })
+            }),
         ]);
     }
 
@@ -282,19 +281,19 @@ class TrackingController extends Controller
         $validated = $request->validate([
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
-            'days' => 'nullable|integer|min:1|max:365'
+            'days' => 'nullable|integer|min:1|max:365',
         ]);
 
         $dateRange = null;
         if ($validated['start_date'] && $validated['end_date']) {
             $dateRange = [
                 Carbon::parse($validated['start_date']),
-                Carbon::parse($validated['end_date'])
+                Carbon::parse($validated['end_date']),
             ];
         } elseif ($validated['days']) {
             $dateRange = [
                 Carbon::now()->subDays($validated['days']),
-                Carbon::now()
+                Carbon::now(),
             ];
         }
 
@@ -304,8 +303,8 @@ class TrackingController extends Controller
             'conversion_rates' => $conversionRates,
             'period' => $dateRange ? [
                 'start' => $dateRange[0]->toISOString(),
-                'end' => $dateRange[1]->toISOString()
-            ] : null
+                'end' => $dateRange[1]->toISOString(),
+            ] : null,
         ]);
     }
 
@@ -316,7 +315,7 @@ class TrackingController extends Controller
     {
         $validated = $request->validate([
             'limit' => 'nullable|integer|min:1|max:100',
-            'days' => 'nullable|integer|min:1|max:365'
+            'days' => 'nullable|integer|min:1|max:365',
         ]);
 
         $limit = $validated['limit'] ?? 5;
@@ -328,7 +327,7 @@ class TrackingController extends Controller
             'units' => $popularUnits->map(function ($unit) {
                 return [
                     'id' => $unit->id,
-                    'name' => $unit->name ?? 'Unit #' . $unit->id,
+                    'name' => $unit->name ?? 'Unit #'.$unit->id,
                     'project_name' => $unit->project->name ?? 'Unknown Project',
                     'popularity_score' => $unit->popularity_score ?? 0,
                     'tracking_stats' => [
@@ -337,11 +336,11 @@ class TrackingController extends Controller
                         'shows_count' => $unit->shows_count,
                         'orders_count' => $unit->orders_count,
                         'conversion_rate' => $unit->getConversionRate(),
-                    ]
+                    ],
                 ];
             }),
             'period_days' => $days,
-            'limit' => $limit
+            'limit' => $limit,
         ]);
     }
 
@@ -352,7 +351,7 @@ class TrackingController extends Controller
     {
         $validated = $request->validate([
             'limit' => 'nullable|integer|min:1|max:100',
-            'days' => 'nullable|integer|min:1|max:365'
+            'days' => 'nullable|integer|min:1|max:365',
         ]);
 
         $limit = $validated['limit'] ?? 10;
@@ -374,11 +373,11 @@ class TrackingController extends Controller
                         'orders_count' => $project->orders_count,
                         'conversion_rate' => $project->getConversionRate(),
                     ],
-                    'total_stats' => $project->getTotalTrackingStats()
+                    'total_stats' => $project->getTotalTrackingStats(),
                 ];
             }),
             'period_days' => $days,
-            'limit' => $limit
+            'limit' => $limit,
         ]);
     }
 }

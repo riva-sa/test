@@ -24,12 +24,10 @@ class Contact extends Model
 
     /**
      * Get the status label for this contact.
-     *
-     * @return string
      */
     public function getStatusLabelAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'new' => 'جديد',
             'processing' => 'قيد المعالجة',
             'completed' => 'تم الرد',

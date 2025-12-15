@@ -3,9 +3,8 @@
 namespace App\Filament\Resources\UnitResource\Pages;
 
 use App\Filament\Resources\UnitResource;
-use Filament\Actions;
-use Filament\Resources\Pages\CreateRecord;
 use App\Models\Unit;
+use Filament\Resources\Pages\CreateRecord;
 
 class CreateUnit extends CreateRecord
 {
@@ -25,7 +24,7 @@ class CreateUnit extends CreateRecord
                     'title' => $copyUnit->title,
                     'project_id' => $copyUnit->project_id,
                     'floor' => $copyUnit->floor,
-                    'slug' => $copyUnit->slug . '-copy',
+                    'slug' => $copyUnit->slug.'-copy',
                     'unit_type' => $copyUnit->unit_type,
                     'building_number' => $copyUnit->building_number,
                     'unit_number' => $copyUnit->unit_number,
@@ -46,5 +45,4 @@ class CreateUnit extends CreateRecord
             }
         }
     }
-
 }

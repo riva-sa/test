@@ -175,14 +175,14 @@
                 @if($view_type === 'projects')
                     <!-- Projects Grid -->
                     <div class="projects-masonry shop">
-                        <div class="row">
+                        <div class="row" wire:loading.class="opacity-50">
 
                             @forelse($items as $project)
                                 <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 mb-3" wire:key="{{ $project->id }}" data-tracking='{"type":"project","id":{{ $project->id }}}' data-project-id="{{ $project->id }}">
                                     <article class="post">
 
                                         <figure class="rounded-top position-relative">
-                                            <a href="{{ route('frontend.projects.single', $project->slug) }}"> <img src="@if($project->getMainImages() !== null ) {{ App\Helpers\MediaHelper::getUrl($project->getMainImages()->media_url) }} @else {{ App\Helpers\MediaHelper::getUrl($project->projectMedia()->first()->media_url) }} @endif" style="max-height: 200px" alt="{{ $project->name }}" /></a>
+                                            <a href="{{ route('frontend.projects.single', $project->slug) }}"> <img src="@if($project->getMainImages() !== null ) {{ App\Helpers\MediaHelper::getUrl($project->getMainImages()->media_url) }} @else {{ App\Helpers\MediaHelper::getUrl($project->projectMedia()->first()->media_url) }} @endif" style="max-height: 200px" alt="{{ $project->name }}" loading="lazy" /></a>
                                             <figcaption class="noise-container text-right heroTop position-absolute" style="top: 6px;right: 6px;" dir="rtl">
                                                 <span class="badge badge-lg text-white d-flex align-content-center align-items-center">
                                                     <i class="uil uil-map-marker fs-15 ms-1"></i>
@@ -261,7 +261,7 @@
                 @else
                     <!-- units Grid -->
                     <div class="projects-masonry shop">
-                        <div class="row">
+                        <div class="row" wire:loading.class="opacity-50">
                             <!-- Units grid -->
                             @forelse($items as $unit)
                                 <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 mb-3" wire:key="{{ $unit->id }}">
@@ -270,9 +270,9 @@
                                         <figure class="rounded-top position-relative">
                                             <a wire:click="showUnitDetails({{ $unit->id }})" data-unit-id="{{ $unit->id }}">
                                                 @if ($unit->floor_plan)
-                                                    <img src="{{ App\Helpers\MediaHelper::getUrl($unit->floor_plan ) }}" style="max-height: 200px" alt="{{ $unit->title }}" />
+                                                    <img src="{{ App\Helpers\MediaHelper::getUrl($unit->floor_plan ) }}" style="max-height: 200px" alt="{{ $unit->title }}" loading="lazy" />
                                                 @else
-                                                    <img src="{{ App\Helpers\MediaHelper::getUrl($unit->project->getMainImages()->media_url ) }}" style="max-height: 200px" alt="{{ $unit->title }}" />
+                                                    <img src="{{ App\Helpers\MediaHelper::getUrl($unit->project->getMainImages()->media_url ) }}" style="max-height: 200px" alt="{{ $unit->title }}" loading="lazy" />
                                                 @endif
                                             </a>
                                             <figcaption class="glass-white-card text-right heroTop position-absolute" style="top: 6px;right: 6px;" dir="rtl">

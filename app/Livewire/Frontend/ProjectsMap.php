@@ -2,17 +2,16 @@
 
 namespace App\Livewire\Frontend;
 
-use Livewire\Component;
-use App\Models\Project;
 use App\Models\City;
-use App\Models\State;
-use App\Models\Unit;
-use App\Models\ProjectType;
-use Livewire\Attributes\Title;
-use Jantinnerezo\LivewireAlert\LivewireAlert;
-use Livewire\Attributes\Url;
 use App\Models\Developer;
+use App\Models\Project;
+use App\Models\ProjectType;
+use App\Models\State;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Title;
+use Livewire\Attributes\Url;
+use Livewire\Component;
 
 #[Title('المشاريع')]
 class ProjectsMap extends Component
@@ -20,6 +19,7 @@ class ProjectsMap extends Component
     use LivewireAlert;
 
     public bool $showSideSheet = false;
+
     public ?Project $selectedProject = null;
 
     #[Url]
@@ -38,6 +38,7 @@ class ProjectsMap extends Component
     public $selected_states = null;
 
     public $states = [];
+
     public $cities = [];
 
     public function mount()

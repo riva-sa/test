@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Project;
-use App\Models\ProjectMedia;
 use Illuminate\Support\Facades\Storage;
+
 class HelperController extends Controller
 {
     public function downloadPdf(Project $project, $file)

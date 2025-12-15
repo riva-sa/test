@@ -2,17 +2,19 @@
 
 namespace App\Livewire\Mannager;
 
-use Livewire\Component;
-use Livewire\WithPagination;
 use App\Models\UnitOrder;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class CustomersList extends Component
 {
     use WithPagination;
 
     public $selectedCustomer = null;
+
     public $search = '';
+
     public $perPage = 10;
 
     public function selectCustomer($phone)
@@ -31,23 +33,23 @@ class CustomersList extends Component
             return $this->renderCustomerOrders();
         }
 
-        if(!Auth::user()->hasRole('sales')) {
+        if (! Auth::user()->hasRole('sales')) {
             $customers = UnitOrder::selectRaw('
                 phone,
                 MIN(name) as name,
                 MIN(email) as email,
                 COUNT(*) as orders_count
             ')
-            ->when($this->search, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('name', 'like', '%'.$this->search.'%')
-                    ->orWhere('email', 'like', '%'.$this->search.'%')
-                    ->orWhere('phone', 'like', '%'.$this->search.'%');
-                });
-            })
-            ->groupBy('phone')
-            ->orderBy('orders_count', 'desc')
-            ->paginate($this->perPage);
+                ->when($this->search, function ($query) {
+                    $query->where(function ($q) {
+                        $q->where('name', 'like', '%'.$this->search.'%')
+                            ->orWhere('email', 'like', '%'.$this->search.'%')
+                            ->orWhere('phone', 'like', '%'.$this->search.'%');
+                    });
+                })
+                ->groupBy('phone')
+                ->orderBy('orders_count', 'desc')
+                ->paginate($this->perPage);
         } else {
             $customers = UnitOrder::selectRaw('
                 phone,
@@ -55,19 +57,19 @@ class CustomersList extends Component
                 MIN(email) as email,
                 COUNT(*) as orders_count
             ')
-            ->whereHas('project', function($query) {
-                $query->where('sales_manager_id', auth()->id());
-            })
-            ->when($this->search, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('name', 'like', '%'.$this->search.'%')
-                    ->orWhere('email', 'like', '%'.$this->search.'%')
-                    ->orWhere('phone', 'like', '%'.$this->search.'%');
-                });
-            })
-            ->groupBy('phone')
-            ->orderBy('orders_count', 'desc')
-            ->paginate($this->perPage);
+                ->whereHas('project', function ($query) {
+                    $query->where('sales_manager_id', auth()->id());
+                })
+                ->when($this->search, function ($query) {
+                    $query->where(function ($q) {
+                        $q->where('name', 'like', '%'.$this->search.'%')
+                            ->orWhere('email', 'like', '%'.$this->search.'%')
+                            ->orWhere('phone', 'like', '%'.$this->search.'%');
+                    });
+                })
+                ->groupBy('phone')
+                ->orderBy('orders_count', 'desc')
+                ->paginate($this->perPage);
         }
 
         return view('livewire.mannager.customers-list', [
@@ -82,17 +84,17 @@ class CustomersList extends Component
     {
         if (Auth::user()->hasRole('sales_manager') || Auth::user()->hasRole('follow_up')) {
             $orders = UnitOrder::with(['unit', 'project'])
-            ->where('phone', $this->selectedCustomer)
-            ->orderBy('created_at', 'desc')
-            ->paginate($this->perPage);
-        }else{
+                ->where('phone', $this->selectedCustomer)
+                ->orderBy('created_at', 'desc')
+                ->paginate($this->perPage);
+        } else {
             $orders = UnitOrder::with(['unit', 'project'])
-            ->where('phone', $this->selectedCustomer)
-            ->whereHas('project', function($query) {
-                $query->where('sales_manager_id', auth()->id());
-            })
-            ->orderBy('created_at', 'desc')
-            ->paginate($this->perPage);
+                ->where('phone', $this->selectedCustomer)
+                ->whereHas('project', function ($query) {
+                    $query->where('sales_manager_id', auth()->id());
+                })
+                ->orderBy('created_at', 'desc')
+                ->paginate($this->perPage);
         }
 
         return view('livewire.mannager.customers-list', [

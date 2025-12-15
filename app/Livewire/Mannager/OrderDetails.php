@@ -2,39 +2,43 @@
 
 namespace App\Livewire\Mannager;
 
-use Livewire\Component;
-use App\Models\UnitOrder;
 use App\Models\OrderNote;
 use App\Models\OrderPermission;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Project;
 use App\Models\Unit;
-use App\Models\User;
-use Illuminate\Support\Facades\Cache;
-use Carbon\Carbon;
-use App\Traits\DelayedOrderLogic;
-use App\Notifications\UnitOrderUpdated;
-use Illuminate\Support\Facades\Log;
+use App\Models\UnitOrder;
 use App\Services\NotificationService;
+use App\Traits\DelayedOrderLogic;
+use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
 
 class OrderDetails extends Component
 {
     use DelayedOrderLogic;
+
     public $order;
+
     public $note = '';
+
     public $orderId;
+
     public $isEditingClient = false;
+
     public $clientData = [];
+
     public $permissions = [];
 
     public $isEditingUnitCase = false;
+
     public $unitCase = '';
 
     // إضافة هذه الخصائص في بداية الكلاس
     public $isEditingMessage = false;
+
     public $orderMessage = '';
 
     public $isEditingUnitInfo = false;
+
     public $unitData = [];
     // إضافة هذه الوظائف في الكلاس OrderDetails
 
@@ -101,7 +105,7 @@ class OrderDetails extends Component
         ]);
 
         $this->order->update([
-            'message' => $this->orderMessage
+            'message' => $this->orderMessage,
         ]);
 
         $this->updateOrderWithDelayControl($this->order, ['message' => $this->orderMessage]);
@@ -120,7 +124,7 @@ class OrderDetails extends Component
     public function deleteOrderMessage()
     {
         $this->order->update([
-            'message' => null
+            'message' => null,
         ]);
 
         $this->isEditingMessage = false;
@@ -202,7 +206,7 @@ class OrderDetails extends Component
             'PurchasePurpose' => $this->unitData['purchase_purpose'],
             'support_type' => $this->unitData['support_type'],
         ];
-        
+
         // استخدام الدالة الجديدة من الـ Trait
         $this->updateOrderWithDelayControl($this->order, $updateData);
         $this->isEditingUnitInfo = false;
@@ -211,7 +215,6 @@ class OrderDetails extends Component
         session()->flash('message', 'تم تحديث معلومات الوحدة بنجاح');
         $this->loadOrder();
     }
-
 
     public function loadOrder()
     {
@@ -229,7 +232,7 @@ class OrderDetails extends Component
             'note' => $this->note,
             'user_id' => Auth::id(),
         ]);
-        
+
         // 👇 Update the order's updated_at timestamp
         $this->updateOrderWithDelayControl($this->order);
         $this->note = '';
@@ -249,13 +252,13 @@ class OrderDetails extends Component
         // إشعار المهتمين بتحديث الحالة
         app(NotificationService::class)
             ->notifyStatusUpdate($this->order, $oldStatus, $this->order->status, auth()->id());
-        
+
         $this->updateOrderWithDelayControl($this->order, ['status' => $status]);
         $this->loadOrder();
 
         return response()->json([
             'message' => 'تم تحديث حالة الطلب بنجاح',
-            'new_status' => $status
+            'new_status' => $status,
         ]);
 
         session()->flash('messageStatus', 'تم التعديل بنجاح');
@@ -267,34 +270,36 @@ class OrderDetails extends Component
 
         $previousOrder = \App\Models\UnitOrder::where('id', '<', $this->order->id)->orderBy('id', 'desc')->first();
         $nextOrder = \App\Models\UnitOrder::where('id', '>', $this->order->id)->orderBy('id')->first();
+
         return view('livewire.mannager.order-details', [
             'statusLabels' => [
                 0 => 'جديد',
                 1 => 'طلب مفتوح',
                 2 => 'معاملات بيعية',
                 3 => 'مغلق',
-                4 => 'مكتمل'
+                4 => 'مكتمل',
             ],
             'purchaseTypes' => [
                 'cash' => 'كاش',
-                'installment' => 'تقسيط'
+                'installment' => 'تقسيط',
             ],
             'purchasePurposes' => [
                 'investment' => 'استثمار',
-                'personal' => 'سكنى'
+                'personal' => 'سكنى',
             ],
             'supportTypes' => [
                 'مدعوم' => 'مدعوم',
-                'غير مدعوم' => 'غير مدعوم'
+                'غير مدعوم' => 'غير مدعوم',
             ],
             'projects' => Project::all(),
             'units' => $this->isEditingUnitInfo && isset($this->unitData['project_id'])
                 ? Unit::where('project_id', $this->unitData['project_id'])->get()
                 : collect(),
-            'previousOrder' => $previousOrder ,
+            'previousOrder' => $previousOrder,
             'nextOrder' => $nextOrder,
         ])->layout('layouts.custom');
     }
+
     public function logout()
     {
         Auth::logout();
@@ -303,5 +308,4 @@ class OrderDetails extends Component
 
         return redirect()->route('frontend.home');
     }
-
 }

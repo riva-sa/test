@@ -2,14 +2,16 @@
 
 namespace App\Livewire\Frontend\Conponents;
 
-use Livewire\Component;
 use App\Models\Project;
 use App\Models\ProjectType;
+use Livewire\Component;
 
 class ProjectsTab extends Component
 {
     public $activeTab = 'all';
+
     public $projectTypes;
+
     public $projects;
 
     public function mount()
@@ -29,17 +31,17 @@ class ProjectsTab extends Component
         if ($this->activeTab === 'all') {
             $this->projects = Project::with(['projectType', 'developer', 'units'])
                 ->where('status', 1)
-                ->whereHas('units', function($query) {
+                ->whereHas('units', function ($query) {
                     $query->where('case', 0);
                 })
                 ->get();
         } else {
             $this->projects = Project::with(['developer', 'units'])
                 ->where('status', 1)
-                ->whereHas('projectType', function($query) {
+                ->whereHas('projectType', function ($query) {
                     $query->where('slug', $this->activeTab);
                 })
-                ->whereHas('units', function($query) {
+                ->whereHas('units', function ($query) {
                     $query->where('case', 0);
                 })
                 ->get();

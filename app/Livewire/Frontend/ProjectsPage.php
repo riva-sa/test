@@ -2,19 +2,19 @@
 
 namespace App\Livewire\Frontend;
 
-use App\Models\Developer;
-use Livewire\Component;
-use App\Models\Project;
 use App\Models\City;
+use App\Models\Developer;
+use App\Models\Project;
+use App\Models\ProjectType;
 use App\Models\State;
 use App\Models\Unit;
-use App\Models\ProjectType;
-use Livewire\Attributes\Title;
-use Jantinnerezo\LivewireAlert\LivewireAlert;
-use Livewire\Attributes\Url;
-use Livewire\WithPagination;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
+use Livewire\Attributes\Title;
+use Livewire\Attributes\Url;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 #[Title('المشاريع')]
 class ProjectsPage extends Component
@@ -36,10 +36,13 @@ class ProjectsPage extends Component
 
     #[Url]
     public $selected_projectTypes = [];
+
     #[Url]
     public $selected_developer = [];
+
     #[Url]
     public $is_featured = false;
+
     #[Url]
     public $price_range = 0;
 
@@ -77,9 +80,11 @@ class ProjectsPage extends Component
     public $projectCaseAvilable = true;
 
     public $sort_by = 'id';
+
     public $sort_direction = 'asc';
 
     public $states = [];
+
     public $cities = [];
 
     public function sortBy($field)
@@ -98,23 +103,23 @@ class ProjectsPage extends Component
         $urlParams = request()->query();
 
         // Handle arrays in URL parameters
-        $this->selected_projectTypes = !empty($urlParams['selected_projectTypes']) ?
+        $this->selected_projectTypes = ! empty($urlParams['selected_projectTypes']) ?
             (is_array($urlParams['selected_projectTypes']) ? $urlParams['selected_projectTypes'] : [$urlParams['selected_projectTypes']]) :
             [];
 
-        $this->selected_developer = !empty($urlParams['selected_developer']) ?
+        $this->selected_developer = ! empty($urlParams['selected_developer']) ?
             (is_array($urlParams['selected_developer']) ? $urlParams['selected_developer'] : [$urlParams['selected_developer']]) :
             [];
 
-        $this->selected_bedrooms = !empty($urlParams['selected_bedrooms']) ?
+        $this->selected_bedrooms = ! empty($urlParams['selected_bedrooms']) ?
             (is_array($urlParams['selected_bedrooms']) ? $urlParams['selected_bedrooms'] : [$urlParams['selected_bedrooms']]) :
             [];
 
-        $this->selected_bathrooms = !empty($urlParams['selected_bathrooms']) ?
+        $this->selected_bathrooms = ! empty($urlParams['selected_bathrooms']) ?
             (is_array($urlParams['selected_bathrooms']) ? $urlParams['selected_bathrooms'] : [$urlParams['selected_bathrooms']]) :
             [];
 
-        $this->selected_kitchens = !empty($urlParams['selected_kitchens']) ?
+        $this->selected_kitchens = ! empty($urlParams['selected_kitchens']) ?
             (is_array($urlParams['selected_kitchens']) ? $urlParams['selected_kitchens'] : [$urlParams['selected_kitchens']]) :
             [];
 
@@ -176,7 +181,7 @@ class ProjectsPage extends Component
         'selected_cities' => ['except' => null],
         'selected_states' => ['except' => null],
         'sort_by' => ['except' => 'id'],
-        'sort_direction' => ['except' => 'asc']
+        'sort_direction' => ['except' => 'asc'],
     ];
 
     // Update state based on selected city
@@ -205,7 +210,7 @@ class ProjectsPage extends Component
     public function showUnitDetails($unitId)
     {
         $this->dispatch('loadUnit', [
-            'unitId' => $unitId
+            'unitId' => $unitId,
         ]);
     }
 
@@ -214,28 +219,44 @@ class ProjectsPage extends Component
         $query = null;
 
         if ($this->view_type === 'projects') {
+            $page = (int) request()->query('projects_page', 1);
+            $filters = [
+                'selected_projectTypes' => $this->selected_projectTypes,
+                'selected_developer' => $this->selected_developer,
+                'is_featured' => $this->is_featured,
+                'selected_cities' => $this->selected_cities,
+                'selected_states' => $this->selected_states,
+                'price_min' => $this->price_min,
+                'price_max' => $this->price_max,
+                'space_min' => $this->space_min,
+                'space_max' => $this->space_max,
+                'sort_by' => $this->sort_by,
+                'sort_direction' => $this->sort_direction,
+                'projectCaseAvilable' => $this->projectCaseAvilable,
+            ];
+            $globalVersion = Cache::get('projects_cache_version', 0);
+            $cacheKey = 'projects_page:projects:'.md5(json_encode($filters)).':page:'.$page.':v:'.$globalVersion;
             $query = Project::with(['projectType', 'developer', 'units'])
-            ->select([
-                'projects.*',
-                DB::raw('(SELECT COUNT(*) FROM units WHERE units.project_id = projects.id AND units.case = 0) AS available_units_count'),
-                DB::raw('(SELECT COUNT(*) FROM units WHERE units.project_id = projects.id AND units.case = 1) AS reserved_units_count'),
-                DB::raw('(SELECT COUNT(*) FROM units WHERE units.project_id = projects.id AND units.case = 2) AS sold_units_count'),
-            ])
-            ->where('status', 1)
-            ->orderByRaw("
+                ->select([
+                    'projects.*',
+                    DB::raw('(SELECT COUNT(*) FROM units WHERE units.project_id = projects.id AND units.case = 0) AS available_units_count'),
+                    DB::raw('(SELECT COUNT(*) FROM units WHERE units.project_id = projects.id AND units.case = 1) AS reserved_units_count'),
+                    DB::raw('(SELECT COUNT(*) FROM units WHERE units.project_id = projects.id AND units.case = 2) AS sold_units_count'),
+                ])
+                ->where('status', 1)
+                ->orderByRaw('
                 CASE
                     WHEN (SELECT COUNT(*) FROM units WHERE units.project_id = projects.id AND units.case = 0) > 0 THEN 1
                     WHEN (SELECT COUNT(*) FROM units WHERE units.project_id = projects.id AND units.case = 1) > 0 THEN 2
                     ELSE 3
                 END
-            ");
+            ');
 
-
-            if (!empty($this->selected_projectTypes)) {
+            if (! empty($this->selected_projectTypes)) {
                 $query->whereIn('project_type_id', $this->selected_projectTypes);
             }
 
-            if (!empty($this->selected_developer)) {
+            if (! empty($this->selected_developer)) {
                 $query->whereIn('developer_id', $this->selected_developer);
             }
 
@@ -251,40 +272,40 @@ class ProjectsPage extends Component
                 $query->where('state_id', $this->selected_states);
             }
 
-            if (!empty($this->selected_bedrooms)) {
-                $query->whereHas('units', function($q) {
+            if (! empty($this->selected_bedrooms)) {
+                $query->whereHas('units', function ($q) {
                     $q->whereIn('beadrooms', $this->selected_bedrooms);
                 });
             }
 
-            if ($this->projectCaseAvilable == true){
-                $query->whereHas('units', function($q) {
+            if ($this->projectCaseAvilable == true) {
+                $query->whereHas('units', function ($q) {
                     $q->where('case', 0);
                 });
             }
 
-            if (!empty($this->selected_bathrooms)) {
-                $query->whereHas('units', function($q) {
+            if (! empty($this->selected_bathrooms)) {
+                $query->whereHas('units', function ($q) {
                     $q->whereIn('bathrooms', $this->selected_bathrooms);
                 });
             }
 
-            if (!empty($this->selected_kitchens)) {
-                $query->whereHas('units', function($q) {
+            if (! empty($this->selected_kitchens)) {
+                $query->whereHas('units', function ($q) {
                     $q->whereIn('kitchen', $this->selected_kitchens);
                 });
             }
 
             // Add price range filter
             if ($this->price_min > 0 || $this->price_max < 10000000) {
-                $query->whereHas('units', function($q) {
+                $query->whereHas('units', function ($q) {
                     $q->whereBetween('unit_price', [$this->price_min, $this->price_max]);
                 });
             }
 
             // Add space range filter
             if ($this->space_min > 0 || $this->space_max < 10000) {
-                $query->whereHas('units', function($q) {
+                $query->whereHas('units', function ($q) {
                     $q->whereBetween('unit_area', [$this->space_min, $this->space_max]);
                 });
             }
@@ -302,9 +323,28 @@ class ProjectsPage extends Component
             //     $query->orderBy($this->sort_by, $this->sort_direction);
             // }
 
-            // Use projects_page for pagination
-            $items = $query->paginate(18, ['*'], 'projects_page');
+            // Use projects_page for pagination with cache
+            $items = Cache::remember($cacheKey, 60, function () use ($query) {
+                return $query->paginate(18, ['*'], 'projects_page');
+            });
         } else {
+            $page = (int) request()->query('units_page', 1);
+            $filters = [
+                'selected_projectTypes' => $this->selected_projectTypes,
+                'selected_developer' => $this->selected_developer,
+                'is_featured' => $this->is_featured,
+                'selected_cities' => $this->selected_cities,
+                'selected_states' => $this->selected_states,
+                'price_min' => $this->price_min,
+                'price_max' => $this->price_max,
+                'space_min' => $this->space_min,
+                'space_max' => $this->space_max,
+                'sort_by' => $this->sort_by,
+                'sort_direction' => $this->sort_direction,
+                'projectCaseAvilable' => $this->projectCaseAvilable,
+            ];
+            $globalVersion = Cache::get('projects_cache_version', 0);
+            $cacheKey = 'projects_page:units:'.md5(json_encode($filters)).':page:'.$page.':v:'.$globalVersion;
             $query = Unit::with(['project', 'project.developer'])
                 ->whereHas('project', function ($q) {
                     $q->where('status', 1);
@@ -312,6 +352,7 @@ class ProjectsPage extends Component
                 ->where('status', 1)
                 ->where('case', 0)
                 ->OrWhere('case', 1)
+                ->select(['id', 'title', 'unit_type', 'unit_price', 'unit_area', 'beadrooms', 'bathrooms', 'floor_plan', 'case', 'show_price', 'project_id'])
                 ->addSelect([
                     'available_units_count' => Unit::selectRaw('count(*)')
                         ->whereColumn('project_id', 'units.project_id')
@@ -330,37 +371,35 @@ class ProjectsPage extends Component
                     END
                 ");
 
-
-            if (!empty($this->selected_projectTypes)) {
-                $query->whereHas('project', function($q) {
+            if (! empty($this->selected_projectTypes)) {
+                $query->whereHas('project', function ($q) {
                     $q->whereIn('project_type_id', $this->selected_projectTypes);
                 });
             }
 
-            if (!empty($this->selected_developer)) {
-                $query->whereHas('project', function($q) {
+            if (! empty($this->selected_developer)) {
+                $query->whereHas('project', function ($q) {
                     $q->whereIn('developer_id', $this->selected_developer);
                 });
             }
 
             if ($this->is_featured) {
-                $query->whereHas('project', function($q) {
+                $query->whereHas('project', function ($q) {
                     $q->where('is_featured', 1);
                 });
             }
-            if ($this->projectCaseAvilable == true){
+            if ($this->projectCaseAvilable == true) {
                 $query->where('case', 0);
             }
 
-
             if ($this->selected_cities) {
-                $query->whereHas('project', function($q) {
+                $query->whereHas('project', function ($q) {
                     $q->where('city_id', $this->selected_cities);
                 });
             }
 
             if ($this->selected_states) {
-                $query->whereHas('project', function($q) {
+                $query->whereHas('project', function ($q) {
                     $q->where('state_id', $this->selected_states);
                 });
             }
@@ -379,23 +418,24 @@ class ProjectsPage extends Component
                 $query->whereBetween('unit_area', [$this->space_min, $this->space_max]);
             }
 
-
-            if (!empty($this->selected_bedrooms)) {
+            if (! empty($this->selected_bedrooms)) {
                 $query->where('beadrooms', $this->selected_bedrooms);
             }
 
-            if (!empty($this->selected_bathrooms)) {
+            if (! empty($this->selected_bathrooms)) {
                 $query->where('bathrooms', $this->selected_bathrooms);
             }
 
-            if (!empty($this->selected_kitchens)) {
+            if (! empty($this->selected_kitchens)) {
                 $query->where('kitchen', $this->selected_kitchens);
             }
 
             $query->orderBy($this->sort_by, $this->sort_direction);
 
-            // Use units_page for pagination
-            $items = $query->paginate(12, ['*'], 'units_page');
+            // Use units_page for pagination with cache
+            $items = Cache::remember($cacheKey, 60, function () use ($query) {
+                return $query->paginate(12, ['*'], 'units_page');
+            });
         }
 
         $developers = Developer::all();

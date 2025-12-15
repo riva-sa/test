@@ -5,6 +5,7 @@ namespace App\Filament\Resources\ProjectResource\Pages;
 use App\Filament\Resources\ProjectResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Support\Facades\Cache;
 
 class EditProject extends EditRecord
 {
@@ -15,5 +16,12 @@ class EditProject extends EditRecord
         return [
             Actions\DeleteAction::make(),
         ];
+    }
+
+    protected function afterSave(): void
+    {
+        $projectId = $this->record->id;
+        Cache::forever('project_cache_version:'.$projectId, time());
+        Cache::forever('projects_cache_version', time());
     }
 }

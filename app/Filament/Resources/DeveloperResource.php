@@ -3,10 +3,9 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\DeveloperResource\Pages;
-use App\Filament\Resources\DeveloperResource\RelationManagers;
 use App\Models\Developer;
-use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -14,7 +13,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Forms\Components\RichEditor;
 
 class DeveloperResource extends Resource
 {
@@ -35,66 +33,67 @@ class DeveloperResource extends Resource
             'description',
         ];
     }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 // Section 1: Basic Information
                 Section::make('المعلومات الأساسية')
-                ->schema([
-                    TextInput::make('name')
-                        ->label('الاسم')
-                        ->required()
-                        ->maxLength(255)
-                        ->columnSpan(2), // Span across 2 columns
-                    FileUpload::make('logo')
-                        ->label('الشعار')
-                        ->image()
-                        ->imageEditor()
-                        ->imageEditorAspectRatios([
-                            '16:9',
-                            '4:3',
-                            '1:1',
-                        ])
-                        ->directory('developers')
-                        ->columnSpan(2), // Span across 2 columns
-                    RichEditor::make('description')
-                        ->label('الوصف')
-                        ->columnSpan(2), // Span across 2 columns
-                ])
-                ->columns(2), // Use 2 columns for this section
+                    ->schema([
+                        TextInput::make('name')
+                            ->label('الاسم')
+                            ->required()
+                            ->maxLength(255)
+                            ->columnSpan(2), // Span across 2 columns
+                        FileUpload::make('logo')
+                            ->label('الشعار')
+                            ->image()
+                            ->imageEditor()
+                            ->imageEditorAspectRatios([
+                                '16:9',
+                                '4:3',
+                                '1:1',
+                            ])
+                            ->directory('developers')
+                            ->columnSpan(2), // Span across 2 columns
+                        RichEditor::make('description')
+                            ->label('الوصف')
+                            ->columnSpan(2), // Span across 2 columns
+                    ])
+                    ->columns(2), // Use 2 columns for this section
 
                 // Section 2: Contact Information
                 Section::make('معلومات الاتصال')
-                ->schema([
-                    TextInput::make('email')
-                        ->label('البريد الإلكتروني')
-                        ->email()
-                        ->maxLength(255)
-                        ->columnSpan(1), // Span across 1 column
-                    TextInput::make('phone')
-                        ->label('رقم الهاتف')
-                        ->tel()
-                        ->maxLength(255)
-                        ->columnSpan(1), // Span across 1 column
-                    TextInput::make('website')
-                        ->label('الموقع الإلكتروني')
-                        ->url()
-                        ->maxLength(255)
-                        ->columnSpan(2), // Span across 2 columns
-                ])
-                ->columns(2), // Use 2 columns for this section
+                    ->schema([
+                        TextInput::make('email')
+                            ->label('البريد الإلكتروني')
+                            ->email()
+                            ->maxLength(255)
+                            ->columnSpan(1), // Span across 1 column
+                        TextInput::make('phone')
+                            ->label('رقم الهاتف')
+                            ->tel()
+                            ->maxLength(255)
+                            ->columnSpan(1), // Span across 1 column
+                        TextInput::make('website')
+                            ->label('الموقع الإلكتروني')
+                            ->url()
+                            ->maxLength(255)
+                            ->columnSpan(2), // Span across 2 columns
+                    ])
+                    ->columns(2), // Use 2 columns for this section
 
                 // Section 3: Address
                 Section::make('العنوان')
-                ->schema([
-                    Textarea::make('address')
-                        ->label('العنوان التفصيلي')
-                        ->maxLength(65535)
-                        ->columnSpan(2), // Span across 2 columns
-                ])
-                ->columns(2),
-        ]);
+                    ->schema([
+                        Textarea::make('address')
+                            ->label('العنوان التفصيلي')
+                            ->maxLength(65535)
+                            ->columnSpan(2), // Span across 2 columns
+                    ])
+                    ->columns(2),
+            ]);
     }
 
     public static function table(Table $table): Table

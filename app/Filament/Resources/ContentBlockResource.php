@@ -3,15 +3,12 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ContentBlockResource\Pages;
-use App\Filament\Resources\ContentBlockResource\RelationManagers;
 use App\Models\ContentBlock;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ContentBlockResource extends Resource
 {
@@ -24,7 +21,6 @@ class ContentBlockResource extends Resource
     protected static ?string $navigationLabel = 'محتوي الصفحات';
 
     protected static ?int $navigationSort = 1;
-
 
     public static function form(Form $form): Form
     {

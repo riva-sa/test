@@ -3,11 +3,12 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\App\Profile;
-use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use App\Filament\Pages\Auth\Login;
 use App\Filament\Resources\UnitOrderResource\Widgets\UnitOrderStats;
 use App\Filament\Widgets\LatestUnitOrders;
 use App\Http\Middleware\AdminaPanelMiddleware;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use Filament\FontProviders\GoogleFontProvider;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -15,17 +16,15 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Firefly\FilamentBlog\Blog;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
-use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Illuminate\Support\Facades\Storage;
-use Filament\FontProviders\GoogleFontProvider;
-use Firefly\FilamentBlog\Blog;
-use Illuminate\Support\HtmlString;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -45,9 +44,9 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::Zinc,
             ])
             ->font('IBM Plex Sans Arabic', provider: GoogleFontProvider::class)
-            ->favicon( Storage::url(Setting('site_favicon')) )
+            ->favicon(Storage::url(Setting('site_favicon')))
             ->brandName(Setting('site_name'))
-            ->brandLogo( Storage::url(Setting('site_logo')) )
+            ->brandLogo(Storage::url(Setting('site_logo')))
 
             ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
             ->globalSearchFieldKeyBindingSuffix()
@@ -59,7 +58,7 @@ class AdminPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 LatestUnitOrders::class,
-                UnitOrderStats::class
+                UnitOrderStats::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -71,18 +70,17 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-                AdminaPanelMiddleware::class
+                AdminaPanelMiddleware::class,
             ])
             ->plugins([
                 FilamentShieldPlugin::make(),
                 \TomatoPHP\FilamentSettingsHub\FilamentSettingsHubPlugin::make()
-                ->allowSiteSettings()
-                ->allowSocialMenuSettings(),
+                    ->allowSiteSettings()
+                    ->allowSocialMenuSettings(),
                 Blog::make(),
             ])
             ->authMiddleware([
                 Authenticate::class,
             ]);
     }
-
 }

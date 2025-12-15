@@ -6,8 +6,8 @@ use Livewire\Component;
 
 class PdfViewer extends Component
 {
-
     public $pdfUrl;
+
     public $showModal = false;
 
     protected $listeners = ['showPdf'];

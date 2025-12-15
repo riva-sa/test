@@ -3,18 +3,15 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\GuaranteeResource\Pages;
-use App\Filament\Resources\GuaranteeResource\RelationManagers;
 use App\Models\Guarantee;
+use App\Models\Project;
 use Doctrine\DBAL\Query\From;
 use Filament\Forms;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Models\Project;
-use Filament\Forms\Components\CheckboxList;
 
 class GuaranteeResource extends Resource
 {
@@ -61,7 +58,7 @@ class GuaranteeResource extends Resource
                             ->columns(4)
                             ->options(Project::all()->pluck('name', 'id')->toArray()), // Fetch available projects from the database
 
-                    ])
+                    ]),
             ]);
     }
 
@@ -73,7 +70,7 @@ class GuaranteeResource extends Resource
                 Tables\Columns\ToggleColumn::make('is_active')
                     ->label('الحالة')
                     ->onColor('success')
-                    ->offColor('danger')
+                    ->offColor('danger'),
             ])
             ->filters([
                 //

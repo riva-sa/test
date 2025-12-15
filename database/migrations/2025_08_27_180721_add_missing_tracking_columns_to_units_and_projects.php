@@ -13,20 +13,20 @@ return new class extends Migration
     {
         // Add missing tracking columns to units
         Schema::table('units', function (Blueprint $table) {
-            if (!Schema::hasColumn('units', 'whatsapp_count')) {
+            if (! Schema::hasColumn('units', 'whatsapp_count')) {
                 $table->unsignedInteger('whatsapp_count')->default(0)->after('orders_count');
             }
-            if (!Schema::hasColumn('units', 'calls_count')) {
+            if (! Schema::hasColumn('units', 'calls_count')) {
                 $table->unsignedInteger('calls_count')->default(0)->after('whatsapp_count');
             }
         });
 
         // Add missing tracking columns to projects
         Schema::table('projects', function (Blueprint $table) {
-            if (!Schema::hasColumn('projects', 'whatsapp_count')) {
+            if (! Schema::hasColumn('projects', 'whatsapp_count')) {
                 $table->unsignedInteger('whatsapp_count')->default(0)->after('orders_count');
             }
-            if (!Schema::hasColumn('projects', 'calls_count')) {
+            if (! Schema::hasColumn('projects', 'calls_count')) {
                 $table->unsignedInteger('calls_count')->default(0)->after('whatsapp_count');
             }
         });

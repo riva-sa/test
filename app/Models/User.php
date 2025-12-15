@@ -8,13 +8,13 @@ use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements FilamentUser
 {
     use HasFactory, Notifiable;
     use HasRoles;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -56,8 +56,6 @@ class User extends Authenticatable implements FilamentUser
         return true; // str_ends_with($this->email, '@larament.test');
     }
 
-
-
     /**
      * Get all order permissions for this user
      */
@@ -69,17 +67,18 @@ class User extends Authenticatable implements FilamentUser
     /**
      * Check if user has permission for a specific order
      *
-     * @param int $orderId
-     * @param string $permissionType
+     * @param  int  $orderId
+     * @param  string  $permissionType
      * @return bool
      */
     public function hasOrderPermission($orderId, $permissionType)
     {
         // First check if the user is the sales manager of the project associated with this order
         $order = UnitOrder::find($orderId);
-        if (!$order) {
+        if (! $order) {
             return false;
         }
+
         // Check for explicit order permission
         return $this->orderPermissions()
             ->where('unit_order_id', $orderId)
@@ -144,5 +143,4 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->hasMany(Project::class, 'sales_manager_id');
     }
-
 }

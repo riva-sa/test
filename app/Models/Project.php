@@ -2,14 +2,16 @@
 
 namespace App\Models;
 
+use App\Traits\Trackable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Traits\Trackable;
+
 class Project extends Model
 {
     use HasFactory, Trackable;
+
     protected $fillable = [
         'name',
         'slug',
@@ -42,16 +44,15 @@ class Project extends Model
     ];
 
     protected $casts =
-    [
-        'status' => 'boolean',
-        'show_price' => 'boolean',
-        'location' => 'array',
-        'last_visited_at' => 'datetime',
-        'last_viewed_at' => 'datetime',
-        'last_shown_at' => 'datetime',
-        'last_ordered_at' => 'datetime',
-    ];
-
+        [
+            'status' => 'boolean',
+            'show_price' => 'boolean',
+            'location' => 'array',
+            'last_visited_at' => 'datetime',
+            'last_viewed_at' => 'datetime',
+            'last_shown_at' => 'datetime',
+            'last_ordered_at' => 'datetime',
+        ];
 
     public function developer()
     {
@@ -83,6 +84,7 @@ class Project extends Model
     {
         return $this->belongsTo(City::class);
     }
+
     // state
     public function state()
     {
@@ -166,7 +168,6 @@ class Project extends Model
             return null; // إرجاع null في حالة الخطأ
         }
     }
-
 
     public function getFirstPdfUrl()
     {
@@ -252,10 +253,10 @@ class Project extends Model
         $unitCases = $this->units()->pluck('case');
 
         // إحصائيات الحالات
-        $availableCount = $unitCases->filter(fn($case) => $case == 0)->count();
-        $reservedCount = $unitCases->filter(fn($case) => $case == 1)->count();
-        $soldCount = $unitCases->filter(fn($case) => $case == 2)->count();
-        $underConstructionCount = $unitCases->filter(fn($case) => $case == 3)->count();
+        $availableCount = $unitCases->filter(fn ($case) => $case == 0)->count();
+        $reservedCount = $unitCases->filter(fn ($case) => $case == 1)->count();
+        $soldCount = $unitCases->filter(fn ($case) => $case == 2)->count();
+        $underConstructionCount = $unitCases->filter(fn ($case) => $case == 3)->count();
 
         $totalUnits = $unitCases->count();
 
@@ -326,16 +327,16 @@ class Project extends Model
                 'sold' => 0,
                 'under_construction' => 0,
                 'total' => 0,
-                'availability_percentage' => 0
+                'availability_percentage' => 0,
             ];
         }
 
         $unitCases = $this->units()->pluck('case');
 
-        $available = $unitCases->filter(fn($case) => $case == 0)->count();
-        $reserved = $unitCases->filter(fn($case) => $case == 1)->count();
-        $sold = $unitCases->filter(fn($case) => $case == 2)->count();
-        $underConstruction = $unitCases->filter(fn($case) => $case == 3)->count();
+        $available = $unitCases->filter(fn ($case) => $case == 0)->count();
+        $reserved = $unitCases->filter(fn ($case) => $case == 1)->count();
+        $sold = $unitCases->filter(fn ($case) => $case == 2)->count();
+        $underConstruction = $unitCases->filter(fn ($case) => $case == 3)->count();
         $total = $unitCases->count();
 
         $availabilityPercentage = $total > 0 ? round(($available / $total) * 100, 1) : 0;
@@ -347,7 +348,7 @@ class Project extends Model
             'sold' => $sold,
             'under_construction' => $underConstruction,
             'total' => $total,
-            'availability_percentage' => $availabilityPercentage
+            'availability_percentage' => $availabilityPercentage,
         ];
     }
 
@@ -368,7 +369,6 @@ class Project extends Model
             return 'mixed';
         }
     }
-
 
     // public function getFirstPdfUrl()
     // {
@@ -405,7 +405,7 @@ class Project extends Model
             // return number_format($minPrice);
         }
 
-        return number_format($minPrice) . ' الي ' . number_format($maxPrice);
+        return number_format($minPrice).' الي '.number_format($maxPrice);
     }
 
     public function getSpaceRangeAttribute()
@@ -414,10 +414,10 @@ class Project extends Model
         $maxSpace = $this->units()->max('unit_area');
 
         if ($minSpace === $maxSpace) {
-            return $minSpace . ' م²';
+            return $minSpace.' م²';
         }
 
-        return $minSpace . ' - ' . $maxSpace . ' م²';
+        return $minSpace.' - '.$maxSpace.' م²';
     }
 
     public function getBedroomRangeAttribute()
@@ -429,7 +429,7 @@ class Project extends Model
             return $minBedrooms;
         }
 
-        return $minBedrooms . ' - ' . $maxBedrooms;
+        return $minBedrooms.' - '.$maxBedrooms;
     }
 
     public function getBathroomRangeAttribute()
@@ -441,7 +441,7 @@ class Project extends Model
             return $minBathrooms;
         }
 
-        return $minBathrooms . ' - ' . $maxBathrooms;
+        return $minBathrooms.' - '.$maxBathrooms;
     }
 
     public function getKitchenRangeAttribute()
@@ -453,7 +453,7 @@ class Project extends Model
             return $minKitchens;
         }
 
-        return $minKitchens . ' - ' . $maxKitchens;
+        return $minKitchens.' - '.$maxKitchens;
     }
 
     // tracking methods
@@ -487,6 +487,7 @@ class Project extends Model
             $carry['views'] += $unit->views_count;
             $carry['shows'] += $unit->shows_count;
             $carry['orders'] += $unit->orders_count;
+
             return $carry;
         }, ['visits' => 0, 'views' => 0, 'shows' => 0, 'orders' => 0]);
 
@@ -498,7 +499,7 @@ class Project extends Model
                 'views' => $projectStats['views'] + $unitStats['views'],
                 'shows' => $projectStats['shows'] + $unitStats['shows'],
                 'orders' => $projectStats['orders'] + $unitStats['orders'],
-            ]
+            ],
         ];
     }
 
@@ -506,8 +507,10 @@ class Project extends Model
     public function getConversionRate()
     {
         $totalStats = $this->getTotalTrackingStats()['total_stats'];
-        if ($totalStats['visits'] == 0) return 0;
+        if ($totalStats['visits'] == 0) {
+            return 0;
+        }
+
         return round(($totalStats['orders'] / $totalStats['visits']) * 100, 2);
     }
-
 }

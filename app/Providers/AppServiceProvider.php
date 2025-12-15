@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
 use Filament\Forms\Components\Field;
 use Filament\Forms\Components\Placeholder;
 use Filament\Infolists\Components\Entry;
@@ -9,12 +10,11 @@ use Filament\Support\Components\Component;
 use Filament\Support\Concerns\Configurable;
 use Filament\Tables\Columns\Column;
 use Filament\Tables\Filters\BaseFilter;
+use Firefly\FilamentBlog\Models\Setting;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
-use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
-use Firefly\FilamentBlog\Models\Setting;
-use Illuminate\Support\Facades\Blade;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -59,14 +59,13 @@ class AppServiceProvider extends ServiceProvider
         //         ->locales(['ar','en']);
         // });
 
-
-           // Custom Blade directive for roles
+        // Custom Blade directive for roles
         Blade::directive('role', function ($role) {
             return "<?php if(auth()->check() && auth()->user()->hasRole({$role})): ?>";
         });
 
         Blade::directive('endrole', function () {
-            return "<?php endif; ?>";
+            return '<?php endif; ?>';
         });
 
         // Custom Blade directive for permissions
@@ -75,7 +74,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Blade::directive('endpermission', function () {
-            return "<?php endif; ?>";
+            return '<?php endif; ?>';
         });
     }
 }

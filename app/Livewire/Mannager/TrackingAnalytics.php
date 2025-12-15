@@ -3,40 +3,60 @@
 namespace App\Livewire\Mannager;
 
 use App\Models\Campaign;
-use Livewire\Component;
 use App\Models\Project;
-use App\Models\Unit;
 use App\Models\TrackingEvent;
+use App\Models\Unit;
 use App\Services\TrackingService;
 use Carbon\Carbon;
+use Livewire\Component;
 
 class TrackingAnalytics extends Component
 {
     public $dateRange = '30';
+
     public $customStartDate = '';
+
     public $customEndDate = '';
+
     public $useCustomDate = false;
+
     public $selectedCampaign = '';
+
     public $selectedProject = '';
+
     public $filterMode = 'general'; // 'general', 'campaign', 'project'
-    
+
     // Campaign creation properties
     public $showCampaignModal = false;
+
     public $campaignId = null; // لتحديد الحملة التي يتم تعديلها
+
     public $isEditMode = false;
+
     public $campaignName = '';
+
     public $campaignDescription = '';
+
     public $campaignProject = '';
+
     public $campaignSource = '';
+
     public $campaignStartDate = '';
+
     public $campaignEndDate = '';
+
     public $campaignBudget = '';
+
     public $campaignGoals = [];
 
     public $startDate;
+
     public $endDate;
+
     public $sortField = 'created_at';
+
     public $sortDirection = 'desc';
+
     protected $trackingService;
 
     public function boot(TrackingService $trackingService)
@@ -51,16 +71,28 @@ class TrackingAnalytics extends Component
         $this->campaignEndDate = Carbon::now()->addDays(30)->format('Y-m-d');
     }
 
-    public function updatedDateRange() { $this->useCustomDate = false; $this->updateDateRange(); }
-    public function updatedUseCustomDate() 
+    public function updatedDateRange()
+    {
+        $this->useCustomDate = false;
+        $this->updateDateRange();
+    }
+
+    public function updatedUseCustomDate()
     {
         if ($this->useCustomDate) {
             $this->updateDateRange();
         }
     }
-    public function updatedCustomStartDate() { $this->updateDateRange(); }
-    public function updatedCustomEndDate() { $this->updateDateRange(); }
-    
+
+    public function updatedCustomStartDate()
+    {
+        $this->updateDateRange();
+    }
+
+    public function updatedCustomEndDate()
+    {
+        $this->updateDateRange();
+    }
 
     private function updateDateRange()
     {
@@ -69,7 +101,7 @@ class TrackingAnalytics extends Component
             $this->endDate = Carbon::parse($this->customEndDate)->endOfDay();
         } else {
             $this->endDate = Carbon::now()->endOfDay();
-            $this->startDate = Carbon::now()->subDays((int)$this->dateRange)->startOfDay();
+            $this->startDate = Carbon::now()->subDays((int) $this->dateRange)->startOfDay();
         }
     }
 
@@ -111,12 +143,14 @@ class TrackingAnalytics extends Component
             $this->endDate = Carbon::parse($this->customEndDate)->endOfDay();
         }
     }
+
     public function openCreateModal()
     {
         $this->isEditMode = false;
         $this->resetCampaignForm();
         $this->showCampaignModal = true;
     }
+
     /**
      * يفتح نافذة التعديل لحملة موجودة
      */
@@ -133,7 +167,7 @@ class TrackingAnalytics extends Component
         $this->campaignEndDate = $campaign->end_date ? Carbon::parse($campaign->end_date)->format('Y-m-d') : '';
         $this->campaignBudget = $campaign->budget;
         $this->campaignGoals = $campaign->goals ?? [];
-        
+
         $this->showCampaignModal = true;
     }
 
@@ -156,11 +190,13 @@ class TrackingAnalytics extends Component
         $this->campaignBudget = '';
         $this->campaignGoals = [];
     }
+
     public function openCampaignModal()
     {
         $this->showCampaignModal = true;
         $this->resetCampaignForm();
     }
+
     public function saveCampaign()
     {
         $rules = [
@@ -206,7 +242,8 @@ class TrackingAnalytics extends Component
         $this->closeCampaignModal();
         $this->dispatch('campaign-updated'); // حدث لتحديث أي قوائم
     }
-        /**
+
+    /**
      * يحذف حملة
      */
     public function deleteCampaign($campaignId)
@@ -216,6 +253,7 @@ class TrackingAnalytics extends Component
         session()->flash('message', 'تم حذف الحملة بنجاح.');
         $this->dispatch('campaign-updated');
     }
+
     public function createCampaign()
     {
         $this->validate([
@@ -260,7 +298,7 @@ class TrackingAnalytics extends Component
         } elseif ($this->filterMode === 'campaign') {
             $campaignId = $this->selectedCampaign;
         }
-        
+
         $dateRange = [$this->startDate, $this->endDate];
 
         return $this->trackingService->getAnalytics($dateRange, $projectId, $campaignId);
@@ -269,35 +307,40 @@ class TrackingAnalytics extends Component
     public function getConversionRatesProperty()
     {
         $campaignId = $this->filterMode === 'campaign' ? $this->selectedCampaign : null;
+
         return $this->trackingService->getConversionRates([$this->startDate, $this->endDate], $campaignId);
     }
 
     public function getPopularUnitsProperty()
     {
-        $days = $this->useCustomDate ? $this->startDate->diffInDays($this->endDate) : (int)$this->dateRange;
+        $days = $this->useCustomDate ? $this->startDate->diffInDays($this->endDate) : (int) $this->dateRange;
         $campaignId = $this->filterMode === 'campaign' ? $this->selectedCampaign : null;
+
         return $this->trackingService->getPopularUnits(5, $days, $campaignId);
     }
 
     public function getPopularProjectsProperty()
     {
-        $days = $this->useCustomDate ? $this->startDate->diffInDays($this->endDate) : (int)$this->dateRange;
+        $days = $this->useCustomDate ? $this->startDate->diffInDays($this->endDate) : (int) $this->dateRange;
         $campaignId = $this->filterMode === 'campaign' ? $this->selectedCampaign : null;
+
         return $this->trackingService->getPopularProjects(5, $days, $campaignId);
     }
 
     public function getTopPerformingContentProperty()
     {
         $campaignId = $this->filterMode === 'campaign' ? $this->selectedCampaign : null;
+
         return [
             'projects' => $this->trackingService->getTopPerformingContent([$this->startDate, $this->endDate], 5, $campaignId)['projects'],
-            'units' => $this->trackingService->getTopPerformingContent([$this->startDate, $this->endDate], 5, $campaignId)['units']
+            'units' => $this->trackingService->getTopPerformingContent([$this->startDate, $this->endDate], 5, $campaignId)['units'],
         ];
     }
 
     public function getTrafficSourcesProperty()
     {
         $campaignId = $this->filterMode === 'campaign' ? $this->selectedCampaign : null;
+
         return $this->trackingService->getTrafficSources([$this->startDate, $this->endDate], $campaignId);
     }
 
@@ -306,27 +349,26 @@ class TrackingAnalytics extends Component
         return Project::where('status', 1)->orderBy('name')->get();
     }
 
-public function getCampaignsProperty()
-{
-    $query = Campaign::with('project')
-        ->orderBy($this->sortField, $this->sortDirection);
-    
-    if ($this->selectedProject) {
-        $query->where('project_id', $this->selectedProject);
-    }
-    
-    return $query->get();
-}
+    public function getCampaignsProperty()
+    {
+        $query = Campaign::with('project')
+            ->orderBy($this->sortField, $this->sortDirection);
 
+        if ($this->selectedProject) {
+            $query->where('project_id', $this->selectedProject);
+        }
+
+        return $query->get();
+    }
 
     public function getCampaignAnalyticsProperty()
     {
-        if (!$this->selectedCampaign) {
+        if (! $this->selectedCampaign) {
             return null;
         }
 
         $campaign = Campaign::find($this->selectedCampaign);
-        if (!$campaign) {
+        if (! $campaign) {
             return null;
         }
 
@@ -335,26 +377,26 @@ public function getCampaignsProperty()
 
     public function getProjectAnalyticsProperty()
     {
-        if (!$this->selectedProject || $this->filterMode !== 'project') {
+        if (! $this->selectedProject || $this->filterMode !== 'project') {
             return null;
         }
 
         // Get project-specific analytics for the selected time period
         $project = Project::find($this->selectedProject);
-        if (!$project) {
+        if (! $project) {
             return null;
         }
 
         $query = TrackingEvent::whereBetween('created_at', [$this->startDate, $this->endDate])
-            ->where(function($q) use ($project) {
+            ->where(function ($q) use ($project) {
                 $q->where('trackable_type', 'project')
-                  ->where('trackable_id', $project->id)
-                  ->orWhere(function($subQ) use ($project) {
-                      $subQ->where('trackable_type', 'unit')
-                           ->whereIn('trackable_id', 
-                               Unit::where('project_id', $project->id)->pluck('id')
-                           );
-                  });
+                    ->where('trackable_id', $project->id)
+                    ->orWhere(function ($subQ) use ($project) {
+                        $subQ->where('trackable_type', 'unit')
+                            ->whereIn('trackable_id',
+                                Unit::where('project_id', $project->id)->pluck('id')
+                            );
+                    });
             });
 
         $analytics = [

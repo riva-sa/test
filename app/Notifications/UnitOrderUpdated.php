@@ -12,13 +12,15 @@ class UnitOrderUpdated extends Notification implements ShouldQueue
     use Queueable;
 
     public $order;
+
     public $type;
+
     public $data;
 
     /**
-     * @param UnitOrder $order الطلب
-     * @param string $type نوع الحدث: new_order, status_update, message_update, permission_granted, permission_revoked
-     * @param array $data بيانات إضافية حسب الحاجة
+     * @param  UnitOrder  $order  الطلب
+     * @param  string  $type  نوع الحدث: new_order, status_update, message_update, permission_granted, permission_revoked
+     * @param  array  $data  بيانات إضافية حسب الحاجة
      */
     public function __construct(UnitOrder $order, string $type, array $data = [])
     {
@@ -68,7 +70,7 @@ class UnitOrderUpdated extends Notification implements ShouldQueue
             'permission_revoked' => "تم إلغاء صلاحية المستخدم {$this->data['user_name']} من الطلب (#{$orderId})",
             default => "تم تحديث الطلب (#{$orderId}) بواسطة {$userName}",
         };
-        
+
     }
 
     /**
@@ -83,6 +85,7 @@ class UnitOrderUpdated extends Notification implements ShouldQueue
             3 => 'مغلق',
             4 => 'مكتمل',
         ];
+
         return $labels[$this->order->status] ?? $this->order->status;
     }
 }

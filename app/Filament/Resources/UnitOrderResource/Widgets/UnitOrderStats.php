@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\UnitOrderResource\Widgets;
 
+use App\Models\UnitOrder;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use App\Models\UnitOrder;
 use Illuminate\Support\Facades\Auth;
 
 class UnitOrderStats extends BaseWidget

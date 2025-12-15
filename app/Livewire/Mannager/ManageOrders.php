@@ -2,31 +2,34 @@
 
 namespace App\Livewire\Mannager;
 
+use App\Models\Project;
+use App\Models\UnitOrder;
+use App\Traits\DelayedOrderLogic;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
-use App\Models\UnitOrder;
-use App\Models\OrderNote;
-use App\Models\Project;
-use App\Models\Unit;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Collection;
-use App\Traits\DelayedOrderLogic;
 
 class ManageOrders extends Component
 {
-    use WithPagination;
     use DelayedOrderLogic;
+    use WithPagination;
 
     public $search = '';
+
     public $statusFilter = '';
+
     public $projectFilter = '';
+
     public $sortField = 'created_at';
+
     public $sortDirection = 'desc';
+
     public $perPage = 10;
+
     public $salesManagerFilter = '';
+
     public $delayedFilter = '';
-    
+
     protected $queryString = [
         'search' => ['except' => ''],
         'statusFilter' => ['except' => ''],
@@ -83,6 +86,7 @@ class ManageOrders extends Component
         Auth::logout();
         session()->invalidate();
         session()->regenerateToken();
+
         return redirect()->route('frontend.home');
     }
 
@@ -93,13 +97,13 @@ class ManageOrders extends Component
         if (auth()->user()->hasRole('sales')) {
             $query->where(function ($q) {
                 // الطلبات التي يكون المستخدم هو مدير المبيعات المسؤول عن مشروعها
-                $q->whereHas('project', function($subQ) {
+                $q->whereHas('project', function ($subQ) {
                     $subQ->where('sales_manager_id', auth()->id());
                 })
                 // أو الطلبات التي مُنح المستخدم صلاحية للوصول إليها
-                ->orWhereHas('permissions', function($subQ) {
-                    $subQ->where('user_id', auth()->id());
-                });
+                    ->orWhereHas('permissions', function ($subQ) {
+                        $subQ->where('user_id', auth()->id());
+                    });
             });
         }
 
@@ -107,24 +111,24 @@ class ManageOrders extends Component
         $query->when($this->search, function ($query) {
             $query->where(function ($q) {
                 $q->where('name', 'like', '%'.$this->search.'%')
-                ->orWhere('email', 'like', '%'.$this->search.'%')
-                ->orWhere('phone', 'like', '%'.$this->search.'%')
-                ->orWhereHas('unit', function($q) {
-                    $q->where('title', 'like', '%'.$this->search.'%');
+                    ->orWhere('email', 'like', '%'.$this->search.'%')
+                    ->orWhere('phone', 'like', '%'.$this->search.'%')
+                    ->orWhereHas('unit', function ($q) {
+                        $q->where('title', 'like', '%'.$this->search.'%');
+                    });
+            });
+        })
+            ->when($this->statusFilter !== '', function ($query) {
+                $query->where('status', $this->statusFilter);
+            })
+            ->when($this->projectFilter !== '', function ($query) {
+                $query->where('project_id', $this->projectFilter);
+            })
+            ->when($this->salesManagerFilter, function ($query) {
+                $query->whereHas('project', function ($q) {
+                    $q->where('sales_manager_id', $this->salesManagerFilter);
                 });
             });
-        })
-        ->when($this->statusFilter !== '', function ($query) {
-            $query->where('status', $this->statusFilter);
-        })
-        ->when($this->projectFilter !== '', function ($query) {
-            $query->where('project_id', $this->projectFilter);
-        })
-        ->when($this->salesManagerFilter, function ($query) {
-            $query->whereHas('project', function ($q) {
-                $q->where('sales_manager_id', $this->salesManagerFilter);
-            });
-        });
 
         if ($this->delayedFilter == '1') {
             $query->whereNotIn('status', [3, 4]) // استبعاد الطلبات المغلقة والمكتملة
@@ -161,28 +165,27 @@ class ManageOrders extends Component
                 1 => 'طلب مفتوح',
                 2 => 'معاملات بيعية',
                 3 => 'مغلق',
-                4 => 'مكتمل'
+                4 => 'مكتمل',
             ],
             'purchaseTypes' => [
                 'cash' => 'كاش',
-                'installment' => 'تقسيط'
+                'installment' => 'تقسيط',
             ],
             'purchasePurposes' => [
                 'investment' => 'استثمار',
-                'personal' => 'سكنى'
+                'personal' => 'سكنى',
             ],
             'supportTypes' => [
                 'technical' => 'فنى',
                 'financial' => 'مالى',
-                'general' => 'عام'
+                'general' => 'عام',
             ],
             'projects' => Project::all(),
             'salesManagers' => \App\Models\User::whereHas('roles', function ($q) {
                 $q->where('name', 'sales');
-            })->get()
+            })->get(),
         ])->layout('layouts.custom');
     }
-
 
     private function getDelayedOrdersCount($user)
     {
@@ -191,18 +194,18 @@ class ManageOrders extends Component
 
         if ($user->hasRole('sales')) {
             $query->where(function ($q) use ($user) {
-                $q->whereHas('project', function($subQ) use ($user) {
+                $q->whereHas('project', function ($subQ) use ($user) {
                     $subQ->where('sales_manager_id', $user->id);
                 })
-                ->orWhereHas('permissions', function($subQ) use ($user) {
-                    $subQ->where('user_id', $user->id);
-                });
+                    ->orWhereHas('permissions', function ($subQ) use ($user) {
+                        $subQ->where('user_id', $user->id);
+                    });
             });
         }
 
         // جلب كل الطلبات المحتملة وفلترتها
         $potentialDelayed = $query->get();
-        
+
         return $potentialDelayed->filter(function ($order) {
             return $this->isOrderDelayed($order);
         })->count();

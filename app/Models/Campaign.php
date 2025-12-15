@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -50,9 +49,13 @@ class Campaign extends Model
 
     // Campaign statuses
     const STATUS_DRAFT = 'draft';
+
     const STATUS_ACTIVE = 'active';
+
     const STATUS_PAUSED = 'paused';
+
     const STATUS_COMPLETED = 'completed';
+
     const STATUS_CANCELLED = 'cancelled';
 
     /**
@@ -68,9 +71,12 @@ class Campaign extends Model
      */
     public function getDurationAttribute()
     {
-        if (!$this->start_date) return 0;
-        
+        if (! $this->start_date) {
+            return 0;
+        }
+
         $endDate = $this->end_date ?: now();
+
         return $this->start_date->diffInDays($endDate);
     }
 
@@ -79,9 +85,9 @@ class Campaign extends Model
      */
     public function isActive()
     {
-        return $this->status === self::STATUS_ACTIVE 
-            && $this->start_date <= now() 
-            && (!$this->end_date || $this->end_date >= now());
+        return $this->status === self::STATUS_ACTIVE
+            && $this->start_date <= now()
+            && (! $this->end_date || $this->end_date >= now());
     }
 
     /**
@@ -107,5 +113,4 @@ class Campaign extends Model
     {
         return $query->where('project_id', $projectId);
     }
-
 }

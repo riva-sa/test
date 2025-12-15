@@ -30,7 +30,7 @@ class StatesGrid extends Component
         //     ->get();
 
         // Map the final result
-        $this->states = $statesWithProjects->map(function($state) {
+        $this->states = $statesWithProjects->map(function ($state) {
             // Set a default city_id if city doesn't exist
             $cityId = 1; // Default value
             if ($state->city !== null) {
@@ -43,7 +43,7 @@ class StatesGrid extends Component
                 'projects_count' => $state->projects_count,
                 'height' => $this->getRandomHeight(),
                 'city_id' => $cityId,
-                'photo' => $state->photo ? asset('storage/' . $state->photo) : asset('frontend/img/riva.jpg'),
+                'photo' => $state->photo ? asset('storage/'.$state->photo) : asset('frontend/img/riva.jpg'),
             ];
         });
     }
@@ -52,6 +52,7 @@ class StatesGrid extends Component
     {
         // Maintain the varying heights from your original design
         $heights = ['300px', '350px', '400px', '450px', '500px'];
+
         return $heights[array_rand($heights)];
     }
 

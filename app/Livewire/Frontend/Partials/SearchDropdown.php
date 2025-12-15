@@ -3,7 +3,6 @@
 namespace App\Livewire\Frontend\Partials;
 
 use Livewire\Component;
-use App\Models\Project;
 
 class SearchDropdown extends Component
 {

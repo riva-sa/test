@@ -1,21 +1,21 @@
 <?php
 
-use App\Livewire\Frontend\HomePage;
-use App\Livewire\Frontend\ProjectSingle;
-use App\Livewire\Frontend\ProjectsMap;
-use App\Livewire\Frontend\ProjectsPage;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\File;
 use App\Http\Controllers\HelperController;
+use App\Http\Controllers\ImageController;
 use App\Http\Controllers\Manager\ManagerAuthController;
+use App\Http\Controllers\Manager\TrackingController;
 use App\Livewire\Frontend\About;
 use App\Livewire\Frontend\Blog;
 use App\Livewire\Frontend\BlogSingle;
 use App\Livewire\Frontend\ContactUs;
+use App\Livewire\Frontend\HomePage;
 use App\Livewire\Frontend\Privacy;
+use App\Livewire\Frontend\ProjectSingle;
+use App\Livewire\Frontend\ProjectsMap;
+use App\Livewire\Frontend\ProjectsPage;
 use App\Livewire\Frontend\Services;
 use App\Livewire\Frontend\Terms;
+use App\Livewire\Mannager\Campaigns;
 use App\Livewire\Mannager\CreateOrder;
 use App\Livewire\Mannager\CustomersList;
 use App\Livewire\Mannager\ManageOrders;
@@ -23,11 +23,11 @@ use App\Livewire\Mannager\ManagerDashboard;
 use App\Livewire\Mannager\OrderDetails;
 use App\Livewire\Mannager\OrderPermissions;
 use App\Livewire\Mannager\SalesManagers;
-use App\Models\Project;
-use App\Livewire\Mannager\TrackingAnalytics;
-use App\Http\Controllers\Manager\TrackingController;
-use App\Livewire\Mannager\Campaigns;
 use App\Livewire\Mannager\SessionJourneys;
+use App\Livewire\Mannager\TrackingAnalytics;
+use App\Models\Project;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomePage::class)->name('frontend.home');
 // Route::get('/units/create', [CreateUnit::class, 'render'])->name('filament.resources.units.create');
@@ -35,6 +35,7 @@ Route::get('/', HomePage::class)->name('frontend.home');
 Route::get('/projects', ProjectsPage::class)->name('frontend.projects');
 Route::get('/projects-map', ProjectsMap::class)->name('frontend.projects.map');
 Route::get('/project/{slug}', ProjectSingle::class)->name('frontend.projects.single');
+Route::get('/media/{path}', [ImageController::class, 'show'])->where('path', '.*')->name('media.show');
 
 Route::get('/privacy', Privacy::class)->name('frontend.privacy');
 Route::get('/terms', Terms::class)->name('frontend.terms');
@@ -61,22 +62,22 @@ Route::middleware(['auth', 'role:sales_manager'])->group(function () {
     Route::get('/crm/analytics/campaigns', Campaigns::class)->name('manager.analytics.campaigns');
     Route::get('/crm/journeys', SessionJourneys::class)->name('manager.journeys');
     Route::prefix('crm/tracking')->group(function () {
-    
-    // Public tracking endpoints (no authentication required)
-    Route::post('/track', [TrackingController::class, 'track']);
-    Route::post('/units/{unit}/track', [TrackingController::class, 'trackUnit']);
-    Route::post('/projects/{project}/track', [TrackingController::class, 'trackProject']);
-    
-    // Analytics endpoints (require authentication)
-    Route::middleware('auth')->group(function () {
-        Route::get('/analytics', [TrackingController::class, 'getAnalytics']);
-        Route::get('/analytics/units', [TrackingController::class, 'getUnitAnalytics']);
-        Route::get('/analytics/projects', [TrackingController::class, 'getProjectAnalytics']);
-        Route::get('/analytics/conversion-rates', [TrackingController::class, 'getConversionRates']);
-        Route::get('/popular/units', [TrackingController::class, 'getPopularUnits']);
-        Route::get('/popular/projects', [TrackingController::class, 'getPopularProjects']);
+
+        // Public tracking endpoints (no authentication required)
+        Route::post('/track', [TrackingController::class, 'track']);
+        Route::post('/units/{unit}/track', [TrackingController::class, 'trackUnit']);
+        Route::post('/projects/{project}/track', [TrackingController::class, 'trackProject']);
+
+        // Analytics endpoints (require authentication)
+        Route::middleware('auth')->group(function () {
+            Route::get('/analytics', [TrackingController::class, 'getAnalytics']);
+            Route::get('/analytics/units', [TrackingController::class, 'getUnitAnalytics']);
+            Route::get('/analytics/projects', [TrackingController::class, 'getProjectAnalytics']);
+            Route::get('/analytics/conversion-rates', [TrackingController::class, 'getConversionRates']);
+            Route::get('/popular/units', [TrackingController::class, 'getPopularUnits']);
+            Route::get('/popular/projects', [TrackingController::class, 'getPopularProjects']);
+        });
     });
-});
 });
 
 // Route::middleware(['auth', 'permission:view_dashboard'])->group(function () {
@@ -123,17 +124,15 @@ Route::get('/single/{slug}', function ($slug) {
         'اصال-اليرموك' => 'asal-alyrmok',
     ];
 
-    if (!array_key_exists($slug, $slugMap)) {
+    if (! array_key_exists($slug, $slugMap)) {
         abort(404);
     }
 
-    return redirect('project/' . $slugMap[$slug]);
+    return redirect('project/'.$slugMap[$slug]);
 });
-
 
 // Route::get('/project/download/{project}/{file}', [HelperController::class, 'downloadPdf'])
 //     ->name('project.download');
-
 
 // Route::get('/run-storage-link', function () {
 //     try {
@@ -162,7 +161,6 @@ Route::get('/run-storage-link', function () {
 
         return 'Storage directory has been copied successfully.';
     } catch (\Exception $e) {
-        return 'Error: ' . $e->getMessage();
+        return 'Error: '.$e->getMessage();
     }
 });
-

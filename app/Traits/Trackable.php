@@ -21,17 +21,25 @@ trait Trackable
     public function track($eventType, $metadata = [])
     {
         $request = request();
-        
+        $referrer = $request->headers->get('referer');
+        if ($referrer !== null && strlen($referrer) > 2048) {
+            $referrer = substr($referrer, 0, 2048);
+        }
+        $userAgent = $request->userAgent();
+        if ($userAgent !== null && strlen($userAgent) > 2048) {
+            $userAgent = substr($userAgent, 0, 2048);
+        }
+
         // Create tracking event
         $trackingEvent = $this->trackingEvents()->create([
             'event_type' => $eventType,
             'session_id' => session()->getId(),
             'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-            'referrer' => $request->headers->get('referer'),
+            'user_agent' => $userAgent,
+            'referrer' => $referrer,
             'metadata' => array_merge($metadata, [
-                'device_type' => $this->getDeviceType($request->userAgent()),
-                'browser' => $this->getBrowserInfo($request->userAgent()),
+                'device_type' => $this->getDeviceType($userAgent),
+                'browser' => $this->getBrowserInfo($userAgent),
             ]),
         ]);
 
@@ -47,7 +55,7 @@ trait Trackable
     protected function updateTrackingCounters($eventType)
     {
         $now = Carbon::now();
-        
+
         switch ($eventType) {
             case 'visit':
                 $this->increment('visits_count');
@@ -80,14 +88,14 @@ trait Trackable
     public function shouldTrack($eventType, $timeWindow = 300) // 5 minutes window
     {
         $sessionId = session()->getId();
-        
+
         $recentEvent = $this->trackingEvents()
             ->where('event_type', $eventType)
             ->where('session_id', $sessionId)
             ->where('created_at', '>', Carbon::now()->subSeconds($timeWindow))
             ->first();
 
-        return !$recentEvent;
+        return ! $recentEvent;
     }
 
     /**
@@ -100,6 +108,7 @@ trait Trackable
         } elseif (preg_match('/tablet/i', $userAgent)) {
             return 'tablet';
         }
+
         return 'desktop';
     }
 
@@ -132,7 +141,7 @@ trait Trackable
     public function getTrackingStats($dateRange = null)
     {
         $query = $this->trackingEvents();
-        
+
         if ($dateRange) {
             $query->whereBetween('created_at', $dateRange);
         }

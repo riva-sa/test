@@ -3,14 +3,12 @@
 namespace App\Filament\Resources\UnitOrderResource\Pages;
 
 use App\Filament\Resources\UnitOrderResource;
-use Filament\Resources\Pages\Page;
 use App\Models\UnitOrder;
+use Filament\Resources\Pages\Page;
+use Filament\Tables;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
-use Filament\Tables;
-use Illuminate\Support\HtmlString;
-use Filament\Support\Colors\Color;
 use Illuminate\Database\Eloquent\Builder;
 
 class ListUserOrders extends Page implements HasTable
@@ -18,6 +16,7 @@ class ListUserOrders extends Page implements HasTable
     use InteractsWithTable;
 
     protected static string $resource = UnitOrderResource::class;
+
     protected static string $view = 'filament.resources.unit-order-resource.pages.list-user-orders';
 
     public function table(Table $table): Table
@@ -47,14 +46,11 @@ class ListUserOrders extends Page implements HasTable
                     ->copyable()
                     ->extraAttributes(['class' => 'font-medium']),
 
-
-
                 Tables\Columns\TextColumn::make('total_orders')
                     ->label('عدد الطلبات')
                     ->sortable()
                     ->badge()
-                    ->color(fn($state) =>
-                        $state >= 5 ? 'success' :
+                    ->color(fn ($state) => $state >= 5 ? 'success' :
                         ($state >= 3 ? 'warning' : 'gray')
                     )
                     ->alignCenter(),
@@ -67,7 +63,7 @@ class ListUserOrders extends Page implements HasTable
                     ->dateTime('d M Y - H:i')
                     ->sortable()
                     ->color('primary')
-                    ->icon('heroicon-o-calendar')
+                    ->icon('heroicon-o-calendar'),
             ])
             ->defaultSort('last_order', 'desc')
             ->actions([
@@ -77,8 +73,8 @@ class ListUserOrders extends Page implements HasTable
                     ->color('primary')
                     ->button()
                     ->url(fn ($record) => route('filament.admin.resources.unit-orders.index', [
-                        'tableSearch' => $record->phone
-                    ]))
+                        'tableSearch' => $record->phone,
+                    ])),
             ])
             ->filters([
                 // Tables\Filters\Filter::make('high_value_customers')
@@ -91,7 +87,7 @@ class ListUserOrders extends Page implements HasTable
 
                 Tables\Filters\Filter::make('recent_customers')
                     ->label('العملاء الجدد')
-                    ->query(fn (Builder $query) => $query->whereRaw('last_order >= DATE_SUB(NOW(), INTERVAL 7 DAY)'))
+                    ->query(fn (Builder $query) => $query->whereRaw('last_order >= DATE_SUB(NOW(), INTERVAL 7 DAY)')),
             ])
             ->bulkActions([
                 Tables\Actions\BulkAction::make('export_selected')
@@ -99,7 +95,7 @@ class ListUserOrders extends Page implements HasTable
                     ->icon('heroicon-o-document-arrow-down')
                     ->action(function ($records) {
                         // Export logic here
-                    })
+                    }),
             ]);
     }
 }

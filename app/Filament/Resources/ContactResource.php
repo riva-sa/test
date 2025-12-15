@@ -3,15 +3,12 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ContactResource\Pages;
-use App\Filament\Resources\ContactResource\RelationManagers;
 use App\Models\Contact;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ContactResource extends Resource
 {
@@ -91,7 +88,7 @@ class ContactResource extends Resource
                         'archived' => 'gray',
                         default => 'warning',
                     })
-                    ->formatStateUsing(fn (Contact $record) => match($record->status) {
+                    ->formatStateUsing(fn (Contact $record) => match ($record->status) {
                         'new' => 'جديد',
                         'processing' => 'قيد المعالجة',
                         'completed' => 'تم الرد',
@@ -124,9 +121,9 @@ class ContactResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
-                ->label('تعديل'),
-            Tables\Actions\DeleteAction::make()
-                ->label('حذف'),
+                    ->label('تعديل'),
+                Tables\Actions\DeleteAction::make()
+                    ->label('حذف'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

@@ -2,14 +2,17 @@
 
 namespace App\Livewire\Frontend;
 
-use Livewire\Component;
 use App\Models\Contact;
+use Livewire\Component;
 
 class ContactUs extends Component
 {
     public $name = '';
+
     public $email = '';
+
     public $department = '';
+
     public $message = '';
 
     public $success = false;
@@ -40,7 +43,7 @@ class ContactUs extends Component
             'email' => $this->email,
             'department' => $this->department,
             'message' => $this->message,
-            'status' => 'new'
+            'status' => 'new',
         ]);
 
         $this->reset(['name', 'email', 'department', 'message']);

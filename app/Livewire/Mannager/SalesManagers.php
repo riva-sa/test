@@ -2,14 +2,16 @@
 
 namespace App\Livewire\Mannager;
 
-use Livewire\Component;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
 
 class SalesManagers extends Component
 {
     public $salesUsers = [];
+
     public $editingUser = null;
+
     public $editFields = [];
 
     public function mount()
@@ -57,7 +59,7 @@ class SalesManagers extends Component
     public function render()
     {
         return view('livewire.mannager.sales-managers', [
-            'isSalesManager' => true
+            'isSalesManager' => true,
         ])->layout('layouts.custom');
     }
 }

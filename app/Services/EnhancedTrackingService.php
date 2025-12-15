@@ -2,16 +2,14 @@
 
 namespace App\Services;
 
-use App\Models\Project;
-use App\Models\Unit;
-use App\Models\TrackingEvent;
-use App\Models\Campaign;
-use Carbon\Carbon;
-use Carbon\CarbonPeriod;
-use Illuminate\Support\Facades\Cache;
 use App\Helpers\DatabaseHelper;
+use App\Models\Campaign;
+use App\Models\Project;
+use App\Models\TrackingEvent;
+use App\Models\Unit;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Collection;
 
 class EnhancedTrackingService extends TrackingService
 {
@@ -20,20 +18,20 @@ class EnhancedTrackingService extends TrackingService
      */
     public function getDashboardOverview(array $filters = []): array
     {
-        $cacheKey = 'dashboard_overview_' . md5(serialize($filters));
-        
+        $cacheKey = 'dashboard_overview_'.md5(serialize($filters));
+
         return Cache::remember($cacheKey, 300, function () use ($filters) {
             $query = $this->buildBaseQuery($filters);
             $startDate = $filters['start_date'] ?? Carbon::now()->subDays(30);
             $endDate = $filters['end_date'] ?? Carbon::now();
-            
+
             // Previous period for comparison
             $previousStartDate = Carbon::parse($startDate)->subDays($startDate->diffInDays($endDate));
             $previousEndDate = Carbon::parse($startDate)->subDay();
-            
+
             $currentStats = $this->getStatsForPeriod($query, $startDate, $endDate);
             $previousStats = $this->getStatsForPeriod($query, $previousStartDate, $previousEndDate);
-            
+
             return [
                 'current' => $currentStats,
                 'previous' => $previousStats,
@@ -57,13 +55,13 @@ class EnhancedTrackingService extends TrackingService
         $campaign = Campaign::with('project')->findOrFail($campaignId);
         $startDate = $options['start_date'] ?? $campaign->start_date;
         $endDate = $options['end_date'] ?? ($campaign->end_date ?? Carbon::now());
-        
+
         $filters = [
             'campaign_id' => $campaignId,
             'start_date' => $startDate,
             'end_date' => $endDate,
         ];
-        
+
         return [
             'campaign' => $campaign,
             'overview' => $this->getCampaignOverview($campaign, $startDate, $endDate),
@@ -106,7 +104,7 @@ class EnhancedTrackingService extends TrackingService
     {
         $campaigns = Campaign::whereIn('id', $campaignIds)->with('project')->get();
         $comparison = [];
-        
+
         foreach ($campaigns as $campaign) {
             $campaignFilters = array_merge($filters, ['campaign_id' => $campaign->id]);
             $comparison[$campaign->id] = [
@@ -115,7 +113,7 @@ class EnhancedTrackingService extends TrackingService
                 'performance_score' => $this->calculatePerformanceScore($campaign, $campaignFilters),
             ];
         }
-        
+
         return $comparison;
     }
 
@@ -125,11 +123,11 @@ class EnhancedTrackingService extends TrackingService
     public function getRealTimeUpdates($campaignId = null): array
     {
         $query = TrackingEvent::where('created_at', '>=', Carbon::now()->subMinutes(5));
-        
+
         if ($campaignId) {
             $campaign = Campaign::find($campaignId);
             if ($campaign) {
-                $query->where(function($q) use ($campaign) {
+                $query->where(function ($q) use ($campaign) {
                     $q->whereHasMorph('trackable', [Project::class], function ($query) use ($campaign) {
                         $query->where('id', $campaign->project_id);
                     })->orWhereHasMorph('trackable', [Unit::class], function ($query) use ($campaign) {
@@ -138,9 +136,9 @@ class EnhancedTrackingService extends TrackingService
                 });
             }
         }
-        
+
         $recentEvents = $query->with('trackable')->latest()->limit(10)->get();
-        
+
         return [
             'recent_events' => $recentEvents,
             'live_stats' => [
@@ -158,7 +156,7 @@ class EnhancedTrackingService extends TrackingService
     {
         $campaign = Campaign::with('project')->findOrFail($campaignId);
         $analytics = $this->getCampaignDetailedAnalytics($campaignId);
-        
+
         $exportData = [
             'campaign_info' => [
                 'name' => $campaign->name,
@@ -178,7 +176,7 @@ class EnhancedTrackingService extends TrackingService
             'roi_analysis' => $analytics['roi_analysis'],
             'generated_at' => Carbon::now()->toISOString(),
         ];
-        
+
         return $exportData;
     }
 
@@ -187,15 +185,15 @@ class EnhancedTrackingService extends TrackingService
     private function buildBaseQuery(array $filters = [])
     {
         $query = TrackingEvent::query();
-        
+
         if (isset($filters['start_date']) && isset($filters['end_date'])) {
             $query->whereBetween('created_at', [$filters['start_date'], $filters['end_date']]);
         }
-        
+
         if (isset($filters['campaign_id'])) {
             $campaign = Campaign::find($filters['campaign_id']);
             if ($campaign) {
-                $query->where(function($q) use ($campaign) {
+                $query->where(function ($q) use ($campaign) {
                     $q->whereHasMorph('trackable', [Project::class], function ($query) use ($campaign) {
                         $query->where('id', $campaign->project_id);
                     })->orWhereHasMorph('trackable', [Unit::class], function ($query) use ($campaign) {
@@ -204,9 +202,9 @@ class EnhancedTrackingService extends TrackingService
                 });
             }
         }
-        
+
         if (isset($filters['project_id'])) {
-            $query->where(function($q) use ($filters) {
+            $query->where(function ($q) use ($filters) {
                 $q->whereHasMorph('trackable', [Project::class], function ($query) use ($filters) {
                     $query->where('id', $filters['project_id']);
                 })->orWhereHasMorph('trackable', [Unit::class], function ($query) use ($filters) {
@@ -214,18 +212,18 @@ class EnhancedTrackingService extends TrackingService
                 });
             });
         }
-        
+
         if (isset($filters['event_types']) && is_array($filters['event_types'])) {
             $query->whereIn('event_type', $filters['event_types']);
         }
-        
+
         return $query;
     }
 
     private function getStatsForPeriod($query, $startDate, $endDate): array
     {
         $periodQuery = $query->clone()->whereBetween('created_at', [$startDate, $endDate]);
-        
+
         return [
             'total_events' => $periodQuery->count(),
             'unique_sessions' => $periodQuery->distinct('session_id')->count('session_id'),
@@ -249,6 +247,7 @@ class EnhancedTrackingService extends TrackingService
                 $growth[$key] = $value > 0 ? 100 : 0;
             }
         }
+
         return $growth;
     }
 
@@ -257,11 +256,11 @@ class EnhancedTrackingService extends TrackingService
         $campaigns = Campaign::with('project')->get();
         $bestCampaign = null;
         $bestScore = 0;
-        
+
         foreach ($campaigns as $campaign) {
             $campaignFilters = array_merge($filters, ['campaign_id' => $campaign->id]);
             $score = $this->calculatePerformanceScore($campaign, $campaignFilters);
-            
+
             if ($score > $bestScore) {
                 $bestScore = $score;
                 $bestCampaign = [
@@ -271,7 +270,7 @@ class EnhancedTrackingService extends TrackingService
                 ];
             }
         }
-        
+
         return $bestCampaign;
     }
 
@@ -282,16 +281,16 @@ class EnhancedTrackingService extends TrackingService
             'start_date' => $startDate,
             'end_date' => $endDate,
         ];
-        
+
         $query = $this->buildBaseQuery($filters);
         $stats = $this->getStatsForPeriod($query, $startDate, $endDate);
-        
+
         // Calculate additional metrics
         $stats['conversion_rate'] = $stats['visits'] > 0 ? round(($stats['orders'] / $stats['visits']) * 100, 2) : 0;
         $stats['engagement_rate'] = $stats['visits'] > 0 ? round((($stats['whatsapp'] + $stats['calls']) / $stats['visits']) * 100, 2) : 0;
         $stats['cost_per_acquisition'] = $campaign->budget && $stats['orders'] > 0 ? round($campaign->budget / $stats['orders'], 2) : 0;
         $stats['return_on_investment'] = $this->calculateROI($campaign, $stats);
-        
+
         return $stats;
     }
 
@@ -299,13 +298,13 @@ class EnhancedTrackingService extends TrackingService
     {
         $query = $this->buildBaseQuery(['campaign_id' => $campaign->id])
             ->whereBetween('created_at', [$startDate, $endDate]);
-        
+
         $hourlyStats = $query
             ->selectRaw('HOUR(created_at) as hour, event_type, COUNT(*) as count')
             ->groupBy('hour', 'event_type')
             ->orderBy('hour')
             ->get();
-        
+
         $results = [];
         for ($hour = 0; $hour < 24; $hour++) {
             $results[$hour] = [
@@ -318,13 +317,13 @@ class EnhancedTrackingService extends TrackingService
                 'call' => 0,
             ];
         }
-        
+
         foreach ($hourlyStats as $stat) {
             if (isset($results[$stat->hour][$stat->event_type])) {
                 $results[$stat->hour][$stat->event_type] = $stat->count;
             }
         }
-        
+
         return array_values($results);
     }
 
@@ -332,13 +331,13 @@ class EnhancedTrackingService extends TrackingService
     {
         $query = $this->buildBaseQuery(['campaign_id' => $campaign->id])
             ->whereBetween('created_at', [$startDate, $endDate]);
-        
+
         $visits = $query->clone()->where('event_type', 'visit')->count();
         $views = $query->clone()->where('event_type', 'view')->count();
         $shows = $query->clone()->where('event_type', 'show')->count();
         $contacts = $query->clone()->whereIn('event_type', ['whatsapp', 'call'])->count();
         $orders = $query->clone()->where('event_type', 'order')->count();
-        
+
         return [
             ['stage' => 'زيارات', 'count' => $visits, 'percentage' => 100],
             ['stage' => 'مشاهدات', 'count' => $views, 'percentage' => $visits > 0 ? round(($views / $visits) * 100, 2) : 0],
@@ -352,7 +351,7 @@ class EnhancedTrackingService extends TrackingService
     {
         $query = $this->buildBaseQuery(['campaign_id' => $campaign->id])
             ->whereBetween('created_at', [$startDate, $endDate]);
-        
+
         return $query
             ->selectRaw('source, COUNT(*) as count')
             ->whereNotNull('source')
@@ -372,7 +371,7 @@ class EnhancedTrackingService extends TrackingService
     {
         $query = $this->buildBaseQuery(['campaign_id' => $campaign->id])
             ->whereBetween('created_at', [$startDate, $endDate]);
-        
+
         try {
             if (DatabaseHelper::isPostgreSQL()) {
                 return $query
@@ -411,7 +410,7 @@ class EnhancedTrackingService extends TrackingService
     {
         $query = $this->buildBaseQuery(['campaign_id' => $campaign->id])
             ->whereBetween('created_at', [$startDate, $endDate]);
-        
+
         $topUnits = $query->clone()
             ->where('trackable_type', Unit::class)
             ->selectRaw('trackable_id, COUNT(*) as interactions')
@@ -419,7 +418,7 @@ class EnhancedTrackingService extends TrackingService
             ->orderByDesc('interactions')
             ->limit(5)
             ->get();
-        
+
         $units = [];
         foreach ($topUnits as $item) {
             $unit = Unit::find($item->trackable_id);
@@ -430,14 +429,14 @@ class EnhancedTrackingService extends TrackingService
                 ];
             }
         }
-        
+
         return $units;
     }
 
     private function getCampaignROIAnalysis(Campaign $campaign, $startDate, $endDate): array
     {
         $stats = $this->getCampaignOverview($campaign, $startDate, $endDate);
-        
+
         return [
             'budget' => $campaign->budget ?? 0,
             'cost_per_click' => $campaign->budget && $stats['visits'] > 0 ? round($campaign->budget / $stats['visits'], 2) : 0,
@@ -452,31 +451,32 @@ class EnhancedTrackingService extends TrackingService
         $query = $this->buildBaseQuery($filters);
         $startDate = $filters['start_date'] ?? $campaign->start_date;
         $endDate = $filters['end_date'] ?? ($campaign->end_date ?? Carbon::now());
-        
+
         return $this->getStatsForPeriod($query, $startDate, $endDate);
     }
 
     private function calculatePerformanceScore(Campaign $campaign, array $filters): float
     {
         $metrics = $this->getCampaignMetrics($campaign, $filters);
-        
+
         // Simple scoring algorithm - can be made more sophisticated
         $score = 0;
         $score += $metrics['visits'] * 0.1;
         $score += $metrics['orders'] * 10;
         $score += $metrics['whatsapp'] * 2;
         $score += $metrics['calls'] * 3;
-        
+
         return round($score, 2);
     }
 
     private function calculateROI(Campaign $campaign, array $stats): float
     {
-        if (!$campaign->budget || $campaign->budget <= 0) {
+        if (! $campaign->budget || $campaign->budget <= 0) {
             return 0;
         }
-        
+
         $estimatedRevenue = $stats['orders'] * 1000; // Assuming average order value
+
         return round((($estimatedRevenue - $campaign->budget) / $campaign->budget) * 100, 2);
     }
 
@@ -508,11 +508,11 @@ class EnhancedTrackingService extends TrackingService
     private function getActiveVisitors($campaignId = null): int
     {
         $query = TrackingEvent::where('created_at', '>=', Carbon::now()->subMinutes(30));
-        
+
         if ($campaignId) {
             $campaign = Campaign::find($campaignId);
             if ($campaign) {
-                $query->where(function($q) use ($campaign) {
+                $query->where(function ($q) use ($campaign) {
                     $q->whereHasMorph('trackable', [Project::class], function ($query) use ($campaign) {
                         $query->where('id', $campaign->project_id);
                     })->orWhereHasMorph('trackable', [Unit::class], function ($query) use ($campaign) {
@@ -521,7 +521,7 @@ class EnhancedTrackingService extends TrackingService
                 });
             }
         }
-        
+
         return $query->distinct('session_id')->count('session_id');
     }
 
@@ -532,16 +532,15 @@ class EnhancedTrackingService extends TrackingService
             'start_date' => $today,
             'end_date' => Carbon::now(),
         ];
-        
+
         if ($campaignId) {
             $filters['campaign_id'] = $campaignId;
         }
-        
+
         $query = $this->buildBaseQuery($filters);
         $visits = $query->clone()->where('event_type', 'visit')->count();
         $orders = $query->clone()->where('event_type', 'order')->count();
-        
+
         return $visits > 0 ? round(($orders / $visits) * 100, 2) : 0;
     }
 }
-

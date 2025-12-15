@@ -2,16 +2,15 @@
 
 namespace App\Services;
 
-use App\Models\Project;
-use App\Models\Unit;
-use App\Models\TrackingEvent;
-use App\Models\Campaign;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Cache;
 use App\Helpers\DatabaseHelper;
-use Illuminate\Support\Facades\DB;
-
+use App\Models\Campaign;
+use App\Models\Project;
+use App\Models\TrackingEvent;
+use App\Models\Unit;
+use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class TrackingService
 {
@@ -39,7 +38,7 @@ class TrackingService
                 'project_id' => $unit->project_id,
             ]);
         }
-        
+
         // Also track project view
         if ($unit->project && $unit->project->shouldTrack('view', 600)) { // 10 min window for project
             $unit->project->track('view', [
@@ -121,8 +120,8 @@ class TrackingService
      */
     public function getPopularUnits($limit = 10, $days = 30, $campaignId = null)
     {
-        $cacheKey = "popular_units_{$limit}_{$days}" . ($campaignId ? "_{$campaignId}" : '');
-        
+        $cacheKey = "popular_units_{$limit}_{$days}".($campaignId ? "_{$campaignId}" : '');
+
         return Cache::remember($cacheKey, 3600, function () use ($limit, $days, $campaignId) {
             $query = Unit::select('units.*')
                 ->selectRaw('COALESCE(visits_count, 0) + COALESCE(views_count, 0) * 2 + COALESCE(shows_count, 0) * 3 + COALESCE(orders_count, 0) * 10 + COALESCE(whatsapp_count, 0) * 5 + COALESCE(calls_count, 0) * 7 as popularity_score')
@@ -136,18 +135,18 @@ class TrackingService
                 }
             }
 
-            $query->where(function($q) use ($days) {
+            $query->where(function ($q) use ($days) {
                 $q->where('last_visited_at', '>', Carbon::now()->subDays($days))
-                  ->orWhere('visits_count', '>', 0)
-                  ->orWhere('views_count', '>', 0)
-                  ->orWhere('shows_count', '>', 0)
-                  ->orWhere('orders_count', '>', 0)
-                  ->orWhere('whatsapp_count', '>', 0)
-                  ->orWhere('calls_count', '>', 0);
+                    ->orWhere('visits_count', '>', 0)
+                    ->orWhere('views_count', '>', 0)
+                    ->orWhere('shows_count', '>', 0)
+                    ->orWhere('orders_count', '>', 0)
+                    ->orWhere('whatsapp_count', '>', 0)
+                    ->orWhere('calls_count', '>', 0);
             })
-            ->with('project:id,name')
-            ->orderBy('popularity_score', 'desc')
-            ->limit($limit);
+                ->with('project:id,name')
+                ->orderBy('popularity_score', 'desc')
+                ->limit($limit);
 
             return $query->get();
         });
@@ -158,8 +157,8 @@ class TrackingService
      */
     public function getPopularProjects($limit = 10, $days = 30, $campaignId = null)
     {
-        $cacheKey = "popular_projects_{$limit}_{$days}" . ($campaignId ? "_{$campaignId}" : '');
-        
+        $cacheKey = "popular_projects_{$limit}_{$days}".($campaignId ? "_{$campaignId}" : '');
+
         return Cache::remember($cacheKey, 3600, function () use ($limit, $days, $campaignId) {
             $query = Project::select('projects.*')
                 ->selectRaw('COALESCE(visits_count, 0) + COALESCE(views_count, 0) * 2 + COALESCE(shows_count, 0) * 3 + COALESCE(orders_count, 0) * 10 + COALESCE(whatsapp_count, 0) * 5 + COALESCE(calls_count, 0) * 7 as popularity_score')
@@ -169,17 +168,17 @@ class TrackingService
                 $query->where('id', Campaign::find($campaignId)?->project_id);
             }
 
-            $query->where(function($q) use ($days) {
+            $query->where(function ($q) use ($days) {
                 $q->where('last_visited_at', '>', Carbon::now()->subDays($days))
-                  ->orWhere('visits_count', '>', 0)
-                  ->orWhere('views_count', '>', 0)
-                  ->orWhere('shows_count', '>', 0)
-                  ->orWhere('orders_count', '>', 0)
-                  ->orWhere('whatsapp_count', '>', 0)
-                  ->orWhere('calls_count', '>', 0);
+                    ->orWhere('visits_count', '>', 0)
+                    ->orWhere('views_count', '>', 0)
+                    ->orWhere('shows_count', '>', 0)
+                    ->orWhere('orders_count', '>', 0)
+                    ->orWhere('whatsapp_count', '>', 0)
+                    ->orWhere('calls_count', '>', 0);
             })
-            ->orderBy('popularity_score', 'desc')
-            ->limit($limit);
+                ->orderBy('popularity_score', 'desc')
+                ->limit($limit);
 
             return $query->get();
         });
@@ -199,15 +198,15 @@ class TrackingService
         if ($campaignId) {
             $campaign = Campaign::find($campaignId);
             if ($campaign) {
-                $query->where(function($q) use ($campaign) {
+                $query->where(function ($q) use ($campaign) {
                     $q->where('trackable_type', 'project')
-                      ->where('trackable_id', $campaign->project_id)
-                      ->orWhere(function($subQ) use ($campaign) {
-                          $subQ->where('trackable_type', 'unit')
-                               ->whereIn('trackable_id', 
-                                   Unit::where('project_id', $campaign->project_id)->pluck('id')
-                               );
-                      });
+                        ->where('trackable_id', $campaign->project_id)
+                        ->orWhere(function ($subQ) use ($campaign) {
+                            $subQ->where('trackable_type', 'unit')
+                                ->whereIn('trackable_id',
+                                    Unit::where('project_id', $campaign->project_id)->pluck('id')
+                                );
+                        });
                 });
             }
         }
@@ -228,7 +227,7 @@ class TrackingService
                 'projects' => $query->clone()->trackableType('project')->count(),
             ],
             'daily_stats' => $query->clone()
-                ->selectRaw(DatabaseHelper::dateFormat('created_at') . ' as date, event_type, COUNT(*) as count')
+                ->selectRaw(DatabaseHelper::dateFormat('created_at').' as date, event_type, COUNT(*) as count')
                 ->groupBy('date', 'event_type')
                 ->orderBy('date')
                 ->get()
@@ -290,15 +289,15 @@ class TrackingService
         if ($campaignId) {
             $campaign = Campaign::find($campaignId);
             if ($campaign) {
-                $query->where(function($q) use ($campaign) {
+                $query->where(function ($q) use ($campaign) {
                     $q->where('trackable_type', 'project')
-                      ->where('trackable_id', $campaign->project_id)
-                      ->orWhere(function($subQ) use ($campaign) {
-                          $subQ->where('trackable_type', 'unit')
-                               ->whereIn('trackable_id', 
-                                   Unit::where('project_id', $campaign->project_id)->pluck('id')
-                               );
-                      });
+                        ->where('trackable_id', $campaign->project_id)
+                        ->orWhere(function ($subQ) use ($campaign) {
+                            $subQ->where('trackable_type', 'unit')
+                                ->whereIn('trackable_id',
+                                    Unit::where('project_id', $campaign->project_id)->pluck('id')
+                                );
+                        });
                 });
             }
         }
@@ -328,7 +327,7 @@ class TrackingService
     {
         $analytics = $this->getAnalytics([$campaign->start_date, $campaign->end_date ?: Carbon::now()], $campaign->id);
         $conversionRates = $this->getConversionRates([$campaign->start_date, $campaign->end_date ?: Carbon::now()], $campaign->id);
-        
+
         return [
             'analytics' => $analytics,
             'conversion_rates' => $conversionRates,
@@ -345,7 +344,7 @@ class TrackingService
     {
         $analytics = $this->getAnalytics([$campaign->start_date, $campaign->end_date ?: Carbon::now()], $campaign->id);
         $overview = $analytics['overview'];
-        
+
         $score = 0;
         $score += $overview['total_visits'] * 1;
         $score += $overview['total_views'] * 2;
@@ -353,14 +352,14 @@ class TrackingService
         $score += $overview['total_whatsapp'] * 5;
         $score += $overview['total_calls'] * 7;
         $score += $overview['total_orders'] * 10;
-        
+
         return $score;
     }
 
     /**
      * Get top performing content (units and projects) - PostgreSQL Compatible
      */
-    public function getTopPerformingContent(array $dateRange = null, int $limit = 5, $campaignId = null)
+    public function getTopPerformingContent(?array $dateRange = null, int $limit = 5, $campaignId = null)
     {
         $startDate = $dateRange ? $dateRange[0] : Carbon::now()->subDays(30);
         $endDate = $dateRange ? $dateRange[1] : Carbon::now();
@@ -369,27 +368,27 @@ class TrackingService
         $unitsQuery = Unit::select('units.*', 'projects.name as project_name')
             ->join('projects', 'units.project_id', '=', 'projects.id')
             ->where('units.status', 1)
-            ->where(function($query) use ($startDate, $endDate) {
+            ->where(function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('units.last_visited_at', [$startDate, $endDate])
-                      ->orWhereBetween('units.last_ordered_at', [$startDate, $endDate])
-                      ->orWhere(function($subQuery) {
-                          $subQuery->where('units.orders_count', '>', 0)
-                                   ->orWhere('units.shows_count', '>', 0)
-                                   ->orWhere('units.whatsapp_count', '>', 0)
-                                   ->orWhere('units.calls_count', '>', 0);
-                      });
+                    ->orWhereBetween('units.last_ordered_at', [$startDate, $endDate])
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->where('units.orders_count', '>', 0)
+                            ->orWhere('units.shows_count', '>', 0)
+                            ->orWhere('units.whatsapp_count', '>', 0)
+                            ->orWhere('units.calls_count', '>', 0);
+                    });
             });
 
         $projectsQuery = Project::where('status', 1)
-            ->where(function($query) use ($startDate, $endDate) {
+            ->where(function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('last_visited_at', [$startDate, $endDate])
-                      ->orWhereBetween('last_ordered_at', [$startDate, $endDate])
-                      ->orWhere(function($subQuery) {
-                          $subQuery->where('orders_count', '>', 0)
-                                   ->orWhere('shows_count', '>', 0)
-                                   ->orWhere('whatsapp_count', '>', 0)
-                                   ->orWhere('calls_count', '>', 0);
-                      });
+                    ->orWhereBetween('last_ordered_at', [$startDate, $endDate])
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->where('orders_count', '>', 0)
+                            ->orWhere('shows_count', '>', 0)
+                            ->orWhere('whatsapp_count', '>', 0)
+                            ->orWhere('calls_count', '>', 0);
+                    });
             });
 
         // Filter by campaign if specified
@@ -417,14 +416,14 @@ class TrackingService
 
         return [
             'units' => $units,
-            'projects' => $projects
+            'projects' => $projects,
         ];
     }
 
     /**
      * Get traffic sources breakdown - PostgreSQL Compatible
      */
-    public function getTrafficSources(array $dateRange = null, $campaignId = null)
+    public function getTrafficSources(?array $dateRange = null, $campaignId = null)
     {
         $startDate = $dateRange ? $dateRange[0] : Carbon::now()->subDays(30);
         $endDate = $dateRange ? $dateRange[1] : Carbon::now();
@@ -435,15 +434,15 @@ class TrackingService
         if ($campaignId) {
             $campaign = Campaign::find($campaignId);
             if ($campaign) {
-                $query->where(function($q) use ($campaign) {
+                $query->where(function ($q) use ($campaign) {
                     $q->where('trackable_type', 'project')
-                      ->where('trackable_id', $campaign->project_id)
-                      ->orWhere(function($subQ) use ($campaign) {
-                          $subQ->where('trackable_type', 'unit')
-                               ->whereIn('trackable_id', 
-                                   Unit::where('project_id', $campaign->project_id)->pluck('id')
-                               );
-                      });
+                        ->where('trackable_id', $campaign->project_id)
+                        ->orWhere(function ($subQ) use ($campaign) {
+                            $subQ->where('trackable_type', 'unit')
+                                ->whereIn('trackable_id',
+                                    Unit::where('project_id', $campaign->project_id)->pluck('id')
+                                );
+                        });
                 });
             }
         }
@@ -489,7 +488,7 @@ class TrackingService
         $endDate = $campaign->end_date ?? Carbon::now();
 
         $query = TrackingEvent::whereBetween('created_at', [$startDate, $endDate])
-            ->where(function($q) use ($campaign) {
+            ->where(function ($q) use ($campaign) {
                 $q->whereHasMorph('trackable', [Project::class], function ($query) use ($campaign) {
                     $query->where('id', $campaign->project_id);
                 })->orWhereHasMorph('trackable', [Unit::class], function ($query) use ($campaign) {
@@ -498,7 +497,7 @@ class TrackingService
             });
 
         $dailyStats = $query
-            ->selectRaw(DatabaseHelper::dateFormat('created_at') . ' as date, event_type, COUNT(*) as count')
+            ->selectRaw(DatabaseHelper::dateFormat('created_at').' as date, event_type, COUNT(*) as count')
             ->groupBy('date', 'event_type')
             ->orderBy('date')
             ->get();
@@ -521,8 +520,8 @@ class TrackingService
 
         return array_values($results);
     }
-    
-    public function getSessionJourneys(array $dateRange = null, int $limit = 50): array
+
+    public function getSessionJourneys(?array $dateRange = null, int $limit = 50): array
     {
         // 1. تحديد النطاق الزمني وجلب البيانات (لا تغيير هنا)
         $startDate = $dateRange ? $dateRange[0] : Carbon::now()->subDays(7);
@@ -542,9 +541,9 @@ class TrackingService
         // 2. الحماية من الأخطاء (لا تغيير هنا)
         if ($allEvents->isEmpty()) {
             return [
-                'journeys'        => collect(),
-                'stats'           => ['total_sessions' => 0, 'conversion_rate' => 0, 'avg_duration' => 0, 'avg_events' => 0],
-                'top_funnels'     => [],
+                'journeys' => collect(),
+                'stats' => ['total_sessions' => 0, 'conversion_rate' => 0, 'avg_duration' => 0, 'avg_events' => 0],
+                'top_funnels' => [],
                 'friction_points' => collect(),
             ];
         }
@@ -556,7 +555,7 @@ class TrackingService
         $sessionsWithLead = 0;
         $totalDuration = 0;
         $totalEventsCount = 0;
-        
+
         // -- [تعديل جوهري] -- فصل المسارات الناجحة عن تحليل التسرب
         $successfulFunnels = [];
         $unitPerformanceData = [];
@@ -569,7 +568,7 @@ class TrackingService
             $totalEventsCount += $events->count();
 
             $hasLead = $events->whereIn('event_type', ['order', 'whatsapp', 'call'])->isNotEmpty();
-            
+
             // تبسيط المسار (لا تغيير هنا)
             $eventTypes = $events->pluck('event_type');
             $simplifiedPathArray = [];
@@ -592,19 +591,19 @@ class TrackingService
                 $shownUnitsInSession = $events->where('event_type', 'show')->where('trackable_type', 'App\Models\Unit');
                 foreach ($shownUnitsInSession as $showEvent) {
                     $unitId = $showEvent->trackable_id;
-                    if (!isset($unitPerformanceData[$unitId])) {
+                    if (! isset($unitPerformanceData[$unitId])) {
                         $unitPerformanceData[$unitId] = ['shows' => 0, 'drop_offs' => 0];
                     }
                     // يتم حساب التسرب فقط من الجلسات الفاشلة
                     $unitPerformanceData[$unitId]['drop_offs']++;
                 }
             }
-            
+
             // حساب إجمالي المشاهدات لكل وحدة (من كل الجلسات، ناجحة وفاشلة)
             $allShownUnits = $events->where('event_type', 'show')->where('trackable_type', 'App\Models\Unit');
             foreach ($allShownUnits as $showEvent) {
                 $unitId = $showEvent->trackable_id;
-                 if (!isset($unitPerformanceData[$unitId])) {
+                if (! isset($unitPerformanceData[$unitId])) {
                     $unitPerformanceData[$unitId] = ['shows' => 0, 'drop_offs' => 0];
                 }
                 $unitPerformanceData[$unitId]['shows']++;
@@ -625,12 +624,12 @@ class TrackingService
         $topFunnels = array_slice($successfulFunnels, 0, 5, true);
 
         // ترتيب نقاط التسرب (لا تغيير هنا)
-        $frictionPointsData = array_filter($unitPerformanceData, fn($data) => $data['drop_offs'] > 0);
-        uasort($frictionPointsData, fn($a, $b) => $b['drop_offs'] <=> $a['drop_offs']);
+        $frictionPointsData = array_filter($unitPerformanceData, fn ($data) => $data['drop_offs'] > 0);
+        uasort($frictionPointsData, fn ($a, $b) => $b['drop_offs'] <=> $a['drop_offs']);
         $frictionPointUnitIds = array_keys(array_slice($frictionPointsData, 0, 5, true));
-        
+
         $frictionPoints = collect();
-        if (!empty($frictionPointUnitIds)) {
+        if (! empty($frictionPointUnitIds)) {
             $frictionPoints = Unit::whereIn('id', $frictionPointUnitIds)
                 ->select('id', 'title', 'unit_number')
                 ->get()
@@ -638,6 +637,7 @@ class TrackingService
                     $unit->total_shows = $unitPerformanceData[$unit->id]['shows'];
                     $unit->drop_offs = $unitPerformanceData[$unit->id]['drop_offs'];
                     $unit->drop_off_rate = $unit->total_shows > 0 ? round(($unit->drop_offs / $unit->total_shows) * 100) : 0;
+
                     return $unit;
                 })->sortByDesc('drop_off_rate');
         }
@@ -649,45 +649,92 @@ class TrackingService
 
         // 8. إرجاع كل البيانات (لا تغيير هنا)
         return [
-            'journeys'        => $journeys,
-            'stats'           => $stats,
-            'top_funnels'     => $topFunnels,
+            'journeys' => $journeys,
+            'stats' => $stats,
+            'top_funnels' => $topFunnels,
             'friction_points' => $frictionPoints,
         ];
     }
-
 
     /**
      * Helper function to extract a readable source from a referrer URL.
      */
     private function extractSourceFromReferrer($referrer)
     {
-        if (empty($referrer)) return 'Direct';
-        if (str_contains($referrer, 'google.com')) return 'Google';
-        if (str_contains($referrer, 'facebook.com')) return 'Facebook';
-        if (str_contains($referrer, 'instagram.com')) return 'Instagram';
-        if (str_contains($referrer, 'twitter.com')) return 'Twitter';
-        if (str_contains($referrer, 'linkedin.com')) return 'LinkedIn';
-        if (str_contains($referrer, 'youtube.com')) return 'YouTube';
-        if (str_contains($referrer, 'bing.com')) return 'Bing';
-        if (str_contains($referrer, 'yahoo.com')) return 'Yahoo';
-        if (str_contains($referrer, 'reddit.com')) return 'Reddit';
-        if (str_contains($referrer, 'tiktok.com')) return 'TikTok';
-        if (str_contains($referrer, 'pinterest.com')) return 'Pinterest';
-        if (str_contains($referrer, 'snapchat.com')) return 'Snapchat';
-        if (str_contains($referrer, 'whatsapp.com')) return 'WhatsApp';
-        if (str_contains($referrer, 'vk.com')) return 'VK';
-        if (str_contains($referrer, 'baidu.com')) return 'Baidu';
-        if (str_contains($referrer, 'yandex.com')) return 'Yandex';
-        if (str_contains($referrer, 'quora.com')) return 'Quora';
-        if (str_contains($referrer, 'tumblr.com')) return 'Tumblr';
-        if (str_contains($referrer, 'weibo.com')) return 'Weibo';
-        if (str_contains($referrer, 'twitch.tv')) return 'Twitch';
-        if (str_contains($referrer, 'discord.com')) return 'Discord';
-        if (str_contains($referrer, 'telegram.org')) return 'Telegram';
-        if (str_contains($referrer, 'line.me')) return 'Line';        
+        if (empty($referrer)) {
+            return 'Direct';
+        }
+        if (str_contains($referrer, 'google.com')) {
+            return 'Google';
+        }
+        if (str_contains($referrer, 'facebook.com')) {
+            return 'Facebook';
+        }
+        if (str_contains($referrer, 'instagram.com')) {
+            return 'Instagram';
+        }
+        if (str_contains($referrer, 'twitter.com')) {
+            return 'Twitter';
+        }
+        if (str_contains($referrer, 'linkedin.com')) {
+            return 'LinkedIn';
+        }
+        if (str_contains($referrer, 'youtube.com')) {
+            return 'YouTube';
+        }
+        if (str_contains($referrer, 'bing.com')) {
+            return 'Bing';
+        }
+        if (str_contains($referrer, 'yahoo.com')) {
+            return 'Yahoo';
+        }
+        if (str_contains($referrer, 'reddit.com')) {
+            return 'Reddit';
+        }
+        if (str_contains($referrer, 'tiktok.com')) {
+            return 'TikTok';
+        }
+        if (str_contains($referrer, 'pinterest.com')) {
+            return 'Pinterest';
+        }
+        if (str_contains($referrer, 'snapchat.com')) {
+            return 'Snapchat';
+        }
+        if (str_contains($referrer, 'whatsapp.com')) {
+            return 'WhatsApp';
+        }
+        if (str_contains($referrer, 'vk.com')) {
+            return 'VK';
+        }
+        if (str_contains($referrer, 'baidu.com')) {
+            return 'Baidu';
+        }
+        if (str_contains($referrer, 'yandex.com')) {
+            return 'Yandex';
+        }
+        if (str_contains($referrer, 'quora.com')) {
+            return 'Quora';
+        }
+        if (str_contains($referrer, 'tumblr.com')) {
+            return 'Tumblr';
+        }
+        if (str_contains($referrer, 'weibo.com')) {
+            return 'Weibo';
+        }
+        if (str_contains($referrer, 'twitch.tv')) {
+            return 'Twitch';
+        }
+        if (str_contains($referrer, 'discord.com')) {
+            return 'Discord';
+        }
+        if (str_contains($referrer, 'telegram.org')) {
+            return 'Telegram';
+        }
+        if (str_contains($referrer, 'line.me')) {
+            return 'Line';
+        }
         $host = parse_url($referrer, PHP_URL_HOST);
+
         return $host ?: 'Other';
     }
-
 }

@@ -2,22 +2,26 @@
 
 namespace App\Livewire\Mannager;
 
-use Livewire\Component;
 use App\Models\OrderPermission;
 use App\Models\UnitOrder;
 use App\Models\User;
+use App\Notifications\UnitOrderUpdated;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
-use App\Notifications\UnitOrderUpdated;
+use Livewire\Component;
 
 class OrderPermissions extends Component
 {
     public UnitOrder $order;
+
     public $users;
+
     public $permissions;
 
     public $user_id;
+
     public $permission_type;
+
     public $expires_at;
 
     public function mount(UnitOrder $order)
@@ -26,9 +30,10 @@ class OrderPermissions extends Component
         // if order status is not 4, redirect to order details
         if ($this->order->status == 4) {
             session()->flash('error', 'لا يمكن إدارة الصلاحيات لطلب مكتمل');
+
             return redirect()->route('manager.order-details', $this->order->id);
         }
-        $this->users = User::whereHas('roles', function($query) {
+        $this->users = User::whereHas('roles', function ($query) {
             $query->whereIn('name', ['sales']);
         })->get();
 
@@ -67,18 +72,18 @@ class OrderPermissions extends Component
 
         $user->notify(new UnitOrderUpdated($order, 'permission_granted', [
             'user_name' => $user->name,
-            'granted_by' => auth()->user()->name
+            'granted_by' => auth()->user()->name,
         ]));
 
         // إشعار المدراء أيضاً
-        $managers = User::whereHas('roles', function($query) {
+        $managers = User::whereHas('roles', function ($query) {
             $query->whereIn('name', ['sales_manager', 'super_admin']);
         })->where('id', '!=', auth()->id())->get();
 
         foreach ($managers as $manager) {
             $manager->notify(new UnitOrderUpdated($order, 'permission_granted', [
                 'user_name' => $user->name,
-                'granted_by' => auth()->user()->name
+                'granted_by' => auth()->user()->name,
             ]));
         }
 
@@ -92,7 +97,6 @@ class OrderPermissions extends Component
     public function revokePermission($id)
     {
         $permission = OrderPermission::findOrFail($id);
-
 
         $permission->delete();
 

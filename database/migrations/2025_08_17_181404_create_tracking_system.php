@@ -61,18 +61,18 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('tracking_events');
-        
+
         Schema::table('units', function (Blueprint $table) {
             $table->dropColumn([
                 'visits_count', 'views_count', 'shows_count', 'orders_count',
-                'last_visited_at', 'last_viewed_at', 'last_shown_at', 'last_ordered_at'
+                'last_visited_at', 'last_viewed_at', 'last_shown_at', 'last_ordered_at',
             ]);
         });
 
         Schema::table('projects', function (Blueprint $table) {
             $table->dropColumn([
                 'visits_count', 'views_count', 'shows_count', 'orders_count',
-                'last_visited_at', 'last_viewed_at', 'last_shown_at', 'last_ordered_at'
+                'last_visited_at', 'last_viewed_at', 'last_shown_at', 'last_ordered_at',
             ]);
         });
     }
