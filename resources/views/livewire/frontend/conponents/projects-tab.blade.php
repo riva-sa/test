@@ -30,7 +30,7 @@
             </ul>
         </div>
         <!-- /.row -->
-        <div class="row">
+        <div class="row" wire:loading.class="opacity-50">
             @foreach($projects as $project)
                 <div class="col-md-4 mb-3" dir="rtl">
                     <figure class="overlay caption caption-overlay rounded-xl mb-0">

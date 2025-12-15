@@ -3,6 +3,7 @@
 namespace App\Livewire\Frontend\Conponents;
 
 use App\Models\Project;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
 
 class ProjectSlider extends Component
@@ -19,8 +20,15 @@ class ProjectSlider extends Component
 
     public function loadProjects()
     {
-        $query = Project::query();
-        $this->projects = $query->latest()->with('projectMedia', 'developer')->where('status', 1)->where('is_featured', 1)->get();
+        $cacheKey = 'home:project_slider:'.($this->type ?? 'default');
+        $this->projects = Cache::remember($cacheKey, 60, function () {
+            return Project::query()
+                ->latest()
+                ->with(['projectMedia', 'developer'])
+                ->where('status', 1)
+                ->where('is_featured', 1)
+                ->get();
+        });
     }
 
     public function render()
