@@ -12,17 +12,8 @@ class MediaHelper
             return 'https://placehold.co/800x600?text=No+Image';
         }
 
-        if (app()->environment('local') || env('FILESYSTEM_DISK') === 'local') {
-            return url('storage/'.$path);
-        }
-
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
         $disk = Storage::disk('public');
-        try {
-            $version = $disk->lastModified($path);
-        } catch (\Throwable $e) {
-            $version = time();
-        }
-
-        return route('media.show', ['path' => $path, 'v' => $version]);
+        return $disk->url($path);
     }
 }

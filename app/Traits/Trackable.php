@@ -20,6 +20,9 @@ trait Trackable
      */
     public function track($eventType, $metadata = [])
     {
+        // TODO: Temporarily disabled for performance testing
+        return null;
+
         $request = request();
         $referrer = $request->headers->get('referer');
         if ($referrer !== null && strlen($referrer) > 2048) {
@@ -87,6 +90,9 @@ trait Trackable
      */
     public function shouldTrack($eventType, $timeWindow = 300) // 5 minutes window
     {
+        // TODO: Temporarily disabled for performance testing
+        return false;
+
         $sessionId = session()->getId();
 
         $recentEvent = $this->trackingEvents()
@@ -140,6 +146,19 @@ trait Trackable
      */
     public function getTrackingStats($dateRange = null)
     {
+        // TODO: Temporarily disabled for performance testing
+        return [
+            'total_events' => 0,
+            'visits' => 0,
+            'views' => 0,
+            'shows' => 0,
+            'orders' => 0,
+            'unique_sessions' => 0,
+            'events_by_day' => collect(),
+            'events_by_type' => collect(),
+        ];
+
+        /*
         $query = $this->trackingEvents();
 
         if ($dateRange) {
@@ -163,5 +182,6 @@ trait Trackable
                 ->groupBy('event_type')
                 ->get(),
         ];
+        */
     }
 }

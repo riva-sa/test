@@ -110,7 +110,8 @@ class ProjectsMap extends Component
     public function render()
     {
         // Start with a base query
-        $query = Project::with('projectType', 'developer', 'units')->where('status', 1);
+        // Only load necessary relationships for the map. 'units' are not needed for the markers.
+        $query = Project::with('projectType', 'developer')->where('status', 1);
 
         // Apply filters
         $query = $this->applyFilters($query);
@@ -121,9 +122,18 @@ class ProjectsMap extends Component
         // Dispatch event to update the map
         $this->dispatch('projectsUpdated', ['projects' => $projects]);
 
+        // Cache static data for 1 hour
+        $developers = \Illuminate\Support\Facades\Cache::remember('developers_all', 3600, function () {
+            return Developer::all();
+        });
+        
+        $projectTypes = \Illuminate\Support\Facades\Cache::remember('project_types_active', 3600, function () {
+            return ProjectType::where('status', 1)->get();
+        });
+
         return view('livewire.frontend.projects-map', [
-            'developers' => Developer::all(),
-            'projectTypes' => ProjectType::where('status', 1)->get(),
+            'developers' => $developers,
+            'projectTypes' => $projectTypes,
             'projects' => $projects,
         ]);
     }

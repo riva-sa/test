@@ -18,6 +18,21 @@ class EnhancedTrackingService extends TrackingService
      */
     public function getDashboardOverview(array $filters = []): array
     {
+        // TODO: Temporarily disabled for performance testing
+        return [
+            'current' => [],
+            'previous' => [],
+            'growth' => [],
+            'campaigns' => [
+                'total' => 0,
+                'active' => 0,
+                'paused' => 0,
+                'completed' => 0,
+            ],
+            'top_performing_campaign' => null,
+        ];
+
+        /*
         $cacheKey = 'dashboard_overview_'.md5(serialize($filters));
 
         return Cache::remember($cacheKey, 300, function () use ($filters) {
@@ -45,6 +60,7 @@ class EnhancedTrackingService extends TrackingService
                 'top_performing_campaign' => $this->getTopPerformingCampaign($filters),
             ];
         });
+        */
     }
 
     /**
@@ -52,6 +68,21 @@ class EnhancedTrackingService extends TrackingService
      */
     public function getCampaignDetailedAnalytics($campaignId, array $options = []): array
     {
+        // TODO: Temporarily disabled for performance testing
+        return [
+            'campaign' => null,
+            'overview' => [],
+            'daily_breakdown' => [],
+            'hourly_breakdown' => [],
+            'conversion_funnel' => [],
+            'traffic_sources' => [],
+            'device_breakdown' => [],
+            'geographic_data' => [],
+            'top_content' => [],
+            'roi_analysis' => [],
+        ];
+
+        /*
         $campaign = Campaign::with('project')->findOrFail($campaignId);
         $startDate = $options['start_date'] ?? $campaign->start_date;
         $endDate = $options['end_date'] ?? ($campaign->end_date ?? Carbon::now());
@@ -74,6 +105,7 @@ class EnhancedTrackingService extends TrackingService
             'top_content' => $this->getCampaignTopContent($campaign, $startDate, $endDate),
             'roi_analysis' => $this->getCampaignROIAnalysis($campaign, $startDate, $endDate),
         ];
+        */
     }
 
     /**
@@ -81,6 +113,16 @@ class EnhancedTrackingService extends TrackingService
      */
     public function getAdvancedFilters(): array
     {
+        // TODO: Temporarily disabled for performance testing
+        return [
+            'projects' => [],
+            'sources' => [],
+            'event_types' => [],
+            'device_types' => [],
+            'date_presets' => [],
+        ];
+
+        /*
         return [
             'projects' => Project::where('status', 1)->select('id', 'name')->get(),
             'sources' => Campaign::distinct('source')->whereNotNull('source')->pluck('source'),
@@ -95,6 +137,7 @@ class EnhancedTrackingService extends TrackingService
                 'last_month' => ['start' => Carbon::now()->subMonth()->startOfMonth(), 'end' => Carbon::now()->subMonth()->endOfMonth()],
             ],
         ];
+        */
     }
 
     /**
@@ -102,6 +145,10 @@ class EnhancedTrackingService extends TrackingService
      */
     public function getCampaignComparison(array $campaignIds, array $filters = []): array
     {
+        // TODO: Temporarily disabled for performance testing
+        return [];
+
+        /*
         $campaigns = Campaign::whereIn('id', $campaignIds)->with('project')->get();
         $comparison = [];
 
@@ -115,6 +162,7 @@ class EnhancedTrackingService extends TrackingService
         }
 
         return $comparison;
+        */
     }
 
     /**
@@ -122,6 +170,17 @@ class EnhancedTrackingService extends TrackingService
      */
     public function getRealTimeUpdates($campaignId = null): array
     {
+        // TODO: Temporarily disabled for performance testing
+        return [
+            'recent_events' => collect(),
+            'live_stats' => [
+                'active_visitors' => 0,
+                'events_last_hour' => 0,
+                'conversion_rate_today' => 0,
+            ],
+        ];
+
+        /*
         $query = TrackingEvent::where('created_at', '>=', Carbon::now()->subMinutes(5));
 
         if ($campaignId) {
@@ -147,6 +206,7 @@ class EnhancedTrackingService extends TrackingService
                 'conversion_rate_today' => $this->getTodayConversionRate($campaignId),
             ],
         ];
+        */
     }
 
     /**
@@ -154,6 +214,20 @@ class EnhancedTrackingService extends TrackingService
      */
     public function exportCampaignData($campaignId, $format = 'array'): array
     {
+        // TODO: Temporarily disabled for performance testing
+        return [
+            'campaign_info' => [],
+            'summary_metrics' => [],
+            'daily_data' => [],
+            'conversion_funnel' => [],
+            'traffic_sources' => [],
+            'device_breakdown' => [],
+            'top_content' => [],
+            'roi_analysis' => [],
+            'generated_at' => Carbon::now()->toISOString(),
+        ];
+
+        /*
         $campaign = Campaign::with('project')->findOrFail($campaignId);
         $analytics = $this->getCampaignDetailedAnalytics($campaignId);
 
@@ -178,6 +252,7 @@ class EnhancedTrackingService extends TrackingService
         ];
 
         return $exportData;
+        */
     }
 
     // Private helper methods
@@ -482,6 +557,10 @@ class EnhancedTrackingService extends TrackingService
 
     private function getDeviceTypes(): array
     {
+        // TODO: Temporarily disabled for performance testing
+        return ['desktop', 'mobile', 'tablet'];
+
+        /*
         try {
             if (DatabaseHelper::isPostgreSQL()) {
                 return TrackingEvent::selectRaw("metadata->>'device_type' as device_type")
@@ -503,10 +582,15 @@ class EnhancedTrackingService extends TrackingService
         } catch (\Exception $e) {
             return ['desktop', 'mobile', 'tablet'];
         }
+        */
     }
 
     private function getActiveVisitors($campaignId = null): int
     {
+        // TODO: Temporarily disabled for performance testing
+        return 0;
+
+        /*
         $query = TrackingEvent::where('created_at', '>=', Carbon::now()->subMinutes(30));
 
         if ($campaignId) {
@@ -523,10 +607,15 @@ class EnhancedTrackingService extends TrackingService
         }
 
         return $query->distinct('session_id')->count('session_id');
+        */
     }
 
     private function getTodayConversionRate($campaignId = null): float
     {
+        // TODO: Temporarily disabled for performance testing
+        return 0;
+
+        /*
         $today = Carbon::today();
         $filters = [
             'start_date' => $today,
@@ -542,5 +631,6 @@ class EnhancedTrackingService extends TrackingService
         $orders = $query->clone()->where('event_type', 'order')->count();
 
         return $visits > 0 ? round(($orders / $visits) * 100, 2) : 0;
+        */
     }
 }

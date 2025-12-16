@@ -120,6 +120,14 @@ class TrackingService
      */
     public function getPopularUnits($limit = 10, $days = 30, $campaignId = null)
     {
+        // TODO: Temporarily disabled for performance testing - returning latest units instead
+        return Unit::with('project:id,name')
+            ->where('status', 1)
+            ->latest()
+            ->limit($limit)
+            ->get();
+
+        /*
         $cacheKey = "popular_units_{$limit}_{$days}".($campaignId ? "_{$campaignId}" : '');
 
         return Cache::remember($cacheKey, 3600, function () use ($limit, $days, $campaignId) {
@@ -150,6 +158,7 @@ class TrackingService
 
             return $query->get();
         });
+        */
     }
 
     /**
@@ -157,6 +166,13 @@ class TrackingService
      */
     public function getPopularProjects($limit = 10, $days = 30, $campaignId = null)
     {
+        // TODO: Temporarily disabled for performance testing - returning latest projects instead
+        return Project::where('status', 1)
+            ->latest()
+            ->limit($limit)
+            ->get();
+
+        /*
         $cacheKey = "popular_projects_{$limit}_{$days}".($campaignId ? "_{$campaignId}" : '');
 
         return Cache::remember($cacheKey, 3600, function () use ($limit, $days, $campaignId) {
@@ -182,6 +198,7 @@ class TrackingService
 
             return $query->get();
         });
+        */
     }
 
     /**
@@ -189,6 +206,28 @@ class TrackingService
      */
     public function getAnalytics($dateRange = null, $campaignId = null)
     {
+        // TODO: Temporarily disabled for performance testing
+        return [
+            'overview' => [
+                'total_events' => 0,
+                'total_visits' => 0,
+                'total_views' => 0,
+                'total_shows' => 0,
+                'total_orders' => 0,
+                'total_whatsapp' => 0,
+                'total_calls' => 0,
+                'unique_sessions' => 0,
+            ],
+            'by_type' => [
+                'units' => 0,
+                'projects' => 0,
+            ],
+            'daily_stats' => [],
+            'device_stats' => [],
+            'browser_stats' => [],
+        ];
+
+        /*
         $startDate = $dateRange ? $dateRange[0] : Carbon::now()->subDays(30);
         $endDate = $dateRange ? $dateRange[1] : Carbon::now();
 
@@ -273,6 +312,7 @@ class TrackingService
         }
 
         return $analytics;
+        */
     }
 
     /**
@@ -280,6 +320,18 @@ class TrackingService
      */
     public function getConversionRates($dateRange = null, $campaignId = null)
     {
+        // TODO: Temporarily disabled for performance testing
+        return [
+            'visit_to_view' => 0,
+            'view_to_show' => 0,
+            'show_to_order' => 0,
+            'visit_to_order' => 0,
+            'visit_to_whatsapp' => 0,
+            'visit_to_call' => 0,
+            'engagement_rate' => 0,
+        ];
+
+        /*
         $startDate = $dateRange ? $dateRange[0] : Carbon::now()->subDays(30);
         $endDate = $dateRange ? $dateRange[1] : Carbon::now();
 
@@ -318,6 +370,7 @@ class TrackingService
             'visit_to_call' => $visits > 0 ? round(($calls / $visits) * 100, 2) : 0,
             'engagement_rate' => $visits > 0 ? round((($whatsapp + $calls + $orders) / $visits) * 100, 2) : 0,
         ];
+        */
     }
 
     /**
@@ -325,6 +378,16 @@ class TrackingService
      */
     public function getCampaignAnalytics(Campaign $campaign)
     {
+        // TODO: Temporarily disabled for performance testing
+        return [
+            'analytics' => $this->getAnalytics(),
+            'conversion_rates' => $this->getConversionRates(),
+            'duration_days' => 0,
+            'project' => $campaign->project,
+            'performance_score' => 0,
+        ];
+
+        /*
         $analytics = $this->getAnalytics([$campaign->start_date, $campaign->end_date ?: Carbon::now()], $campaign->id);
         $conversionRates = $this->getConversionRates([$campaign->start_date, $campaign->end_date ?: Carbon::now()], $campaign->id);
 
@@ -335,6 +398,7 @@ class TrackingService
             'project' => $campaign->project,
             'performance_score' => $this->calculateCampaignPerformanceScore($campaign),
         ];
+        */
     }
 
     /**
@@ -361,6 +425,13 @@ class TrackingService
      */
     public function getTopPerformingContent(?array $dateRange = null, int $limit = 5, $campaignId = null)
     {
+        // TODO: Temporarily disabled for performance testing
+        return [
+            'units' => collect(),
+            'projects' => collect(),
+        ];
+
+        /*
         $startDate = $dateRange ? $dateRange[0] : Carbon::now()->subDays(30);
         $endDate = $dateRange ? $dateRange[1] : Carbon::now();
 
@@ -418,6 +489,7 @@ class TrackingService
             'units' => $units,
             'projects' => $projects,
         ];
+        */
     }
 
     /**
@@ -425,6 +497,10 @@ class TrackingService
      */
     public function getTrafficSources(?array $dateRange = null, $campaignId = null)
     {
+        // TODO: Temporarily disabled for performance testing
+        return collect();
+
+        /*
         $startDate = $dateRange ? $dateRange[0] : Carbon::now()->subDays(30);
         $endDate = $dateRange ? $dateRange[1] : Carbon::now();
 
@@ -480,6 +556,7 @@ class TrackingService
             ->groupBy('source')
             ->orderBy('count', 'desc')
             ->get();
+        */
     }
 
     public function getCampaignDailyBreakdown(Campaign $campaign): array

@@ -889,7 +889,7 @@
 
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js "></script>
-    <script src="{{ asset('frontend/js/tracking.js') }}"></script>
+    {{-- <script src="{{ asset('frontend/js/tracking.js') }}"></script> --}}
     {{-- inter scripts here --}}
     @stack('scripts')
 

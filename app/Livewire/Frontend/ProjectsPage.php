@@ -237,17 +237,22 @@ class ProjectsPage extends Component
             $globalVersion = Cache::get('projects_cache_version', 0);
             $cacheKey = 'projects_page:projects:'.md5(json_encode($filters)).':page:'.$page.':v:'.$globalVersion;
             $query = Project::with(['projectType', 'developer', 'units'])
-                ->select([
-                    'projects.*',
-                    DB::raw('(SELECT COUNT(*) FROM units WHERE units.project_id = projects.id AND units.case = 0) AS available_units_count'),
-                    DB::raw('(SELECT COUNT(*) FROM units WHERE units.project_id = projects.id AND units.case = 1) AS reserved_units_count'),
-                    DB::raw('(SELECT COUNT(*) FROM units WHERE units.project_id = projects.id AND units.case = 2) AS sold_units_count'),
+                ->withCount([
+                    'units as available_units_count' => function ($q) {
+                        $q->where('case', 0);
+                    },
+                    'units as reserved_units_count' => function ($q) {
+                        $q->where('case', 1);
+                    },
+                    'units as sold_units_count' => function ($q) {
+                        $q->where('case', 2);
+                    },
                 ])
                 ->where('status', 1)
                 ->orderByRaw('
                 CASE
-                    WHEN (SELECT COUNT(*) FROM units WHERE units.project_id = projects.id AND units.case = 0) > 0 THEN 1
-                    WHEN (SELECT COUNT(*) FROM units WHERE units.project_id = projects.id AND units.case = 1) > 0 THEN 2
+                    WHEN available_units_count > 0 THEN 1
+                    WHEN reserved_units_count > 0 THEN 2
                     ELSE 3
                 END
             ');
@@ -437,9 +442,15 @@ class ProjectsPage extends Component
                 return $query->paginate(12, ['*'], 'units_page');
             });
         }
-
-        $developers = Developer::all();
-        $projectTypes = ProjectType::where('status', 1)->get();
+        
+        // Cache static data for 1 hour
+        $developers = Cache::remember('developers_all', 3600, function () {
+            return Developer::all();
+        });
+        
+        $projectTypes = Cache::remember('project_types_active', 3600, function () {
+            return ProjectType::where('status', 1)->get();
+        });
 
         return view('livewire.frontend.projects-page', [
             'items' => $items,

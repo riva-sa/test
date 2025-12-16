@@ -377,6 +377,10 @@ class TrackingAnalytics extends Component
 
     public function getProjectAnalyticsProperty()
     {
+        // TODO: Temporarily disabled for performance testing
+        return null;
+
+        /*
         if (! $this->selectedProject || $this->filterMode !== 'project') {
             return null;
         }
@@ -415,6 +419,7 @@ class TrackingAnalytics extends Component
         ];
 
         return $analytics;
+        */
     }
 
     public function render()
