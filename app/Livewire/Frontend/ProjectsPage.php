@@ -236,23 +236,24 @@ class ProjectsPage extends Component
             ];
             $globalVersion = Cache::get('projects_cache_version', 0);
             $cacheKey = 'projects_page:projects:'.md5(json_encode($filters)).':page:'.$page.':v:'.$globalVersion;
+
+            // Prepare subquery for unit counts
+            $unitCounts = Unit::toBase()
+                ->select('project_id')
+                ->selectRaw('count(case when "case" = 0 then 1 end) as available_units_count')
+                ->selectRaw('count(case when "case" = 1 then 1 end) as reserved_units_count')
+                ->selectRaw('count(case when "case" = 2 then 1 end) as sold_units_count')
+                ->groupBy('project_id');
+
             $query = Project::with(['projectType', 'developer', 'units'])
-                ->withCount([
-                    'units as available_units_count' => function ($q) {
-                        $q->where('case', 0);
-                    },
-                    'units as reserved_units_count' => function ($q) {
-                        $q->where('case', 1);
-                    },
-                    'units as sold_units_count' => function ($q) {
-                        $q->where('case', 2);
-                    },
-                ])
+                ->leftJoinSub($unitCounts, 'unit_counts', 'projects.id', '=', 'unit_counts.project_id')
+                ->select('projects.*', 'unit_counts.available_units_count', 'unit_counts.reserved_units_count', 'unit_counts.sold_units_count')
                 ->where('status', 1)
+                ->where('unit_counts.available_units_count', '>', 0) // Hide sold out or empty projects
                 ->orderByRaw('
                 CASE
-                    WHEN available_units_count > 0 THEN 1
-                    WHEN reserved_units_count > 0 THEN 2
+                    WHEN unit_counts.available_units_count > 0 THEN 1
+                    WHEN unit_counts.reserved_units_count > 0 THEN 2
                     ELSE 3
                 END
             ');

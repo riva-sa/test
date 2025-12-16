@@ -9,6 +9,7 @@
                             <a class="wrapper image-wrapper bg-image bg-cover bg-overlay"
                                style="height: 700px"
                                href="{{ route('frontend.projects.single', $project->slug) }}"
+                               loading="lazy"
                                data-image-src="@if($project->getMainImages()) {{ App\Helpers\MediaHelper::getUrl($project->getMainImages()->media_url) }} @else {{ App\Helpers\MediaHelper::getUrl($project->projectMedia->first()->media_url) }} @endif">
                             </a>
 
@@ -20,7 +21,7 @@
                                     <div>
                                         <img src="{{ App\Helpers\MediaHelper::getUrl($project->developer->logo) }}"
                                              style="width: 50px !important;max-height:50px"
-                                             alt="Logo">
+                                             alt="Logo" loading="lazy">
                                     </div>
                                 </div>
                                 <p class="fs-15 text-muted fw-light mt-2 mb-0">
