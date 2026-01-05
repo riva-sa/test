@@ -14,6 +14,7 @@ class MediaHelper
 
         /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
         $disk = Storage::disk('public');
+
         return $disk->url($path);
     }
 }

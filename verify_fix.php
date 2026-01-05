@@ -2,11 +2,10 @@
 
 use App\Models\Project;
 use App\Models\Unit;
-use Illuminate\Support\Facades\DB;
 
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__.'/vendor/autoload.php';
 
-$app = require_once __DIR__ . '/bootstrap/app.php';
+$app = require_once __DIR__.'/bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 $kernel->bootstrap();
 
@@ -33,22 +32,22 @@ try {
     ');
 
     $sql = $query->toSql();
-    echo "Generated SQL: " . $sql . "\n";
-    
+    echo 'Generated SQL: '.$sql."\n";
+
     // Attempt to run the query (limit 1)
     $results = $query->limit(1)->get();
     echo "Query executed successfully.\n";
-    
+
     if ($results->isNotEmpty()) {
         $project = $results->first();
-        echo "First project: " . $project->id . "\n";
-        echo "Available: " . $project->available_units_count . "\n";
-        echo "Reserved: " . $project->reserved_units_count . "\n";
+        echo 'First project: '.$project->id."\n";
+        echo 'Available: '.$project->available_units_count."\n";
+        echo 'Reserved: '.$project->reserved_units_count."\n";
     } else {
         echo "No projects found.\n";
     }
 
 } catch (\Exception $e) {
-    echo "Error: " . $e->getMessage() . "\n";
+    echo 'Error: '.$e->getMessage()."\n";
     exit(1);
 }

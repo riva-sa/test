@@ -7,12 +7,16 @@ use App\Models\Developer;
 use App\Models\Project;
 use App\Models\ProjectType;
 use App\Models\State;
+use Illuminate\Support\Facades\Cache;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Lazy;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 
+#[Lazy]
 #[Title('المشاريع')]
 class ProjectsMap extends Component
 {
@@ -37,14 +41,9 @@ class ProjectsMap extends Component
     #[Url]
     public $selected_states = null;
 
-    public $states = [];
-
-    public $cities = [];
-
     public function mount()
     {
         // Load initial data
-        $this->cities = City::all();
     }
 
     #[On('showProject')]
@@ -64,15 +63,7 @@ class ProjectsMap extends Component
 
     public function updatedSelectedCities($value)
     {
-        // Fetch states based on the selected city
-        if ($value) {
-            $city = City::find($value);
-            if ($city) {
-                $this->states = State::where('id', $city->state_id)->get();
-            }
-        } else {
-            $this->states = [];
-        }
+        $this->selected_states = null;
     }
 
     protected function applyFilters($query)
@@ -107,6 +98,24 @@ class ProjectsMap extends Component
         return $query;
     }
 
+    #[Computed]
+    public function cities()
+    {
+        return Cache::remember('all_cities', 3600, function () {
+            return City::all();
+        });
+    }
+
+    #[Computed]
+    public function states()
+    {
+        if ($this->selected_cities) {
+            return State::where('city_id', $this->selected_cities)->get();
+        }
+
+        return collect();
+    }
+
     public function render()
     {
         // Start with a base query
@@ -123,11 +132,11 @@ class ProjectsMap extends Component
         $this->dispatch('projectsUpdated', ['projects' => $projects]);
 
         // Cache static data for 1 hour
-        $developers = \Illuminate\Support\Facades\Cache::remember('developers_all', 3600, function () {
+        $developers = Cache::remember('developers_all', 3600, function () {
             return Developer::all();
         });
-        
-        $projectTypes = \Illuminate\Support\Facades\Cache::remember('project_types_active', 3600, function () {
+
+        $projectTypes = Cache::remember('project_types_active', 3600, function () {
             return ProjectType::where('status', 1)->get();
         });
 
@@ -135,6 +144,8 @@ class ProjectsMap extends Component
             'developers' => $developers,
             'projectTypes' => $projectTypes,
             'projects' => $projects,
+            'cities' => $this->cities,
+            'states' => $this->states,
         ]);
     }
 }

@@ -9,7 +9,6 @@ use App\Models\ProjectType;
 use App\Models\State;
 use App\Models\Unit;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
@@ -78,6 +77,8 @@ class ProjectsPage extends Component
 
     #[Url]
     public $projectCaseAvilable = true;
+
+    public $showSidebar = false; // Control sidebar visibility
 
     public $sort_by = 'id';
 
@@ -194,6 +195,16 @@ class ProjectsPage extends Component
         } else {
             $this->states = collect();
             $this->selected_states = null;
+        }
+    }
+
+    public function setViewType($type)
+    {
+        $this->view_type = $type;
+        if ($type === 'projects') {
+            $this->resetPage('units_page');
+        } else {
+            $this->resetPage('projects_page');
         }
     }
 
@@ -443,12 +454,12 @@ class ProjectsPage extends Component
                 return $query->paginate(12, ['*'], 'units_page');
             });
         }
-        
+
         // Cache static data for 1 hour
         $developers = Cache::remember('developers_all', 3600, function () {
             return Developer::all();
         });
-        
+
         $projectTypes = Cache::remember('project_types_active', 3600, function () {
             return ProjectType::where('status', 1)->get();
         });

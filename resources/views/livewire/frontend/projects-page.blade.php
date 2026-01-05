@@ -34,7 +34,11 @@
         height: 100%;
         background-color: rgba(0, 0, 0, 0.5);
         z-index: 1045;
-        display: none;
+        display: none; /* Controlled by Alpine/CSS */
+    }
+    
+    .filter-sidebar__overlay--active {
+        display: block;
     }
 
     .filter-sidebar {
@@ -44,6 +48,8 @@
         max-width: 400px;
         background-color: white;
         z-index: 1069 !important;
+        /* Mobile: hidden by default */
+        transition: transform 0.3s ease-in-out;
     }
 
     /* Mobile Styles */
@@ -52,16 +58,11 @@
             top: 0;
             right: 0;
             transform: translateX(100%);
-            transition: transform 0.3s ease-in-out;
         }
 
-        .filter-sidebar--active {
+        .filter-sidebar.filter-sidebar--active {
             transform: translateX(0);
             box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .filter-sidebar__overlay--active {
-            display: block;
         }
     }
 
@@ -72,7 +73,7 @@
             top: 20px;
             right: 0px !important;
             height: fit-content;
-            transform: none;
+            transform: none !important; /* Always visible/reset on desktop */
             max-width: calc((2.1 / 12) * 100%);
             border-radius: 15px;
             border: 1px solid #e6e6e640;
@@ -114,7 +115,14 @@
     }
 </style>
 @endpush
-<section class="section-frame mx-xxl-5 position-relative projectspage" dir="rtl">
+<section class="section-frame mx-xxl-5 position-relative projectspage" dir="rtl"
+    x-data="{ showSidebar: @entangle('showSidebar') }"
+    x-init="$watch('showSidebar', value => document.body.classList.toggle('filter-sidebar--open', value))">
+    
+    <!-- Overlay for mobile -->
+    <div class="filter-sidebar__overlay" 
+         :class="{ 'filter-sidebar__overlay--active': showSidebar }"
+         @click="showSidebar = false"></div>
     @livewire('frontend.conponents.unit-popup')
 
     <div class="row">
@@ -126,14 +134,14 @@
                     <div class="col-md-7 col-xl-8 ps-xl-20 d-flex">
                         <ul class="nav nav-tabs nav-pills tab-box" dir="rtl" style="width: fit-content;">
                             <li class="nav-item">
-                                <a wire:click="$set('view_type', 'projects')"
+                                <a wire:click.prevent="setViewType('projects')"
                                    class="nav-link px-4 {{ $view_type === 'projects' ? 'active noise-container' : '' }}"
                                    style="cursor: pointer;">
                                     المشاريع
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a wire:click="$set('view_type', 'units')"
+                                <a wire:click.prevent="setViewType('units')"
                                    class="nav-link px-4 {{ $view_type === 'units' ? 'active noise-container' : '' }}"
                                    style="cursor: pointer;">
                                     الوحدات
@@ -157,7 +165,7 @@
                         <!-- Mobile Filter Button -->
                         <button class="btn btn-primary rounded-pill d-lg-none position-fixed bottom-0 start-50 translate-middle-x mb-4 px-4"
                                 style="z-index: 1040;"
-                                onclick="filterSidebarToggle()">
+                                @click="showSidebar = true">
                             <i class="uil uil-filter me-1"></i> فلترة
                         </button>
 
@@ -182,7 +190,9 @@
                                     <article class="post">
 
                                         <figure class="rounded-top position-relative">
-                                            <a href="{{ route('frontend.projects.single', $project->slug) }}"> <img src="@if($project->getMainImages() !== null ) {{ App\Helpers\MediaHelper::getUrl($project->getMainImages()->media_url) }} @else {{ App\Helpers\MediaHelper::getUrl($project->projectMedia()->first()->media_url) }} @endif" style="max-height: 200px" alt="{{ $project->name }}" loading="lazy" /></a>
+                                            <a href="{{ route('frontend.projects.single', $project->slug) }}">
+                                                <img src="{{ App\Helpers\MediaHelper::getUrl(optional($project->getMainImages())->media_url ?? optional($project->projectMedia()->first())->media_url) }}" style="max-height: 200px" alt="{{ $project->name }}" loading="lazy" />
+                                            </a>
                                             <figcaption class="noise-container text-right heroTop position-absolute" style="top: 6px;right: 6px;" dir="rtl">
                                                 <span class="badge badge-lg text-white d-flex align-content-center align-items-center">
                                                     <i class="uil uil-map-marker fs-15 ms-1"></i>
@@ -270,9 +280,9 @@
                                         <figure class="rounded-top position-relative">
                                             <a wire:click="showUnitDetails({{ $unit->id }})" data-unit-id="{{ $unit->id }}">
                                                 @if ($unit->floor_plan)
-                                                    <img src="{{ App\Helpers\MediaHelper::getUrl($unit->floor_plan ) }}" style="max-height: 200px" alt="{{ $unit->title }}" loading="lazy" />
+                                                    <img src="{{ App\Helpers\MediaHelper::getUrl($unit->floor_plan) }}" style="max-height: 200px" alt="{{ $unit->title }}" loading="lazy" />
                                                 @else
-                                                    <img src="{{ App\Helpers\MediaHelper::getUrl($unit->project->getMainImages()->media_url ) }}" style="max-height: 200px" alt="{{ $unit->title }}" loading="lazy" />
+                                                    <img src="{{ App\Helpers\MediaHelper::getUrl(optional($unit->project->getMainImages())->media_url ?? optional($unit->project->projectMedia()->first())->media_url) }}" style="max-height: 200px" alt="{{ $unit->title }}" loading="lazy" />
                                                 @endif
                                             </a>
                                             <figcaption class="glass-white-card text-right heroTop position-absolute" style="top: 6px;right: 6px;" dir="rtl">
@@ -354,7 +364,7 @@
     </div>
 
     <!-- Sidebar -->
-    <aside class="filter-sidebar" id="filterSidebar" wire:ignore.self >
+    <aside class="filter-sidebar" id="filterSidebar" :class="{ 'filter-sidebar--active': showSidebar }">
 
         <div class="filter-sidebar__container" style="border: 1px solid #e6e6e6;border-radius: 15px;">
 
@@ -363,7 +373,7 @@
                 <a href="{{route('frontend.projects')}}" class="text-warning fs-12 mb-0">اعداة تعيين</a>
                 <!-- Mobile Close Button -->
                 <div class="widget d-lg-none">
-                    <button class="filter-sidebar__close-btn" id="filterSidebarOverlay" onclick="filterSidebarToggle()"></button>
+                    <button class="filter-sidebar__close-btn" @click="showSidebar = false"></button>
                 </div>
             </div>
 
@@ -613,21 +623,3 @@
         </div>
     </aside>
 </section>
-@push('scripts')
-<script>
-    function filterSidebarToggle() {
-        const sidebar = document.getElementById('filterSidebar');
-        const overlay = document.getElementById('filterSidebarOverlay');
-        const body = document.body;
-
-        sidebar.classList.toggle('filter-sidebar--active');
-        overlay.classList.toggle('filter-sidebar__overlay--active');
-        body.classList.toggle('filter-sidebar--open');
-    }
-
-    // Prevent clicks inside sidebar from bubbling up to overlay
-    document.getElementById('filterSidebar').addEventListener('click', function(event) {
-        event.stopPropagation();
-    });
-</script>
-@endpush

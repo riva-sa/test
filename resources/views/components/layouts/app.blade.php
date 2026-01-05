@@ -93,7 +93,7 @@
 
         <!-- Add Alpine.js (optional if you're using it) -->
         {{-- <script src="//unpkg.com/alpinejs" defer></script> --}}
-        <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+        {{-- <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script> --}}
 
         <!-- /.page-frame -->
         <div class="progress-wrap">
@@ -124,5 +124,30 @@
                 <i class="uil uil-whatsapp"></i>
             </a>
         @endif
+        <script>
+            (function(){
+                function pushEvent(name, data){
+                    if (window.ttq && typeof window.ttq.track === 'function') {
+                        window.ttq.track(name);
+                    }
+                    if (window.dataLayer) {
+                        window.dataLayer.push(Object.assign({ event: name }, data || {}));
+                    }
+                }
+                document.addEventListener('click', function(e){
+                    var el = e.target.closest('a.whatsapp-float');
+                    if (el) {
+                        pushEvent('WhatsAppClick', { context: 'floating_button' });
+                    }
+                });
+                if (window.Livewire && typeof window.Livewire.on === 'function') {
+                    window.Livewire.on('clientTrack', function(payload){
+                        if (payload && payload.event) {
+                            pushEvent(payload.event, payload);
+                        }
+                    });
+                }
+            })();
+        </script>
     </body>
 </html>

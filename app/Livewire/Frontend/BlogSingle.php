@@ -3,8 +3,10 @@
 namespace App\Livewire\Frontend;
 
 use Firefly\FilamentBlog\Models\Post;
+use Livewire\Attributes\Lazy;
 use Livewire\Component;
 
+#[Lazy]
 class BlogSingle extends Component
 {
     public $post;

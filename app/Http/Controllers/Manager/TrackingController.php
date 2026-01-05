@@ -23,13 +23,7 @@ class TrackingController extends Controller
      */
     public function track(Request $request)
     {
-        // TODO: Temporarily disabled for performance testing
-        return response()->json([
-            'success' => true,
-            'message' => 'Event tracked successfully',
-        ]);
 
-        /*
         $validated = $request->validate([
             'type' => 'required|in:unit,project',
             'id' => 'required|integer',
@@ -79,7 +73,7 @@ class TrackingController extends Controller
                 'message' => 'Failed to track event: '.$e->getMessage(),
             ], 500);
         }
-        */
+
     }
 
     /**
@@ -87,14 +81,7 @@ class TrackingController extends Controller
      */
     public function trackUnit(Request $request, Unit $unit)
     {
-        // TODO: Temporarily disabled for performance testing
-        return response()->json([
-            'success' => true,
-            'message' => 'Unit event tracked successfully',
-            'unit_id' => $unit->id,
-        ]);
 
-        /*
         $validated = $request->validate([
             'event' => 'required|in:visit,view,show,order',
             'metadata' => 'nullable|array',
@@ -126,7 +113,7 @@ class TrackingController extends Controller
                 'message' => 'Failed to track unit event: '.$e->getMessage(),
             ], 500);
         }
-        */
+
     }
 
     /**
@@ -134,14 +121,7 @@ class TrackingController extends Controller
      */
     public function trackProject(Request $request, Project $project)
     {
-        // TODO: Temporarily disabled for performance testing
-        return response()->json([
-            'success' => true,
-            'message' => 'Project event tracked successfully',
-            'project_id' => $project->id,
-        ]);
 
-        /*
         $validated = $request->validate([
             'event' => 'required|in:visit,show',
             'metadata' => 'nullable|array',
@@ -169,7 +149,7 @@ class TrackingController extends Controller
                 'message' => 'Failed to track project event: '.$e->getMessage(),
             ], 500);
         }
-        */
+
     }
 
     /**
@@ -177,14 +157,7 @@ class TrackingController extends Controller
      */
     public function getAnalytics(Request $request)
     {
-        // TODO: Temporarily disabled for performance testing
-        return response()->json([
-            'analytics' => [],
-            'conversion_rates' => [],
-            'period' => null,
-        ]);
 
-        /*
         $validated = $request->validate([
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
@@ -215,7 +188,7 @@ class TrackingController extends Controller
                 'end' => $dateRange[1]->toISOString(),
             ] : null,
         ]);
-        */
+
     }
 
     /**
@@ -223,12 +196,7 @@ class TrackingController extends Controller
      */
     public function getUnitAnalytics(Request $request)
     {
-        // TODO: Temporarily disabled for performance testing
-        return response()->json([
-            'units' => [],
-        ]);
 
-        /*
         $validated = $request->validate([
             'unit_id' => 'nullable|exists:units,id',
             'project_id' => 'nullable|exists:projects,id',
@@ -269,7 +237,7 @@ class TrackingController extends Controller
                 ];
             }),
         ]);
-        */
+
     }
 
     /**
@@ -277,12 +245,7 @@ class TrackingController extends Controller
      */
     public function getProjectAnalytics(Request $request)
     {
-        // TODO: Temporarily disabled for performance testing
-        return response()->json([
-            'projects' => [],
-        ]);
 
-        /*
         $validated = $request->validate([
             'project_id' => 'nullable|exists:projects,id',
             'limit' => 'nullable|integer|min:1|max:100',
@@ -319,7 +282,7 @@ class TrackingController extends Controller
                 ];
             }),
         ]);
-        */
+
     }
 
     /**
@@ -327,13 +290,7 @@ class TrackingController extends Controller
      */
     public function getConversionRates(Request $request)
     {
-        // TODO: Temporarily disabled for performance testing
-        return response()->json([
-            'conversion_rates' => [],
-            'period' => null,
-        ]);
 
-        /*
         $validated = $request->validate([
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
@@ -362,7 +319,7 @@ class TrackingController extends Controller
                 'end' => $dateRange[1]->toISOString(),
             ] : null,
         ]);
-        */
+
     }
 
     /**
@@ -370,14 +327,7 @@ class TrackingController extends Controller
      */
     public function getPopularUnits(Request $request)
     {
-        // TODO: Temporarily disabled for performance testing
-        return response()->json([
-            'units' => [],
-            'period_days' => 0,
-            'limit' => 0,
-        ]);
 
-        /*
         $validated = $request->validate([
             'limit' => 'nullable|integer|min:1|max:100',
             'days' => 'nullable|integer|min:1|max:365',
@@ -407,7 +357,7 @@ class TrackingController extends Controller
             'period_days' => $days,
             'limit' => $limit,
         ]);
-        */
+
     }
 
     /**
@@ -415,14 +365,7 @@ class TrackingController extends Controller
      */
     public function getPopularProjects(Request $request)
     {
-        // TODO: Temporarily disabled for performance testing
-        return response()->json([
-            'projects' => [],
-            'period_days' => 0,
-            'limit' => 0,
-        ]);
 
-        /*
         $validated = $request->validate([
             'limit' => 'nullable|integer|min:1|max:100',
             'days' => 'nullable|integer|min:1|max:365',
@@ -453,6 +396,6 @@ class TrackingController extends Controller
             'period_days' => $days,
             'limit' => $limit,
         ]);
-        */
+
     }
 }

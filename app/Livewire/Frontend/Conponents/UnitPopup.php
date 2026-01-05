@@ -252,12 +252,14 @@ class UnitPopup extends Component
     {
         $unit = Unit::findOrFail($unitId);
         $this->trackingService->trackWhatsAppClick($unit);
+        $this->dispatch('clientTrack', ['event' => 'WhatsAppClick', 'context' => 'unit_popup', 'unit_id' => $unit->id]);
     }
 
     public function trackCallClick($unitId)
     {
         $unit = Unit::findOrFail($unitId);
         $this->trackingService->trackPhoneCall($unit);
+        $this->dispatch('clientTrack', ['event' => 'PhoneCall', 'context' => 'unit_popup', 'unit_id' => $unit->id]);
     }
 
     public function loadUnit($unitId)

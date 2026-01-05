@@ -5,9 +5,11 @@ namespace App\Livewire\Frontend;
 use Firefly\FilamentBlog\Models\Category;
 use Firefly\FilamentBlog\Models\Post;
 use Firefly\FilamentBlog\Models\Tag;
+use Livewire\Attributes\Lazy;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+#[Lazy]
 class Blog extends Component
 {
     use WithPagination;

@@ -235,18 +235,18 @@
             <div class="space-y-4">
                 @php $totalTraffic = $this->trafficSources->sum('count'); @endphp
                 @forelse($this->trafficSources as $source)
-                @php $percentage = $totalTraffic > 0 ? ($source->count / $totalTraffic) * 100 : 0; @endphp
-                <div>
-                    <div class="flex justify-between mb-1">
-                        <span class="text-base font-medium text-gray-700">{{ $source->source }}</span>
-                        <span class="text-sm font-medium text-gray-500">{{ number_format($source->count) }} ({{ number_format($percentage, 1) }}%)</span>
+                    @php $percentage = $totalTraffic > 0 ? ($source->count / $totalTraffic) * 100 : 0; @endphp
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <span class="text-base font-medium text-gray-700">{{ $source->source }}</span>
+                            <span class="text-sm font-medium text-gray-500">{{ number_format($source->count) }} ({{ number_format($percentage, 1) }}%)</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5">
+                            <div class="bg-gray-800 h-2.5 rounded-full" style="width: {{ $percentage }}%"></div>
+                        </div>
                     </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2.5">
-                        <div class="bg-gray-800 h-2.5 rounded-full" style="width: {{ $percentage }}%"></div>
-                    </div>
-                </div>
                 @empty
-                <div class="text-center py-8 text-gray-500"><p>لا توجد بيانات زيارات</p></div>
+                    <div class="text-center py-8 text-gray-500"><p>لا توجد بيانات زيارات</p></div>
                 @endforelse
             </div>
         </div>

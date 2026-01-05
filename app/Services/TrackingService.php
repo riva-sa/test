@@ -86,7 +86,7 @@ class TrackingService
      */
     public function trackWhatsAppClick($trackable, array $additionalData = [])
     {
-        $trackable->track('whatsapp', array_merge([
+        $trackable->track('WhatsAppClick', array_merge([
             'page' => request()->get('page', 'unknown'),
             'action' => 'whatsapp_click',
         ], $additionalData));
@@ -97,7 +97,7 @@ class TrackingService
      */
     public function trackPhoneCall($trackable, array $additionalData = [])
     {
-        $trackable->track('call', array_merge([
+        $trackable->track('PhoneCall', array_merge([
             'page' => request()->get('page', 'unknown'),
             'action' => 'phone_call',
         ], $additionalData));
@@ -120,14 +120,7 @@ class TrackingService
      */
     public function getPopularUnits($limit = 10, $days = 30, $campaignId = null)
     {
-        // TODO: Temporarily disabled for performance testing - returning latest units instead
-        return Unit::with('project:id,name')
-            ->where('status', 1)
-            ->latest()
-            ->limit($limit)
-            ->get();
 
-        /*
         $cacheKey = "popular_units_{$limit}_{$days}".($campaignId ? "_{$campaignId}" : '');
 
         return Cache::remember($cacheKey, 3600, function () use ($limit, $days, $campaignId) {
@@ -158,7 +151,7 @@ class TrackingService
 
             return $query->get();
         });
-        */
+
     }
 
     /**
@@ -166,13 +159,7 @@ class TrackingService
      */
     public function getPopularProjects($limit = 10, $days = 30, $campaignId = null)
     {
-        // TODO: Temporarily disabled for performance testing - returning latest projects instead
-        return Project::where('status', 1)
-            ->latest()
-            ->limit($limit)
-            ->get();
 
-        /*
         $cacheKey = "popular_projects_{$limit}_{$days}".($campaignId ? "_{$campaignId}" : '');
 
         return Cache::remember($cacheKey, 3600, function () use ($limit, $days, $campaignId) {
@@ -198,7 +185,7 @@ class TrackingService
 
             return $query->get();
         });
-        */
+
     }
 
     /**
@@ -206,28 +193,7 @@ class TrackingService
      */
     public function getAnalytics($dateRange = null, $campaignId = null)
     {
-        // TODO: Temporarily disabled for performance testing
-        return [
-            'overview' => [
-                'total_events' => 0,
-                'total_visits' => 0,
-                'total_views' => 0,
-                'total_shows' => 0,
-                'total_orders' => 0,
-                'total_whatsapp' => 0,
-                'total_calls' => 0,
-                'unique_sessions' => 0,
-            ],
-            'by_type' => [
-                'units' => 0,
-                'projects' => 0,
-            ],
-            'daily_stats' => [],
-            'device_stats' => [],
-            'browser_stats' => [],
-        ];
 
-        /*
         $startDate = $dateRange ? $dateRange[0] : Carbon::now()->subDays(30);
         $endDate = $dateRange ? $dateRange[1] : Carbon::now();
 
@@ -257,8 +223,8 @@ class TrackingService
                 'total_views' => $query->clone()->eventType('view')->count(),
                 'total_shows' => $query->clone()->eventType('show')->count(),
                 'total_orders' => $query->clone()->eventType('order')->count(),
-                'total_whatsapp' => $query->clone()->eventType('whatsapp')->count(),
-                'total_calls' => $query->clone()->eventType('call')->count(),
+                'total_whatsapp' => $query->clone()->whereIn('event_type', ['whatsapp', 'WhatsAppClick'])->count(),
+                'total_calls' => $query->clone()->whereIn('event_type', ['call', 'PhoneCall'])->count(),
                 'unique_sessions' => $query->clone()->distinct('session_id')->count('session_id'),
             ],
             'by_type' => [
@@ -312,7 +278,7 @@ class TrackingService
         }
 
         return $analytics;
-        */
+
     }
 
     /**
@@ -320,18 +286,7 @@ class TrackingService
      */
     public function getConversionRates($dateRange = null, $campaignId = null)
     {
-        // TODO: Temporarily disabled for performance testing
-        return [
-            'visit_to_view' => 0,
-            'view_to_show' => 0,
-            'show_to_order' => 0,
-            'visit_to_order' => 0,
-            'visit_to_whatsapp' => 0,
-            'visit_to_call' => 0,
-            'engagement_rate' => 0,
-        ];
 
-        /*
         $startDate = $dateRange ? $dateRange[0] : Carbon::now()->subDays(30);
         $endDate = $dateRange ? $dateRange[1] : Carbon::now();
 
@@ -358,8 +313,8 @@ class TrackingService
         $views = $query->clone()->eventType('view')->count();
         $shows = $query->clone()->eventType('show')->count();
         $orders = $query->clone()->eventType('order')->count();
-        $whatsapp = $query->clone()->eventType('whatsapp')->count();
-        $calls = $query->clone()->eventType('call')->count();
+        $whatsapp = $query->clone()->whereIn('event_type', ['whatsapp', 'WhatsAppClick'])->count();
+        $calls = $query->clone()->whereIn('event_type', ['call', 'PhoneCall'])->count();
 
         return [
             'visit_to_view' => $visits > 0 ? round(($views / $visits) * 100, 2) : 0,
@@ -370,7 +325,7 @@ class TrackingService
             'visit_to_call' => $visits > 0 ? round(($calls / $visits) * 100, 2) : 0,
             'engagement_rate' => $visits > 0 ? round((($whatsapp + $calls + $orders) / $visits) * 100, 2) : 0,
         ];
-        */
+
     }
 
     /**
@@ -378,16 +333,7 @@ class TrackingService
      */
     public function getCampaignAnalytics(Campaign $campaign)
     {
-        // TODO: Temporarily disabled for performance testing
-        return [
-            'analytics' => $this->getAnalytics(),
-            'conversion_rates' => $this->getConversionRates(),
-            'duration_days' => 0,
-            'project' => $campaign->project,
-            'performance_score' => 0,
-        ];
 
-        /*
         $analytics = $this->getAnalytics([$campaign->start_date, $campaign->end_date ?: Carbon::now()], $campaign->id);
         $conversionRates = $this->getConversionRates([$campaign->start_date, $campaign->end_date ?: Carbon::now()], $campaign->id);
 
@@ -398,7 +344,7 @@ class TrackingService
             'project' => $campaign->project,
             'performance_score' => $this->calculateCampaignPerformanceScore($campaign),
         ];
-        */
+
     }
 
     /**
@@ -425,13 +371,6 @@ class TrackingService
      */
     public function getTopPerformingContent(?array $dateRange = null, int $limit = 5, $campaignId = null)
     {
-        // TODO: Temporarily disabled for performance testing
-        return [
-            'units' => collect(),
-            'projects' => collect(),
-        ];
-
-        /*
         $startDate = $dateRange ? $dateRange[0] : Carbon::now()->subDays(30);
         $endDate = $dateRange ? $dateRange[1] : Carbon::now();
 
@@ -457,31 +396,27 @@ class TrackingService
                     ->orWhere(function ($subQuery) {
                         $subQuery->where('orders_count', '>', 0)
                             ->orWhere('shows_count', '>', 0)
-                            ->orWhere('whatsapp_count', '>', 0)
-                            ->orWhere('calls_count', '>', 0);
+                            ->orWhere('visits_count', '>', 0);
                     });
             });
 
-        // Filter by campaign if specified
+        // Apply campaign filters if provided
         if ($campaignId) {
             $campaign = Campaign::find($campaignId);
             if ($campaign) {
-                $unitsQuery->where('units.project_id', $campaign->project_id);
                 $projectsQuery->where('id', $campaign->project_id);
+                $unitsQuery->where('units.project_id', $campaign->project_id);
             }
         }
 
-        $units = $unitsQuery->orderByDesc('orders_count')
-            ->orderByDesc('whatsapp_count')
-            ->orderByDesc('calls_count')
-            ->orderByDesc('shows_count')
+        $units = $unitsQuery->orderBy('units.orders_count', 'desc')
+            ->orderBy('units.shows_count', 'desc')
+            ->orderBy('units.views_count', 'desc')
             ->limit($limit)
             ->get();
 
-        $projects = $projectsQuery->orderByDesc('orders_count')
-            ->orderByDesc('whatsapp_count')
-            ->orderByDesc('calls_count')
-            ->orderByDesc('shows_count')
+        $projects = $projectsQuery->orderBy('orders_count', 'desc')
+            ->orderBy('visits_count', 'desc')
             ->limit($limit)
             ->get();
 
@@ -489,7 +424,6 @@ class TrackingService
             'units' => $units,
             'projects' => $projects,
         ];
-        */
     }
 
     /**
@@ -497,10 +431,6 @@ class TrackingService
      */
     public function getTrafficSources(?array $dateRange = null, $campaignId = null)
     {
-        // TODO: Temporarily disabled for performance testing
-        return collect();
-
-        /*
         $startDate = $dateRange ? $dateRange[0] : Carbon::now()->subDays(30);
         $endDate = $dateRange ? $dateRange[1] : Carbon::now();
 
@@ -523,40 +453,33 @@ class TrackingService
             }
         }
 
-        return $query->selectRaw("
-                CASE 
-                    WHEN referrer IS NULL OR referrer = '' THEN 'Direct'
-                    WHEN referrer LIKE '%google.%' THEN 'Google'
-                    WHEN referrer LIKE '%facebook.%' THEN 'Facebook'
-                    WHEN referrer LIKE '%instagram.%' THEN 'Instagram'
-                    WHEN referrer LIKE '%twitter.%' THEN 'Twitter'
-                    WHEN referrer LIKE '%linkedin.%' THEN 'LinkedIn'
-                    WHEN referrer LIKE '%youtube.%' THEN 'YouTube'
-                    WHEN referrer LIKE '%bing.%' THEN 'Bing'
-                    WHEN referrer LIKE '%yahoo.%' THEN 'Yahoo'
-                    WHEN referrer LIKE '%reddit.%' THEN 'Reddit'
-                    WHEN referrer LIKE '%tiktok.%' THEN 'TikTok'
-                    WHEN referrer LIKE '%pinterest.%' THEN 'Pinterest'
-                    WHEN referrer LIKE '%snapchat.%' THEN 'Snapchat'
-                    WHEN referrer LIKE '%whatsapp.%' THEN 'WhatsApp'
-                    WHEN referrer LIKE '%vk.%' THEN 'VK'
-                    WHEN referrer LIKE '%baidu.%' THEN 'Baidu'
-                    WHEN referrer LIKE '%yandex.%' THEN 'Yandex'
-                    WHEN referrer LIKE '%quora.%' THEN 'Quora'
-                    WHEN referrer LIKE '%tumblr.%' THEN 'Tumblr'
-                    WHEN referrer LIKE '%weibo.%' THEN 'Weibo'
-                    WHEN referrer LIKE '%twitch.%' THEN 'Twitch'
-                    WHEN referrer LIKE '%discord.%' THEN 'Discord'
-                    WHEN referrer LIKE '%telegram.%' THEN 'Telegram'
-                    WHEN referrer LIKE '%line.%' THEN 'Line'
-                    ELSE 'Other'
-                END as source,
-                COUNT(*) as count
-            ")
-            ->groupBy('source')
-            ->orderBy('count', 'desc')
+        $raw = $query
+            ->select('referrer', DB::raw('COUNT(*) as count'))
+            ->whereNotNull('referrer')
+            ->groupBy('referrer')
+            ->orderByDesc('count')
+            ->limit(1000)
             ->get();
-        */
+
+        $grouped = $raw
+            ->map(function ($row) {
+                return [
+                    'source' => $this->extractSourceFromReferrer($row->referrer),
+                    'count' => (int) $row->count,
+                ];
+            })
+            ->groupBy('source')
+            ->map(function ($items, $source) {
+                return (object) [
+                    'source' => $source,
+                    'count' => collect($items)->sum('count'),
+                ];
+            })
+            ->values()
+            ->sortByDesc('count')
+            ->take(10);
+
+        return $grouped;
     }
 
     public function getCampaignDailyBreakdown(Campaign $campaign): array
@@ -590,8 +513,14 @@ class TrackingService
         }
 
         foreach ($dailyStats as $stat) {
-            if (isset($results[$stat->date]) && in_array($stat->event_type, $eventTypes)) {
-                $results[$stat->date][$stat->event_type] = $stat->count;
+            $type = $stat->event_type;
+            if ($type === 'WhatsAppClick') {
+                $type = 'whatsapp';
+            } elseif ($type === 'PhoneCall') {
+                $type = 'call';
+            }
+            if (isset($results[$stat->date]) && in_array($type, $eventTypes)) {
+                $results[$stat->date][$type] = $stat->count;
             }
         }
 
@@ -736,7 +665,7 @@ class TrackingService
     /**
      * Helper function to extract a readable source from a referrer URL.
      */
-    private function extractSourceFromReferrer($referrer)
+    protected function extractSourceFromReferrer($referrer)
     {
         if (empty($referrer)) {
             return 'Direct';

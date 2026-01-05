@@ -37,13 +37,16 @@ class NavBar extends Component
     {
         // Perform the search when more than 2 characters are entered
         if (strlen($this->search) > 2) {
-            $this->results = Project::where('name', 'like', '%'.$this->search.'%')
+            $this->results = Project::select(['id', 'name', 'slug'])
+                ->where('name', 'like', '%'.$this->search.'%')
                 ->orWhere('description', 'like', '%'.$this->search.'%')
                 ->orWhere('address', 'like', '%'.$this->search.'%')
                 ->take(5) // Limit the results to 5
                 ->get();
+            $this->showDropdown = true;
         } else {
             $this->results = []; // Clear results if search input is less than 3 characters
+            $this->showDropdown = false;
         }
     }
 

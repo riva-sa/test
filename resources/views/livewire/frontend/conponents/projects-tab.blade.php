@@ -43,7 +43,9 @@
                             <a href="{{ route('frontend.projects.single', $project->slug) }}" class="noise-container arrowToSingle"><i class="uil uil-arrow-up-left"></i></a>
                         </div>
                         <a href="{{ route('frontend.projects.single', $project->slug) }}"
-                            style="height: 500px; background:url('@if($project->getMainImages() !== null ) {{ App\Helpers\MediaHelper::getUrl($project->getMainImages()->media_url) }} @else {{ App\Helpers\MediaHelper::getUrl($project->projectMedia()->first()->media_url) }} @endif');background-size: cover;background-position: center;"></a>
+                            class="project-image-link"
+                            style="height: 500px; background:url('{{ App\Helpers\MediaHelper::getUrl(optional($project->getMainImages())->media_url ?? optional($project->projectMedia()->first())->media_url) }}');background-size: cover;background-position: center;"
+                            loading="lazy"></a>
                         {{-- <a href="{{ route('frontend.projects.single', $project->slug) }}"
                             style="height: 500px; background:url('@if($project->getMainImages() !== null ) {{ Storage::disk('public')->url($project->getMainImages()->media_url) }} @else {{ Storage::disk('public')->url($project->projectMedia()->first()->media_url) }} @endif');background-size: cover;background-position: center;"></a> --}}
                             <figcaption class="noise-container text-right tap" dir="rtl">
@@ -53,26 +55,26 @@
                                     <a href="{{ route('frontend.projects.single', $project->slug) }}">نظرة عامة</a>
                                 </h2>
                                 <div>
-                                    <img src="{{ App\Helpers\MediaHelper::getUrl($project->developer->logo) }}" style="width: 50px !important;max-height:50px" alt="Logo">
+                                    <img src="{{ App\Helpers\MediaHelper::getUrl($project->developer->logo) }}" style="width: 50px !important;max-height:50px" alt="Logo" loading="lazy">
                                 </div>
                             </div>
                             <ul class="post-meta text-white mb-3">
                                 <li class="post-date">
-                                    <img src="{{ asset('frontend/img/icons/money-03.png') }}" style="width: 20px;" alt="Riva - ريفا">
+                                    <img src="{{ asset('frontend/img/icons/money-03.png') }}" style="width: 20px;" alt="Riva - ريفا" loading="lazy">
                                     <span class="me-1">{{ $project->price_range }}</span>
                                 </li>
                             </ul>
                             <ul class="post-meta text-white mb-0">
                                 <li class="post-date">
-                                    <img src="{{ asset('frontend/img/icons/bathtub-01.png') }}" style="width: 20px;" alt="Riva - ريفا">
+                                    <img src="{{ asset('frontend/img/icons/bathtub-01.png') }}" style="width: 20px;" alt="Riva - ريفا" loading="lazy">
                                     <span class="me-1">{{ $project->bathroom_range }}</span>
                                 </li>
                                 <li class="post-author">
-                                    <img src="{{ asset('frontend/img/icons/bed.png') }}" style="width: 20px;" alt="Riva - ريفا">
+                                    <img src="{{ asset('frontend/img/icons/bed.png') }}" style="width: 20px;" alt="Riva - ريفا" loading="lazy">
                                     <span class="me-1">{{ $project->bedroom_range }}</span>
                                 </li>
                                 <li class="post-comments">
-                                    <img src="{{ asset('frontend/img/icons/move.png') }}" style="width: 20px;" alt="Riva - ريفا">
+                                    <img src="{{ asset('frontend/img/icons/move.png') }}" style="width: 20px;" alt="Riva - ريفا" loading="lazy">
                                     <span class="me-1">{{ $project->space_range }}</span>
                                 </li>
                             </ul>

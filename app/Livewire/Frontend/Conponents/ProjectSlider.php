@@ -4,24 +4,24 @@ namespace App\Livewire\Frontend\Conponents;
 
 use App\Models\Project;
 use Illuminate\Support\Facades\Cache;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 class ProjectSlider extends Component
 {
-    public $projects;
-
     public $type = null; // Optional parameter with default value
 
     public function mount($type = null)
     {
         $this->type = $type;
-        $this->loadProjects();
     }
 
-    public function loadProjects()
+    #[Computed]
+    public function projects()
     {
         $cacheKey = 'home:project_slider:'.($this->type ?? 'default');
-        $this->projects = Cache::remember($cacheKey, 60, function () {
+
+        return Cache::remember($cacheKey, 60, function () {
             return Project::query()
                 ->latest()
                 ->with(['projectMedia', 'developer'])
@@ -33,6 +33,8 @@ class ProjectSlider extends Component
 
     public function render()
     {
-        return view('livewire.frontend.conponents.project-slider');
+        return view('livewire.frontend.conponents.project-slider', [
+            'projects' => $this->projects,
+        ]);
     }
 }

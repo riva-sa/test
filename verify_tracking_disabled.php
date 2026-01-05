@@ -1,9 +1,8 @@
 <?php
 
 use App\Models\Project;
-use App\Models\TrackingEvent;
-use App\Services\TrackingService;
 use App\Services\EnhancedTrackingService;
+use App\Services\TrackingService;
 
 require __DIR__.'/vendor/autoload.php';
 
@@ -15,9 +14,9 @@ echo "Verifying tracking disablement...\n";
 
 // 1. Test Trackable trait
 echo "Testing Trackable trait...\n";
-$project = new Project();
+$project = new Project;
 $project->id = 99999; // Dummy ID
-$project->name = "Test Project";
+$project->name = 'Test Project';
 // Mock saving if needed, but track() usually works on instance if it doesn't require DB existence for relation (morphMany needs ID)
 
 // We can mock the relation or just check the return value of track()
@@ -26,19 +25,19 @@ $result = $project->track('visit');
 if ($result === null) {
     echo "PASS: Project::track() returned null.\n";
 } else {
-    echo "FAIL: Project::track() returned " . print_r($result, true) . "\n";
+    echo 'FAIL: Project::track() returned '.print_r($result, true)."\n";
 }
 
 $shouldTrack = $project->shouldTrack('visit');
 if ($shouldTrack === false) {
     echo "PASS: Project::shouldTrack() returned false.\n";
 } else {
-    echo "FAIL: Project::shouldTrack() returned " . var_export($shouldTrack, true) . "\n";
+    echo 'FAIL: Project::shouldTrack() returned '.var_export($shouldTrack, true)."\n";
 }
 
 // 2. Test TrackingService
 echo "Testing TrackingService...\n";
-$service = new TrackingService();
+$service = new TrackingService;
 $analytics = $service->getAnalytics();
 if ($analytics['overview']['total_events'] === 0 && empty($analytics['daily_stats'])) {
     echo "PASS: TrackingService::getAnalytics() returned empty stats.\n";
@@ -48,7 +47,7 @@ if ($analytics['overview']['total_events'] === 0 && empty($analytics['daily_stat
 
 // 3. Test EnhancedTrackingService
 echo "Testing EnhancedTrackingService...\n";
-$enhancedService = new EnhancedTrackingService();
+$enhancedService = new EnhancedTrackingService;
 $dashboard = $enhancedService->getDashboardOverview();
 if (empty($dashboard['current']) && empty($dashboard['previous'])) {
     echo "PASS: EnhancedTrackingService::getDashboardOverview() returned empty stats.\n";

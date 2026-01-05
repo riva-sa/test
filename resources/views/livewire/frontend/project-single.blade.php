@@ -4,10 +4,10 @@
     {{-- @section('keywords', implode(',', $project->tags ?? [])) --}}
     @section('og:title',  $project->name . ' ' . $project->projectType->name)
     @section('og:description', Str::limit(strip_tags($project->description), 150))
-    @section('og:image', App\Helpers\MediaHelper::getUrl($project->projectMedia()->first()->media_url))
+    @section('og:image', App\Helpers\MediaHelper::getUrl(optional($project->projectMedia->first())->media_url))
     @section('twitter:title',  $project->name . ' ' . $project->projectType->name)
     @section('twitter:description', Str::limit(strip_tags($project->description), 150))
-    @section('twitter:image', App\Helpers\MediaHelper::getUrl($project->projectMedia()->first()->media_url) )
+    @section('twitter:image', App\Helpers\MediaHelper::getUrl(optional($project->projectMedia->first())->media_url) )
 
     @livewire('frontend.conponents.unit-popup')
     @livewire('frontend.conponents.unit-orderpopup')
@@ -295,8 +295,6 @@
                                     </a>
                                 </li>
                             </ul>
-
-
                             {{-- Tab Contents --}}
                             <div class="mt-5">
                                 {{-- Units Grid --}}
@@ -386,13 +384,7 @@
                                         </div>
                                     @endforelse
                                 </div>
-
-                                <div class="mt-4">
-                                    {{ $units->links() }}
-                                </div>
-
                             </div>
-
                         </div>
                     </div>
 
@@ -432,7 +424,7 @@
                                         @foreach ($project->guarantees as $guarante)
                                             <div class="d-flex flex-row col-6 col-md-4 mb-3" wire:key="{{$guarante->id}}">
                                                 <div>
-                                                    @if ($features->icon)
+                                                    @if ($guarante->icon)
                                                         <img src="{{ App\Helpers\MediaHelper::getUrl($guarante->icon) }}" class="svg-inject icon-svg icon-svg-sm text-purple" alt="Riva - ريفا" />
                                                     @else
                                                         <img src="https://placehold.co/30x30" alt="" />
@@ -542,8 +534,8 @@
 
     <!-- WhatsApp Fixed Icon -->
     <a href="https://wa.me/{{ isset($project) && $project->sales_manager_id ?
-        App\Models\User::where('id',$project->sales_manager_id)->first()->phone ?? setting('site_phone') :
-    setting('site_phone')
+        optional($project->salesManager)->phone ?? setting('site_phone') :
+        setting('site_phone')
     }}?text=انا مهتم بهذا المشروع {{ isset($project) ? $project->name : '' }} {{ isset($project) ? route('frontend.projects.single', $project->slug) : '' }}" class="whatsapp-float glass-card" target="_blank">
     <i class="uil uil-whatsapp"></i>
     </a>
@@ -552,51 +544,51 @@
 
 @push('scripts')
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""></script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-    // Initialize the map
-    const map = L.map('projectMap').setView([{{ $project->latitude }}, {{ $project->longitude }}], 15);
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        // Initialize the map
+        const map = L.map('projectMap').setView([{{ $project->latitude }}, {{ $project->longitude }}], 15);
 
-    // Add OpenStreetMap tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: ' <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        maxZoom: 19
-    }).addTo(map);
-
-    // Custom marker icon (optional - using default if not needed)
-    const customIcon = L.icon({
-        iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
-        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41]
-    });
-
-    // Add marker for the project
-    const marker = L.marker([{{ $project->latitude }}, {{ $project->longitude }}], {
-        icon: customIcon
-    }).addTo(map);
-
-    // Add popup to marker
-    marker.bindPopup(`
-        <div class="text-center" dir="rtl">
-            <h5 class="mb-2">{{ $project->name }}</h5>
-            <span class="mb-2">{{ $project->address }}</span>
-        </div>
-    `).openPopup();
-
-    // Add circle to highlight the area
-    L.circle([{{ $project->latitude }}, {{ $project->longitude }}], {
-        color: '#007bff',
-        fillColor: '#007bff',
-        fillOpacity: 0.1,
-        radius: 500
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: ' <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
         }).addTo(map);
-    });
+
+        // Custom marker icon (optional - using default if not needed)
+        const customIcon = L.icon({
+            iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+
+        // Add marker for the project
+        const marker = L.marker([{{ $project->latitude }}, {{ $project->longitude }}], {
+            icon: customIcon
+        }).addTo(map);
+
+        // Add popup to marker
+        marker.bindPopup(`
+            <div class="text-center" dir="rtl">
+                <h5 class="mb-2">{{ $project->name }}</h5>
+                <span class="mb-2">{{ $project->address }}</span>
+            </div>
+        `).openPopup();
+
+        // Add circle to highlight the area
+        L.circle([{{ $project->latitude }}, {{ $project->longitude }}], {
+            color: '#007bff',
+            fillColor: '#007bff',
+            fillOpacity: 0.1,
+            radius: 500
+            }).addTo(map);
+        });
     </script>
 @endpush

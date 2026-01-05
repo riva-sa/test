@@ -3,7 +3,6 @@
 namespace App\Traits;
 
 use App\Models\TrackingEvent;
-use Carbon\Carbon;
 
 trait Trackable
 {
@@ -20,9 +19,6 @@ trait Trackable
      */
     public function track($eventType, $metadata = [])
     {
-        // TODO: Temporarily disabled for performance testing
-        return null;
-
         $request = request();
         $referrer = $request->headers->get('referer');
         if ($referrer !== null && strlen($referrer) > 2048) {
@@ -33,8 +29,7 @@ trait Trackable
             $userAgent = substr($userAgent, 0, 2048);
         }
 
-        // Create tracking event
-        $trackingEvent = $this->trackingEvents()->create([
+        $data = [
             'event_type' => $eventType,
             'session_id' => session()->getId(),
             'ip_address' => $request->ip(),
@@ -44,12 +39,14 @@ trait Trackable
                 'device_type' => $this->getDeviceType($userAgent),
                 'browser' => $this->getBrowserInfo($userAgent),
             ]),
-        ]);
+        ];
 
-        // Update counter columns
-        $this->updateTrackingCounters($eventType);
+        // Dispatch job to handle tracking asynchronously
+        // dispatch()->afterResponse() ensures the job runs after the response is sent to the user
+        // so it doesn't affect page load time at all.
+        \App\Jobs\ProcessTrackingEvent::dispatch($this, $eventType, $data)->afterResponse();
 
-        return $trackingEvent;
+        return true;
     }
 
     /**
@@ -57,32 +54,7 @@ trait Trackable
      */
     protected function updateTrackingCounters($eventType)
     {
-        $now = Carbon::now();
-
-        switch ($eventType) {
-            case 'visit':
-                $this->increment('visits_count');
-                $this->update(['last_visited_at' => $now]);
-                break;
-            case 'view':
-                $this->increment('views_count');
-                $this->update(['last_viewed_at' => $now]);
-                break;
-            case 'show':
-                $this->increment('shows_count');
-                $this->update(['last_shown_at' => $now]);
-                break;
-            case 'order':
-                $this->increment('orders_count');
-                $this->update(['last_ordered_at' => $now]);
-                break;
-            case 'whatsapp':
-                $this->increment('whatsapp_count');
-                break;
-            case 'call':
-                $this->increment('calls_count');
-                break;
-        }
+        // Moved to ProcessTrackingEvent Job
     }
 
     /**
@@ -90,18 +62,19 @@ trait Trackable
      */
     public function shouldTrack($eventType, $timeWindow = 300) // 5 minutes window
     {
-        // TODO: Temporarily disabled for performance testing
-        return false;
-
         $sessionId = session()->getId();
 
-        $recentEvent = $this->trackingEvents()
-            ->where('event_type', $eventType)
-            ->where('session_id', $sessionId)
-            ->where('created_at', '>', Carbon::now()->subSeconds($timeWindow))
-            ->first();
+        // Check cache first for better performance
+        $cacheKey = "tracking:{$this->getTable()}:{$this->id}:{$eventType}:{$sessionId}";
 
-        return ! $recentEvent;
+        if (\Illuminate\Support\Facades\Cache::has($cacheKey)) {
+            return false;
+        }
+
+        // Cache the tracking event for the time window
+        \Illuminate\Support\Facades\Cache::put($cacheKey, true, $timeWindow);
+
+        return true;
     }
 
     /**
@@ -146,19 +119,6 @@ trait Trackable
      */
     public function getTrackingStats($dateRange = null)
     {
-        // TODO: Temporarily disabled for performance testing
-        return [
-            'total_events' => 0,
-            'visits' => 0,
-            'views' => 0,
-            'shows' => 0,
-            'orders' => 0,
-            'unique_sessions' => 0,
-            'events_by_day' => collect(),
-            'events_by_type' => collect(),
-        ];
-
-        /*
         $query = $this->trackingEvents();
 
         if ($dateRange) {
@@ -182,6 +142,5 @@ trait Trackable
                 ->groupBy('event_type')
                 ->get(),
         ];
-        */
     }
 }

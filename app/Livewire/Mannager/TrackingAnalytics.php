@@ -377,10 +377,7 @@ class TrackingAnalytics extends Component
 
     public function getProjectAnalyticsProperty()
     {
-        // TODO: Temporarily disabled for performance testing
-        return null;
 
-        /*
         if (! $this->selectedProject || $this->filterMode !== 'project') {
             return null;
         }
@@ -411,15 +408,15 @@ class TrackingAnalytics extends Component
                 'total_views' => $query->clone()->eventType('view')->count(),
                 'total_shows' => $query->clone()->eventType('show')->count(),
                 'total_orders' => $query->clone()->eventType('order')->count(),
-                'total_whatsapp' => $query->clone()->eventType('whatsapp')->count(),
-                'total_calls' => $query->clone()->eventType('call')->count(),
+                'total_whatsapp' => $query->clone()->whereIn('event_type', ['whatsapp', 'WhatsAppClick'])->count(),
+                'total_calls' => $query->clone()->whereIn('event_type', ['call', 'PhoneCall'])->count(),
             ],
             'period_days' => round($this->startDate->diffInDays($this->endDate)),
             'units_count' => Unit::where('project_id', $project->id)->count(),
         ];
 
         return $analytics;
-        */
+
     }
 
     public function render()

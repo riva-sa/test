@@ -104,9 +104,7 @@ class Project extends Model
     public function getMediaImages()
     {
         try {
-            $images = $this->hasMany(ProjectMedia::class)
-                ->where('media_type', 'image')
-                ->get();
+            $images = $this->projectMedia->where('media_type', 'image');
 
             return $images->isNotEmpty() ? $images : collect([]); // إرجاع مجموعة فارغة إذا لم يكن هناك صور
         } catch (\Exception $e) {
@@ -118,7 +116,7 @@ class Project extends Model
     public function getMainImages()
     {
         try {
-            $mainImage = $this->hasMany(ProjectMedia::class)
+            $mainImage = $this->projectMedia
                 ->where('media_type', 'image')
                 ->where('main', '1')
                 ->first();
@@ -132,9 +130,7 @@ class Project extends Model
     public function getMediaVideos()
     {
         try {
-            $videos = $this->hasMany(ProjectMedia::class)
-                ->where('media_type', 'video')
-                ->get();
+            $videos = $this->projectMedia->where('media_type', 'video');
 
             return $videos->isNotEmpty() ? $videos : collect([]); // إرجاع مجموعة فارغة إذا لم يكن هناك فيديوهات
         } catch (\Exception $e) {
@@ -145,9 +141,7 @@ class Project extends Model
     public function getMediaPdf()
     {
         try {
-            $pdfs = $this->hasMany(ProjectMedia::class)
-                ->where('media_type', 'pdf')
-                ->get();
+            $pdfs = $this->projectMedia->where('media_type', 'pdf');
 
             return $pdfs->isNotEmpty() ? $pdfs : collect([]); // إرجاع مجموعة فارغة إذا لم يكن هناك PDF
         } catch (\Exception $e) {
@@ -158,7 +152,7 @@ class Project extends Model
     public function getMainImage()
     {
         try {
-            $mainImage = $this->hasMany(ProjectMedia::class)
+            $mainImage = $this->projectMedia
                 ->where('media_type', 'image')
                 ->where('main', 1)
                 ->first();
@@ -173,7 +167,7 @@ class Project extends Model
     {
         try {
             // إحضار أول ملف PDF فقط
-            $firstPdf = $this->hasMany(ProjectMedia::class)
+            $firstPdf = $this->projectMedia
                 ->where('media_type', 'pdf')
                 ->first();
 
@@ -395,8 +389,8 @@ class Project extends Model
     // Helper methods to calculate ranges
     public function getPriceRangeAttribute()
     {
-        $minPrice = $this->units()->min('unit_price');
-        $maxPrice = $this->units()->max('unit_price');
+        $minPrice = $this->units->min('unit_price');
+        $maxPrice = $this->units->max('unit_price');
 
         if ($minPrice === $maxPrice) {
             if ($this->show_price) {
@@ -410,8 +404,8 @@ class Project extends Model
 
     public function getSpaceRangeAttribute()
     {
-        $minSpace = $this->units()->min('unit_area');
-        $maxSpace = $this->units()->max('unit_area');
+        $minSpace = $this->units->min('unit_area');
+        $maxSpace = $this->units->max('unit_area');
 
         if ($minSpace === $maxSpace) {
             return $minSpace.' م²';
@@ -422,8 +416,8 @@ class Project extends Model
 
     public function getBedroomRangeAttribute()
     {
-        $minBedrooms = $this->units()->min('beadrooms');
-        $maxBedrooms = $this->units()->max('beadrooms');
+        $minBedrooms = $this->units->min('beadrooms');
+        $maxBedrooms = $this->units->max('beadrooms');
 
         if ($minBedrooms === $maxBedrooms) {
             return $minBedrooms;
@@ -434,8 +428,8 @@ class Project extends Model
 
     public function getBathroomRangeAttribute()
     {
-        $minBathrooms = $this->units()->min('bathrooms');
-        $maxBathrooms = $this->units()->max('bathrooms');
+        $minBathrooms = $this->units->min('bathrooms');
+        $maxBathrooms = $this->units->max('bathrooms');
 
         if ($minBathrooms === $maxBathrooms) {
             return $minBathrooms;
@@ -446,8 +440,8 @@ class Project extends Model
 
     public function getKitchenRangeAttribute()
     {
-        $minKitchens = $this->units()->min('kitchen');
-        $maxKitchens = $this->units()->max('kitchen');
+        $minKitchens = $this->units->min('kitchen');
+        $maxKitchens = $this->units->max('kitchen');
 
         if ($minKitchens === $maxKitchens) {
             return $minKitchens;

@@ -10,7 +10,7 @@
                                style="height: 700px"
                                href="{{ route('frontend.projects.single', $project->slug) }}"
                                loading="lazy"
-                               data-image-src="@if($project->getMainImages()) {{ App\Helpers\MediaHelper::getUrl($project->getMainImages()->media_url) }} @else {{ App\Helpers\MediaHelper::getUrl($project->projectMedia->first()->media_url) }} @endif">
+                               data-image-src="{{ App\Helpers\MediaHelper::getUrl(optional($project->getMainImages())->media_url ?? optional($project->projectMedia->first())->media_url) }}">
                             </a>
 
                             <figcaption class="noise-container text-right hero" dir="rtl">
