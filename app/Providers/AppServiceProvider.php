@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
-
+use Illuminate\Support\Facades\Schema;
 class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
@@ -50,8 +50,14 @@ class AppServiceProvider extends ServiceProvider
         $this->configureModels();
         $this->translatableComponents();
 
-        $BlogSettings = Setting::first();
-        view()->share('BlogSettings', $BlogSettings);
+        if (! app()->runningInConsole() && Schema::hasTable('fblog_settings')) {
+            try {
+                $BlogSettings = Setting::query()->first();
+                view()->share('BlogSettings', $BlogSettings);
+            } catch (\Throwable $e) {
+                logger()->warning('BlogSettings skipped: ' . $e->getMessage());
+            }
+        }
 
         // LanguageSwitch::configureUsing(function (LanguageSwitch $switch) {
         //     $switch
