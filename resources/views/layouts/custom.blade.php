@@ -892,6 +892,6 @@
     {{-- <script src="{{ asset('frontend/js/tracking.js') }}"></script> --}}
     {{-- inter scripts here --}}
     @stack('scripts')
-
+    
 </body>
 </html>

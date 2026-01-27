@@ -39,7 +39,7 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
-        {{-- <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css"> --}}
+        <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css">
         @livewireStyles
 
         @stack('styles')
@@ -69,7 +69,7 @@
         'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
         })(window,document,'script','dataLayer','GTM-THCCWX7G');</script>
         <!-- End Google Tag Manager -->
-
+        
     </head>
     <body>
         <!-- Google Tag Manager (noscript) -->
@@ -92,8 +92,8 @@
         <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
         <!-- Add Alpine.js (optional if you're using it) -->
-        {{-- <script src="//unpkg.com/alpinejs" defer></script> --}}
-        {{-- <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script> --}}
+        <script src="//unpkg.com/alpinejs" defer></script>
+        <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
         <!-- /.page-frame -->
         <div class="progress-wrap">
@@ -101,12 +101,12 @@
                 <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98" />
             </svg>
         </div>
-        {{-- <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script> --}}
+        <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
         <script src="{{ asset('frontend/js/plugins.js') }}"></script>
 
         <script src="{{ asset('frontend/js/theme.js') }}"></script>
 
-        {{-- <script src="{{ asset('vendor/livewire-alert/livewire-alert.js') }}"></script> --}}
+        <script src="{{ asset('vendor/livewire-alert/livewire-alert.js') }}"></script>
 
         <x-livewire-alert::flash />
         <x-livewire-alert::scripts />
@@ -147,6 +147,14 @@
                         }
                     });
                 }
+            })();
+        </script>
+        <script>
+            (function() {
+              var script = document.createElement('script');
+              script.src = 'https://app.sudeem.ai/api/widget.js?agentId=76e01bef-2c02-448d-a668-8e6992df3734&locale=ar&v=1769359226000';
+              script.async = true;
+              document.body.appendChild(script);
             })();
         </script>
     </body>

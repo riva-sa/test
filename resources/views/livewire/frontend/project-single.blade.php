@@ -137,21 +137,18 @@
 
                         <div class="swiper-container dots-over" data-margin="10" data-dots="false" data-nav="true" data-thumbs="false">
                             <div class="swiper rounded">
-                              <div class="swiper-wrapper rounded">
+                                <div class="swiper-wrapper rounded">
+                                    @foreach ($project->projectMedia->where('media_type', 'image') as $media)
+                                        <div class="swiper-slide">
+                                            <a class="item-link" href="{{ App\Helpers\MediaHelper::getUrl($media->media_url) }}" data-glightbox data-gallery="product-group">
+                                                <figure class="rounded">
+                                                    <img src="{{ App\Helpers\MediaHelper::getUrl($media->media_url) }}" class="rounded" style="max-height:550px" srcset="{{ App\Helpers\MediaHelper::getUrl($media->media_url) }} 2x" alt="Riva - ريفا" />
+                                                </figure>
 
-                                @foreach ($project->projectMedia->where('media_type', 'image') as $media)
-
-                                    <div class="swiper-slide">
-                                        <a class="item-link" href="{{ App\Helpers\MediaHelper::getUrl($media->media_url) }}" data-glightbox data-gallery="product-group">
-                                            <figure class="rounded">
-                                                <img src="{{ App\Helpers\MediaHelper::getUrl($media->media_url) }}" class="rounded" style="max-height:550px" srcset="{{ App\Helpers\MediaHelper::getUrl($media->media_url) }} 2x" alt="Riva - ريفا" />
-                                            </figure>
-
-                                        </a>
-                                    </div>
-
-                                @endforeach
-                              </div>
+                                            </a>
+                                        </div>
+                                    @endforeach
+                                </div>
                               <!--/.swiper-wrapper -->
                             </div>
                         </div>
