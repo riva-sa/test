@@ -8,7 +8,7 @@ class MediaHelper
 {
     public static function getUrl($path)
     {
-        if (empty($path)) {
+        if (!is_string($path) || empty($path)) {
             return 'https://placehold.co/800x600?text=No+Image';
         }
 

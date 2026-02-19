@@ -55,7 +55,7 @@
                                     <a href="{{ route('frontend.projects.single', $project->slug) }}">نظرة عامة</a>
                                 </h2>
                                 <div>
-                                    <img src="{{ App\Helpers\MediaHelper::getUrl($project->developer->logo) }}" style="width: 50px !important;max-height:50px" alt="Logo" loading="lazy">
+                                    <img src="{{ App\Helpers\MediaHelper::getUrl(optional($project->developer)->logo) }}" style="width: 50px !important;max-height:50px" alt="Logo" loading="lazy">
                                 </div>
                             </div>
                             <ul class="post-meta text-white mb-3">
