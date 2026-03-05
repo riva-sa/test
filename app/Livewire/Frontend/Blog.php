@@ -9,7 +9,7 @@ use Livewire\Attributes\Lazy;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-#[Lazy]
+// #[Lazy]
 class Blog extends Component
 {
     use WithPagination;

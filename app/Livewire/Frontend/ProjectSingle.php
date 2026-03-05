@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\Lazy;
 use Livewire\Component;
 
-#[Lazy]
+// #[Lazy]
 class ProjectSingle extends Component
 {
     public Project $project;

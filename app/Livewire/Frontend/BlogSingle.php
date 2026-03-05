@@ -6,7 +6,7 @@ use Firefly\FilamentBlog\Models\Post;
 use Livewire\Attributes\Lazy;
 use Livewire\Component;
 
-#[Lazy]
+// #[Lazy]
 class BlogSingle extends Component
 {
     public $post;

@@ -16,7 +16,7 @@ use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 
-#[Lazy]
+// #[Lazy]
 #[Title('المشاريع')]
 class ProjectsMap extends Component
 {

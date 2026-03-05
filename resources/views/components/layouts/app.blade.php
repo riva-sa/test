@@ -22,8 +22,8 @@
         <meta name="twitter:description" content="@yield('twitter:description', 'رحلة سكن')">
         <meta name="twitter:image" content="@yield('twitter:image', asset('frontend/img/riva2.jpg'))">
 
-        @vite('resources/css/app.css')
-        @vite(['resources/js/app.js'])
+        <!-- @vite('resources/css/app.css')
+        @vite(['resources/js/app.js']) -->
 
         <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -40,6 +40,8 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css">
+
+        
         @livewireStyles
 
         @stack('styles')
@@ -149,13 +151,13 @@
                 }
             })();
         </script>
-        <script>
+        <!-- <script>
             (function() {
               var script = document.createElement('script');
               script.src = 'https://app.sudeem.ai/api/widget.js?agentId=76e01bef-2c02-448d-a668-8e6992df3734&locale=ar&v=1769359226000';
               script.async = true;
               document.body.appendChild(script);
             })();
-        </script>
+        </script> -->
     </body>
 </html>
