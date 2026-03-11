@@ -8,6 +8,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
         commands: __DIR__.'/../routes/console.php',
+        api: __DIR__.'/../routes/api.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
@@ -15,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckUserRole::class,
             'permission' => \App\Http\Middleware\CheckPermission::class,
+            'api.ai.key' => \App\Http\Middleware\AiApiKeyAuth::class,
         ]);
 
         // Middleware groups

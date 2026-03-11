@@ -151,13 +151,14 @@
                 }
             })();
         </script>
-        <!-- <script>
-            (function() {
-              var script = document.createElement('script');
-              script.src = 'https://app.sudeem.ai/api/widget.js?agentId=76e01bef-2c02-448d-a668-8e6992df3734&locale=ar&v=1769359226000';
-              script.async = true;
-              document.body.appendChild(script);
-            })();
-        </script> -->
+        <script>
+            window.SudeemWidget = window.SudeemWidget || function() {
+                (window.SudeemWidget.q = window.SudeemWidget.q || []).push(arguments);
+            };
+            window.SudeemWidget.config = {
+                agentId: '7f8b132a-abe7-4381-968b-3cfec981cc9d'
+            };
+        </script>
+        <script src="https://app.sudeem.ai/api/widget.js" async></script>
     </body>
 </html>

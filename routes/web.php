@@ -28,6 +28,8 @@ use App\Livewire\Mannager\TrackingAnalytics;
 use App\Models\Project;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\Ai\AiSearchController;
+
 
 Route::get('/', HomePage::class)->name('frontend.home');
 // Route::get('/units/create', [CreateUnit::class, 'render'])->name('filament.resources.units.create');
@@ -164,3 +166,16 @@ Route::get('/run-storage-link', function () {
         return 'Error: '.$e->getMessage();
     }
 });
+
+
+// Route::prefix('ai')
+//     ->middleware(['throttle:60,1', 'api.ai.key'])   // throttle + custom API-key guard
+//     ->group(function () {
+
+//         // Combined single-call search (projects + units together)
+//         Route::get('search',          [AiSearchController::class, 'search']);
+
+//         // Dedicated endpoints (preferred for the chatbot form)
+//         Route::get('search/projects', [AiSearchController::class, 'searchProjects']);
+//         Route::get('search/units',    [AiSearchController::class, 'searchUnits']);
+//     });
