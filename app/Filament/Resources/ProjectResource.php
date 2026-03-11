@@ -88,7 +88,6 @@ class ProjectResource extends Resource
                                                 ->nullable()
                                                 ->maxLength(255)
                                                 ->columnSpan(1)
-                                                ->disabled()
                                                 ->unique(Project::class, 'slug', ignoreRecord: true)
                                                 ->dehydrated(fn ($state) => filled($state)),
                                             Forms\Components\TextInput::make('AdLicense')
