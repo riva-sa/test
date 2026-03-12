@@ -126,6 +126,7 @@
                 <i class="uil uil-whatsapp"></i>
             </a>
         @endif
+
         <script>
             (function(){
                 function pushEvent(name, data){
@@ -151,6 +152,8 @@
                 }
             })();
         </script>
+
+
         <script>
             window.SudeemWidget = window.SudeemWidget || function() {
                 (window.SudeemWidget.q = window.SudeemWidget.q || []).push(arguments);

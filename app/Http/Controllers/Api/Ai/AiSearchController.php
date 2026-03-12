@@ -57,28 +57,13 @@ class AiSearchController extends Controller
         if (!$name) return null;
         return Project::where('name', 'like', "%{$name}%")->first()?->id;
     }
-
-    /**
-     * Generate full URL for files stored in Laravel Cloud / S3 bucket.
-     * Uses Storage::url() which respects the configured filesystem disk.
-     * If the path is already a full URL it is returned as-is.
-     */
+    
     private function storageUrl(?string $path): ?string
     {
         if (!$path) return null;
         if (str_starts_with($path, 'http')) return $path;
         return Storage::url($path);
     }
-
-    // =========================================================================
-    //  SEARCH PROJECTS   GET /api/ai/search/projects
-    //
-    //  AI sends names (not IDs):
-    //   city           e.g. "الرياض"
-    //   state          e.g. "النرجس"
-    //   developer      e.g. "دار الأركان"
-    //   project_type   e.g. "فيلا" | "شقة" | "villa"
-    // =========================================================================
 
     public function searchProjects(Request $request): JsonResponse
     {
