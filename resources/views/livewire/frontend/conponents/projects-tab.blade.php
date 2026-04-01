@@ -43,9 +43,16 @@
                             <a href="{{ route('frontend.projects.single', $project->slug) }}" class="noise-container arrowToSingle"><i class="uil uil-arrow-up-left"></i></a>
                         </div>
                         <a href="{{ route('frontend.projects.single', $project->slug) }}"
-                            class="project-image-link"
-                            style="height: 500px; background:url('{{ App\Helpers\MediaHelper::getUrl(optional($project->getMainImages())->media_url ?? optional($project->projectMedia()->first())->media_url) }}');background-size: cover;background-position: center;"
-                            loading="lazy"></a>
+                            class="project-image-link d-block"
+                            style="height: 500px;">
+                            <img src="{{ App\Helpers\MediaHelper::getUrl(optional($project->getMainImages())->media_url ?? optional($project->projectMedia->first())->media_url) }}"
+                                alt="{{ $project->name }}"
+                                class="w-100 h-100"
+                                style="object-fit: cover; object-position: center;"
+                                loading="lazy"
+                                decoding="async"
+                                fetchpriority="low">
+                        </a>
                         {{-- <a href="{{ route('frontend.projects.single', $project->slug) }}"
                             style="height: 500px; background:url('@if($project->getMainImages() !== null ) {{ Storage::disk('public')->url($project->getMainImages()->media_url) }} @else {{ Storage::disk('public')->url($project->projectMedia()->first()->media_url) }} @endif');background-size: cover;background-position: center;"></a> --}}
                             <figcaption class="noise-container text-right tap" dir="rtl">

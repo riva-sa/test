@@ -238,15 +238,11 @@ class Project extends Model
 
     public function getDynamicProjectStatusAttribute()
     {
-        // التحقق من وجود وحدات في المشروع
-        if ($this->units()->count() == 0) {
+        $unitCases = $this->getUnitCasesCollection();
+
+        if ($unitCases->isEmpty()) {
             return 'تحت الانشاء';
         }
-
-        // الحصول على جميع حالات الوحدات
-        $unitCases = $this->units()->pluck('case');
-
-        // إحصائيات الحالات
         $availableCount = $unitCases->filter(fn ($case) => $case == 0)->count();
         $reservedCount = $unitCases->filter(fn ($case) => $case == 1)->count();
         $soldCount = $unitCases->filter(fn ($case) => $case == 2)->count();
@@ -254,7 +250,6 @@ class Project extends Model
 
         $totalUnits = $unitCases->count();
 
-        // الحالات الأساسية (كل الوحدات لها نفس الحالة)
         if ($availableCount == $totalUnits) {
             return "متاح ($totalUnits وحدة)";
         }
@@ -271,7 +266,6 @@ class Project extends Model
             return "تحت الانشاء ($totalUnits وحدة)";
         }
 
-        // الحالات المختلطة مع التفاصيل
         if ($availableCount > 0) {
             $statusParts = [];
             $statusParts[] = "متاح $availableCount";
@@ -289,7 +283,6 @@ class Project extends Model
             return implode(' | ', $statusParts);
         }
 
-        // إذا لم يكن هناك وحدات متاحة
         if ($availableCount == 0) {
             $statusParts = [];
 
@@ -306,14 +299,14 @@ class Project extends Model
             return implode(' | ', $statusParts);
         }
 
-        // الحالة الافتراضية
         return "المجموع $totalUnits وحدة";
     }
 
-    // دالة مساعدة للحصول على معلومات مفصلة
     public function getProjectStatusDetailsAttribute()
     {
-        if ($this->units()->count() == 0) {
+        $unitCases = $this->getUnitCasesCollection();
+
+        if ($unitCases->isEmpty()) {
             return [
                 'status' => 'تحت الانشاء',
                 'available' => 0,
@@ -324,8 +317,6 @@ class Project extends Model
                 'availability_percentage' => 0,
             ];
         }
-
-        $unitCases = $this->units()->pluck('case');
 
         $available = $unitCases->filter(fn ($case) => $case == 0)->count();
         $reserved = $unitCases->filter(fn ($case) => $case == 1)->count();
@@ -346,7 +337,6 @@ class Project extends Model
         ];
     }
 
-    // دالة للحصول على حالة مبسطة للألوان
     public function getProjectStatusTypeAttribute()
     {
         $details = $this->project_status_details;
@@ -362,6 +352,15 @@ class Project extends Model
         } else {
             return 'mixed';
         }
+    }
+
+    protected function getUnitCasesCollection()
+    {
+        if ($this->relationLoaded('units')) {
+            return $this->units->pluck('case');
+        }
+
+        return $this->units()->select('case')->pluck('case');
     }
 
     // public function getFirstPdfUrl()

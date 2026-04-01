@@ -139,7 +139,7 @@
                     <div class="d-flex gap-2">
                         <div class="">
                             <figure class="card-img-top">
-                                <img src="{{ App\Helpers\MediaHelper::getUrl(optional($selectedProject->getMainImages())->media_url ?? optional($selectedProject->projectMedia()->first())->media_url) }}" class="rounded" alt="" />
+                                <img src="{{ App\Helpers\MediaHelper::getUrl(optional($selectedProject->getMainImages())->media_url ?? optional($selectedProject->projectMedia->first())->media_url) }}" class="rounded" alt="{{ $selectedProject->name }}" loading="lazy" decoding="async" fetchpriority="low" />
                             </figure>
                             <div class="post-header mb-5 mt-5">
                                 <h4 class="post-title">

@@ -19,12 +19,14 @@ class ProjectSlider extends Component
     #[Computed]
     public function projects()
     {
-        $cacheKey = 'home:project_slider:'.($this->type ?? 'default');
+        $globalVersion = Cache::get('projects_cache_version', 0);
+        $cacheKey = 'home:project_slider:'.($this->type ?? 'default').':v:'.$globalVersion;
 
         return Cache::remember($cacheKey, 60, function () {
             return Project::query()
                 ->latest()
-                ->with(['projectMedia', 'developer'])
+                ->with(['projectMedia:id,project_id,media_url,media_type,main', 'developer:id,name,logo'])
+                ->select(['id', 'name', 'slug', 'description', 'developer_id', 'is_featured', 'status'])
                 ->where('status', 1)
                 ->where('is_featured', 1)
                 ->get();
@@ -34,7 +36,7 @@ class ProjectSlider extends Component
     public function render()
     {
         return view('livewire.frontend.conponents.project-slider', [
-            'projects' => $this->projects,
+            'projects' => $this->projects(),
         ]);
     }
 }

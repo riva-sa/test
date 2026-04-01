@@ -225,6 +225,21 @@ class ProjectsPage extends Component
         ]);
     }
 
+    public function updated($property): void
+    {
+        if ($property === 'view_type' || str_starts_with($property, 'showSidebar')) {
+            return;
+        }
+
+        if ($this->view_type === 'projects') {
+            $this->resetPage('projects_page');
+
+            return;
+        }
+
+        $this->resetPage('units_page');
+    }
+
     public function render()
     {
         $query = null;
@@ -234,6 +249,9 @@ class ProjectsPage extends Component
             $filters = [
                 'selected_projectTypes' => $this->selected_projectTypes,
                 'selected_developer' => $this->selected_developer,
+                'selected_bedrooms' => $this->selected_bedrooms,
+                'selected_bathrooms' => $this->selected_bathrooms,
+                'selected_kitchens' => $this->selected_kitchens,
                 'is_featured' => $this->is_featured,
                 'selected_cities' => $this->selected_cities,
                 'selected_states' => $this->selected_states,
@@ -256,7 +274,12 @@ class ProjectsPage extends Component
                 ->selectRaw('count(case when "case" = 2 then 1 end) as sold_units_count')
                 ->groupBy('project_id');
 
-            $query = Project::with(['projectType', 'developer', 'units'])
+            $query = Project::with([
+                'projectType:id,name',
+                'developer:id,name,logo',
+                'projectMedia:id,project_id,media_url,media_type,main',
+                'units:id,project_id,unit_price,unit_area,beadrooms,bathrooms,kitchen,case',
+            ])
                 ->leftJoinSub($unitCounts, 'unit_counts', 'projects.id', '=', 'unit_counts.project_id')
                 ->select('projects.*', 'unit_counts.available_units_count', 'unit_counts.reserved_units_count', 'unit_counts.sold_units_count')
                 ->where('status', 1)
@@ -349,6 +372,9 @@ class ProjectsPage extends Component
             $filters = [
                 'selected_projectTypes' => $this->selected_projectTypes,
                 'selected_developer' => $this->selected_developer,
+                'selected_bedrooms' => $this->selected_bedrooms,
+                'selected_bathrooms' => $this->selected_bathrooms,
+                'selected_kitchens' => $this->selected_kitchens,
                 'is_featured' => $this->is_featured,
                 'selected_cities' => $this->selected_cities,
                 'selected_states' => $this->selected_states,
@@ -362,13 +388,16 @@ class ProjectsPage extends Component
             ];
             $globalVersion = Cache::get('projects_cache_version', 0);
             $cacheKey = 'projects_page:units:'.md5(json_encode($filters)).':page:'.$page.':v:'.$globalVersion;
-            $query = Unit::with(['project', 'project.developer'])
+            $query = Unit::with([
+                'project:id,name,slug,developer_id,status',
+                'project.developer:id,name,logo',
+                'project.projectMedia:id,project_id,media_url,media_type,main',
+            ])
                 ->whereHas('project', function ($q) {
                     $q->where('status', 1);
                 })
                 ->where('status', 1)
-                ->where('case', 0)
-                ->OrWhere('case', 1)
+                ->whereIn('case', [0, 1])
                 ->select(['id', 'title', 'unit_type', 'unit_price', 'unit_area', 'beadrooms', 'bathrooms', 'floor_plan', 'case', 'show_price', 'project_id'])
                 ->addSelect([
                     'available_units_count' => Unit::selectRaw('count(*)')
@@ -436,15 +465,15 @@ class ProjectsPage extends Component
             }
 
             if (! empty($this->selected_bedrooms)) {
-                $query->where('beadrooms', $this->selected_bedrooms);
+                $query->whereIn('beadrooms', $this->selected_bedrooms);
             }
 
             if (! empty($this->selected_bathrooms)) {
-                $query->where('bathrooms', $this->selected_bathrooms);
+                $query->whereIn('bathrooms', $this->selected_bathrooms);
             }
 
             if (! empty($this->selected_kitchens)) {
-                $query->where('kitchen', $this->selected_kitchens);
+                $query->whereIn('kitchen', $this->selected_kitchens);
             }
 
             $query->orderBy($this->sort_by, $this->sort_direction);
@@ -457,11 +486,11 @@ class ProjectsPage extends Component
 
         // Cache static data for 1 hour
         $developers = Cache::remember('developers_all', 3600, function () {
-            return Developer::all();
+            return Developer::select(['id', 'name', 'logo'])->get();
         });
 
         $projectTypes = Cache::remember('project_types_active', 3600, function () {
-            return ProjectType::where('status', 1)->get();
+            return ProjectType::where('status', 1)->select(['id', 'name', 'slug'])->get();
         });
 
         return view('livewire.frontend.projects-page', [

@@ -34,6 +34,10 @@ class PartnerResource extends Resource
                 Forms\Components\FileUpload::make('logo')
                     ->label('الشعار')
                     ->image()
+                    ->imageResizeMode('contain')
+                    ->imageResizeUpscale(false)
+                    ->imageResizeTargetWidth('1200')
+                    ->imageResizeTargetHeight('1200')
                     ->imageEditor()
                     ->imageEditorAspectRatios([
                         '16:9',

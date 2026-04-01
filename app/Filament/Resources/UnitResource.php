@@ -173,6 +173,10 @@ class UnitResource extends Resource
                         Forms\Components\FileUpload::make('image')
                             ->label('الصورة')
                             ->image()
+                            ->imageResizeMode('contain')
+                            ->imageResizeUpscale(false)
+                            ->imageResizeTargetWidth('1600')
+                            ->imageResizeTargetHeight('1600')
                             ->imageEditor()
                             ->imageEditorAspectRatios([
                                 '16:9',
@@ -184,6 +188,10 @@ class UnitResource extends Resource
                         Forms\Components\FileUpload::make('floor_plan')
                             ->label('مخطط الطابق')
                             ->image()
+                            ->imageResizeMode('contain')
+                            ->imageResizeUpscale(false)
+                            ->imageResizeTargetWidth('2000')
+                            ->imageResizeTargetHeight('2000')
                             ->imageEditor()
                             ->imageEditorAspectRatios([
                                 '16:9',

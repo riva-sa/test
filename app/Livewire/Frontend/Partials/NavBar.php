@@ -3,6 +3,7 @@
 namespace App\Livewire\Frontend\Partials;
 
 use App\Models\Project;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
 
 class NavBar extends Component
@@ -35,17 +36,26 @@ class NavBar extends Component
     // Method that runs when the search input changes
     public function updatedSearch()
     {
-        // Perform the search when more than 2 characters are entered
-        if (strlen($this->search) > 2) {
-            $this->results = Project::select(['id', 'name', 'slug'])
-                ->where('name', 'like', '%'.$this->search.'%')
-                ->orWhere('description', 'like', '%'.$this->search.'%')
-                ->orWhere('address', 'like', '%'.$this->search.'%')
-                ->take(5) // Limit the results to 5
-                ->get();
+        $search = trim($this->search);
+
+        if (strlen($search) > 2) {
+            $cacheKey = 'navbar:search:'.md5(mb_strtolower($search));
+            $this->results = Cache::remember($cacheKey, 30, function () use ($search) {
+                return Project::query()
+                    ->select(['id', 'name', 'slug'])
+                    ->where('status', 1)
+                    ->where(function ($query) use ($search) {
+                        $query->where('name', 'like', '%'.$search.'%')
+                            ->orWhere('description', 'like', '%'.$search.'%')
+                            ->orWhere('address', 'like', '%'.$search.'%');
+                    })
+                    ->latest('id')
+                    ->take(5)
+                    ->get();
+            });
             $this->showDropdown = true;
         } else {
-            $this->results = []; // Clear results if search input is less than 3 characters
+            $this->results = [];
             $this->showDropdown = false;
         }
     }

@@ -116,7 +116,7 @@
 </style>
 @endpush
 <section class="section-frame mx-xxl-5 position-relative projectspage" dir="rtl"
-    x-data="{ showSidebar: @entangle('showSidebar') }"
+    x-data="{ showSidebar: $wire.entangle('showSidebar') }"
     x-init="$watch('showSidebar', value => document.body.classList.toggle('filter-sidebar--open', value))">
     
     <!-- Overlay for mobile -->
@@ -191,7 +191,7 @@
 
                                         <figure class="rounded-top position-relative">
                                             <a href="{{ route('frontend.projects.single', $project->slug) }}">
-                                                <img src="{{ App\Helpers\MediaHelper::getUrl(optional($project->getMainImages())->media_url ?? optional($project->projectMedia()->first())->media_url) }}" style="max-height: 200px" alt="{{ $project->name }}" loading="lazy" />
+                                                <img src="{{ App\Helpers\MediaHelper::getUrl(optional($project->getMainImages())->media_url ?? optional($project->projectMedia->first())->media_url) }}" style="max-height: 200px" alt="{{ $project->name }}" loading="lazy" decoding="async" fetchpriority="low" />
                                             </a>
                                             <figcaption class="noise-container text-right heroTop position-absolute" style="top: 6px;right: 6px;" dir="rtl">
                                                 <span class="badge badge-lg text-white d-flex align-content-center align-items-center">
@@ -280,9 +280,9 @@
                                         <figure class="rounded-top position-relative">
                                             <a wire:click="showUnitDetails({{ $unit->id }})" data-unit-id="{{ $unit->id }}">
                                                 @if ($unit->floor_plan)
-                                                    <img src="{{ App\Helpers\MediaHelper::getUrl($unit->floor_plan) }}" style="max-height: 200px" alt="{{ $unit->title }}" loading="lazy" />
+                                                    <img src="{{ App\Helpers\MediaHelper::getUrl($unit->floor_plan) }}" style="max-height: 200px" alt="{{ $unit->title }}" loading="lazy" decoding="async" fetchpriority="low" />
                                                 @else
-                                                    <img src="{{ App\Helpers\MediaHelper::getUrl(optional($unit->project->getMainImages())->media_url ?? optional($unit->project->projectMedia()->first())->media_url) }}" style="max-height: 200px" alt="{{ $unit->title }}" loading="lazy" />
+                                                    <img src="{{ App\Helpers\MediaHelper::getUrl(optional($unit->project->getMainImages())->media_url ?? optional($unit->project->projectMedia->first())->media_url) }}" style="max-height: 200px" alt="{{ $unit->title }}" loading="lazy" decoding="async" fetchpriority="low" />
                                                 @endif
                                             </a>
                                             <figcaption class="glass-white-card text-right heroTop position-absolute" style="top: 6px;right: 6px;" dir="rtl">

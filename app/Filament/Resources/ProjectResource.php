@@ -254,8 +254,11 @@ class ProjectResource extends Resource
                                                 ->directory('project-media') // Folder to store the media
                                                 ->visibility('public') // Set the visibility (public or private)
                                                 ->required()
+                                                ->imageResizeMode('contain')
+                                                ->imageResizeUpscale(false)
+                                                ->imageResizeTargetWidth('1920')
+                                                ->imageResizeTargetHeight('1920')
                                                 ->imageEditor()  // This enables the built-in image editor
-                                                ->maxSize(1000000)
                                                 ->columnSpanFull(),
 
                                             Select::make('media_type')

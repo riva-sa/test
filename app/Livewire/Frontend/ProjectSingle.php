@@ -6,7 +6,6 @@ use App\Models\Project;
 use App\Models\Unit;
 use App\Services\TrackingService;
 use Illuminate\Support\Facades\Cache;
-use Livewire\Attributes\Lazy;
 use Livewire\Component;
 
 // #[Lazy]
@@ -78,10 +77,19 @@ class ProjectSingle extends Component
 
     public function mount($slug)
     {
-
-        $this->project = Project::with(['developer', 'projectMedia', 'features', 'guarantees', 'landmarks', 'projectType', 'salesManager'])->where('slug', $slug)->firstOrFail();
+        $cacheKey = 'project_single:'.$slug;
+        $this->project = Cache::remember($cacheKey, 60, function () use ($slug) {
+            return Project::with([
+                'developer:id,name,logo',
+                'projectMedia',
+                'features:id,name,description,icon',
+                'guarantees:id,name,description,icon',
+                'landmarks:id,name',
+                'projectType:id,name,slug',
+                'salesManager:id,name,phone',
+            ])->where('slug', $slug)->firstOrFail();
+        });
         $this->case = request()->query('case', 'all');
-        // Track project visit
         app(TrackingService::class)->trackProjectVisit($this->project);
     }
 

@@ -10,7 +10,6 @@ use App\Models\State;
 use Illuminate\Support\Facades\Cache;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Attributes\Computed;
-use Livewire\Attributes\Lazy;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
@@ -49,7 +48,14 @@ class ProjectsMap extends Component
     #[On('showProject')]
     public function showProject($projectId)
     {
-        $this->selectedProject = Project::with('developer', 'units')->find($projectId);
+        $this->selectedProject = Project::query()
+            ->with([
+                'developer:id,name,logo',
+                'projectMedia:id,project_id,media_url,media_type,main',
+                'units:id,project_id,unit_price,unit_area,beadrooms,bathrooms,kitchen,case',
+            ])
+            ->select(['id', 'name', 'slug', 'developer_id', 'address', 'description', 'AdLicense', 'show_price'])
+            ->find($projectId);
         $this->showSideSheet = true;
         $this->dispatch('side-sheet-updated');
     }
@@ -91,7 +97,7 @@ class ProjectsMap extends Component
         // Apply price range filter
         if ($this->price_range) {
             $query->whereHas('units', function ($query) {
-                $query->where('price', '<=', $this->price_range);
+                $query->where('unit_price', '<=', $this->price_range);
             });
         }
 
@@ -110,7 +116,9 @@ class ProjectsMap extends Component
     public function states()
     {
         if ($this->selected_cities) {
-            return State::where('city_id', $this->selected_cities)->get();
+            return Cache::remember('states_by_city:'.$this->selected_cities, 3600, function () {
+                return State::where('city_id', $this->selected_cities)->get();
+            });
         }
 
         return collect();
@@ -118,34 +126,43 @@ class ProjectsMap extends Component
 
     public function render()
     {
-        // Start with a base query
-        // Only load necessary relationships for the map. 'units' are not needed for the markers.
-        $query = Project::with('projectType', 'developer')->where('status', 1);
+        $query = Project::query()
+            ->with(['projectType:id,name,slug', 'developer:id,name,logo'])
+            ->select(['id', 'name', 'slug', 'developer_id', 'project_type_id', 'latitude', 'longitude', 'address', 'status'])
+            ->where('status', 1);
 
-        // Apply filters
         $query = $this->applyFilters($query);
 
-        // Get filtered projects
-        $projects = $query->get();
+        $filters = [
+            'selected_projectTypes' => $this->selected_projectTypes,
+            'selected_developer' => $this->selected_developer,
+            'price_range' => $this->price_range,
+            'selected_cities' => $this->selected_cities,
+            'selected_states' => $this->selected_states,
+        ];
+        $globalVersion = Cache::get('projects_cache_version', 0);
+        $cacheKey = 'projects_map:'.md5(json_encode($filters)).':v:'.$globalVersion;
 
-        // Dispatch event to update the map
+        $projects = Cache::remember($cacheKey, 60, function () use ($query) {
+            return $query->get();
+        });
+
         $this->dispatch('projectsUpdated', ['projects' => $projects]);
 
-        // Cache static data for 1 hour
         $developers = Cache::remember('developers_all', 3600, function () {
-            return Developer::all();
+            return Developer::select(['id', 'name', 'logo'])->get();
         });
 
         $projectTypes = Cache::remember('project_types_active', 3600, function () {
-            return ProjectType::where('status', 1)->get();
+            return ProjectType::where('status', 1)->select(['id', 'name', 'slug'])->get();
         });
 
         return view('livewire.frontend.projects-map', [
             'developers' => $developers,
             'projectTypes' => $projectTypes,
             'projects' => $projects,
-            'cities' => $this->cities,
-            'states' => $this->states,
+            'cities' => $this->cities(),
+            'states' => $this->states(),
         ]);
     }
 }

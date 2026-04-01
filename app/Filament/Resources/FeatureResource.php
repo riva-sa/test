@@ -38,7 +38,11 @@ class FeatureResource extends Resource
                             ->label('الأيقونة')
                             ->directory('feature/images')
                             ->disk('public')
-                            ->image(),
+                            ->image()
+                            ->imageResizeMode('contain')
+                            ->imageResizeUpscale(false)
+                            ->imageResizeTargetWidth('1200')
+                            ->imageResizeTargetHeight('1200'),
 
                         Forms\Components\Toggle::make('is_active')
                             ->label('مفعل')
@@ -49,7 +53,7 @@ class FeatureResource extends Resource
                             ->label('المشاريع')
                             ->relationship('projects', 'name') // Uses the relationship
                             ->columns(4)
-                            ->options(Project::all()->pluck('name', 'id')->toArray()),
+                            ->options(Project::query()->pluck('name', 'id')->toArray()),
                     ]),
             ]);
     }

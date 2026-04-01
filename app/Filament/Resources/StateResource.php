@@ -39,6 +39,10 @@ class StateResource extends Resource
                         Forms\Components\FileUpload::make('photo')
                             ->label('الصورة')
                             ->image()
+                            ->imageResizeMode('contain')
+                            ->imageResizeUpscale(false)
+                            ->imageResizeTargetWidth('1600')
+                            ->imageResizeTargetHeight('1600')
                             ->imageEditor()
                             ->imageEditorAspectRatios([
                                 '16:9',

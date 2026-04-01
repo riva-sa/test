@@ -93,10 +93,6 @@
 
         <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-        <!-- Add Alpine.js (optional if you're using it) -->
-        <script src="//unpkg.com/alpinejs" defer></script>
-        <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
         <!-- /.page-frame -->
         <div class="progress-wrap">
             <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">

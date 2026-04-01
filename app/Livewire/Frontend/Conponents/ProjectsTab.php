@@ -30,11 +30,19 @@ class ProjectsTab extends Component
     #[Computed]
     public function projects()
     {
-        $key = 'home:projects_tab:'.$this->activeTab;
+        $globalVersion = Cache::get('projects_cache_version', 0);
+        $key = 'home:projects_tab:'.$this->activeTab.':v:'.$globalVersion;
 
         return Cache::remember($key, 60, function () {
             if ($this->activeTab === 'all') {
-                return Project::with(['projectType', 'developer', 'units', 'projectMedia'])
+                return Project::query()
+                    ->with([
+                        'projectType:id,name,slug',
+                        'developer:id,name,logo',
+                        'projectMedia:id,project_id,media_url,media_type,main',
+                        'units:id,project_id,unit_price,unit_area,beadrooms,bathrooms,kitchen,case',
+                    ])
+                    ->select(['id', 'name', 'slug', 'project_type_id', 'developer_id', 'status', 'show_price'])
                     ->where('status', 1)
                     ->whereHas('units', function ($query) {
                         $query->where('case', 0);
@@ -42,7 +50,14 @@ class ProjectsTab extends Component
                     ->get();
             }
 
-            return Project::with(['developer', 'units', 'projectMedia'])
+            return Project::query()
+                ->with([
+                    'projectType:id,name,slug',
+                    'developer:id,name,logo',
+                    'projectMedia:id,project_id,media_url,media_type,main',
+                    'units:id,project_id,unit_price,unit_area,beadrooms,bathrooms,kitchen,case',
+                ])
+                ->select(['id', 'name', 'slug', 'project_type_id', 'developer_id', 'status', 'show_price'])
                 ->where('status', 1)
                 ->whereHas('projectType', function ($query) {
                     $query->where('slug', $this->activeTab);
@@ -57,8 +72,8 @@ class ProjectsTab extends Component
     public function render()
     {
         return view('livewire.frontend.conponents.projects-tab', [
-            'projects' => $this->projects,
-            'projectTypes' => $this->projectTypes,
+            'projects' => $this->projects(),
+            'projectTypes' => $this->projectTypes(),
         ]);
     }
 }
