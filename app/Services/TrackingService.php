@@ -66,18 +66,47 @@ class TrackingService
      */
     public function trackUnitOrder(Unit $unit, array $orderData = [])
     {
-        // Always track orders (no time window check)
-        $unit->track('order', array_merge([
+        $sessionId = request()->cookie('tracking_session_id', session()->getId());
+        
+        $firstEvent = TrackingEvent::where('session_id', $sessionId)
+            ->orderBy('created_at', 'asc')
+            ->first();
+
+        $marketingSource = null;
+        if ($firstEvent && $firstEvent->referrer) {
+            $metadata = is_string($firstEvent->metadata) ? json_decode($firstEvent->metadata, true) : $firstEvent->metadata;
+            if (isset($metadata['utm_source'])) {
+                $marketingSource = ucfirst(strtolower($metadata['utm_source']));
+            } else {
+                $marketingSource = $this->extractSourceFromReferrer($firstEvent->referrer);
+            }
+        }
+
+        if (isset($orderData['order_id'])) {
+            $unitOrder = \App\Models\UnitOrder::find($orderData['order_id']);
+            if ($unitOrder && empty($unitOrder->marketing_source)) {
+                $unitOrder->update([
+                    'marketing_source' => $marketingSource,
+                    'session_id' => $sessionId,
+                ]);
+            }
+        }
+
+        $trackingData = array_merge([
             'page' => 'unit_order',
             'project_id' => $unit->project_id,
-        ], $orderData));
+            'marketing_source' => $marketingSource,
+        ], $orderData);
+
+        // Always track orders (no time window check)
+        $unit->track('order', $trackingData);
 
         // Track project order
         if ($unit->project) {
             $unit->project->track('order', array_merge([
                 'triggered_by' => 'unit_order',
                 'unit_id' => $unit->id,
-            ], $orderData));
+            ], $trackingData));
         }
     }
 
@@ -118,20 +147,24 @@ class TrackingService
     /**
      * Get popular units based on tracking data - PostgreSQL Compatible
      */
-    public function getPopularUnits($limit = 10, $days = 30, $campaignId = null)
+    public function getPopularUnits($limit = 10, $days = 30, $projectId = null, $campaignId = null)
     {
 
-        $cacheKey = "popular_units_{$limit}_{$days}".($campaignId ? "_{$campaignId}" : '');
+        $cacheKey = "popular_units_{$limit}_{$days}".($projectId ? "_{$projectId}" : '').($campaignId ? "_{$campaignId}" : '');
 
-        return Cache::remember($cacheKey, 3600, function () use ($limit, $days, $campaignId) {
+        return Cache::remember($cacheKey, 3600, function () use ($limit, $days, $projectId, $campaignId) {
             $query = Unit::select('units.*')
                 ->selectRaw('COALESCE(visits_count, 0) + COALESCE(views_count, 0) * 2 + COALESCE(shows_count, 0) * 3 + COALESCE(orders_count, 0) * 10 + COALESCE(whatsapp_count, 0) * 5 + COALESCE(calls_count, 0) * 7 as popularity_score')
-                ->where('status', 1);
+                ->where('units.status', 1);
+
+            if ($projectId) {
+                $query->where('units.project_id', $projectId);
+            }
 
             if ($campaignId) {
                 $campaign = Campaign::find($campaignId);
                 if ($campaign) {
-                    $query->where('project_id', $campaign->project_id);
+                    $query->where('units.project_id', $campaign->project_id);
                     $days = $campaign->start_date->diffInDays($campaign->end_date ?: Carbon::now());
                 }
             }
@@ -157,15 +190,19 @@ class TrackingService
     /**
      * Get popular projects based on tracking data - PostgreSQL Compatible
      */
-    public function getPopularProjects($limit = 10, $days = 30, $campaignId = null)
+    public function getPopularProjects($limit = 10, $days = 30, $projectId = null, $campaignId = null)
     {
 
-        $cacheKey = "popular_projects_{$limit}_{$days}".($campaignId ? "_{$campaignId}" : '');
+        $cacheKey = "popular_projects_{$limit}_{$days}".($projectId ? "_{$projectId}" : '').($campaignId ? "_{$campaignId}" : '');
 
-        return Cache::remember($cacheKey, 3600, function () use ($limit, $days, $campaignId) {
+        return Cache::remember($cacheKey, 3600, function () use ($limit, $days, $projectId, $campaignId) {
             $query = Project::select('projects.*')
                 ->selectRaw('COALESCE(visits_count, 0) + COALESCE(views_count, 0) * 2 + COALESCE(shows_count, 0) * 3 + COALESCE(orders_count, 0) * 10 + COALESCE(whatsapp_count, 0) * 5 + COALESCE(calls_count, 0) * 7 as popularity_score')
                 ->where('status', 1);
+
+            if ($projectId) {
+                $query->where('id', $projectId);
+            }
 
             if ($campaignId) {
                 $query->where('id', Campaign::find($campaignId)?->project_id);
@@ -191,13 +228,27 @@ class TrackingService
     /**
      * Get tracking analytics for dashboard - Cross-DB Compatible
      */
-    public function getAnalytics($dateRange = null, $campaignId = null)
+    public function getAnalytics($dateRange = null, $projectId = null, $campaignId = null)
     {
 
         $startDate = $dateRange ? $dateRange[0] : Carbon::now()->subDays(30);
         $endDate = $dateRange ? $dateRange[1] : Carbon::now();
 
         $query = TrackingEvent::whereBetween('created_at', [$startDate, $endDate]);
+
+        // Filter by project if specified
+        if ($projectId) {
+            $query->where(function ($q) use ($projectId) {
+                $q->where('trackable_type', 'project')
+                    ->where('trackable_id', $projectId)
+                    ->orWhere(function ($subQ) use ($projectId) {
+                        $subQ->where('trackable_type', 'unit')
+                            ->whereIn('trackable_id',
+                                Unit::where('project_id', $projectId)->pluck('id')
+                            );
+                    });
+            });
+        }
 
         // Filter by campaign if specified
         if ($campaignId) {
@@ -284,13 +335,27 @@ class TrackingService
     /**
      * Get conversion rates - Enhanced with new events
      */
-    public function getConversionRates($dateRange = null, $campaignId = null)
+    public function getConversionRates($dateRange = null, $projectId = null, $campaignId = null)
     {
 
         $startDate = $dateRange ? $dateRange[0] : Carbon::now()->subDays(30);
         $endDate = $dateRange ? $dateRange[1] : Carbon::now();
 
         $query = TrackingEvent::whereBetween('created_at', [$startDate, $endDate]);
+
+        // Filter by project if specified
+        if ($projectId) {
+            $query->where(function ($q) use ($projectId) {
+                $q->where('trackable_type', 'project')
+                    ->where('trackable_id', $projectId)
+                    ->orWhere(function ($subQ) use ($projectId) {
+                        $subQ->where('trackable_type', 'unit')
+                            ->whereIn('trackable_id',
+                                Unit::where('project_id', $projectId)->pluck('id')
+                            );
+                    });
+            });
+        }
 
         // Filter by campaign if specified
         if ($campaignId) {
@@ -369,7 +434,7 @@ class TrackingService
     /**
      * Get top performing content (units and projects) - PostgreSQL Compatible
      */
-    public function getTopPerformingContent(?array $dateRange = null, int $limit = 5, $campaignId = null)
+    public function getTopPerformingContent(?array $dateRange = null, int $limit = 5, $projectId = null, $campaignId = null)
     {
         $startDate = $dateRange ? $dateRange[0] : Carbon::now()->subDays(30);
         $endDate = $dateRange ? $dateRange[1] : Carbon::now();
@@ -400,6 +465,11 @@ class TrackingService
                     });
             });
 
+        if ($projectId) {
+            $projectsQuery->where('id', $projectId);
+            $unitsQuery->where('units.project_id', $projectId);
+        }
+
         // Apply campaign filters if provided
         if ($campaignId) {
             $campaign = Campaign::find($campaignId);
@@ -429,12 +499,25 @@ class TrackingService
     /**
      * Get traffic sources breakdown - PostgreSQL Compatible
      */
-    public function getTrafficSources(?array $dateRange = null, $campaignId = null)
+    public function getTrafficSources(?array $dateRange = null, $projectId = null, $campaignId = null)
     {
         $startDate = $dateRange ? $dateRange[0] : Carbon::now()->subDays(30);
         $endDate = $dateRange ? $dateRange[1] : Carbon::now();
 
         $query = TrackingEvent::whereBetween('created_at', [$startDate, $endDate]);
+
+        if ($projectId) {
+            $query->where(function ($q) use ($projectId) {
+                $q->where('trackable_type', 'project')
+                    ->where('trackable_id', $projectId)
+                    ->orWhere(function ($subQ) use ($projectId) {
+                        $subQ->where('trackable_type', 'unit')
+                            ->whereIn('trackable_id',
+                                Unit::where('project_id', $projectId)->pluck('id')
+                            );
+                    });
+            });
+        }
 
         // Filter by campaign if specified
         if ($campaignId) {
@@ -538,7 +621,7 @@ class TrackingService
                 if ($query->getQuery()->from === 'projects') {
                     $query->select('id', 'name');
                 } elseif ($query->getQuery()->from === 'units') {
-                    $query->select('id', 'title', 'unit_number');
+                    $query->select('id', 'title', 'unit_number', 'project_id');
                 }
             }])
             ->orderBy('created_at', 'asc')
@@ -648,9 +731,77 @@ class TrackingService
                 })->sortByDesc('drop_off_rate');
         }
 
-        // 7. تنسيق قائمة الجلسات (لا تغيير هنا)
+        // 7. تنسيق قائمة الجلسات
         $journeys = $groupedBySession->map(function ($events) {
-            // ... نفس الكود السابق لتنسيق journeys
+            $firstEvent = $events->first();
+            $lastEvent = $events->last();
+            $duration = $firstEvent->created_at->diffInSeconds($lastEvent->created_at);
+            
+            $source = 'مباشر';
+            if ($firstEvent->referrer) {
+                $metadata = is_string($firstEvent->metadata) ? json_decode($firstEvent->metadata, true) : $firstEvent->metadata;
+                if (isset($metadata['utm_source'])) {
+                    $source = ucfirst(strtolower($metadata['utm_source']));
+                } else {
+                    $source = $this->extractSourceFromReferrer($firstEvent->referrer);
+                }
+            }
+
+            $mainProject = null;
+            $mainUnit = null;
+
+            $projectsSeen = [];
+            $unitsSeen = [];
+            $unitsShowed = [];
+            $orderedUnit = null;
+            
+            foreach ($events as $event) {
+                if ($event->trackable_type === 'App\Models\Project') {
+                    $projectsSeen[$event->trackable_id] = ($projectsSeen[$event->trackable_id] ?? 0) + 1;
+                    if (!$mainProject) $mainProject = $event->trackable;
+                } elseif ($event->trackable_type === 'App\Models\Unit') {
+                    $unitsSeen[$event->trackable_id] = ($unitsSeen[$event->trackable_id] ?? 0) + 1;
+                    if ($event->event_type === 'show') {
+                        $unitsShowed[$event->trackable_id] = ($unitsShowed[$event->trackable_id] ?? 0) + 1;
+                    }
+                    if (in_array($event->event_type, ['order', 'whatsapp', 'call'])) {
+                        $orderedUnit = $event->trackable;
+                    }
+                }
+            }
+
+            if ($orderedUnit) {
+                $mainUnit = $orderedUnit;
+            } elseif (!empty($unitsShowed)) {
+                arsort($unitsShowed);
+                $mainUnitId = array_key_first($unitsShowed);
+                $mainUnit = \App\Models\Unit::find($mainUnitId);
+            } elseif (!empty($unitsSeen)) {
+                arsort($unitsSeen);
+                $mainUnitId = array_key_first($unitsSeen);
+                $mainUnit = \App\Models\Unit::find($mainUnitId);
+            }
+
+            if ($mainUnit && $mainUnit->project_id) {
+                $mainProject = \App\Models\Project::find($mainUnit->project_id);
+            } elseif (!empty($projectsSeen)) {
+                arsort($projectsSeen);
+                $mainProjectId = array_key_first($projectsSeen);
+                $mainProject = \App\Models\Project::find($mainProjectId);
+            }
+
+            return (object) [
+                'session_id' => $firstEvent->session_id,
+                'events_count' => $events->count(),
+                'duration' => $duration,
+                'start_time' => $firstEvent->created_at,
+                'end_time' => $lastEvent->created_at,
+                'events' => $events,
+                'is_converted' => $events->whereIn('event_type', ['order', 'whatsapp', 'call'])->isNotEmpty(),
+                'lead_source' => $source,
+                'main_project' => $mainProject,
+                'main_unit' => $mainUnit,
+            ];
         })->sortByDesc('start_time')->take($limit);
 
         // 8. إرجاع كل البيانات (لا تغيير هنا)

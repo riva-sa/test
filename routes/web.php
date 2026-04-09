@@ -65,6 +65,8 @@ Route::middleware(['auth', 'role:sales_manager'])->group(function () {
 
     Route::get('/crm/analytics', TrackingAnalytics::class)->name('manager.analytics');
     Route::get('/crm/analytics/campaigns', Campaigns::class)->name('manager.analytics.campaigns');
+    Route::get('/crm/analytics/projects/{id}', \App\Livewire\Mannager\ProjectAnalyticsDetail::class)->name('manager.analytics.projects.detail');
+    Route::get('/crm/analytics/units/{id}', \App\Livewire\Mannager\UnitAnalyticsDetail::class)->name('manager.analytics.units.detail');
     Route::get('/crm/journeys', SessionJourneys::class)->name('manager.journeys');
     Route::prefix('crm/tracking')->group(function () {
 

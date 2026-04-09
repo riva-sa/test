@@ -306,42 +306,49 @@ class TrackingAnalytics extends Component
 
     public function getConversionRatesProperty()
     {
+        $projectId = $this->filterMode === 'project' ? $this->selectedProject : null;
         $campaignId = $this->filterMode === 'campaign' ? $this->selectedCampaign : null;
 
-        return $this->trackingService->getConversionRates([$this->startDate, $this->endDate], $campaignId);
+        return $this->trackingService->getConversionRates([$this->startDate, $this->endDate], $projectId, $campaignId);
     }
 
     public function getPopularUnitsProperty()
     {
         $days = $this->useCustomDate ? $this->startDate->diffInDays($this->endDate) : (int) $this->dateRange;
+        $projectId = $this->filterMode === 'project' ? $this->selectedProject : null;
         $campaignId = $this->filterMode === 'campaign' ? $this->selectedCampaign : null;
 
-        return $this->trackingService->getPopularUnits(5, $days, $campaignId);
+        return $this->trackingService->getPopularUnits(5, $days, $projectId, $campaignId);
     }
 
     public function getPopularProjectsProperty()
     {
         $days = $this->useCustomDate ? $this->startDate->diffInDays($this->endDate) : (int) $this->dateRange;
+        $projectId = $this->filterMode === 'project' ? $this->selectedProject : null;
         $campaignId = $this->filterMode === 'campaign' ? $this->selectedCampaign : null;
 
-        return $this->trackingService->getPopularProjects(5, $days, $campaignId);
+        return $this->trackingService->getPopularProjects(5, $days, $projectId, $campaignId);
     }
 
     public function getTopPerformingContentProperty()
     {
+        $projectId = $this->filterMode === 'project' ? $this->selectedProject : null;
         $campaignId = $this->filterMode === 'campaign' ? $this->selectedCampaign : null;
 
+        $content = $this->trackingService->getTopPerformingContent([$this->startDate, $this->endDate], 5, $projectId, $campaignId);
+
         return [
-            'projects' => $this->trackingService->getTopPerformingContent([$this->startDate, $this->endDate], 5, $campaignId)['projects'],
-            'units' => $this->trackingService->getTopPerformingContent([$this->startDate, $this->endDate], 5, $campaignId)['units'],
+            'projects' => $content['projects'],
+            'units' => $content['units'],
         ];
     }
 
     public function getTrafficSourcesProperty()
     {
+        $projectId = $this->filterMode === 'project' ? $this->selectedProject : null;
         $campaignId = $this->filterMode === 'campaign' ? $this->selectedCampaign : null;
 
-        return $this->trackingService->getTrafficSources([$this->startDate, $this->endDate], $campaignId);
+        return $this->trackingService->getTrafficSources([$this->startDate, $this->endDate], $projectId, $campaignId);
     }
 
     public function getProjectsProperty()

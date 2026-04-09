@@ -33,9 +33,13 @@ class SessionJourneys extends Component
 
     public function showJourneyDetails($sessionId)
     {
-        $journey = $this->journeys->firstWhere('session_id', $sessionId);
+        $journey = collect($this->journeys)->first(function($j) use ($sessionId) {
+            $id = is_array($j) ? $j['session_id'] : $j->session_id;
+            return $id === $sessionId;
+        });
+
         if ($journey) {
-            $eventsCollection = $journey['events'];
+            $eventsCollection = is_array($journey) ? $journey['events'] : $journey->events;
             $eventsCollection->load(['trackable' => function ($query) {
                 if ($query->getQuery()->from === 'projects') {
                     $query->select('id', 'name');

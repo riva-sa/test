@@ -99,6 +99,84 @@
         </div>
     </div>
 
+    <!-- Journeys Table -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
+        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+            <h3 class="text-lg font-semibold text-gray-800">تفاصيل الجلسات الأخيرة</h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-right text-gray-500">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                    <tr>
+                        <th class="px-6 py-3 font-semibold">المصدر</th>
+                        <th class="px-6 py-3 font-semibold">المشروع / الوحدة (الأكثر اهتماماً)</th>
+                        <th class="px-6 py-3 font-semibold">وقت البدء</th>
+                        <th class="px-6 py-3 font-semibold">المدة</th>
+                        <th class="px-6 py-3 font-semibold">الأحداث</th>
+                        <th class="px-6 py-3 font-semibold">الحالة</th>
+                        <th class="px-6 py-3 font-semibold">الإجراء</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($journeys as $journey)
+                        <tr class="border-b hover:bg-gray-50 transition-colors {{ $journey->is_converted ? 'bg-green-50/30' : '' }}">
+                            <td class="px-6 py-4">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                    {{ $journey->lead_source ?? 'مباشر' }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                @if($journey->main_project)
+                                    <div class="font-medium text-gray-900">{{ $journey->main_project->name }}</div>
+                                @endif
+                                @if($journey->main_unit)
+                                    <div class="text-xs text-indigo-600 mt-1">{{ $journey->main_unit->title ?? ('وحدة ' . $journey->main_unit->unit_number) }}</div>
+                                @endif
+                                @if(!$journey->main_project && !$journey->main_unit)
+                                    <span class="text-gray-400">-</span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-600">
+                                {{ $journey->start_time->format('Y-m-d h:i A') }}
+                                <div class="text-xs text-gray-400 mt-0.5">{{ $journey->start_time->diffForHumans() }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="font-medium text-gray-700">{{ \Carbon\CarbonInterval::seconds($journey->duration)->cascade()->forHumans(['short' => true]) }}</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-800 text-xs font-bold">
+                                    {{ $journey->events_count }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                @if($journey->is_converted)
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        تحويل ناجح
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                                        تصفح
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-left">
+                                <button wire:click="showJourneyDetails('{{ is_array($journey) ? $journey['session_id'] : $journey->session_id }}')" class="text-indigo-600 hover:text-indigo-900 text-sm font-medium focus:outline-none">
+                                    عرض التفاصيل
+                                </button>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                                لا توجد جلسات مسجلة في هذه الفترة.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <!-- Journey Details Modal -->
     @if($showJourneyModal)
     <div class="fixed inset-0 bg-gray-900 bg-opacity-60 z-50 flex items-center justify-center p-4" x-data="{ show: @entangle('showJourneyModal') }" x-show="show" @click.self="show = false">

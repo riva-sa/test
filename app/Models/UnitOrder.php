@@ -30,6 +30,8 @@ class UnitOrder extends Model
         'order_source',
         'import_batch_id',
         'assigned_sales_user_id',
+        'marketing_source',
+        'session_id',
     ];
 
     public const ORDER_SOURCE_LEGACY = 'legacy';
@@ -212,5 +214,34 @@ class UnitOrder extends Model
         ];
 
         return $sources[$this->order_source] ?? $this->order_source ?? 'غير معروف';
+    }
+
+    /**
+     * Helper method to format marketing source with icons.
+     */
+    public function formattedMarketingSource()
+    {
+        $marketingSource = array_key_exists('marketing_source', $this->getAttributes()) ? $this->getAttribute('marketing_source') : null;
+        $source = $marketingSource ?: ($this->order_source == self::ORDER_SOURCE_MANAGER ? 'إضافة يدوية' : 'مباشر');
+        
+        $icons = [
+            'Facebook' => 'fab fa-facebook text-blue-600',
+            'Instagram' => 'fab fa-instagram text-pink-600',
+            'Snapchat' => 'fab fa-snapchat-ghost text-yellow-500',
+            'Google' => 'fab fa-google text-red-500',
+            'TikTok' => 'fab fa-tiktok text-gray-900',
+            'Twitter' => 'fab fa-twitter text-blue-400',
+            'LinkedIn' => 'fab fa-linkedin text-blue-700',
+            'WhatsApp' => 'fab fa-whatsapp text-green-500',
+            'إضافة يدوية' => 'fas fa-user-edit text-gray-600',
+            'مباشر' => 'fas fa-link text-gray-500',
+        ];
+        
+        $icon = $icons[$source] ?? 'fas fa-globe text-gray-400';
+        
+        return [
+            'label' => $source,
+            'icon' => $icon
+        ];
     }
 }

@@ -113,6 +113,7 @@ class EnhancedTrackingService extends TrackingService
         $comparison = [];
 
         foreach ($campaigns as $campaign) {
+            /** @var \App\Models\Campaign $campaign */
             $campaignFilters = array_merge($filters, ['campaign_id' => $campaign->id]);
             $comparison[$campaign->id] = [
                 'campaign' => $campaign,
@@ -215,25 +216,54 @@ class EnhancedTrackingService extends TrackingService
             }
         }
 
-        if (isset($filters['project_id'])) {
-            $query->where(function ($q) use ($filters) {
-                $q->whereHasMorph('trackable', [Project::class], function ($query) use ($filters) {
-                    $query->where('id', $filters['project_id']);
-                })->orWhereHasMorph('trackable', [Unit::class], function ($query) use ($filters) {
-                    $query->where('project_id', $filters['project_id']);
+        // Support both single project_id and multiple project_ids
+        if (isset($filters['project_id']) || isset($filters['project_ids'])) {
+            $projectIds = isset($filters['project_ids']) ? (array) $filters['project_ids'] : (array) $filters['project_id'];
+            
+            $query->where(function ($q) use ($projectIds) {
+                $q->whereHasMorph('trackable', [Project::class], function ($query) use ($projectIds) {
+                    $query->whereIn('id', $projectIds);
+                })->orWhereHasMorph('trackable', [Unit::class], function ($query) use ($projectIds) {
+                    $query->whereIn('project_id', $projectIds);
                 });
+            });
+        }
+
+        // Support source filtering
+        if (isset($filters['sources']) && !empty($filters['sources'])) {
+            $sources = (array) $filters['sources'];
+            $query->whereHasMorph('trackable', [Project::class], function ($query) use ($sources) {
+                $query->whereIn('id', Campaign::whereIn('source', $sources)->pluck('project_id'));
+            })->orWhereHasMorph('trackable', [Unit::class], function ($query) use ($sources) {
+                $query->whereIn('project_id', Campaign::whereIn('source', $sources)->pluck('project_id'));
             });
         }
 
         if (isset($filters['event_types']) && is_array($filters['event_types'])) {
             $types = $filters['event_types'];
+            $expandedTypes = $types;
             if (in_array('whatsapp', $types)) {
-                $types[] = 'WhatsAppClick';
+                $expandedTypes[] = 'WhatsAppClick';
             }
             if (in_array('call', $types)) {
-                $types[] = 'PhoneCall';
+                $expandedTypes[] = 'PhoneCall';
             }
-            $query->whereIn('event_type', $types);
+            $query->whereIn('event_type', array_unique($expandedTypes));
+        }
+
+        // Support search
+        if (isset($filters['search']) && !empty($filters['search'])) {
+            $searchTerm = $filters['search'];
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('event_type', 'like', "%{$searchTerm}%")
+                  ->orWhereHasMorph('trackable', [Project::class], function($query) use ($searchTerm) {
+                      $query->where('name', 'like', "%{$searchTerm}%");
+                  })
+                  ->orWhereHasMorph('trackable', [Unit::class], function($query) use ($searchTerm) {
+                      $query->where('title', 'like', "%{$searchTerm}%")
+                            ->orWhere('unit_number', 'like', "%{$searchTerm}%");
+                  });
+            });
         }
 
         return $query;
@@ -277,6 +307,7 @@ class EnhancedTrackingService extends TrackingService
         $bestScore = 0;
 
         foreach ($campaigns as $campaign) {
+            /** @var \App\Models\Campaign $campaign */
             $campaignFilters = array_merge($filters, ['campaign_id' => $campaign->id]);
             $score = $this->calculatePerformanceScore($campaign, $campaignFilters);
 

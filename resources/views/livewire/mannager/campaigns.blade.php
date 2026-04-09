@@ -115,42 +115,50 @@
             </div>
 
             {{-- Advanced Filters Row --}}
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div class="grid gap-6">
+            {{-- Advanced Filters Row --}}
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-4">
                 {{-- Project Filter --}}
-                {{-- <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">المشاريع</label>
-                    <select wire:model.live="selectedProjects" multiple class="custom-multiselect" size="3">
-                        @foreach($this->projects as $project)
-                            <option value="{{ $project->id }}" class="px-3 py-2 hover:bg-indigo-50">{{ $project->name }}</option>
+                <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">المشاريع</label>
+                    <div class="space-y-1 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
+                        @foreach($this->filterOptions['projects'] ?? [] as $project)
+                            <label class="flex items-center p-2 rounded hover:bg-white transition-colors cursor-pointer group">
+                                <input type="checkbox" wire:model.live="selectedProjects" value="{{ $project->id }}" 
+                                       class="form-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500 transition-all">
+                                <span class="mr-3 text-sm text-gray-600 group-hover:text-gray-900">{{ $project->name }}</span>
+                            </label>
                         @endforeach
-                    </select>
-                    <p class="text-xs text-gray-500 mt-1">اضغط Ctrl للاختيار المتعدد</p>
-                </div> --}}
+                    </div>
+                </div>
 
                 {{-- Sources Filter --}}
-                {{-- <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">المصادر</label>
-                    <select wire:model.live="selectedSources" multiple class="custom-multiselect" size="3">
+                <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">المصادر</label>
+                    <div class="space-y-1 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
                         @foreach($availableSources as $key => $value)
-                            <option value="{{ $key }}" class="px-3 py-2 hover:bg-indigo-50">{{ $value }}</option>
+                            <label class="flex items-center p-2 rounded hover:bg-white transition-colors cursor-pointer group">
+                                <input type="checkbox" wire:model.live="selectedSources" value="{{ $key }}" 
+                                       class="form-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500 transition-all">
+                                <span class="mr-3 text-sm text-gray-600 group-hover:text-gray-900">{{ $value }}</span>
+                            </label>
                         @endforeach
-                    </select>
-                    <p class="text-xs text-gray-500 mt-1">اضغط Ctrl للاختيار المتعدد</p>
-                </div> --}}
+                    </div>
+                </div>
 
                 {{-- Event Types Filter --}}
-                {{-- <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">نوع الأحداث</label>
-                    <select wire:model.live="selectedEventTypes" multiple class="custom-multiselect" size="3">
-                        <option value="visit" class="px-3 py-2 hover:bg-indigo-50">زيارات</option>
-                        <option value="view" class="px-3 py-2 hover:bg-indigo-50">مشاهدات</option>
-                        <option value="show" class="px-3 py-2 hover:bg-indigo-50">عروض</option>
-                        <option value="order" class="px-3 py-2 hover:bg-indigo-50">طلبات</option>
-                        <option value="whatsapp" class="px-3 py-2 hover:bg-indigo-50">واتساب</option>
-                        <option value="call" class="px-3 py-2 hover:bg-indigo-50">مكالمات</option>
-                    </select>
-                    <p class="text-xs text-gray-500 mt-1">اضغط Ctrl للاختيار المتعدد</p>
-                </div> --}}
+                <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">نوع الأحداث</label>
+                    <div class="space-y-1 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
+                        @foreach($eventTypes as $key => $value)
+                            <label class="flex items-center p-2 rounded hover:bg-white transition-colors cursor-pointer group">
+                                <input type="checkbox" wire:model.live="selectedEventTypes" value="{{ $key }}" 
+                                       class="form-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500 transition-all">
+                                <span class="mr-3 text-sm text-gray-600 group-hover:text-gray-900">{{ $value }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
 
                 {{-- View Mode Selector --}}
                 <div>

@@ -282,8 +282,10 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 py-1 text-xs font-medium rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100">
-                                    {{ $order->orderSourceLabel() }}
+                                @php $sourceData = $order->formattedMarketingSource(); @endphp
+                                <span class="px-2.5 py-1 text-xs font-medium rounded-full bg-gray-50 text-gray-700 border border-gray-200 inline-flex items-center gap-1.5">
+                                    <i class="{{ $sourceData['icon'] }}"></i>
+                                    {{ $sourceData['label'] }}
                                 </span>
                             </td>
 
