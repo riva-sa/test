@@ -28,12 +28,6 @@ class ProjectsPage extends Component
     public $view_type = 'projects'; // Default view
 
     #[Url]
-    public $projects_page = 1; // Pagination for projects
-
-    #[Url]
-    public $units_page = 1; // Pagination for units
-
-    #[Url]
     public $selected_projectTypes = [];
 
     #[Url]
@@ -164,8 +158,6 @@ class ProjectsPage extends Component
 
     protected $queryString = [
         'view_type' => ['except' => 'projects'],
-        'projects_page' => ['except' => 1],
-        'units_page' => ['except' => 1],
         'selected_projectTypes' => ['except' => []],
         'selected_developer' => ['except' => []],
         'is_featured' => ['except' => false],
@@ -227,17 +219,17 @@ class ProjectsPage extends Component
 
     public function updated($property): void
     {
+        // Don't reset pagination if the changed property is a sidebar toggle
         if ($property === 'view_type' || str_starts_with($property, 'showSidebar')) {
             return;
         }
 
+        // Reset pagination when filters change
         if ($this->view_type === 'projects') {
             $this->resetPage('projects_page');
-
-            return;
+        } else {
+            $this->resetPage('units_page');
         }
-
-        $this->resetPage('units_page');
     }
 
     public function render()
@@ -245,7 +237,7 @@ class ProjectsPage extends Component
         $query = null;
 
         if ($this->view_type === 'projects') {
-            $page = (int) request()->query('projects_page', 1);
+            $page = $this->getPage('projects_page');
             $filters = [
                 'selected_projectTypes' => $this->selected_projectTypes,
                 'selected_developer' => $this->selected_developer,
@@ -364,11 +356,11 @@ class ProjectsPage extends Component
             // }
 
             // Use projects_page for pagination with cache
-            $items = Cache::remember($cacheKey, 60, function () use ($query) {
+            $items = Cache::remember($cacheKey, 60, function () use ($query) { // cache for 60 seconds
                 return $query->paginate(18, ['*'], 'projects_page');
             });
         } else {
-            $page = (int) request()->query('units_page', 1);
+            $page = $this->getPage('units_page');
             $filters = [
                 'selected_projectTypes' => $this->selected_projectTypes,
                 'selected_developer' => $this->selected_developer,
@@ -479,7 +471,7 @@ class ProjectsPage extends Component
             $query->orderBy($this->sort_by, $this->sort_direction);
 
             // Use units_page for pagination with cache
-            $items = Cache::remember($cacheKey, 60, function () use ($query) {
+            $items = Cache::remember($cacheKey, 60, function () use ($query) { // cache for 60 seconds
                 return $query->paginate(12, ['*'], 'units_page');
             });
         }

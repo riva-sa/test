@@ -29,6 +29,8 @@ class ManagerAuthController extends Controller
 
             if ($user->hasRole('super_admin')) {
                 return redirect()->route('filament.admin.pages.dashboard');
+            } elseif ($user->hasRole('developer')) {
+                return redirect()->route('developer.dashboard');
             } elseif ($user->hasRole('sales_manager')) {
                 return redirect()->route('manager.dashboard');
             } elseif ($user->hasRole('sales')) {

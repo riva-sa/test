@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\UnitOrder;
+use App\Observers\UnitOrderObserver;
 use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
 use Filament\Forms\Components\Field;
 use Filament\Forms\Components\Placeholder;
@@ -14,8 +16,9 @@ use Firefly\FilamentBlog\Models\Setting;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\ServiceProvider;
+
 class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
@@ -46,6 +49,8 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        UnitOrder::observe(UnitOrderObserver::class);
+
         $this->configureCommands();
         $this->configureModels();
         $this->translatableComponents();
@@ -55,7 +60,7 @@ class AppServiceProvider extends ServiceProvider
                 $BlogSettings = Setting::query()->first();
                 view()->share('BlogSettings', $BlogSettings);
             } catch (\Throwable $e) {
-                logger()->warning('BlogSettings skipped: ' . $e->getMessage());
+                logger()->warning('BlogSettings skipped: '.$e->getMessage());
             }
         }
 

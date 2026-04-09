@@ -19,7 +19,7 @@
         </div>
     </div>
 
-    <div class="p-6">
+    <div class="p-4 bg-white">
         <!-- Success Message -->
         @if (session()->has('success'))
             <div class="bg-green-100 text-green-800 px-4 py-3 rounded-lg mb-6 animate-fade-in-down flex items-center">
@@ -129,7 +129,7 @@
 
                 <!-- Submit & Reset -->
                 <div class="md:col-span-3 flex flex-wrap gap-3 mt-4">
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md shadow-sm transition flex items-center">
+                    <button type="submit" class="bg-blue-600  text-white hover:bg-gray-900 px-6 py-2 rounded-md shadow-sm transition flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                         </svg>

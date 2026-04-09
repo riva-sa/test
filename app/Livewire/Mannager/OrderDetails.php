@@ -9,6 +9,7 @@ use App\Models\Unit;
 use App\Models\UnitOrder;
 use App\Services\NotificationService;
 use App\Traits\DelayedOrderLogic;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -40,6 +41,11 @@ class OrderDetails extends Component
     public $isEditingUnitInfo = false;
 
     public $unitData = [];
+
+    public $isEditingBank = false;
+
+    public $bankData = [];
+
     // إضافة هذه الوظائف في الكلاس OrderDetails
 
     /**
@@ -65,6 +71,44 @@ class OrderDetails extends Component
         $this->isEditingMessage = false;
         $this->orderMessage = '';
         $this->resetErrorBag('orderMessage');
+    }
+
+    public function startEditBank()
+    {
+        $this->isEditingBank = true;
+        $this->bankData = [
+            'bank_employee_name' => $this->order->bank_employee_name ?? '',
+            'bank_employee_phone' => $this->order->bank_employee_phone ?? '',
+            'bank_name' => $this->order->bank_name ?? '',
+        ];
+    }
+
+    public function cancelEditBank()
+    {
+        $this->isEditingBank = false;
+        $this->bankData = [];
+        $this->resetErrorBag('bankData');
+    }
+
+    public function saveBankData()
+    {
+        $this->validate([
+            'bankData.bank_employee_name' => 'nullable|string|max:255',
+            'bankData.bank_employee_phone' => 'nullable|string|max:30',
+            'bankData.bank_name' => 'nullable|string|max:255',
+        ]);
+
+        $this->order->update([
+            'bank_employee_name' => $this->bankData['bank_employee_name'] !== '' ? $this->bankData['bank_employee_name'] : null,
+            'bank_employee_phone' => $this->bankData['bank_employee_phone'] !== '' ? $this->bankData['bank_employee_phone'] : null,
+            'bank_name' => $this->bankData['bank_name'] !== '' ? $this->bankData['bank_name'] : null,
+        ]);
+
+        $this->updateOrderWithDelayControl($this->order, $this->bankData);
+        $this->loadOrder();
+
+        $this->isEditingBank = false;
+        session()->flash('message', 'تم تحديث بيانات موظف البنك بنجاح');
     }
 
     public function startEditUnitCase()
@@ -218,7 +262,9 @@ class OrderDetails extends Component
 
     public function loadOrder()
     {
-        $this->order = UnitOrder::with(['notes.user.roles', 'unit', 'project.salesManager'])->findOrFail($this->orderId);
+        $this->order = $this->getAccessibleOrdersQuery()
+            ->with(['notes.user.roles', 'unit', 'project.salesManager', 'assignedSalesUser'])
+            ->findOrFail($this->orderId);
     }
 
     public function addNote()
@@ -251,7 +297,7 @@ class OrderDetails extends Component
 
         // إشعار المهتمين بتحديث الحالة
         app(NotificationService::class)
-            ->notifyStatusUpdate($this->order, $oldStatus, $this->order->status, auth()->id());
+            ->notifyStatusUpdate($this->order, $oldStatus, $this->order->status, Auth::id());
 
         $this->updateOrderWithDelayControl($this->order, ['status' => $status]);
         $this->loadOrder();
@@ -267,9 +313,9 @@ class OrderDetails extends Component
 
     public function render()
     {
-
-        $previousOrder = \App\Models\UnitOrder::where('id', '<', $this->order->id)->orderBy('id', 'desc')->first();
-        $nextOrder = \App\Models\UnitOrder::where('id', '>', $this->order->id)->orderBy('id')->first();
+        $accessibleOrdersQuery = $this->getAccessibleOrdersQuery();
+        $previousOrder = (clone $accessibleOrdersQuery)->where('id', '<', $this->order->id)->orderBy('id', 'desc')->first();
+        $nextOrder = (clone $accessibleOrdersQuery)->where('id', '>', $this->order->id)->orderBy('id')->first();
 
         return view('livewire.mannager.order-details', [
             'statusLabels' => [
@@ -278,10 +324,12 @@ class OrderDetails extends Component
                 2 => 'معاملات بيعية',
                 3 => 'مغلق',
                 4 => 'مكتمل',
+                5 => 'قائمة انتظار',
             ],
             'purchaseTypes' => [
                 'cash' => 'كاش',
                 'installment' => 'تقسيط',
+                'bank' => 'تمويل بنكي',
             ],
             'purchasePurposes' => [
                 'investment' => 'استثمار',
@@ -298,6 +346,24 @@ class OrderDetails extends Component
             'previousOrder' => $previousOrder,
             'nextOrder' => $nextOrder,
         ])->layout('layouts.custom');
+    }
+
+    private function getAccessibleOrdersQuery(): Builder
+    {
+        $query = UnitOrder::query();
+        $user = Auth::user();
+
+        if ($user && $user->hasRole('sales')) {
+            $query->where(function ($q) use ($user) {
+                $q->whereHas('project', function ($subQ) use ($user) {
+                    $subQ->where('sales_manager_id', $user->id);
+                })->orWhereHas('permissions', function ($subQ) use ($user) {
+                    $subQ->where('user_id', $user->id);
+                });
+            });
+        }
+
+        return $query;
     }
 
     public function logout()

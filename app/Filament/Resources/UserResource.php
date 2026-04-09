@@ -79,7 +79,12 @@ class UserResource extends Resource
                             ->multiple()
                             ->preload()
                             ->searchable(),
-
+                        Select::make('developer_id')
+                            ->label('اربط الحساب بالمطور')
+                            ->relationship('developer', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->native(true),
                         TextInput::make('password')
                             ->label('كلمة المرور')
                             ->password()

@@ -10,7 +10,7 @@
         </div>
     </div>
 
-    <div class="px-4 py-6 sm:px-6">
+    <div class="px-4 py-6 sm:px-6 bg-white">
         @if (session()->has('status'))
             <div class="mb-4 bg-green-100 text-green-800 p-3 rounded">
                 {{ session('status') }}

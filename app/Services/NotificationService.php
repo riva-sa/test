@@ -126,6 +126,7 @@ class NotificationService
             2 => 'معاملات بيعية',
             3 => 'مغلق',
             4 => 'مكتمل',
+            5 => 'قائمة انتظار',
         ];
 
         return $labels[$status] ?? (string) $status;

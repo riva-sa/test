@@ -159,6 +159,7 @@ class UnitOrderpopup extends Component
                     'PurchasePurpose' => $this->purchasePurpose,
                     'support_type' => $this->support_type,
                     'status' => 0,
+                    'order_source' => UnitOrder::ORDER_SOURCE_FRONTEND_POPUP,
                 ]);
 
                 // Track unit order

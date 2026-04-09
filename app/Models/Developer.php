@@ -15,4 +15,9 @@ class Developer extends Model
         'website',
         'address',
     ];
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
 }

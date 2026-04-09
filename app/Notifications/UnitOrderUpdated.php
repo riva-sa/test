@@ -68,6 +68,7 @@ class UnitOrderUpdated extends Notification implements ShouldQueue
             'message_update' => "قام {$userName} بتعديل الملاحظة الرئيسية للطلب (#{$orderId})",
             'permission_granted' => "تم منح صلاحية للمستخدم {$this->data['user_name']} على الطلب (#{$orderId})",
             'permission_revoked' => "تم إلغاء صلاحية المستخدم {$this->data['user_name']} من الطلب (#{$orderId})",
+            'order_forwarded' => "تم توجيه الطلب (#{$orderId}) آلياً للمتابعة — العميل {$this->order->name}",
             default => "تم تحديث الطلب (#{$orderId}) بواسطة {$userName}",
         };
 
@@ -84,6 +85,7 @@ class UnitOrderUpdated extends Notification implements ShouldQueue
             2 => 'معاملات بيعية',
             3 => 'مغلق',
             4 => 'مكتمل',
+            5 => 'قائمة انتظار',
         ];
 
         return $labels[$this->order->status] ?? $this->order->status;

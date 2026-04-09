@@ -19,7 +19,28 @@ class UnitOrder extends Model
         'project_id',
         'support_type',
         'last_action_by_user_id',
+        'is_waiting_list',
+        'waiting_list_unit_type',
+        'waiting_list_budget',
+        'waiting_list_location',
+        'waiting_list_notes',
+        'bank_employee_name',
+        'bank_employee_phone',
+        'bank_name',
+        'order_source',
+        'import_batch_id',
+        'assigned_sales_user_id',
     ];
+
+    public const ORDER_SOURCE_LEGACY = 'legacy';
+
+    public const ORDER_SOURCE_FRONTEND_POPUP = 'frontend_popup';
+
+    public const ORDER_SOURCE_FRONTEND_UNIT = 'frontend_unit';
+
+    public const ORDER_SOURCE_MANAGER = 'manager';
+
+    public const ORDER_SOURCE_BULK_IMPORT = 'bulk_import';
 
     public function unit()
     {
@@ -50,6 +71,16 @@ class UnitOrder extends Model
     public function lastActionByUser()
     {
         return $this->belongsTo(User::class, 'last_action_by_user_id');
+    }
+
+    public function assignedSalesUser()
+    {
+        return $this->belongsTo(User::class, 'assigned_sales_user_id');
+    }
+
+    public function forwardEvents()
+    {
+        return $this->hasMany(OrderForwardEvent::class);
     }
 
     public function activities()
@@ -150,6 +181,7 @@ class UnitOrder extends Model
             2 => ['label' => 'معاملات بيعية', 'color' => 'yellow'],
             3 => ['label' => 'مغلق', 'color' => 'red'],
             4 => ['label' => 'مكتمل', 'color' => 'emerald'],
+            5 => ['label' => 'قائمة انتظار', 'color' => 'amber'],
         ];
 
         return $statuses[$this->status]['label'] ?? 'غير معروف';
@@ -163,6 +195,7 @@ class UnitOrder extends Model
             2 => 'yellow',
             3 => 'red',
             4 => 'emerald',
+            5 => 'amber',
         ];
 
         return $statuses[$this->status] ?? 'gray';

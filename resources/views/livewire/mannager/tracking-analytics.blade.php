@@ -1,4 +1,4 @@
-<div class="p-6 bg-gray-50 min-h-screen" dir="rtl">
+<div class="p-4 bg-white min-h-screen" dir="rtl">
     <!-- رسالة النجاح -->
     @if (session()->has('message'))
         <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
@@ -8,8 +8,8 @@
 
     <!-- 1. العنوان الرئيسي والفلاتر -->
     <div class="mb-6">
-        <div class="flex flex-wrap items-center justify-between gap-y-4 mb-5">
-            <h1 class="text-3xl font-bold text-gray-800 mb-4">لوحة تحكم الأداء</h1>
+        <div class="flex flex-wrap items-center justify-between gap-y-4 mb-3">
+            <h1 class="text-2xl font-bold text-gray-800">لوحة تحكم الأداء</h1>
             <a href="{{ route('manager.journeys') }}" wire:navigate 
                 class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-lg text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 shadow-sm transform hover:scale-105">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ml-2" viewBox="0 0 20 20" fill="currentColor">

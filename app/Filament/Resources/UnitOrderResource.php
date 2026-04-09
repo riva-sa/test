@@ -74,6 +74,17 @@ class UnitOrderResource extends Resource
                             ->nullable(),
 
                         Grid::make()
+                            ->columns(2)
+                            ->schema([
+                                Forms\Components\TextInput::make('bank_employee_name')
+                                    ->label('موظف البنك (الاسم)')
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('bank_employee_phone')
+                                    ->label('موظف البنك (الهاتف)')
+                                    ->maxLength(255),
+                            ]),
+
+                        Grid::make()
                             ->columns(3)
                             ->schema([
                                 Forms\Components\Select::make('PurchaseType')
@@ -154,6 +165,14 @@ class UnitOrderResource extends Resource
                 Tables\Columns\TextColumn::make('PurchasePurpose')->label('الغرض من الشراء')
                     ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('bank_employee_name')
+                    ->label('موظف البنك')
+                    ->searchable()
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('bank_employee_phone')
+                    ->label('هاتف البنك')
+                    ->searchable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('project.name')->label('المشروع')
                     ->sortable()
                     ->searchable(),

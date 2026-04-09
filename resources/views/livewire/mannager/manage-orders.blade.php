@@ -12,7 +12,7 @@
         </div>
     </div>
     <!-- Header Section -->
-    <div class="bg-gray-50 min-h-screen p-4 sm:p-6">
+    <div class="bg-white min-h-screen p-2 sm:p-4">
         <!-- Filters Card -->
         <div class="bg-white rounded-xl shadow-sm p-4 mb-6 border border-gray-100">
             <h2 class="text-lg font-semibold text-gray-700 mb-4">تصفية النتائج</h2>
@@ -318,6 +318,7 @@
                                             2 => 'bg-green-100 text-green-800',
                                             3 => 'bg-gray-100 text-gray-800',
                                             4 => 'bg-green-100 text-green-800',
+                                            5 => 'bg-amber-100 text-amber-800',
                                         ];
                                     @endphp
                                     <span class="px-2 py-1 text-xs font-medium rounded-full {{ $statusColors[$order->status] ?? 'bg-gray-100 text-gray-800' }}">
@@ -334,7 +335,7 @@
                             <!-- Sales Manager -->
                             @if (auth()->user()->hasRole('sales_manager') || auth()->user()->hasRole('follow_up'))
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ $order->project->salesManager->name ?? '-' }}
+                                {{ $order->project?->salesManager?->name ?? '-' }}
                             </td>
                             @endif
 

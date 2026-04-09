@@ -14,7 +14,9 @@ class ContentBlockSeeder extends Seeder
     public function run()
     {
         // Disable foreign key checks for PostgreSQL
-        DB::statement('SET CONSTRAINTS ALL DEFERRED');
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('SET CONSTRAINTS ALL IMMEDIATE');
+        }
 
         $contentBlocks = [
             [
@@ -175,16 +177,33 @@ class ContentBlockSeeder extends Seeder
             ],
         ];
 
+        // foreach ($contentBlocks as $block) {
+        //     ContentBlock::updateOrCreate(
+        //         ['key' => $block['key']],
+        //         $block
+        //     );
+        // }
+
+        // // Re-enable foreign key checks
+        // DB::statement('SET CONSTRAINTS ALL IMMEDIATE');
+
+        // $this->command->info('Successfully seeded content blocks with keys for Riva Real Estate!');
+
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('SET CONSTRAINTS ALL IMMEDIATE');
+        }
+
         foreach ($contentBlocks as $block) {
             ContentBlock::updateOrCreate(
                 ['key' => $block['key']],
                 $block
             );
         }
-
-        // Re-enable foreign key checks
-        DB::statement('SET CONSTRAINTS ALL IMMEDIATE');
-
+        
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('SET CONSTRAINTS ALL IMMEDIATE');
+        }
+        
         $this->command->info('Successfully seeded content blocks with keys for Riva Real Estate!');
     }
 }

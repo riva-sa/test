@@ -1,7 +1,7 @@
 <div class="hidden md:flex md:flex-shrink-0">
-    <div class="flex flex-col w-72 bg-white border-l border-gray-200 shadow-lg">
-<!-- Sidebar header -->
-        <div class="flex items-center justify-between h-20 px-6 border-b border-gray-200 bg-gradient-to-l from-gray-50 to-white">
+    <div class="flex flex-col w-60">
+        <!-- Sidebar header -->
+        <div class="flex items-center justify-between">
             <div class="flex items-center">
                 <img src="{{ asset('frontend/img/logoyy.png') }}" width="40px" alt="ريفا" class="ml-3">
                 <div class="flex flex-col">
@@ -12,7 +12,7 @@
             
             <!-- Notifications Bell -->
             <div class="relative" x-data="{ open: false }">
-                <button @click="open = !open" class="relative p-2 text-gray-600 hover:text-primary-500 transition-colors duration-200">
+                <button @click="open = !open" class="relative p-2 text-gray-600 hover:text-primary-500 transition-colors duration-200 rounded-lg hover:bg-gray-100">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                     </svg>
@@ -32,7 +32,7 @@
                      x-transition:leave="transition ease-in duration-75"
                      x-transition:leave-start="opacity-100 scale-100"
                      x-transition:leave-end="opacity-0 scale-95"
-                     class="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                     class="absolute right-0 mt-2 w-96 bg-white rounded-xl shadow-lg border border-gray-200 z-1000">
                     
                     <div class="p-4 border-b border-gray-200 bg-gray-50 rounded-t-lg">
                         <div class="flex items-center justify-between">
@@ -188,24 +188,32 @@
         </div>
 
         <!-- Sidebar content -->
-        <div class="flex flex-col flex-grow px-6 py-6 overflow-y-auto">
+        <div class="flex flex-col flex-grow  py-6 overflow-y-auto">
             <h3 class="text-xs font-semibold text-gray-500 mb-4 px-2">القائمة الرئيسية</h3>
             <nav class="flex-1 space-y-1">
-                <a href="{{ route('manager.dashboard') }}" class="group flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-50 transition-all duration-200 text-gray-700 hover:text-primary-500 sidebar-item {{ request()->routeIs('manager.dashboard') ? 'bg-gray-50 text-primary-500 ' : '' }}">
+                @if(auth()->user()->hasRole('developer'))
+                <a href="{{ route('developer.dashboard') }}" class="group flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-50 transition-all duration-200 text-gray-700 hover:text-primary-500 sidebar-item {{ request()->routeIs('developer.dashboard') ? 'bg-gray-50 text-primary-500 border border-gray-200' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-3 text-gray-500 group-hover:text-primary-500 {{ request()->routeIs('developer.dashboard') ? 'text-primary-500' : '' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    لوحة المطوّر
+                </a>
+                @else
+                <a href="{{ route('manager.dashboard') }}" class="group flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-50 transition-all duration-200 text-gray-700 hover:text-primary-500 sidebar-item {{ request()->routeIs('manager.dashboard') ? 'bg-gray-50 text-primary-500 border border-gray-200' : '' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-3 text-gray-500 group-hover:text-primary-500 {{ request()->routeIs('manager.dashboard') ? 'text-primary-500' : '' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                     </svg>
                     الرئيسية
                 </a>
 
-                <a href="{{ route('manager.customerlist') }}" class="group flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-50 transition-all duration-200 text-gray-700 hover:text-primary-500 sidebar-item {{ request()->routeIs('manager.customerlist') ? 'bg-gray-50 text-primary-500 ' : '' }}">
+                <a href="{{ route('manager.customerlist') }}" class="group flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-50 transition-all duration-200 text-gray-700 hover:text-primary-500 sidebar-item {{ request()->routeIs('manager.customerlist') ? 'bg-gray-50 text-primary-500 border border-gray-200' : '' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-3 text-gray-500 group-hover:text-primary-500 {{ request()->routeIs('manager.customerlist') ? 'text-primary-500' : '' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                     </svg>
                     العملاء
                 </a>
 
-                <a href="{{ route('manager.orders') }}" class="group flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-50 transition-all duration-200 text-gray-700 hover:text-primary-500 sidebar-item {{ request()->routeIs('manager.orders') ? 'bg-gray-50 text-primary-500 ' : '' }}">
+                <a href="{{ route('manager.orders') }}" class="group flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-50 transition-all duration-200 text-gray-700 hover:text-primary-500 sidebar-item {{ request()->routeIs('manager.orders') ? 'bg-gray-50 text-primary-500 border border-gray-200' : '' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-3 text-gray-500 group-hover:text-primary-500 {{ request()->routeIs('manager.orders') ? 'text-primary-500' : '' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     </svg>
@@ -213,7 +221,7 @@
                 </a>
 
                 @if (auth()->user()->hasRole('sales_manager') || auth()->user()->hasRole('follow_up'))
-                <a href="{{ route('manager.sales-managers') }}" class="group flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-50 transition-all duration-200 text-gray-700 hover:text-primary-500 sidebar-item {{ request()->routeIs('manager.sales-managers') ? 'bg-gray-50 text-primary-500 ' : '' }}">
+                <a href="{{ route('manager.sales-managers') }}" class="group flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-50 transition-all duration-200 text-gray-700 hover:text-primary-500 sidebar-item {{ request()->routeIs('manager.sales-managers') ? 'bg-gray-50 text-primary-500 border border-gray-200' : '' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-3 text-gray-500 group-hover:text-primary-500 {{ request()->routeIs('manager.sales-managers') ? 'text-primary-500' : '' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
@@ -221,7 +229,7 @@
                 </a>
 
                 <!-- Analytics link with custom SVG icon -->
-                <a href="{{ route('manager.analytics') }}" class="group flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-50 transition-all duration-200 text-gray-700 hover:text-primary-500 sidebar-item {{ request()->routeIs('manager.analytics') ? 'bg-gray-50 text-primary-500 ' : '' }}">
+                <a href="{{ route('manager.analytics') }}" class="group flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-50 transition-all duration-200 text-gray-700 hover:text-primary-500 sidebar-item {{ request()->routeIs('manager.analytics') ? 'bg-gray-50 text-primary-500 border border-gray-200' : '' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-3 text-gray-500 group-hover:text-primary-500 {{ request()->routeIs('manager.analytics') ? 'text-primary-500' : '' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                     </svg>
@@ -229,11 +237,18 @@
                 </a>
 
                 <!-- Analytics link with custom SVG icon -->
-                <a href="{{ route('manager.analytics.campaigns') }}" class="group flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-50 transition-all duration-200 text-gray-700 hover:text-primary-500 sidebar-item {{ request()->routeIs('manager.analytics') ? 'bg-gray-50 text-primary-500 ' : '' }}">
+                <a href="{{ route('manager.analytics.campaigns') }}" class="group flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-50 transition-all duration-200 text-gray-700 hover:text-primary-500 sidebar-item {{ request()->routeIs('manager.analytics') ? 'bg-gray-50 text-primary-500 border border-gray-200' : '' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-3 text-gray-500 group-hover:text-primary-500 {{ request()->routeIs('manager.analytics') ? 'text-primary-500' : '' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                     </svg>
                     الحملات
+                </a>
+
+                <a href="{{ route('manager.bulk-lead-import') }}" class="group flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-50 transition-all duration-200 text-gray-700 hover:text-primary-500 sidebar-item {{ request()->routeIs('manager.bulk-lead-import') ? 'bg-gray-50 text-primary-500 border border-gray-200' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-3 text-gray-500 group-hover:text-primary-500 {{ request()->routeIs('manager.bulk-lead-import') ? 'text-primary-500' : '' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                    استيراد عملاء (Excel)
                 </a>
                 @endif
 
@@ -244,17 +259,18 @@
 
                 <!-- New Order Link -->
                 <a href="{{ route('manager.create-order') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200
-                    {{ request()->routeIs('manager.create-order') ? 'bg-primary-600 text-white' : 'bg-primary-500 bg-opacity-10 text-primary-600 hover:bg-opacity-20' }}">
+                    {{ request()->routeIs('manager.create-order') ? 'bg-primary-600 text-white' : 'bg-gray-100 text-primary-600 hover:bg-gray-200 border border-gray-200' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
                     إضافة طلب جديد
                 </a>
+                @endif
             </nav>
         </div>
 
         <!-- Sidebar footer - User info -->
-        <div class="p-4 border-t border-gray-200 bg-gray-50">
+        <div class="">
             @if(auth()->check())
             <div class="flex items-center">
             <div class="h-10 w-10 rounded-full bg-primary-500 text-white flex items-center justify-center font-bold text-lg">
@@ -272,6 +288,8 @@
                     <span class="px-2 py-1 inline-flex text-xs leading-4 font-medium rounded-full bg-yellow-100 text-yellow-800">متابعة</span>
                     @elseif ($role->name == 'sales')
                     <span class="px-2 py-1 inline-flex text-xs leading-4 font-medium rounded-full bg-purple-100 text-purple-800">مندوب مبيعات</span>
+                    @elseif ($role->name == 'developer')
+                    <span class="px-2 py-1 inline-flex text-xs leading-4 font-medium rounded-full bg-slate-100 text-slate-800">مطوّر عقاري</span>
                     @endif
                 @endforeach
                 </div>

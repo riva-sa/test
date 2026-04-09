@@ -1,7 +1,7 @@
 <div>
     <!-- Header -->
     <div class="bg-white shadow-sm border-b border-gray-200">
-        <div class="mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="mx-auto px-2 sm:px-4 lg:px-4 py-4">
             <div class="flex justify-between items-center">
                 <h1 class="text-2xl font-bold text-gray-900 flex items-center">
                     إدارة العملاء
@@ -9,7 +9,7 @@
             </div>
         </div>
     </div>
-    <div class="px-4 py-6 sm:px-6">
+    <div class="px-2 py-4 sm:px-4 bg-white">
         @if($selectedCustomer)
             <!-- عرض طلبات عميل معين -->
             <div class="mb-6 flex items-center">
@@ -24,10 +24,10 @@
                 </h2>
             </div>
 
-            <div class="bg-white shadow rounded-lg overflow-hidden">
+            <div class="shadow-lg rounded-lg overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
+                    <table class="min-w-full divide-y divide-gray-200 border">
+                        <thead class="bg-gray-100">
                             <tr>
                                 <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الاسم</th>
                                 <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المشروع</th>
@@ -37,7 +37,7 @@
                                 <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">إجراءات</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
+                        <tbody class=" divide-y divide-gray-200">
                             @forelse ($customerOrders as $order)
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap">{{ $order->name }}</td>

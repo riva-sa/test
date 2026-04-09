@@ -113,6 +113,9 @@ class ManageOrders extends Component
                 $q->where('name', 'like', '%'.$this->search.'%')
                     ->orWhere('email', 'like', '%'.$this->search.'%')
                     ->orWhere('phone', 'like', '%'.$this->search.'%')
+                    ->orWhere('bank_name', 'like', '%'.$this->search.'%')
+                    ->orWhere('bank_employee_name', 'like', '%'.$this->search.'%')
+                    ->orWhere('bank_employee_phone', 'like', '%'.$this->search.'%')
                     ->orWhereHas('unit', function ($q) {
                         $q->where('title', 'like', '%'.$this->search.'%');
                     });
@@ -166,6 +169,7 @@ class ManageOrders extends Component
                 2 => 'معاملات بيعية',
                 3 => 'مغلق',
                 4 => 'مكتمل',
+                5 => 'قائمة انتظار',
             ],
             'purchaseTypes' => [
                 'cash' => 'كاش',

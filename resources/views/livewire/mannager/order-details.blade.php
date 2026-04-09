@@ -1,31 +1,30 @@
 <div>
-    <div class="px-4 py-6 sm:px-6">
+    <div class="px-2 py-4 sm:px-4 bg-white">
         <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 mb-6">
             @if($previousOrder || $nextOrder)
                 <div class="flex justify-between items-center mb-4" dir="ltr">
 
-                    @if($previousOrder)
-                        <a href="{{ route('manager.order-details', $previousOrder->id) }}"
-                        class="inline-flex items-center px-3 py-2 bg-gray-100 text-gray-700 text-sm rounded-md hover:bg-gray-200">
-                            
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                            </svg>
-                            التالي
-                        </a>
-                    @endif
-                    
-                    @if($nextOrder)
-                        <a href="{{ route('manager.order-details', $nextOrder->id) }}"
-                        class="inline-flex items-center px-3 py-2 bg-gray-100 text-gray-700 text-sm rounded-md hover:bg-gray-200">
-                            السابق
+                    <a href="{{ route('manager.order-details', $nextOrder->id ?? '#') }}"
+                        @if(!$nextOrder) style="pointer-events: none;cursor: default;color: gray;text-decoration: none;"  @endif
+                        type="button"
+                        class="inline-flex items-center @if($nextOrder) disabled @endif px-3 py-2 bg-gray-100 text-gray-700 text-sm rounded-md hover:bg-gray-200">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                        السابق
+                    </a>
 
-                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                            </svg>
-                        </a>
-                    @endif
+                    <a href="{{ route('manager.order-details', $previousOrder->id ?? '#') }}"
+                        @if(!$previousOrder) style="pointer-events: none;cursor: default;color: gray;text-decoration: none;"  @endif
+                        type="button"
+                        class="inline-flex items-center @if($previousOrder) disabled @endif px-3 py-2 bg-gray-100 text-gray-700 text-sm rounded-md hover:bg-gray-200">
+                        التالي
 
+                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+           
                 </div>
             @endif
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
@@ -38,6 +37,7 @@
                             @elseif($order->status == 2) معاملات بيعية
                             @elseif($order->status == 3) مغلق
                             @elseif($order->status == 4) مكتمل
+                            @elseif($order->status == 5) قائمة انتظار
                             @endif
                         </span>
                         @if ($this->isDelayed())
@@ -96,11 +96,11 @@
                     @endif
                 </div>
                 <div class="flex flex-wrap gap-3">
-                    @if($order->project->salesManager)
+                    @if($order->project?->salesManager)
                     <div class="flex items-center">
                         <div class="relative">
                             <span class="inline-block h-8 w-8 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center font-medium">
-                                {{ substr($order->project->salesManager->name, 0, 1) }}
+                                {{ substr($order->project?->salesManager?->name, 0, 1) }}
                             </span>
                             <span class="absolute -bottom-1 -right-1 bg-blue-500 rounded-full p-1 border-2 border-white">
                                 <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -109,8 +109,22 @@
                             </span>
                         </div>
                         <div class="mr-2">
-                            <p class="text-sm font-medium text-gray-900">{{ $order->project->salesManager->name }}</p>
+                            <p class="text-sm font-medium text-gray-900">{{ $order->project?->salesManager?->name }}</p>
                             <span class="text-xs text-blue-600">مندوب المبيعات المسؤل</span>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if($order->assignedSalesUser)
+                    <div class="flex items-center">
+                        <div class="relative">
+                            <span class="inline-block h-8 w-8 rounded-full bg-indigo-100 text-indigo-800 flex items-center justify-center font-medium">
+                                {{ substr($order->assignedSalesUser->name, 0, 1) }}
+                            </span>
+                        </div>
+                        <div class="mr-2">
+                            <p class="text-sm font-medium text-gray-900">{{ $order->assignedSalesUser->name }}</p>
+                            <span class="text-xs text-indigo-600">مندوب معيّن (استيراد/توزيع)</span>
                         </div>
                     </div>
                     @endif
@@ -280,7 +294,7 @@
         </div>
 
         <!-- معلومات الطلب -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
 
             <!-- معلومات الوحدة -->
             <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -383,11 +397,13 @@
                                 <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">المشروع</p>
                                 <div class="flex items-center justify-between">
                                     <p class="text-sm font-medium text-gray-900">{{ $order->project?->name ?? '-' }}</p>
-                                    <a href="{{ route('frontend.projects.single', $order->project?->slug) }}" target="_blank" class="text-primary-600 hover:text-primary-800">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                        </svg>
-                                    </a>
+                                    @if($order->project?->slug)
+                                        <a href="{{ route('frontend.projects.single', $order->project->slug) }}" target="_blank" class="text-primary-600 hover:text-primary-800">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                            </svg>
+                                        </a>
+                                    @endif
                                 </div>
                             </div>
 
@@ -399,7 +415,7 @@
                             <div class="bg-gray-50 p-4 rounded-lg relative">
                                 <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">حالة الوحدة</p>
 
-                                @if($isEditingUnitCase)
+                                @if($isEditingUnitCase && $this->order->unit)
                                     <div class="mt-1">
                                         <select wire:model="unitCase"
                                                 class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
@@ -412,18 +428,22 @@
                                     </div>
                                 @else
                                     <p class="text-sm font-medium text-gray-900">
-                                        @if ($this->order->unit->case == 0 )
-                                        متاح
-                                        @elseif ($this->order->unit->case == 1)
-                                        محجوزة
-                                        @elseif ($this->order->unit->case == 2)
-                                        مباعة
+                                        @if($this->order->unit)
+                                            @if ($this->order->unit->case == 0 )
+                                            متاح
+                                            @elseif ($this->order->unit->case == 1)
+                                            محجوزة
+                                            @elseif ($this->order->unit->case == 2)
+                                            مباعة
+                                            @endif
+                                        @else
+                                            غير محددة
                                         @endif
                                     </p>
                                 @endif
 
                                 <div class="flex justify-end absolute top-2 left-2">
-                                    @if(!$isEditingUnitCase)
+                                    @if(!$isEditingUnitCase && $this->order->unit)
                                         <button wire:click="startEditUnitCase"
                                                 type="button"
                                                 class="inline-flex items-center px-2 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs rounded-md transition duration-150 ease-in-out">
@@ -479,134 +499,203 @@
                 @endif
             </div>
 
-            <!-- حالة الطلب -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="px-4 py-4 border-b border-gray-100 bg-gray-50">
-                    <h3 class="text-lg font-semibold text-gray-800 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        حالة الطلب
-                    </h3>
-                </div>
-                <div class="px-4 py-4">
-                    @if (session()->has('messageStatus'))
-                        <div class="mb-4 p-3 bg-green-50 text-green-700 text-sm rounded-lg">
-                            {{ session('messageStatus') }}
-                        </div>
-                    @endif
-
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">الحالة الحالية</label>
-                            <select wire:change="updateStatus($event.target.value)"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
-                                @foreach ($statusLabels as $key => $label)
-                                    <option value="{{ $key }}" {{ $order->status == $key ? 'selected' : '' }}>
-                                        {{ $label }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        @if ($this->isDelayed())
-                            <div class="p-3 bg-red-50 text-red-700 rounded-lg flex items-start">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                </svg>
-                                <div>
-                                    <p class="font-medium">تنبيه!</p>
-                                    <p class="text-sm">الطلب متأخر (لم يتم التعديل منذ أكثر من 3 أيام)</p>
-                                </div>
-                            </div>
+            <div class="rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+                <!-- بيانات موظف البنك (التمويل) -->
+                <div class="">
+                    <div class="px-4 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                        <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                            بيانات موظف البنك
+                        </h3>
+                        @if (auth()->user()->hasRole('sales') || auth()->user()->hasRole('sales_manager') || auth()->user()->hasRole('follow_up'))
+                            @if(!$isEditingBank)
+                                <button wire:click="startEditBank" type="button"
+                                        class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                                    تعديل
+                                </button>
+                            @endif
                         @endif
-
-                        <div class="bg-white p-2 rounded-lg border border-gray-100 my-6">
-                            @if($last = $order->lastActivity())
-                                <div class="flex items-start gap-3 max-w-sm">
-                                    {{-- أيقونة النشاط --}}
-                                    <div class="flex-shrink-0 relative">
-                                        <span class="w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium
-                                            @if($last['type'] === 'note') bg-blue-50 text-blue-600 border border-blue-200
-                                            @elseif($last['type'] === 'permission') bg-green-50 text-green-600 border border-green-200
-                                            @elseif($last['type'] === 'status') bg-amber-50 text-amber-600 border border-amber-200
-                                            @else bg-gray-50 text-gray-600 border border-gray-200 @endif
-                                        ">
-                                            @if($last['type'] === 'note') 
-                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
-                                                </svg>
-                                            @elseif($last['type'] === 'permission')
-                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a1 1 0 100 2 2 2 0 012 2 1 1 0 102 0 4 4 0 00-4-4z" clip-rule="evenodd"/>
-                                                </svg>
-                                            @elseif($last['type'] === 'status')
-                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
-                                                </svg>
-                                            @else
-                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-                                                </svg>
-                                            @endif
-                                        </span>
-                                        
-                                        {{-- نقطة حالة صغيرة --}}
-                                        <span class="absolute -top-1 -right-1 w-3 h-3 rounded-full
-                                            @if($last['type'] === 'note') bg-blue-400
-                                            @elseif($last['type'] === 'permission') bg-green-400
-                                            @elseif($last['type'] === 'status') bg-amber-400
-                                            @else bg-gray-400 @endif
-                                        "></span>
+                    </div>
+                    <div class="px-4 py-4">
+                        @if (auth()->user()->hasRole('sales') || auth()->user()->hasRole('sales_manager') || auth()->user()->hasRole('follow_up'))
+                            @if($isEditingBank)
+                                <form wire:submit.prevent="saveBankData" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">اسم البنك</label>
+                                        <input type="text" wire:model="bankData.bank_name"
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
+                                        @error('bankData.bank_name') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                                     </div>
-                                    
-                                    {{-- محتوى النشاط --}}
-                                    <div class="min-w-0 flex-1">
-                                        {{-- نوع النشاط --}}
-                                        <div class="flex items-center gap-2 mb-1">
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
-                                                @if($last['type'] === 'note') bg-blue-100 text-blue-700
-                                                @elseif($last['type'] === 'permission') bg-green-100 text-green-700
-                                                @elseif($last['type'] === 'status') bg-amber-100 text-amber-700
-                                                @else bg-gray-100 text-gray-700 @endif
-                                            ">
-                                                @if($last['type'] === 'note') ملاحظة
-                                                @elseif($last['type'] === 'permission') صلاحية
-                                                @elseif($last['type'] === 'status') حالة
-                                                @else نشاط @endif
-                                            </span>
-                                        </div>
-                                        
-                                        {{-- رسالة النشاط --}}
-                                        <p class="text-sm text-gray-800 leading-relaxed font-medium mb-2" 
-                                        title="{{ $last['message'] }}"
-                                        x-data="{ expanded: false }">
-                                            <span x-show="!expanded">{{$last['message'] }}</span>
-                                            <span x-show="expanded" x-text="'{{ addslashes($last['message']) }}'"></span>
-                                        </p>
-                                        
-                                        {{-- تاريخ النشاط --}}
-                                        <div class="flex items-center gap-2">
-                                            <svg class="w-3 h-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
-                                            </svg>
-                                            <span class="text-xs text-gray-500 font-medium">
-                                                {{ \Carbon\Carbon::parse($last['created_at'])->diffForHumans() }}
-                                            </span>
-                                        </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">اسم موظف البنك</label>
+                                        <input type="text" wire:model="bankData.bank_employee_name"
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
+                                        @error('bankData.bank_employee_name') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                                     </div>
-                                </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">رقم تواصل موظف البنك</label>
+                                        <input type="text" wire:model="bankData.bank_employee_phone" dir="ltr"
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
+                                        @error('bankData.bank_employee_phone') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                                    </div>
+                                    <div class="md:col-span-3 flex gap-2 justify-end">
+                                        <button type="button" wire:click="cancelEditBank" class="px-4 py-2 border border-gray-300 rounded-md text-sm text-gray-700 bg-white hover:bg-gray-50">إلغاء</button>
+                                        <button type="submit" class="px-4 py-2 rounded-md text-sm text-white bg-primary-600 hover:bg-primary-700">حفظ</button>
+                                    </div>
+                                </form>
                             @else
-                                {{-- في حالة عدم وجود نشاط --}}
-                                <div class="flex items-center justify-center h-16">
-                                    <div class="text-center">
-                                        <svg class="w-6 h-6 text-gray-300 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
-                                        <span class="text-xs text-gray-400 font-medium">لا يوجد نشاط</span>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div class="bg-gray-50 p-4 rounded-lg">
+                                        <p class="text-xs font-medium text-gray-500 mb-1">اسم البنك</p>
+                                        <p class="text-sm font-medium text-gray-900">{{ $order->bank_name ?: '—' }}</p>
+                                    </div>
+                                    <div class="bg-gray-50 p-4 rounded-lg">
+                                        <p class="text-xs font-medium text-gray-500 mb-1">اسم موظف البنك</p>
+                                        <p class="text-sm font-medium text-gray-900">{{ $order->bank_employee_name ?: '—' }}</p>
+                                    </div>
+                                    <div class="bg-gray-50 p-4 rounded-lg">
+                                        <p class="text-xs font-medium text-gray-500 mb-1">رقم التواصل</p>
+                                        <p class="text-sm font-medium text-gray-900" dir="ltr">{{ $order->bank_employee_phone ?: '—' }}</p>
                                     </div>
                                 </div>
                             @endif
+                        @else
+                            <p class="text-sm text-gray-500">لا تتوفر صلاحية عرض هذا القسم.</p>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- حالة الطلب -->
+                <div class="border-t border-gray-100 overflow-hidden">
+                    <div class="px-4 py-4">
+                        <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            حالة الطلب
+                        </h3>
+                    </div>
+                    <div class="px-4 py-4">
+                        @if (session()->has('messageStatus'))
+                            <div class="mb-4 p-3 bg-green-50 text-green-700 text-sm rounded-lg">
+                                {{ session('messageStatus') }}
+                            </div>
+                        @endif
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">الحالة الحالية</label>
+                                <select wire:change="updateStatus($event.target.value)"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
+                                    @foreach ($statusLabels as $key => $label)
+                                        <option value="{{ $key }}" {{ $order->status == $key ? 'selected' : '' }}>
+                                            {{ $label }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            @if ($this->isDelayed())
+                                <div class="p-3 bg-red-50 text-red-700 rounded-lg flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                    <div>
+                                        <p class="font-medium">تنبيه!</p>
+                                        <p class="text-sm">الطلب متأخر (لم يتم التعديل منذ أكثر من 3 أيام)</p>
+                                    </div>
+                                </div>
+                            @endif
+
+                            <div class="bg-white p-2 rounded-lg border border-gray-100 my-6">
+                                @if($last = $order->lastActivity())
+                                    <div class="flex items-start gap-3 max-w-sm">
+                                        {{-- أيقونة النشاط --}}
+                                        <div class="flex-shrink-0 relative">
+                                            <span class="w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium
+                                                @if($last['type'] === 'note') bg-blue-50 text-blue-600 border border-blue-200
+                                                @elseif($last['type'] === 'permission') bg-green-50 text-green-600 border border-green-200
+                                                @elseif($last['type'] === 'status') bg-amber-50 text-amber-600 border border-amber-200
+                                                @else bg-gray-50 text-gray-600 border border-gray-200 @endif
+                                            ">
+                                                @if($last['type'] === 'note') 
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                                    </svg>
+                                                @elseif($last['type'] === 'permission')
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a1 1 0 100 2 2 2 0 012 2 1 1 0 102 0 4 4 0 00-4-4z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                @elseif($last['type'] === 'status')
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                @else
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                @endif
+                                            </span>
+                                            
+                                            {{-- نقطة حالة صغيرة --}}
+                                            <span class="absolute -top-1 -right-1 w-3 h-3 rounded-full
+                                                @if($last['type'] === 'note') bg-blue-400
+                                                @elseif($last['type'] === 'permission') bg-green-400
+                                                @elseif($last['type'] === 'status') bg-amber-400
+                                                @else bg-gray-400 @endif
+                                            "></span>
+                                        </div>
+                                        
+                                        {{-- محتوى النشاط --}}
+                                        <div class="min-w-0 flex-1">
+                                            {{-- نوع النشاط --}}
+                                            <div class="flex items-center gap-2 mb-1">
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+                                                    @if($last['type'] === 'note') bg-blue-100 text-blue-700
+                                                    @elseif($last['type'] === 'permission') bg-green-100 text-green-700
+                                                    @elseif($last['type'] === 'status') bg-amber-100 text-amber-700
+                                                    @else bg-gray-100 text-gray-700 @endif
+                                                ">
+                                                    @if($last['type'] === 'note') ملاحظة
+                                                    @elseif($last['type'] === 'permission') صلاحية
+                                                    @elseif($last['type'] === 'status') حالة
+                                                    @else نشاط @endif
+                                                </span>
+                                            </div>
+                                            
+                                            {{-- رسالة النشاط --}}
+                                            <p class="text-sm text-gray-800 leading-relaxed font-medium mb-2" 
+                                            title="{{ $last['message'] }}"
+                                            x-data="{ expanded: false }">
+                                                <span x-show="!expanded">{{$last['message'] }}</span>
+                                                <span x-show="expanded" x-text="'{{ addslashes($last['message']) }}'"></span>
+                                            </p>
+                                            
+                                            {{-- تاريخ النشاط --}}
+                                            <div class="flex items-center gap-2">
+                                                <svg class="w-3 h-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                                                </svg>
+                                                <span class="text-xs text-gray-500 font-medium">
+                                                    {{ \Carbon\Carbon::parse($last['created_at'])->diffForHumans() }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @else
+                                    {{-- في حالة عدم وجود نشاط --}}
+                                    <div class="flex items-center justify-center h-16">
+                                        <div class="text-center">
+                                            <svg class="w-6 h-6 text-gray-300 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            <span class="text-xs text-gray-400 font-medium">لا يوجد نشاط</span>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </div>

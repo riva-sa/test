@@ -25,6 +25,7 @@ class User extends Authenticatable implements FilamentUser
         'email',
         'password',
         'phone',
+        'developer_id',
     ];
 
     /**
@@ -142,5 +143,10 @@ class User extends Authenticatable implements FilamentUser
     public function managedProjects()
     {
         return $this->hasMany(Project::class, 'sales_manager_id');
+    }
+
+    public function developer()
+    {
+        return $this->belongsTo(Developer::class);
     }
 }

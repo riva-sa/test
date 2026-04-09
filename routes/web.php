@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\Api\Ai\AiSearchController;
 use App\Http\Controllers\HelperController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\Manager\ManagerAuthController;
 use App\Http\Controllers\Manager\TrackingController;
+use App\Livewire\Developer\DeveloperDashboard;
 use App\Livewire\Frontend\About;
 use App\Livewire\Frontend\Blog;
 use App\Livewire\Frontend\BlogSingle;
@@ -15,6 +17,7 @@ use App\Livewire\Frontend\ProjectsMap;
 use App\Livewire\Frontend\ProjectsPage;
 use App\Livewire\Frontend\Services;
 use App\Livewire\Frontend\Terms;
+use App\Livewire\Mannager\BulkLeadImport;
 use App\Livewire\Mannager\Campaigns;
 use App\Livewire\Mannager\CreateOrder;
 use App\Livewire\Mannager\CustomersList;
@@ -28,8 +31,6 @@ use App\Livewire\Mannager\TrackingAnalytics;
 use App\Models\Project;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\Ai\AiSearchController;
-
 
 Route::get('/', HomePage::class)->name('frontend.home');
 // Route::get('/units/create', [CreateUnit::class, 'render'])->name('filament.resources.units.create');
@@ -60,6 +61,8 @@ Route::middleware(['auth', 'role:sales_manager'])->group(function () {
 
     Route::get('crm/create-order', CreateOrder::class)->name('manager.create-order');
 
+    Route::get('/crm/bulk-lead-import', BulkLeadImport::class)->name('manager.bulk-lead-import');
+
     Route::get('/crm/analytics', TrackingAnalytics::class)->name('manager.analytics');
     Route::get('/crm/analytics/campaigns', Campaigns::class)->name('manager.analytics.campaigns');
     Route::get('/crm/journeys', SessionJourneys::class)->name('manager.journeys');
@@ -80,6 +83,10 @@ Route::middleware(['auth', 'role:sales_manager'])->group(function () {
             Route::get('/popular/projects', [TrackingController::class, 'getPopularProjects']);
         });
     });
+});
+
+Route::middleware(['auth', 'role:developer'])->prefix('developer')->group(function () {
+    Route::get('/', DeveloperDashboard::class)->name('developer.dashboard');
 });
 
 // Route::middleware(['auth', 'permission:view_dashboard'])->group(function () {
@@ -166,7 +173,6 @@ Route::get('/run-storage-link', function () {
         return 'Error: '.$e->getMessage();
     }
 });
-
 
 // Route::prefix('ai')
 //     ->middleware(['throttle:60,1', 'api.ai.key'])   // throttle + custom API-key guard

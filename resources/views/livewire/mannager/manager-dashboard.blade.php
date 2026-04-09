@@ -1,7 +1,7 @@
-<div class="min-h-full bg-gray-50">
+<div class="min-h-full bg-white">
     <!-- Header -->
     <div class="bg-white shadow-sm border-b border-gray-200">
-        <div class="mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="mx-auto px-2 sm:px-4 lg:px-4 py-4">
             <div class="flex justify-between items-center">
                 <h1 class="text-2xl font-bold text-gray-900 flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-2 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -14,12 +14,12 @@
     </div>
 
     <!-- Main Content -->
-    <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="mx-auto px-2 sm:px-4 lg:px-4 py-4">
         <!-- Stats Cards -->
-        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-4">
             <!-- Customers Card -->
             <div class="bg-white overflow-hidden shadow rounded-xl border border-gray-100 hover:shadow-md transition-shadow duration-200">
-                <div class="px-4 py-5 sm:p-6">
+                <div class="px-3 py-3 sm:p-4">
                     <div class="flex items-center">
                         <div class="flex-shrink-0 bg-blue-100 rounded-xl p-3">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -38,7 +38,7 @@
 
             <!-- All Orders Card -->
             <div class="bg-white overflow-hidden shadow rounded-xl border border-gray-100 hover:shadow-md transition-shadow duration-200">
-                <div class="px-4 py-5 sm:p-6">
+                <div class="px-3 py-3 sm:p-4">
                     <div class="flex items-center">
                         <div class="flex-shrink-0 bg-purple-100 rounded-xl p-3">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -57,7 +57,7 @@
 
             <!-- New Orders Card -->
             <div class="bg-white overflow-hidden shadow rounded-xl border border-gray-100 hover:shadow-md transition-shadow duration-200">
-                <div class="px-4 py-5 sm:p-6">
+                <div class="px-3 py-3 sm:p-4">
                     <div class="flex items-center">
                         <div class="flex-shrink-0 bg-indigo-100 rounded-xl p-3">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -76,7 +76,7 @@
 
             <!-- Open Orders Card -->
             <div class="bg-white overflow-hidden shadow rounded-xl border border-gray-100 hover:shadow-md transition-shadow duration-200">
-                <div class="px-4 py-5 sm:p-6">
+                <div class="px-3 py-3 sm:p-4">
                     <div class="flex items-center">
                         <div class="flex-shrink-0 bg-yellow-100 rounded-xl p-3">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -93,11 +93,11 @@
                 </div>
             </div>
         </div>
-        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-4">
 
             <!-- Delayed Orders Card -->
             <div class="bg-white overflow-hidden shadow rounded-xl border border-gray-100 hover:shadow-md transition-shadow duration-200">
-                <div class="px-4 py-5 sm:p-6">
+                <div class="px-3 py-3 sm:p-4">
                     <div class="flex items-center">
                         <div class="flex-shrink-0 bg-red-100 rounded-xl p-3">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -116,7 +116,7 @@
 
             <!-- Sales Transactions Card -->
             <div class="bg-white overflow-hidden shadow rounded-xl border border-gray-100 hover:shadow-md transition-shadow duration-200">
-                <div class="px-4 py-5 sm:p-6">
+                <div class="px-3 py-3 sm:p-4">
                     <div class="flex items-center">
                         <div class="flex-shrink-0 bg-green-100 rounded-xl p-3">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -135,7 +135,7 @@
 
             <!-- Closed Orders Card -->
             <div class="bg-white overflow-hidden shadow rounded-xl border border-gray-100 hover:shadow-md transition-shadow duration-200">
-                <div class="px-4 py-5 sm:p-6">
+                <div class="px-3 py-3 sm:p-4">
                     <div class="flex items-center">
                         <div class="flex-shrink-0 bg-gray-100 rounded-xl p-3">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -154,7 +154,7 @@
 
             <!-- Completed Orders Card -->
             <div class="bg-white overflow-hidden shadow rounded-xl border border-gray-100 hover:shadow-md transition-shadow duration-200">
-                <div class="px-4 py-5 sm:p-6">
+                <div class="px-3 py-3 sm:p-4">
                     <div class="flex items-center">
                         <div class="flex-shrink-0 bg-teal-100 rounded-xl p-3">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
