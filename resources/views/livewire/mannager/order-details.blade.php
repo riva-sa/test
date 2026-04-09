@@ -124,7 +124,7 @@
                         </div>
                         <div class="mr-2">
                             <p class="text-sm font-medium text-gray-900">{{ $order->assignedSalesUser->name }}</p>
-                            <span class="text-xs text-indigo-600">مندوب معيّن (استيراد/توزيع)</span>
+                            <span class="text-xs text-indigo-600">مندوب معيّن (توزيع)</span>
                         </div>
                     </div>
                     @endif
