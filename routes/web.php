@@ -61,6 +61,8 @@ Route::middleware(['auth', 'role:sales_manager'])->group(function () {
 
     Route::get('crm/create-order', CreateOrder::class)->name('manager.create-order');
 
+    Route::get('/crm/reports/auto-assignment', \App\Livewire\Mannager\AutoAssignmentReport::class)->name('manager.reports.auto-assignment');
+
     Route::get('/crm/bulk-lead-import', BulkLeadImport::class)->name('manager.bulk-lead-import');
 
     Route::get('/crm/analytics', TrackingAnalytics::class)->name('manager.analytics');

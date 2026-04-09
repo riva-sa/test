@@ -228,6 +228,14 @@
                     مندوبي المبيعات
                 </a>
 
+                <a href="{{ route('manager.reports.auto-assignment') }}" class="group flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-50 transition-all duration-200 text-gray-700 hover:text-primary-500 sidebar-item {{ request()->routeIs('manager.reports.auto-assignment') ? 'bg-gray-50 text-primary-500 border border-gray-200' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-3 text-gray-500 group-hover:text-primary-500 {{ request()->routeIs('manager.reports.auto-assignment') ? 'text-primary-500' : '' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    التوزيع التلقائي للطلبات
+                </a>
+
+
                 <!-- Analytics link with custom SVG icon -->
                 <a href="{{ route('manager.analytics') }}" class="group flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-50 transition-all duration-200 text-gray-700 hover:text-primary-500 sidebar-item {{ request()->routeIs('manager.analytics') ? 'bg-gray-50 text-primary-500 border border-gray-200' : '' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-3 text-gray-500 group-hover:text-primary-500 {{ request()->routeIs('manager.analytics') ? 'text-primary-500' : '' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
