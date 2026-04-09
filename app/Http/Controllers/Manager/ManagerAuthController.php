@@ -22,6 +22,15 @@ class ManagerAuthController extends Controller
         ]);
 
         if (Auth::attempt($request->only('email', 'password'), $request->filled('remember'))) {
+            $user = Auth::user();
+
+            if (! $user->is_active) {
+                Auth::logout();
+                throw ValidationException::withMessages([
+                    'email' => ['هذا الحساب غير نشط. يرجى التواصل مع الإدارة.'],
+                ]);
+            }
+
             $request->session()->regenerate();
 
             // Redirect based on user role

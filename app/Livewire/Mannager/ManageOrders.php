@@ -134,8 +134,7 @@ class ManageOrders extends Component
             });
 
         if ($this->delayedFilter == '1') {
-            $query->whereNotIn('status', [3, 4]) // استبعاد الطلبات المغلقة والمكتملة
-                ->where('updated_at', '<', now()->subDays(3)); // التي لم تحدث منذ 3 أيام
+            $query->whereNotIn('status', [3, 4]); // استبعاد الطلبات المغلقة والمكتملة فقط في البداية
         }
 
         $allFilteredOrders = $query->orderBy($this->sortField, $this->sortDirection)->get();

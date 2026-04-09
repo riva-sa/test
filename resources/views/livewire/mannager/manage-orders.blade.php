@@ -105,9 +105,9 @@
                             <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">
                                 <span>التحديثات</span>
                             </th>
-                            {{-- <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 مصدر الطلب
-                            </th> --}}
+                            </th>
 
                             <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" wire:click="sortBy('status')">
                                 <div class="flex items-center justify-start gap-1">
@@ -281,32 +281,11 @@
                                     @endif
                                 @endif
                             </td>
-                            <!-- Order Source -->
-                            {{-- <td class="px-6 py-4 whitespace-nowrap">
-                                @php
-                                    $user = auth()->user();
-                                    $source = '';
-                                    $sourceColor = 'bg-gray-100 text-gray-800';
-                                    if ($order->user_id == $user->id) {
-                                        $source = 'تم إنشاؤه بواسطتي';
-                                        $sourceColor = 'bg-indigo-100 text-indigo-800';
-                                    } elseif ($order->project && $order->project->sales_manager_id == $user->id) {
-                                        if (!$user->hasRole('sales')) {
-                                            $source = 'طلب تحت المتابعة';
-                                            $sourceColor = 'bg-green-100 text-green-800';
-                                        } else {
-                                            $source = 'طلب تحت الإدارة';
-                                            $sourceColor = 'bg-green-100 text-green-800';
-                                        }
-                                    } elseif ($user->hasOrderPermission($order->id, 'manage')) {
-                                        $source = 'طلب تحت المتابعة';
-                                        $sourceColor = 'bg-green-100 text-green-800';
-                                    }
-                                @endphp
-                                <span class="px-2 py-1 text-xs font-medium rounded-full {{ $sourceColor }} ">
-                                    {{ $source }}
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 py-1 text-xs font-medium rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100">
+                                    {{ $order->orderSourceLabel() }}
                                 </span>
-                            </td> --}}
+                            </td>
 
                             <!-- Status -->
                             <td class="px-6 py-4 whitespace-nowrap">
@@ -373,7 +352,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="{{ auth()->user()->hasRole('sales_manager') || auth()->user()->hasRole('follow_up') ? '7' : '6' }}" class="px-6 py-4 text-center">
+                            <td colspan="{{ auth()->user()->hasRole('sales_manager') || auth()->user()->hasRole('follow_up') ? '8' : '7' }}" class="px-6 py-4 text-center">
                                 <div class="flex flex-col items-center justify-center py-8">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />

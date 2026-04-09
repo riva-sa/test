@@ -200,4 +200,17 @@ class UnitOrder extends Model
 
         return $statuses[$this->status] ?? 'gray';
     }
+
+    public function orderSourceLabel()
+    {
+        $sources = [
+            self::ORDER_SOURCE_LEGACY => 'نظام قديم',
+            self::ORDER_SOURCE_FRONTEND_POPUP => 'نافذة منبثقة',
+            self::ORDER_SOURCE_FRONTEND_UNIT => 'صفحة الوحدة',
+            self::ORDER_SOURCE_MANAGER => 'إضافة يدوية',
+            self::ORDER_SOURCE_BULK_IMPORT => 'رفع ملف',
+        ];
+
+        return $sources[$this->order_source] ?? $this->order_source ?? 'غير معروف';
+    }
 }

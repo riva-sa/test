@@ -18,7 +18,11 @@ class LeadDistributionService
      */
     public function assignAndCreate(array $validRows, string $batchId, int $grantedByUserId): array
     {
-        $salesUsers = User::role(config('lead_import.sales_role', 'sales'))->orderBy('id')->get();
+        $salesUsers = User::role(config('lead_import.sales_role', 'sales'))
+            ->where('is_active', true)
+            ->where('on_vacation', false)
+            ->orderBy('id')
+            ->get();
         if ($salesUsers->isEmpty()) {
             return [
                 'imported' => 0,
