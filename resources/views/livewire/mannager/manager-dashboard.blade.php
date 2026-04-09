@@ -236,7 +236,7 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {{ $order->project->name ?? '-' }}
+                                    {{ $order->project?->name ?? '-' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {{-- <div class="bg-white shadow rounded-2xl p-4 mt-6">
@@ -374,7 +374,7 @@
                                 </td>
                                 @if (auth()->user()->hasRole('sales_manager') || auth()->user()->hasRole('follow_up'))
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {{ $order->project->salesManager->name ?? '-' }}
+                                    {{ $order->project?->salesManager?->name ?? '-' }}
                                 </td>
                                 @endif
 

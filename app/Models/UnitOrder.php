@@ -147,10 +147,9 @@ class UnitOrder extends Model
             // التحقق إذا كان المستخدم الحالي ليس sales أو إذا كان sales ولديه الصلاحية
             if (! $currentUser->hasRole('sales') ||
                 ($currentUser->hasRole('sales') && $perm->user_id == $currentUser->id)) {
-
                 $activities->push([
                     'type' => 'permission',
-                    'message' => "تم منح صلاحية {$perm->permission_type} للمستخدم {$perm->user->name} بواسطة {$perm->grantedBy->name}",
+                    'message' => "تم منح صلاحية {$perm->permission_type} للمستخدم {$perm->user->name}",
                     'created_at' => $perm->created_at,
                     'priority' => 2,
                 ]);
