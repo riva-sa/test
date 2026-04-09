@@ -519,50 +519,46 @@
                         @endif
                     </div>
                     <div class="px-4 py-4">
-                        @if (auth()->user()->hasRole('sales') || auth()->user()->hasRole('sales_manager') || auth()->user()->hasRole('follow_up'))
-                            @if($isEditingBank)
-                                <form wire:submit.prevent="saveBankData" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">اسم البنك</label>
-                                        <input type="text" wire:model="bankData.bank_name"
-                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
-                                        @error('bankData.bank_name') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">اسم موظف البنك</label>
-                                        <input type="text" wire:model="bankData.bank_employee_name"
-                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
-                                        @error('bankData.bank_employee_name') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">رقم تواصل موظف البنك</label>
-                                        <input type="text" wire:model="bankData.bank_employee_phone" dir="ltr"
-                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
-                                        @error('bankData.bank_employee_phone') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-                                    </div>
-                                    <div class="md:col-span-3 flex gap-2 justify-end">
-                                        <button type="button" wire:click="cancelEditBank" class="px-4 py-2 border border-gray-300 rounded-md text-sm text-gray-700 bg-white hover:bg-gray-50">إلغاء</button>
-                                        <button type="submit" class="px-4 py-2 rounded-md text-sm text-white bg-primary-600 hover:bg-primary-700">حفظ</button>
-                                    </div>
-                                </form>
-                            @else
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div class="bg-gray-50 p-4 rounded-lg">
-                                        <p class="text-xs font-medium text-gray-500 mb-1">اسم البنك</p>
-                                        <p class="text-sm font-medium text-gray-900">{{ $order->bank_name ?: '—' }}</p>
-                                    </div>
-                                    <div class="bg-gray-50 p-4 rounded-lg">
-                                        <p class="text-xs font-medium text-gray-500 mb-1">اسم موظف البنك</p>
-                                        <p class="text-sm font-medium text-gray-900">{{ $order->bank_employee_name ?: '—' }}</p>
-                                    </div>
-                                    <div class="bg-gray-50 p-4 rounded-lg">
-                                        <p class="text-xs font-medium text-gray-500 mb-1">رقم التواصل</p>
-                                        <p class="text-sm font-medium text-gray-900" dir="ltr">{{ $order->bank_employee_phone ?: '—' }}</p>
-                                    </div>
+                        @if($isEditingBank)
+                            <form wire:submit.prevent="saveBankData" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">اسم البنك</label>
+                                    <input type="text" wire:model="bankData.bank_name"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
+                                    @error('bankData.bank_name') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                                 </div>
-                            @endif
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">اسم موظف البنك</label>
+                                    <input type="text" wire:model="bankData.bank_employee_name"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
+                                    @error('bankData.bank_employee_name') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">رقم تواصل موظف البنك</label>
+                                    <input type="text" wire:model="bankData.bank_employee_phone" dir="ltr"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
+                                    @error('bankData.bank_employee_phone') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                                </div>
+                                <div class="md:col-span-3 flex gap-2 justify-end">
+                                    <button type="button" wire:click="cancelEditBank" class="px-4 py-2 border border-gray-300 rounded-md text-sm text-gray-700 bg-white hover:bg-gray-50">إلغاء</button>
+                                    <button type="submit" class="px-4 py-2 rounded-md text-sm text-white bg-primary-600 hover:bg-primary-700">حفظ</button>
+                                </div>
+                            </form>
                         @else
-                            <p class="text-sm text-gray-500">لا تتوفر صلاحية عرض هذا القسم.</p>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="text-xs font-medium text-gray-500 mb-1">اسم البنك</p>
+                                    <p class="text-sm font-medium text-gray-900">{{ $order->bank_name ?: '—' }}</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="text-xs font-medium text-gray-500 mb-1">اسم موظف البنك</p>
+                                    <p class="text-sm font-medium text-gray-900">{{ $order->bank_employee_name ?: '—' }}</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="text-xs font-medium text-gray-500 mb-1">رقم التواصل</p>
+                                    <p class="text-sm font-medium text-gray-900" dir="ltr">{{ $order->bank_employee_phone ?: '—' }}</p>
+                                </div>
+                            </div>
                         @endif
                     </div>
                 </div>
