@@ -32,8 +32,7 @@ class ZapierLeadController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage(),
-                'payload' => $request->all(),
-                'debug_message' => config('app.debug') ? $e->getMessage() : null
+                'debug_message' => config('app.debug') ? $e->getTraceAsString() : null
             ], 500);
         }
     }

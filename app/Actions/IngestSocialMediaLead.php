@@ -49,7 +49,10 @@ class IngestSocialMediaLead
         ]);
 
         // Notify admins and sales managers
-        $notifiableUsers = User::role(['admin', 'sales_manager'])->get();
+        $notifiableUsers = User::whereHas('roles', function ($query) {
+            $query->whereIn('name', ['admin', 'sales_manager']);
+        })->get();
+
         Notification::send($notifiableUsers, new NewSocialMediaLead($order));
         
         return $order;
