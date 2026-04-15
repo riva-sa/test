@@ -32,6 +32,10 @@ class UnitOrder extends Model
         'assigned_sales_user_id',
         'marketing_source',
         'session_id',
+        'campaign_name',
+        'ad_squad',
+        'ad_set',
+        'ad_name',
     ];
 
     public const ORDER_SOURCE_LEGACY = 'legacy';
@@ -43,6 +47,8 @@ class UnitOrder extends Model
     public const ORDER_SOURCE_MANAGER = 'manager';
 
     public const ORDER_SOURCE_BULK_IMPORT = 'bulk_import';
+
+    public const ORDER_SOURCE_SOCIAL_MEDIA = 'social_media';
 
     public function unit()
     {
