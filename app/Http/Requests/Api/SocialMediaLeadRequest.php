@@ -32,6 +32,7 @@ class SocialMediaLeadRequest extends FormRequest
             'ad_squad' => ['nullable', 'string', 'max:255'],
             'ad_set' => ['nullable', 'string', 'max:255'],
             'ad_name' => ['nullable', 'string', 'max:255'],
+            'external_id' => ['nullable', 'string', 'max:255'],
             'message' => ['nullable', 'string'],
         ];
     }

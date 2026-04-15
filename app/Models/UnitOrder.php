@@ -30,6 +30,7 @@ class UnitOrder extends Model
         'order_source',
         'import_batch_id',
         'assigned_sales_user_id',
+        'external_id',
         'marketing_source',
         'session_id',
         'campaign_name',

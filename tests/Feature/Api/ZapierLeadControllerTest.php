@@ -57,4 +57,31 @@ class ZapierLeadControllerTest extends TestCase
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['name', 'email', 'phone', 'marketing_source']);
     }
+
+    /** @test */
+    public function it_deduplicates_leads_based_on_external_id()
+    {
+        Notification::fake();
+
+        $payload = [
+            'name' => 'John Doe',
+            'email' => 'john@example.com',
+            'phone' => '+966500000000',
+            'marketing_source' => 'TikTok',
+            'external_id' => 'lead_123',
+        ];
+
+        // First ingestion
+        $this->postJson('/api/zapier/social-media-lead', $payload)
+            ->assertStatus(201);
+
+        $this->assertEquals(1, UnitOrder::where('external_id', 'lead_123')->count());
+
+        // Second ingestion with same external_id
+        $this->postJson('/api/zapier/social-media-lead', $payload)
+            ->assertStatus(201);
+
+        // Count should still be 1
+        $this->assertEquals(1, UnitOrder::where('external_id', 'lead_123')->count());
+    }
 }

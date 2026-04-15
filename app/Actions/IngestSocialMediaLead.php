@@ -18,7 +18,7 @@ class IngestSocialMediaLead
      */
     public function execute(array $data): UnitOrder
     {
-        $order = UnitOrder::create([
+        $attributes = [
             'name' => $data['name'],
             'email' => $data['email'],
             'phone' => $data['phone'],
@@ -30,7 +30,16 @@ class IngestSocialMediaLead
             'ad_name' => $data['ad_name'] ?? null,
             'order_source' => UnitOrder::ORDER_SOURCE_SOCIAL_MEDIA,
             'status' => 0, // New
-        ]);
+        ];
+
+        if (!empty($data['external_id'])) {
+            $order = UnitOrder::firstOrCreate(
+                ['external_id' => $data['external_id']],
+                $attributes
+            );
+        } else {
+            $order = UnitOrder::create($attributes);
+        }
 
         Log::info('Social media lead ingested', [
             'order_id' => $order->id,
