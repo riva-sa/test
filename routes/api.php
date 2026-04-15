@@ -14,3 +14,5 @@ Route::prefix('ai')
         Route::get('search/projects', [AiSearchController::class, 'searchProjects']);
         Route::get('search/units',    [AiSearchController::class, 'searchUnits']);
     });
+
+Route::post('zapier/social-media-lead', [App\Http\Controllers\Api\ZapierLeadController::class, 'store']);

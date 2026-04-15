@@ -293,6 +293,40 @@
             @endif
         </div>
 
+        <!-- Attribution Details -->
+        @if($order->order_source === 'social_media')
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+            <div class="px-4 py-4 border-b border-gray-100 bg-gray-50 flex justify-between">
+                <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    {{ __('unit-order.attribution_details') }}
+                </h3>
+            </div>
+            <div class="px-4 py-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                    <div class="bg-blue-50 p-3 rounded-lg border border-blue-100">
+                        <p class="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-1">{{ __('unit-order.marketing_source') }}</p>
+                        <p class="text-sm font-bold text-blue-900">{{ $order->marketing_source }}</p>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                        <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">{{ __('unit-order.campaign_name') }}</p>
+                        <p class="text-sm font-medium text-gray-900">{{ $order->campaign_name ?? 'N/A' }}</p>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                        <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">{{ __('unit-order.ad_squad') }}</p>
+                        <p class="text-sm font-medium text-gray-900">{{ $order->ad_squad ?? 'N/A' }}</p>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                        <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">{{ __('unit-order.ad_set') }}</p>
+                        <p class="text-sm font-medium text-gray-900">{{ $order->ad_set ?? 'N/A' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+
         <!-- معلومات الطلب -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
 

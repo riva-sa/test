@@ -120,6 +120,34 @@ class UnitOrderResource extends Resource
                                     ->relationship('project', 'name')
                                     ->required(),
                             ]),
+
+                        Forms\Components\Section::make(__('unit-order.attribution_details'))
+                            ->schema([
+                                Grid::make()
+                                    ->columns(2)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('marketing_source')
+                                            ->label(__('unit-order.marketing_source'))
+                                            ->disabled(),
+                                        Forms\Components\TextInput::make('campaign_name')
+                                            ->label(__('unit-order.campaign_name'))
+                                            ->disabled(),
+                                    ]),
+                                Grid::make()
+                                    ->columns(3)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('ad_squad')
+                                            ->label(__('unit-order.ad_squad'))
+                                            ->disabled(),
+                                        Forms\Components\TextInput::make('ad_set')
+                                            ->label(__('unit-order.ad_set'))
+                                            ->disabled(),
+                                        Forms\Components\TextInput::make('ad_name')
+                                            ->label(__('unit-order.ad_name'))
+                                            ->disabled(),
+                                    ]),
+                            ])
+                            ->collapsed(),
                     ]),
             ]);
     }
@@ -156,6 +184,15 @@ class UnitOrderResource extends Resource
                             ->success()
                             ->send();
                     }),
+                Tables\Columns\TextColumn::make('marketing_source')
+                    ->label(__('unit-order.marketing_source'))
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('campaign_name')
+                    ->label(__('unit-order.campaign_name'))
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('PurchaseType')->label('طريقة الشراء')
                     ->sortable()
                     ->searchable(),

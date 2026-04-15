@@ -287,6 +287,11 @@
                                     <i class="{{ $sourceData['icon'] }}"></i>
                                     {{ $sourceData['label'] }}
                                 </span>
+                                @if($order->campaign_name)
+                                    <div class="text-xs text-gray-400 mt-1 font-medium">
+                                        {{ $order->campaign_name }}
+                                    </div>
+                                @endif
                             </td>
 
                             <!-- Status -->
