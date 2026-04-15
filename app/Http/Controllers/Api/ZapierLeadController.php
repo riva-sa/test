@@ -31,7 +31,8 @@ class ZapierLeadController extends Controller
 
             return response()->json([
                 'status' => 'error',
-                'message' => 'Failed to process lead. Please try again later or contact support.',
+                'message' => $e->getMessage(),
+                'payload' => $request->all(),
                 'debug_message' => config('app.debug') ? $e->getMessage() : null
             ], 500);
         }
