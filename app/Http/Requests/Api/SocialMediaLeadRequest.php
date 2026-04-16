@@ -18,7 +18,7 @@ class SocialMediaLeadRequest extends FormRequest
     {
         return [
             'name'             => ['required', 'string', 'max:255'],
-            'email'            => ['nullable', 'email', 'max:255'],
+            'email'            => ['nullable', 'string', 'max:255'],
             'phone'            => ['required', 'string', 'max:50'],
             'marketing_source' => ['required', 'string', 'max:255'],
             'campaign_name'    => ['nullable', 'string', 'max:255'],

@@ -20,7 +20,7 @@ class IngestSocialMediaLead
     {
         $attributes = [
             'name' => $data['name'],
-            'email' => $data['email'] ?? "[EMAIL_ADDRESS]",
+            'email' => $data['email'] ?? "EMAIL_ADDRESS@example.com",
             'phone' => $data['phone'],
             'message' => $data['message'] ?? null,
             'marketing_source' => $data['marketing_source'],
