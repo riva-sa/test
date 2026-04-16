@@ -66,9 +66,9 @@ class UnitOrderUpdated extends Notification implements ShouldQueue
             'client_update' => "قام {$userName} بتحديث بيانات العميل في الطلب (#{$orderId})",
             'unit_info_update' => "قام {$userName} بتحديث معلومات الوحدة في الطلب (#{$orderId})",
             'message_update' => "قام {$userName} بتعديل الملاحظة الرئيسية للطلب (#{$orderId})",
-            'permission_granted' => "تم منح صلاحية للمستخدم {$this->data['user_name']} على الطلب (#{$orderId})",
             'permission_revoked' => "تم إلغاء صلاحية المستخدم {$this->data['user_name']} من الطلب (#{$orderId})",
             'order_forwarded' => "تم توجيه الطلب (#{$orderId}) آلياً للمتابعة — العميل {$this->order->name}",
+            'order_assigned' => "تم تعيينك لمتابعة الطلب الجديد (#{$orderId}) للعميل {$this->order->name}",
             default => "تم تحديث الطلب (#{$orderId}) بواسطة {$userName}",
         };
 
