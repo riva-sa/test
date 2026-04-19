@@ -243,19 +243,29 @@
                                             </div>
                                             
                                             {{-- رسالة النشاط --}}
-                                            <p class="text-sm text-gray-800 leading-relaxed font-medium mb-2" 
+                                            <p class="text-sm text-gray-800 leading-relaxed font-medium mb-1" 
                                             title="{{ $last['message'] }}"
                                             x-data="{ expanded: false }">
                                                 <span x-show="!expanded">{{ Str::limit($last['message'], 50) }}</span>
                                                 <span x-show="expanded" x-text="'{{ addslashes($last['message']) }}'"></span>
-                                                {{-- @if(strlen($last['message']) > 50)
-                                                    <button @click="expanded = !expanded" 
-                                                            class="text-blue-600 hover:text-blue-800 text-xs mr-1 focus:outline-none">
-                                                        <span x-show="!expanded">المزيد</span>
-                                                        <span x-show="expanded">أقل</span>
-                                                    </button>
-                                                @endif --}}
                                             </p>
+
+                                            {{-- تفاصيل إضافية (بواسطة والتاريخ) --}}
+                                            <div class="flex items-center gap-2 text-[10px] text-gray-500">
+                                                <span class="flex items-center gap-1">
+                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                                    </svg>
+                                                    {{ $last['user_name'] }}
+                                                </span>
+                                                <span class="text-gray-300">•</span>
+                                                <span class="flex items-center gap-1">
+                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                    </svg>
+                                                    {{ $last['created_at']->diffForHumans() }}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 @else
@@ -318,10 +328,30 @@
                                 {{ $order->created_at->translatedFormat('d M Y - H:i') }}
                             </td>
 
-                            <!-- Sales Manager -->
+                            <!-- Sales Manager / Permissions -->
                             @if (auth()->user()->hasRole('sales_manager') || auth()->user()->hasRole('follow_up'))
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ $order->project?->salesManager?->name ?? '-' }}
+                                <div class="flex flex-col gap-1">
+                                    @if($order->project?->salesManager)
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+                                            <span class="font-medium text-gray-900">{{ $order->project->salesManager->name }}</span>
+                                        </div>
+                                    @endif
+                                    
+                                    @foreach($order->permissions as $permission)
+                                        @if(!$order->project?->salesManager || $permission->user_id !== $order->project->sales_manager_id)
+                                            <div class="flex items-center gap-1.5 text-xs text-gray-500">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-gray-300"></span>
+                                                <span>{{ $permission->user->name }}</span>
+                                            </div>
+                                        @endif
+                                    @endforeach
+
+                                    @if(!$order->project?->salesManager && $order->permissions->isEmpty())
+                                        <span class="text-gray-400">-</span>
+                                    @endif
+                                </div>
                             </td>
                             @endif
 

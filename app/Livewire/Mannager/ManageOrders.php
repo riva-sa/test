@@ -92,7 +92,7 @@ class ManageOrders extends Component
 
     public function render()
     {
-        $query = UnitOrder::with(['notes', 'unit', 'project.salesManager', 'user', 'permissions']);
+        $query = UnitOrder::with(['notes', 'unit', 'project.salesManager', 'user', 'permissions.user', 'lastActionByUser', 'assignedSalesUser']);
 
         if (auth()->user()->hasRole('sales')) {
             $query->where(function ($q) {

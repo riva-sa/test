@@ -33,7 +33,7 @@ class ManagerDashboard extends Component
         };
 
         // جلب كل الطلبات ذات الصلة مرة واحدة لتحسين الأداء
-        $relevantOrders = UnitOrder::with(['project', 'permissions'])
+        $relevantOrders = UnitOrder::with(['project', 'permissions.user', 'lastActionByUser', 'assignedSalesUser'])
             ->whereHas('project', $filterByManager)
             ->latest()
             ->get();
@@ -53,7 +53,7 @@ class ManagerDashboard extends Component
         })->count();
 
         // جلب الطلبات الحديثة (الكود الحالي سليم)
-        $baseRecentOrdersQuery = UnitOrder::with(['unit', 'project.salesManager'])
+        $baseRecentOrdersQuery = UnitOrder::with(['unit', 'project.salesManager', 'lastActionByUser', 'assignedSalesUser'])
             ->whereHas('project', $filterByManager)
             ->orWhere('user_id', $user->id);
 
@@ -67,7 +67,7 @@ class ManagerDashboard extends Component
 
         $recentOrders = UnitOrder::whereIn('id', $baseRecentOrdersQuery->select('id'))
             ->orWhereIn('id', $permissionOrdersQuery->select('id'))
-            ->with(['unit', 'project.salesManager'])
+            ->with(['unit', 'project.salesManager', 'lastActionByUser', 'permissions.user', 'assignedSalesUser'])
             ->latest()
             ->take(10)
             ->get();
