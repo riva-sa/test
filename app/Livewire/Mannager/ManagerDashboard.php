@@ -25,16 +25,26 @@ class ManagerDashboard extends Component
     {
         $user = auth()->user();
 
-        // فلتر أساسي بناءً على دور المستخدم
-        $filterByManager = function ($query) use ($user) {
+        $filterByAccess = function ($query) use ($user) {
             if ($user->hasRole('sales')) {
-                $query->where('sales_manager_id', $user->id);
+                $query->where(function ($q) use ($user) {
+                    // الطلبات التي يكون المستخدم هو مدير المبيعات المسؤول عن مشروعها
+                    $q->whereHas('project', function ($subQ) use ($user) {
+                        $subQ->where('sales_manager_id', $user->id);
+                    })
+                    // أو الطلبات التي مُنح المستخدم صلاحية للوصول إليها
+                    ->orWhereHas('permissions', function ($subQ) use ($user) {
+                        $subQ->where('user_id', $user->id);
+                    })
+                    // أو الطلبات المعينة له مباشرة (توزيع)
+                    ->orWhere('assigned_sales_user_id', $user->id);
+                });
             }
         };
 
-        // جلب كل الطلبات ذات الصلة مرة واحدة لتحسين الأداء
+        // جلب كل الطلبات ذات الصلة (بما في ذلك الطلبات الجديدة status 0)
         $relevantOrders = UnitOrder::with(['project', 'permissions.user', 'lastActionByUser', 'assignedSalesUser'])
-            ->whereHas('project', $filterByManager)
+            ->where($filterByAccess)
             ->latest()
             ->get();
 
@@ -47,26 +57,13 @@ class ManagerDashboard extends Component
         $SalesTransactions = $relevantOrders->where('status', 2)->count();
         $closedOrders = $relevantOrders->where('status', 3)->count();
 
-        // *** التعديل الرئيسي هنا: استخدام دالة isDelayed من الـ Trait ***
+        // حساب الطلبات المتأخرة
         $delayedOrders = $relevantOrders->filter(function ($order) {
             return $this->isOrderDelayed($order);
         })->count();
 
-        // جلب الطلبات الحديثة (الكود الحالي سليم)
-        $baseRecentOrdersQuery = UnitOrder::with(['unit', 'project.salesManager', 'lastActionByUser', 'assignedSalesUser'])
-            ->whereHas('project', $filterByManager)
-            ->orWhere('user_id', $user->id);
-
-        $permissionOrdersQuery = UnitOrder::whereHas('permissions', function ($query) use ($user) {
-            $query->where('user_id', $user->id)
-                ->where(function ($q) {
-                    $q->whereNull('expires_at')
-                        ->orWhere('expires_at', '>', now());
-                });
-        })->with(['unit', 'project']);
-
-        $recentOrders = UnitOrder::whereIn('id', $baseRecentOrdersQuery->select('id'))
-            ->orWhereIn('id', $permissionOrdersQuery->select('id'))
+        // جلب الطلبات الحديثة
+        $recentOrders = UnitOrder::where($filterByAccess)
             ->with(['unit', 'project.salesManager', 'lastActionByUser', 'permissions.user', 'assignedSalesUser'])
             ->latest()
             ->take(10)

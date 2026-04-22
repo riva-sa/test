@@ -30,6 +30,14 @@ class UserSeeder extends Seeder
                 'name' => 'project_manager',
                 'guard_name' => 'web',
             ],
+            [
+                'name' => 'sales',
+                'guard_name' => 'web',
+            ],
+            [
+                'name' => 'follow_up',
+                'guard_name' => 'web',
+            ],
         ];
 
         foreach ($roles as $role) {

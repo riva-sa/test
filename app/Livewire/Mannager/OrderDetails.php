@@ -201,6 +201,7 @@ class OrderDetails extends Component
             'name' => $this->order->name,
             'email' => $this->order->email,
             'phone' => $this->order->phone,
+            'marketing_source' => $this->order->marketing_source,
         ];
     }
 
@@ -208,11 +209,17 @@ class OrderDetails extends Component
     {
         $validatedData = $this->validate([
             'clientData.name' => 'required|string|max:255',
-            'clientData.email' => 'required|email|max:255',
+            'clientData.email' => 'nullable|email|max:255',
             'clientData.phone' => 'required|string|max:20',
+            'clientData.marketing_source' => 'nullable|string|max:255',
         ]);
 
-        $this->order->update($this->clientData);
+        $this->order->update([
+            'name' => $this->clientData['name'],
+            'email' => $this->clientData['email'] ?: null,
+            'phone' => $this->clientData['phone'],
+            'marketing_source' => $this->clientData['marketing_source'],
+        ]);
         $this->updateOrderWithDelayControl($this->order, $this->clientData);
         // ** إرسال الإشعار **
         app(NotificationService::class)->notifyClientUpdate($this->order, $validatedData['clientData']);

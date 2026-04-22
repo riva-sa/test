@@ -17,25 +17,25 @@
   the iteration process.
 -->
 
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
-**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
-**Project Type**: [e.g., library/cli/web-service/mobile-app/compiler/desktop-app or NEEDS CLARIFICATION]  
-**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
-**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
-**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
+**Language/Version**: PHP 8.2, Laravel 11.x  
+**Primary Dependencies**: FilamentPHP 3.x, Livewire 3.x, Pest PHP  
+**Storage**: MySQL/PostgreSQL (existing database)  
+**Testing**: Pest PHP  
+**Target Platform**: Linux server  
+**Project Type**: Web application (Laravel/Filament)  
+**Performance Goals**: Sub-second response times for CRUD operations  
+**Constraints**: Must follow Laravel PSR-12 coding standards, maintain backward compatibility  
+**Scale/Scope**: Enhancements to existing CRM lead management module
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 1 research. Re-check after Phase 2 design.*
 
-- [ ] **Filament-First**: Does this approach prioritize Filament components?
-- [ ] **Decoupled Logic**: Are business rules encapsulated in Actions/Services (not controllers)?
-- [ ] **Testing Discipline**: Does the plan include Pest tests for models and components?
-- [ ] **i18n Readiness**: Are all user-facing strings planned as translation keys?
-- [ ] **Observability**: Is structured JSON logging planned for critical events?
+- [x] **Filament-First**: Yes - The enhancements will be implemented using Livewire components within the Filament admin interface as specified by the "LiveWire Manager path" requirement
+- [x] **Decoupled Logic**: Yes - Business rules will be encapsulated in Action classes (NormalizePhoneAction, IngestSocialMediaLeadAction) and Service classes as needed
+- [x] **Testing Discipline**: Yes - Pest tests will be created for all new Actions, Livewire components, and notification events
+- [x] **i18n Readiness**: Yes - All user-facing strings will use Laravel translation keys with corresponding language files
+- [x] **Observability**: Yes - Structured JSON logging will be implemented for lead ingestion, order status changes, and notification events
 
 ## Project Structure
 
