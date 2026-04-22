@@ -34,7 +34,14 @@ class UnitOrderUpdated extends Notification implements ShouldQueue
      */
     public function via($notifiable)
     {
-        return ['database']; // ممكن تضيف mail أو broadcast لو حابب
+        $channels = ['database'];
+        
+        // Send email for new notes (sales manager statement)
+        if (in_array($this->type, ['new_note', 'status_update', 'message_update'])) {
+            $channels[] = 'mail';
+        }
+        
+        return $channels;
     }
 
     /**
@@ -72,6 +79,20 @@ class UnitOrderUpdated extends Notification implements ShouldQueue
             default => "تم تحديث الطلب (#{$orderId}) بواسطة {$userName}",
         };
 
+    }
+
+    /**
+     * Email message content
+     */
+    public function toMail($notifiable)
+    {
+        $message = $this->generateMessage();
+        
+        return (new \Illuminate\Notifications\Messages\MailMessage)
+            ->subject("تحديث على الطلب #{$this->order->id}")
+            ->line($message)
+            ->action('عرض الطلب', route('manager.order-details', $this->order->id))
+            ->line('شكراً لاستخدامك نظامنا');
     }
 
     /**

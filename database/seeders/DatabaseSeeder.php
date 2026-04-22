@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             GuaranteeSeeder::class,
             FeatureSeeder::class,
             DeveloperRoleSeeder::class,
+            ProjectUnitOrderSeeder::class,
         ]);
     }
 }

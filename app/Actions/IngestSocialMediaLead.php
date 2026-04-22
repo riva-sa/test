@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Notifications\NewSocialMediaLead;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
+use App\Actions\NormalizePhoneAction;
 
 class IngestSocialMediaLead
 {
@@ -20,8 +21,8 @@ class IngestSocialMediaLead
     {
         $attributes = [
             'name' => $data['name'],
-            'email' => $data['email'] ?? "EMAIL_ADDRESS@example.com",
-            'phone' => $data['phone'],
+            'email' => $data['email'] ?? null,
+            'phone' => (new NormalizePhoneAction())->execute($data['phone']),
             'message' => $data['message'] ?? null,
             'marketing_source' => $data['marketing_source'],
             'campaign_name' => $data['campaign_name'] ?? null,
@@ -31,6 +32,12 @@ class IngestSocialMediaLead
             'order_source' => UnitOrder::ORDER_SOURCE_SOCIAL_MEDIA,
             'status' => 0, // New
         ];
+
+        // US8: Capture additional form fields into basic_order_notes
+        $additionalFields = $this->captureAdditionalFields($data);
+        if (!empty($additionalFields)) {
+            $attributes['message'] = ($attributes['message'] ?? '') . "\n" . $additionalFields;
+        }
 
         if (!empty($data['external_id'])) {
             $order = UnitOrder::firstOrCreate(
@@ -56,5 +63,31 @@ class IngestSocialMediaLead
         Notification::send($notifiableUsers, new NewSocialMediaLead($order));
         
         return $order;
+    }
+
+    /**
+     * US8: Capture additional form fields into basic_order_notes
+     */
+    protected function captureAdditionalFields(array $data): string
+    {
+        $notes = [];
+        
+        // Define standard fields to exclude from additional notes
+        $standardFields = [
+            'name', 'email', 'phone', 'marketing_source', 'campaign_name', 
+            'ad_squad', 'ad_set', 'ad_name', 'external_id', 'message',
+            'order_source', 'status', 'project_id', 'unit_id', 'user_id'
+        ];
+
+        foreach ($data as $key => $value) {
+            // If the field is not a standard field and is not empty
+            if (!in_array($key, $standardFields) && !empty($value)) {
+                // Prettify the key (replace underscores with spaces and capitalize)
+                $label = ucwords(str_replace(['_', '-'], ' ', $key));
+                $notes[] = "{$label}: {$value}";
+            }
+        }
+
+        return implode("\n", $notes);
     }
 }

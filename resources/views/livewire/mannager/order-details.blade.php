@@ -80,7 +80,7 @@
                 </div>
             </div>
 
-            @if (auth()->user()->hasRole('sales_manager') || auth()->user()->hasRole('follow_up'))
+            @if (auth()->user()->hasRole('sales') || auth()->user()->hasRole('sales_manager') || auth()->user()->hasRole('follow_up') || auth()->user()->hasRole('admin'))
             <div class="mt-4 pt-4 border-t border-gray-100">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-sm font-medium text-gray-700 mb-2">فريق المبيعات </h3>
@@ -179,7 +179,7 @@
                 </button>
             </div>
 
-            @if (auth()->user()->hasRole('sales') || auth()->user()->hasRole('sales_manager') || auth()->user()->hasRole('follow_up'))
+            @if (auth()->user()->hasRole('sales') || auth()->user()->hasRole('sales_manager') || auth()->user()->hasRole('follow_up') || auth()->user()->hasRole('admin'))
                 @if ($isEditingClient)
                     <form wire:submit.prevent="saveClientData" class="px-4 py-4">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -223,6 +223,20 @@
                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pr-10 p-2.5">
                                 </div>
                                 @error('clientData.phone') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                            </div>
+
+                            <div>
+                                <label for="client-source" class="block text-sm font-medium text-gray-700 mb-1">مصدر الحملة</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                        </svg>
+                                    </div>
+                                    <input type="text" id="client-source" wire:model="clientData.marketing_source"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pr-10 p-2.5" placeholder="Snapchat, Instagram, etc.">
+                                </div>
+                                @error('clientData.marketing_source') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                         </div>
 
@@ -518,7 +532,7 @@
                             </div>
                         </div>
 
-                        @if (auth()->user()->hasRole('sales_manager') || auth()->user()->hasRole('follow_up'))
+                        @if (auth()->user()->hasRole('sales') || auth()->user()->hasRole('sales_manager') || auth()->user()->hasRole('follow_up') || auth()->user()->hasRole('admin'))
                             <div class="mt-4 flex justify-end">
                                 <button wire:click="startEditUnitInfo" type="button"
                                         class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
@@ -543,7 +557,7 @@
                             </svg>
                             بيانات موظف البنك
                         </h3>
-                        @if (auth()->user()->hasRole('sales') || auth()->user()->hasRole('sales_manager') || auth()->user()->hasRole('follow_up'))
+            @if (auth()->user()->hasRole('sales') || auth()->user()->hasRole('sales_manager') || auth()->user()->hasRole('follow_up') || auth()->user()->hasRole('admin'))
                             @if(!$isEditingBank)
                                 <button wire:click="startEditBank" type="button"
                                         class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
@@ -815,7 +829,7 @@
                             </form>
                         @else
                             <div class="bg-white p-3 rounded border-r-4 border-primary-500">
-                                <p class="text-sm text-gray-700 leading-relaxed">{{ $order->message }}</p>
+                                <p class="text-sm text-gray-700 leading-relaxed">{!! nl2br(e($order->message)) !!}</p>
                             </div>
                         @endif
                     </div>
