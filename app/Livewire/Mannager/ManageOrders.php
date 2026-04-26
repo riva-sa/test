@@ -92,8 +92,15 @@ class ManageOrders extends Component
 
     public function render()
     {
-        $query = UnitOrder::with(['notes', 'unit', 'project.salesManager', 'user', 'permissions'])
-            ->accessibleBy(auth()->user());
+        $query = UnitOrder::with([
+            'notes', 
+            'unit', 
+            'project.salesManager', 
+            'user', 
+            'permissions.user', 
+            'lastActionByUser', 
+            'assignedSalesUser'
+        ])->accessibleBy(auth()->user());
 
         // الخطوة 3: تطبيق فلاتر الواجهة (البحث، الحالة، المشروع، إلخ)
         $query->when($this->search, function ($query) {

@@ -19,7 +19,10 @@ class ApplicationForwardingService
         }
 
         $allowedSources = config('order_forwarding.sources', []);
-        if (! in_array($order->order_source, $allowedSources, true)) {
+        $excludedSources = config('order_forwarding.exclude_sources', []);
+
+        if (! in_array($order->order_source, $allowedSources, true) || 
+            in_array($order->order_source, $excludedSources, true)) {
             return;
         }
 
@@ -106,6 +109,20 @@ class ApplicationForwardingService
                     'order_source' => $order->order_source,
                     'project_id' => $order->project_id,
                     'unit_id' => $order->unit_id,
+                    'customer' => [
+                        'name' => $order->name,
+                        'email' => $order->email,
+                        'phone' => $order->phone,
+                        'message' => $order->message,
+                    ],
+                    'marketing' => [
+                        'source' => $order->marketing_source,
+                        'campaign' => $order->campaign_name,
+                        'ad_squad' => $order->ad_squad,
+                        'ad_set' => $order->ad_set,
+                        'ad_name' => $order->ad_name,
+                    ],
+                    'external_id' => $order->external_id,
                     'created_at' => $order->created_at?->toIso8601String(),
                 ]);
 

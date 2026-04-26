@@ -58,6 +58,7 @@ class UnitOrder extends Model
         'order_source',
         'import_batch_id',
         'assigned_sales_user_id',
+        'external_id',
         'marketing_source',
         'session_id',
         'campaign_name',
@@ -168,6 +169,7 @@ class UnitOrder extends Model
         if ($note = $this->notes()->with('user')->latest()->first()) {
             $activities->push([
                 'type' => 'note',
+                'user_name' => $note->user->name ?? 'غير معروف',
                 'message' => "أضاف {$note->user->name} ملاحظة جديدة: {$note->note}",
                 'created_at' => $note->created_at,
                 'priority' => 3, // أولوية عالية للملاحظات
@@ -183,6 +185,7 @@ class UnitOrder extends Model
                 ($currentUser->hasRole('sales') && $perm->user_id == $currentUser->id)) {
                 $activities->push([
                     'type' => 'permission',
+                    'user_name' => $perm->grantedBy->name ?? 'غير معروف',
                     'message' => "تم منح صلاحية {$perm->permission_type} للمستخدم {$perm->user->name}",
                     'created_at' => $perm->created_at,
                     'priority' => 2,
@@ -195,6 +198,7 @@ class UnitOrder extends Model
             // if not new
             $activities->push([
                 'type' => 'status',
+                'user_name' => $this->relationLoaded('lastActionByUser') ? ($this->lastActionByUser->name ?? 'النظام') : 'النظام',
                 'message' => 'تم تحديث حالة الطلب إلى: '.$this->statusLabel(),
                 'created_at' => $this->updated_at,
                 'priority' => 1,

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\OrderPermission;
 use App\Models\UnitOrder;
 use App\Models\User;
+use App\Notifications\UnitOrderUpdated;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -23,6 +24,7 @@ class AutoAssignmentService
         $allowedSources = [
             UnitOrder::ORDER_SOURCE_FRONTEND_POPUP,
             UnitOrder::ORDER_SOURCE_FRONTEND_UNIT,
+            UnitOrder::ORDER_SOURCE_SOCIAL_MEDIA,
             'landing_page', // Common adding for webhooks
         ];
 
@@ -90,6 +92,9 @@ class AutoAssignmentService
                         ], [
                             'granted_by' => null, // System auto assignment doesn't have a granter
                         ]);
+
+                        // Notify the assigned sales user
+                        $bestUser->notify(new UnitOrderUpdated($order, 'order_assigned'));
 
                         Log::info("AutoAssignmentService: Order ID: {$order->id} automatically assigned to Sales User: {$bestUser->id}");
                     }

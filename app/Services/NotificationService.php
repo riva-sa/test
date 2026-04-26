@@ -29,12 +29,16 @@ class NotificationService
 
     /**
      * إرسال إشعار بإضافة ملاحظة جديدة
+     * Only send email notification when added by sales_manager
      */
     public function notifyNewNote(UnitOrder $order, string $noteContent): void
     {
+        $addedBy = auth()->user();
+        
         $notificationData = [
             'note_preview' => mb_substr($noteContent, 0, 50).'...',
-            'added_by' => auth()->user()->name,
+            'added_by' => $addedBy->name,
+            'is_sales_manager' => $addedBy->hasRole('sales_manager'),
         ];
         $this->sendNotification($order, 'new_note', $notificationData);
     }

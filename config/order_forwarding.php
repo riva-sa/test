@@ -26,6 +26,19 @@ return [
     'sources' => [
         UnitOrder::ORDER_SOURCE_FRONTEND_POPUP,
         UnitOrder::ORDER_SOURCE_FRONTEND_UNIT,
+        UnitOrder::ORDER_SOURCE_MANAGER,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Exclude sources from forwarding (e.g. to prevent loops)
+    |--------------------------------------------------------------------------
+    |
+    | Orders with these sources will skip the forwarding logic.
+    |
+    */
+    'exclude_sources' => [
+        UnitOrder::ORDER_SOURCE_SOCIAL_MEDIA,
     ],
 
     /*

@@ -34,7 +34,14 @@ class UnitOrderUpdated extends Notification implements ShouldQueue
      */
     public function via($notifiable)
     {
-        return ['database']; // ممكن تضيف mail أو broadcast لو حابب
+        $channels = ['database'];
+        
+        // Send email for new notes (sales manager statement)
+        if (in_array($this->type, ['new_note', 'status_update', 'message_update'])) {
+            $channels[] = 'mail';
+        }
+        
+        return $channels;
     }
 
     /**
@@ -66,12 +73,26 @@ class UnitOrderUpdated extends Notification implements ShouldQueue
             'client_update' => "قام {$userName} بتحديث بيانات العميل في الطلب (#{$orderId})",
             'unit_info_update' => "قام {$userName} بتحديث معلومات الوحدة في الطلب (#{$orderId})",
             'message_update' => "قام {$userName} بتعديل الملاحظة الرئيسية للطلب (#{$orderId})",
-            'permission_granted' => "تم منح صلاحية للمستخدم {$this->data['user_name']} على الطلب (#{$orderId})",
             'permission_revoked' => "تم إلغاء صلاحية المستخدم {$this->data['user_name']} من الطلب (#{$orderId})",
             'order_forwarded' => "تم توجيه الطلب (#{$orderId}) آلياً للمتابعة — العميل {$this->order->name}",
+            'order_assigned' => "تم تعيينك لمتابعة الطلب الجديد (#{$orderId}) للعميل {$this->order->name}",
             default => "تم تحديث الطلب (#{$orderId}) بواسطة {$userName}",
         };
 
+    }
+
+    /**
+     * Email message content
+     */
+    public function toMail($notifiable)
+    {
+        $message = $this->generateMessage();
+        
+        return (new \Illuminate\Notifications\Messages\MailMessage)
+            ->subject("تحديث على الطلب #{$this->order->id}")
+            ->line($message)
+            ->action('عرض الطلب', route('manager.order-details', $this->order->id))
+            ->line('شكراً لاستخدامك نظامنا');
     }
 
     /**
