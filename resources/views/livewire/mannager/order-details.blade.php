@@ -129,7 +129,7 @@
                     </div>
                     @endif
 
-                    @foreach ($permissions as $permission)
+                    @foreach ($order->permissions as $permission)
                     <div class="flex items-center">
                         <div class="relative">
                             <span class="inline-block h-8 w-8 rounded-full bg-gray-100 text-gray-800 flex items-center justify-center font-medium">

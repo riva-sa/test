@@ -41,8 +41,14 @@ class NewSocialMediaLead extends Notification implements ShouldQueue
             ->subject('طلب مبيعات جديد - ' . $this->order->marketing_source)
             ->view('emails.unit-order-notification', [
                 'emailData' => [
-                    'order' => $this->order,
+                    'customer_name' => $this->order->name,
+                    'customer_email' => $this->order->email ?? 'غير متوفر',
+                    'customer_phone' => $this->order->phone,
                     'project' => $this->order->project,
+                    'unit' => $this->order->unit,
+                    'unit_order' => $this->order,
+                    'purchase_type' => $this->order->PurchaseType ?? 'غير محدد',
+                    'purchase_purpose' => $this->order->PurchasePurpose ?? 'غير محدد',
                 ],
                 'recipientType' => 'admin',
             ]);

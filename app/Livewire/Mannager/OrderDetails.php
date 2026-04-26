@@ -27,7 +27,6 @@ class OrderDetails extends Component
 
     public $clientData = [];
 
-    public $permissions = [];
 
     public $isEditingUnitCase = false;
 
@@ -185,9 +184,6 @@ class OrderDetails extends Component
     {
         $this->orderId = $id;
         $this->loadOrder();
-        $this->permissions = OrderPermission::with(['user', 'grantedBy'])
-            ->where('unit_order_id', $this->order->id)
-            ->get();
 
         // إعداد المتغيرات الجديدة
         $this->isEditingMessage = false;
@@ -270,7 +266,7 @@ class OrderDetails extends Component
     public function loadOrder()
     {
         $this->order = $this->getAccessibleOrdersQuery()
-            ->with(['notes.user.roles', 'unit', 'project.salesManager', 'assignedSalesUser'])
+            ->with(['notes.user.roles', 'unit', 'project.salesManager', 'assignedSalesUser', 'permissions.user', 'permissions.grantedBy', 'lastActionByUser'])
             ->findOrFail($this->orderId);
     }
 
@@ -320,6 +316,8 @@ class OrderDetails extends Component
 
     public function render()
     {
+        $this->order->load(['notes.user.roles', 'unit', 'project.salesManager', 'assignedSalesUser', 'permissions.user', 'permissions.grantedBy', 'lastActionByUser']);
+
         $accessibleOrdersQuery = $this->getAccessibleOrdersQuery();
         $previousOrder = (clone $accessibleOrdersQuery)->where('id', '<', $this->order->id)->orderBy('id', 'desc')->first();
         $nextOrder = (clone $accessibleOrdersQuery)->where('id', '>', $this->order->id)->orderBy('id')->first();

@@ -27,7 +27,7 @@ class ManagerDashboard extends Component
 
         // جلب كل الطلبات ذات الصلة مرة واحدة لتحسين الأداء
         $relevantOrders = UnitOrder::accessibleBy($user)
-            ->with(['project', 'permissions'])
+            ->with(['project.salesManager', 'permissions.user'])
             ->latest()
             ->get();
 
@@ -46,7 +46,7 @@ class ManagerDashboard extends Component
         })->count();
 
         $recentOrders = UnitOrder::accessibleBy($user)
-            ->with(['unit', 'project.salesManager'])
+            ->with(['unit', 'project.salesManager', 'permissions.user'])
             ->latest()
             ->take(10)
             ->get();

@@ -136,12 +136,14 @@ class User extends Authenticatable implements FilamentUser
         }
 
         // Check for explicit permission
-        return $order->permissions
+        return $order->permissions()
             ->where('user_id', $this->id)
             ->where('permission_type', $permissionType)
-            ->filter(function ($perm) {
-                return is_null($perm->expires_at) || $perm->expires_at->isFuture();
-            })->isNotEmpty();
+            ->where(function ($query) {
+                $query->whereNull('expires_at')
+                    ->orWhere('expires_at', '>', now());
+            })
+            ->exists();
     }
 
     public function managedProjects()
