@@ -25,16 +25,9 @@ class ManagerDashboard extends Component
     {
         $user = auth()->user();
 
-        // فلتر أساسي بناءً على دور المستخدم
-        $filterByManager = function ($query) use ($user) {
-            if ($user->hasRole('sales')) {
-                $query->where('sales_manager_id', $user->id);
-            }
-        };
-
         // جلب كل الطلبات ذات الصلة مرة واحدة لتحسين الأداء
-        $relevantOrders = UnitOrder::with(['project', 'permissions'])
-            ->whereHas('project', $filterByManager)
+        $relevantOrders = UnitOrder::accessibleBy($user)
+            ->with(['project', 'permissions'])
             ->latest()
             ->get();
 
@@ -52,21 +45,7 @@ class ManagerDashboard extends Component
             return $this->isOrderDelayed($order);
         })->count();
 
-        // جلب الطلبات الحديثة (الكود الحالي سليم)
-        $baseRecentOrdersQuery = UnitOrder::with(['unit', 'project.salesManager'])
-            ->whereHas('project', $filterByManager)
-            ->orWhere('user_id', $user->id);
-
-        $permissionOrdersQuery = UnitOrder::whereHas('permissions', function ($query) use ($user) {
-            $query->where('user_id', $user->id)
-                ->where(function ($q) {
-                    $q->whereNull('expires_at')
-                        ->orWhere('expires_at', '>', now());
-                });
-        })->with(['unit', 'project']);
-
-        $recentOrders = UnitOrder::whereIn('id', $baseRecentOrdersQuery->select('id'))
-            ->orWhereIn('id', $permissionOrdersQuery->select('id'))
+        $recentOrders = UnitOrder::accessibleBy($user)
             ->with(['unit', 'project.salesManager'])
             ->latest()
             ->take(10)

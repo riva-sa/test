@@ -92,20 +92,8 @@ class ManageOrders extends Component
 
     public function render()
     {
-        $query = UnitOrder::with(['notes', 'unit', 'project.salesManager', 'user', 'permissions']);
-
-        if (auth()->user()->hasRole('sales')) {
-            $query->where(function ($q) {
-                // الطلبات التي يكون المستخدم هو مدير المبيعات المسؤول عن مشروعها
-                $q->whereHas('project', function ($subQ) {
-                    $subQ->where('sales_manager_id', auth()->id());
-                })
-                // أو الطلبات التي مُنح المستخدم صلاحية للوصول إليها
-                    ->orWhereHas('permissions', function ($subQ) {
-                        $subQ->where('user_id', auth()->id());
-                    });
-            });
-        }
+        $query = UnitOrder::with(['notes', 'unit', 'project.salesManager', 'user', 'permissions'])
+            ->accessibleBy(auth()->user());
 
         // الخطوة 3: تطبيق فلاتر الواجهة (البحث، الحالة، المشروع، إلخ)
         $query->when($this->search, function ($query) {
@@ -128,9 +116,10 @@ class ManageOrders extends Component
                 $query->where('project_id', $this->projectFilter);
             })
             ->when($this->salesManagerFilter, function ($query) {
-                $query->whereHas('project', function ($q) {
-                    $q->where('sales_manager_id', $this->salesManagerFilter);
-                });
+                $selectedUser = \App\Models\User::find($this->salesManagerFilter);
+                if ($selectedUser) {
+                    $query->accessibleBy($selectedUser);
+                }
             });
 
         if ($this->delayedFilter == '1') {
@@ -193,18 +182,8 @@ class ManageOrders extends Component
     private function getDelayedOrdersCount($user)
     {
         $query = UnitOrder::with(['project', 'permissions'])
-            ->whereNotIn('status', [3, 4]);
-
-        if ($user->hasRole('sales')) {
-            $query->where(function ($q) use ($user) {
-                $q->whereHas('project', function ($subQ) use ($user) {
-                    $subQ->where('sales_manager_id', $user->id);
-                })
-                    ->orWhereHas('permissions', function ($subQ) use ($user) {
-                        $subQ->where('user_id', $user->id);
-                    });
-            });
-        }
+            ->whereNotIn('status', [3, 4])
+            ->accessibleBy($user);
 
         // جلب كل الطلبات المحتملة وفلترتها
         $potentialDelayed = $query->get();
