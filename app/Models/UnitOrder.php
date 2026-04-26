@@ -16,13 +16,14 @@ class UnitOrder extends Model
         }
 
         // Admins, sales managers, and follow-up users see all orders
-        if ($user->hasRole('sales_manager') || $user->hasRole('follow_up') || $user->hasRole('admin') || $user->hasRole('developer')) {
+        if ($user->hasRole('sales_manager') || $user->hasRole('follow_up') || $user->hasRole('Admin') || $user->hasRole('developer') || $user->hasRole('project_manager')) {
             return $query;
         }
 
         // Sales users are restricted to their projects or explicit permissions
         return $query->where(function ($q) use ($user) {
-            $q->whereHas('project', function ($subQ) use ($user) {
+            $q->where('assigned_sales_user_id', $user->id)
+              ->orWhereHas('project', function ($subQ) use ($user) {
                 $subQ->where('sales_manager_id', $user->id);
             })->orWhereHas('permissions', function ($subQ) use ($user) {
                 $subQ->where('user_id', $user->id)

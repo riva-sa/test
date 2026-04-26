@@ -36,15 +36,11 @@ class ManagerAuthController extends Controller
             // Redirect based on user role
             $user = Auth::user();
 
-            if ($user->hasRole('super_admin')) {
-                return redirect()->route('filament.admin.pages.dashboard');
+            if ($user->hasRole('Admin')) {
+                return redirect()->route('manager.dashboard');
             } elseif ($user->hasRole('developer')) {
                 return redirect()->route('developer.dashboard');
-            } elseif ($user->hasRole('sales_manager')) {
-                return redirect()->route('manager.dashboard');
-            } elseif ($user->hasRole('sales')) {
-                return redirect()->route('manager.dashboard');
-            } elseif ($user->hasRole('follow_up')) {
+            } elseif ($user->hasRole('sales_manager') || $user->hasRole('sales') || $user->hasRole('follow_up') || $user->hasRole('project_manager')) {
                 return redirect()->route('manager.dashboard');
             } else {
                 return redirect()->route('frontend.home');

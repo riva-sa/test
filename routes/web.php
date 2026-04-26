@@ -50,7 +50,7 @@ Route::get('/services', Services::class)->name('frontend.services');
 Route::get('/contact-us', ContactUs::class)->name('frontend.contactus');
 
 // Manager routes protected by the 'manager' role
-Route::middleware(['auth', 'role:sales_manager'])->group(function () {
+Route::middleware(['auth', 'role:sales_manager,sales,Admin,developer,follow_up,project_manager'])->group(function () {
     Route::get('/crm', ManagerDashboard::class)->name('manager.dashboard');
     Route::get('/crm/orders', ManageOrders::class)->name('manager.orders');
     Route::get('/crm/orders/{id}', OrderDetails::class)->name('manager.order-details');
