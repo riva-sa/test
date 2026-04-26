@@ -16,7 +16,7 @@ class ZapierLeadController extends Controller
     public function store(SocialMediaLeadRequest $request, IngestSocialMediaLead $ingestAction)
     {
         try {
-            $ingestAction->execute($request->validated());
+            $ingestAction->execute($request->all());
 
             return response()->json([
                 'status' => 'success',
