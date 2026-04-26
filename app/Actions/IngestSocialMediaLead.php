@@ -19,6 +19,8 @@ class IngestSocialMediaLead
      */
     public function execute(array $data): UnitOrder
     {
+        Log::debug('Incoming Zapier Lead Data:', $data);
+
         $attributes = [
             'name' => $data['name'],
             'email' => $data['email'] ?? null,

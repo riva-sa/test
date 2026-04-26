@@ -33,6 +33,11 @@ class SocialMediaLeadRequest extends FormRequest
     // Force JSON response on validation failure (not HTML redirect)
     protected function failedValidation(Validator $validator): void
     {
+        \Log::warning('Zapier Lead Validation Failed', [
+            'errors' => $validator->errors()->toArray(),
+            'payload' => $this->all()
+        ]);
+
         throw new HttpResponseException(
             response()->json([
                 'status'  => 'error',
