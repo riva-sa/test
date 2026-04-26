@@ -24,8 +24,8 @@ class SalesManagers extends Component
 
     public function mount()
     {
-        // التأكد من أن المستخدم لديه دور sales_manager
-        if (Auth::user()->hasRole('sales')) {
+        // التأكد من أن المستخدم لديه صلاحية الوصول (مدير مبيعات أو مطور أو مسؤول نظام)
+        if (! Auth::user()->hasAnyRole(['sales_manager', 'developer', 'Admin'])) {
             abort(403, 'غير مصرح لك بالوصول إلى هذه الصفحة');
         }
 

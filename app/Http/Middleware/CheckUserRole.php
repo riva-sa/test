@@ -15,9 +15,15 @@ class CheckUserRole
      */
     public function handle(Request $request, Closure $next, ...$roles)
     {
+        if (! $request->user()) {
+            abort(401);
+        }
 
-        if (! $request->user() && ! $request->user()->hasAnyRole(['sales_manager', 'sales', 'follow_up'])) {
-            abort(403, 'إجراء غير مصرح به.');
+        // If specific roles are required, check them
+        if (! empty($roles)) {
+            if (! $request->user()->hasAnyRole($roles)) {
+                abort(403, 'إجراء غير مصرح به.');
+            }
         }
 
         return $next($request);

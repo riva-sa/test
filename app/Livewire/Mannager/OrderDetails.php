@@ -357,20 +357,7 @@ class OrderDetails extends Component
 
     private function getAccessibleOrdersQuery(): Builder
     {
-        $query = UnitOrder::query();
-        $user = Auth::user();
-
-        if ($user && $user->hasRole('sales')) {
-            $query->where(function ($q) use ($user) {
-                $q->whereHas('project', function ($subQ) use ($user) {
-                    $subQ->where('sales_manager_id', $user->id);
-                })->orWhereHas('permissions', function ($subQ) use ($user) {
-                    $subQ->where('user_id', $user->id);
-                });
-            });
-        }
-
-        return $query;
+        return UnitOrder::accessibleBy(Auth::user());
     }
 
     public function logout()

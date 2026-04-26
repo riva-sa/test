@@ -25,26 +25,9 @@ class ManagerDashboard extends Component
     {
         $user = auth()->user();
 
-        $filterByAccess = function ($query) use ($user) {
-            if ($user->hasRole('sales')) {
-                $query->where(function ($q) use ($user) {
-                    // الطلبات التي يكون المستخدم هو مدير المبيعات المسؤول عن مشروعها
-                    $q->whereHas('project', function ($subQ) use ($user) {
-                        $subQ->where('sales_manager_id', $user->id);
-                    })
-                    // أو الطلبات التي مُنح المستخدم صلاحية للوصول إليها
-                    ->orWhereHas('permissions', function ($subQ) use ($user) {
-                        $subQ->where('user_id', $user->id);
-                    })
-                    // أو الطلبات المعينة له مباشرة (توزيع)
-                    ->orWhere('assigned_sales_user_id', $user->id);
-                });
-            }
-        };
-
-        // جلب كل الطلبات ذات الصلة (بما في ذلك الطلبات الجديدة status 0)
-        $relevantOrders = UnitOrder::with(['project', 'permissions.user', 'lastActionByUser', 'assignedSalesUser'])
-            ->where($filterByAccess)
+        // جلب كل الطلبات ذات الصلة مرة واحدة لتحسين الأداء
+        $relevantOrders = UnitOrder::accessibleBy($user)
+            ->with(['project', 'permissions'])
             ->latest()
             ->get();
 
@@ -57,14 +40,13 @@ class ManagerDashboard extends Component
         $SalesTransactions = $relevantOrders->where('status', 2)->count();
         $closedOrders = $relevantOrders->where('status', 3)->count();
 
-        // حساب الطلبات المتأخرة
+        // *** التعديل الرئيسي هنا: استخدام دالة isDelayed من الـ Trait ***
         $delayedOrders = $relevantOrders->filter(function ($order) {
             return $this->isOrderDelayed($order);
         })->count();
 
-        // جلب الطلبات الحديثة
-        $recentOrders = UnitOrder::where($filterByAccess)
-            ->with(['unit', 'project.salesManager', 'lastActionByUser', 'permissions.user', 'assignedSalesUser'])
+        $recentOrders = UnitOrder::accessibleBy($user)
+            ->with(['unit', 'project.salesManager'])
             ->latest()
             ->take(10)
             ->get();

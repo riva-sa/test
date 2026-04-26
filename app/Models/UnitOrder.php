@@ -6,6 +6,34 @@ use Illuminate\Database\Eloquent\Model;
 
 class UnitOrder extends Model
 {
+    /**
+     * Scope a query to only include orders accessible by the given user.
+     */
+    public function scopeAccessibleBy($query, $user)
+    {
+        if (! $user) {
+            return $query->whereRaw('1=0');
+        }
+
+        // Admins, sales managers, and follow-up users see all orders
+        if ($user->hasRole('sales_manager') || $user->hasRole('follow_up') || $user->hasRole('admin') || $user->hasRole('developer')) {
+            return $query;
+        }
+
+        // Sales users are restricted to their projects or explicit permissions
+        return $query->where(function ($q) use ($user) {
+            $q->whereHas('project', function ($subQ) use ($user) {
+                $subQ->where('sales_manager_id', $user->id);
+            })->orWhereHas('permissions', function ($subQ) use ($user) {
+                $subQ->where('user_id', $user->id)
+                    ->where(function ($expQ) {
+                        $expQ->whereNull('expires_at')
+                            ->orWhere('expires_at', '>', now());
+                    });
+            });
+        });
+    }
+
     protected $fillable = [
         'name',
         'email',

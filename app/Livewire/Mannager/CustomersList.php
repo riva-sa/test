@@ -33,44 +33,23 @@ class CustomersList extends Component
             return $this->renderCustomerOrders();
         }
 
-        if (! Auth::user()->hasRole('sales')) {
-            $customers = UnitOrder::selectRaw('
+        $customers = UnitOrder::accessibleBy(auth()->user())
+            ->selectRaw('
                 phone,
                 MIN(name) as name,
                 MIN(email) as email,
                 COUNT(*) as orders_count
             ')
-                ->when($this->search, function ($query) {
-                    $query->where(function ($q) {
-                        $q->where('name', 'like', '%'.$this->search.'%')
-                            ->orWhere('email', 'like', '%'.$this->search.'%')
-                            ->orWhere('phone', 'like', '%'.$this->search.'%');
-                    });
-                })
-                ->groupBy('phone')
-                ->orderBy('orders_count', 'desc')
-                ->paginate($this->perPage);
-        } else {
-            $customers = UnitOrder::selectRaw('
-                phone,
-                MIN(name) as name,
-                MIN(email) as email,
-                COUNT(*) as orders_count
-            ')
-                ->whereHas('project', function ($query) {
-                    $query->where('sales_manager_id', auth()->id());
-                })
-                ->when($this->search, function ($query) {
-                    $query->where(function ($q) {
-                        $q->where('name', 'like', '%'.$this->search.'%')
-                            ->orWhere('email', 'like', '%'.$this->search.'%')
-                            ->orWhere('phone', 'like', '%'.$this->search.'%');
-                    });
-                })
-                ->groupBy('phone')
-                ->orderBy('orders_count', 'desc')
-                ->paginate($this->perPage);
-        }
+            ->when($this->search, function ($query) {
+                $query->where(function ($q) {
+                    $q->where('name', 'like', '%'.$this->search.'%')
+                        ->orWhere('email', 'like', '%'.$this->search.'%')
+                        ->orWhere('phone', 'like', '%'.$this->search.'%');
+                });
+            })
+            ->groupBy('phone')
+            ->orderBy('orders_count', 'desc')
+            ->paginate($this->perPage);
 
         return view('livewire.mannager.customers-list', [
             'customers' => $customers,
@@ -82,20 +61,11 @@ class CustomersList extends Component
 
     protected function renderCustomerOrders()
     {
-        if (Auth::user()->hasRole('sales_manager') || Auth::user()->hasRole('follow_up')) {
-            $orders = UnitOrder::with(['unit', 'project'])
-                ->where('phone', $this->selectedCustomer)
-                ->orderBy('created_at', 'desc')
-                ->paginate($this->perPage);
-        } else {
-            $orders = UnitOrder::with(['unit', 'project'])
-                ->where('phone', $this->selectedCustomer)
-                ->whereHas('project', function ($query) {
-                    $query->where('sales_manager_id', auth()->id());
-                })
-                ->orderBy('created_at', 'desc')
-                ->paginate($this->perPage);
-        }
+        $orders = UnitOrder::accessibleBy(auth()->user())
+            ->with(['unit', 'project'])
+            ->where('phone', $this->selectedCustomer)
+            ->orderBy('created_at', 'desc')
+            ->paginate($this->perPage);
 
         return view('livewire.mannager.customers-list', [
             'customerOrders' => $orders,
