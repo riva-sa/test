@@ -45,13 +45,20 @@
                         <a href="{{ route('frontend.projects.single', $project->slug) }}"
                             class="project-image-link d-block"
                             style="height: 500px;">
-                            <img src="{{ App\Helpers\MediaHelper::getUrl(optional($project->getMainImages())->media_url ?? optional($project->projectMedia->first())->media_url) }}"
+                            @php
+                                $imgPath = optional($project->getMainImages())->media_url ?? optional($project->projectMedia->first())->media_url;
+                            @endphp
+                            <img src="{{ App\Helpers\MediaHelper::getUrl($imgPath, 'medium') }}"
+                                srcset="{{ App\Helpers\MediaHelper::getUrl($imgPath, 'thumbnail') }} 400w,
+                                        {{ App\Helpers\MediaHelper::getUrl($imgPath, 'medium') }} 800w,
+                                        {{ App\Helpers\MediaHelper::getUrl($imgPath, 'large') }} 1200w"
+                                sizes="(max-width: 600px) 400px, (max-width: 900px) 800px, 1200px"
                                 alt="{{ $project->name }}"
                                 class="w-100 h-100"
                                 style="object-fit: cover; object-position: center;"
                                 loading="lazy"
                                 decoding="async"
-                                fetchpriority="low">
+                                fetchpriority="low" width="800" height="500">
                         </a>
                         {{-- <a href="{{ route('frontend.projects.single', $project->slug) }}"
                             style="height: 500px; background:url('@if($project->getMainImages() !== null ) {{ Storage::disk('public')->url($project->getMainImages()->media_url) }} @else {{ Storage::disk('public')->url($project->projectMedia()->first()->media_url) }} @endif');background-size: cover;background-position: center;"></a> --}}
@@ -62,7 +69,7 @@
                                     <a href="{{ route('frontend.projects.single', $project->slug) }}">نظرة عامة</a>
                                 </h2>
                                 <div>
-                                    <img src="{{ App\Helpers\MediaHelper::getUrl(optional($project->developer)->logo) }}" style="width: 50px !important;max-height:50px" alt="Logo" loading="lazy">
+                                    <img src="{{ App\Helpers\MediaHelper::getUrl(optional($project->developer)->logo, 'thumbnail') }}" style="width: 50px !important;max-height:50px" alt="Logo" loading="lazy" width="50" height="50">
                                 </div>
                             </div>
                             <ul class="post-meta text-white mb-3">

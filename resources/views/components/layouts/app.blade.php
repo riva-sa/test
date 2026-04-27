@@ -7,7 +7,7 @@
         {{-- <title>{{ $title ?? 'ريفا العقارية' }}</title> --}}
 
         <title>@yield('title', $title ?? 'ريفا العقارية')</title>
-        <link rel="stylesheet" href="https://sets.hugeicons.com/YOUR-SET-ID.css" crossorigin="anonymous">
+        <!-- <link rel="stylesheet" href="https://sets.hugeicons.com/YOUR-SET-ID.css" crossorigin="anonymous"> -->
         <!-- SEO Meta Tags -->
         <meta name="description" content="@yield('description', 'رحلة سكن')">
         <meta name="keywords" content="@yield('keywords', 'ريفا العقارية')">
@@ -63,6 +63,14 @@
         @if(!empty($settings->google_tag_code))
             {!! $settings->google_tag_code !!}
         @endif
+
+        <!-- TikTok Pixel Base Code -->
+        <script>
+        !function (w, d, t) {
+          w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","trackWithBase","setAndTrack","instance"],ttq.setAndTrack=function(t,e){ttq.instance(t).setAndTrack(e)};for(var i=0;i<ttq.methods.length;i++)ttq[ttq.methods[i]]=ttq.instance(ttq.methods[i]);ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};var o=d.createElement("script");o.type="text/javascript",o.async=!0,o.src=r+"?sdkid="+e+"&lib="+t;var a=d.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};
+        }(window, document, 'ttq');
+        </script>
+        <!-- End TikTok Pixel Base Code -->
 
         <!-- Google Tag Manager -->
         <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\ImageOptimizationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -13,13 +14,21 @@ class ImageController
             abort(404);
         }
 
-        /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
-        $disk = Storage::disk('public');
+        /** @var ImageOptimizationService $optimizer */
+        $optimizer = app(ImageOptimizationService::class);
+        
+        // If client accepts WebP, serve the WebP version if available
+        if (str_contains($request->header('Accept', ''), 'image/webp')) {
+            $url = $optimizer->getOptimizedUrl($path);
+        } else {
+            /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+            $disk = Storage::disk('public');
+            $url = $disk->url($path);
+        }
 
-        // Always redirect to the storage URL (S3 or Local)
-        // This offloads traffic from PHP to Nginx or S3 directly
-        $url = $disk->url($path);
-
-        return redirect()->away($url, 302);
+        return redirect()->away($url, 302, [
+            'Cache-Control' => 'public, max-age=31536000, immutable',
+            'Vary' => 'Accept'
+        ]);
     }
 }

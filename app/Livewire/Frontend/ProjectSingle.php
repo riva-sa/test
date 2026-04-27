@@ -78,7 +78,7 @@ class ProjectSingle extends Component
     public function mount($slug)
     {
         $cacheKey = 'project_single:'.$slug;
-        $this->project = Cache::remember($cacheKey, 60, function () use ($slug) {
+        $this->project = Cache::remember($cacheKey, 86400, function () use ($slug) {
             return Project::with([
                 'developer:id,name,logo',
                 'projectMedia',
@@ -87,7 +87,7 @@ class ProjectSingle extends Component
                 'landmarks:id,name',
                 'projectType:id,name,slug',
                 'salesManager:id,name,phone',
-            ])->where('slug', $slug)->firstOrFail();
+            ])->where('slug', $slug)->where('status', 1)->firstOrFail();
         });
         $this->case = request()->query('case', 'all');
         app(TrackingService::class)->trackProjectVisit($this->project);

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\Trackable;
+use App\Traits\BustsProjectsCache;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\URL;
 
 class Project extends Model
 {
-    use HasFactory, Trackable;
+    use HasFactory, Trackable, BustsProjectsCache;
 
     protected $fillable = [
         'name',

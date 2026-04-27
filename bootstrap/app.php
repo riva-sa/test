@@ -19,6 +19,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'api.ai.key' => \App\Http\Middleware\AiApiKeyAuth::class,
         ]);
 
+        $middleware->web(append: [
+            \App\Http\Middleware\PerformanceMonitorMiddleware::class,
+        ]);
+
         // Middleware groups
         $middleware->group('custom-dashboard', [
             // Add middleware to this group

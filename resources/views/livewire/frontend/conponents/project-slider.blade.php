@@ -10,7 +10,7 @@
                                style="height: 700px"
                                href="{{ route('frontend.projects.single', $project->slug) }}"
                                loading="lazy"
-                               data-image-src="{{ App\Helpers\MediaHelper::getUrl(optional($project->getMainImages())->media_url ?? optional($project->projectMedia->first())->media_url) }}">
+                               data-image-src="{{ App\Helpers\MediaHelper::getUrl(optional($project->getMainImages())->media_url ?? optional($project->projectMedia->first())->media_url, 'large') }}">
                             </a>
 
                             <figcaption class="noise-container text-right hero" dir="rtl">
@@ -18,12 +18,10 @@
                                     <h2 class="post-title h3 mt-1 mb-3">
                                         <a href="{{ route('frontend.projects.single', $project->slug) }}">{{ $project->name }}</a>
                                     </h2>
-                                    <div>
-                                        <img src="{{ App\Helpers\MediaHelper::getUrl($project->developer->logo) }}"
+                                        <img src="{{ App\Helpers\MediaHelper::getUrl($project->developer->logo, 'thumbnail') }}"
                                              style="width: 50px !important;max-height:50px"
-                                             alt="Logo" loading="lazy">
+                                             alt="Logo" loading="lazy" width="50" height="50">
                                     </div>
-                                </div>
                                 <p class="fs-15 text-muted fw-light mt-2 mb-0">
                                     {!! Str::limit(strip_tags($project->description), 150) !!}
                                 </p>

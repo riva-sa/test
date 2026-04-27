@@ -476,12 +476,12 @@ class ProjectsPage extends Component
             });
         }
 
-        // Cache static data for 1 hour
-        $developers = Cache::remember('developers_all', 3600, function () {
+        // Cache static data for 24 hours (86400 seconds)
+        $developers = Cache::remember('developers_all', 86400, function () {
             return Developer::select(['id', 'name', 'logo'])->get();
         });
 
-        $projectTypes = Cache::remember('project_types_active', 3600, function () {
+        $projectTypes = Cache::remember('project_types_active', 86400, function () {
             return ProjectType::where('status', 1)->select(['id', 'name', 'slug'])->get();
         });
 

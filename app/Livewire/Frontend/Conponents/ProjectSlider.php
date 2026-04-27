@@ -22,10 +22,12 @@ class ProjectSlider extends Component
         $globalVersion = Cache::get('projects_cache_version', 0);
         $cacheKey = 'home:project_slider:'.($this->type ?? 'default').':v:'.$globalVersion;
 
-        return Cache::remember($cacheKey, 60, function () {
+        return Cache::remember($cacheKey, 86400, function () {
             return Project::query()
                 ->latest()
-                ->with(['projectMedia:id,project_id,media_url,media_type,main', 'developer:id,name,logo'])
+                ->with(['projectMedia' => function ($query) {
+                    $query->select('id', 'project_id', 'media_url', 'media_type', 'main')->where('main', 1)->orWhere('media_type', 'image');
+                }, 'developer:id,name,logo'])
                 ->select(['id', 'name', 'slug', 'description', 'developer_id', 'is_featured', 'status'])
                 ->where('status', 1)
                 ->where('is_featured', 1)

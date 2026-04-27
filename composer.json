@@ -21,6 +21,7 @@
         "filament/filament": "^3.2",
         "filament/spatie-laravel-settings-plugin": "^3.2",
         "firefly/filament-blog": "^2.0",
+        "intervention/image": "^4.0",
         "jantinnerezo/livewire-alert": "^3.0",
         "laravel/framework": "^11.9",
         "laravel/nightwatch": "^1.15",

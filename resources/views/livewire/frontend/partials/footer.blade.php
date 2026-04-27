@@ -1,7 +1,7 @@
 <footer dir="rtl" class="">
     <div class="container-fluid p-7 pt-md-0">
         <div class="d-md-flex align-items-center justify-content-between">
-            <img class="mb-4" src="{{asset('frontend/img/logoyy.png')}}" width="50px" srcset="{{asset('frontend/img/logoyy.png')}} 2x" alt="Riva - ريفا">
+            <img class="mb-4" src="{{asset('frontend/img/logoyy.png')}}" width="50px" height="50" srcset="{{asset('frontend/img/logoyy.png')}} 2x" alt="Riva - ريفا" loading="lazy">
             <p class="mb-2 mb-lg-0">© 2025 جميع الحقوق محفوظة لشركة ريفا العقارية.</p>
 
             <div class="">

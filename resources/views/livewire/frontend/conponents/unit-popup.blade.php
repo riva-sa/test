@@ -24,8 +24,17 @@
                                                     <a href="{{ $image['url'] }}" class="unit-lightbox-item"
                                                        data-glightbox="type: image; title: {{ $selectedUnit->title }}; description: {{ $selectedUnit->unit_type }};"
                                                        data-gallery="unit-gallery">
-                                                        <figure class="card-img-top rounded"
-                                                                style="background-image: url('{{ $image['url'] }}'); background-size: cover; height: 240px;">
+                                                        <figure class="card-img-top rounded position-relative m-0" style="height: 240px; overflow: hidden;">
+                                                            <img src="{{ $image['url'] }}" 
+                                                                 srcset="{{ \App\Helpers\MediaHelper::getUrl($image['path'], 'thumbnail') }} 400w,
+                                                                         {{ \App\Helpers\MediaHelper::getUrl($image['path'], 'medium') }} 800w,
+                                                                         {{ \App\Helpers\MediaHelper::getUrl($image['path'], 'large') }} 1200w"
+                                                                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px"
+                                                                 style="width: 100%; height: 100%; object-fit: cover;"
+                                                                 alt="{{ $selectedUnit->title }}"
+                                                                 loading="lazy"
+                                                                 decoding="async"
+                                                                 width="800" height="600">
                                                         </figure>
                                                     </a>
                                                 </div>

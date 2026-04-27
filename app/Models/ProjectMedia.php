@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\BustsProjectsCache;
 use Illuminate\Database\Eloquent\Model;
 
 class ProjectMedia extends Model
 {
+    use BustsProjectsCache;
+
     protected $fillable = [
         'project_id',
         'media_type',

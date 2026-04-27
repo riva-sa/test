@@ -2,7 +2,7 @@
     <nav class="navbar navbar-expand-lg extended navbar-light navbar-bg-light" dir="rtl">
         <div class="container-fluid flex-lg-column">
             <div class="topbar d-flex flex-row w-100 justify-content-between align-items-center">
-                <div class="navbar-brand d-md-none d-block"><a href="{{ route('frontend.home') }}" ><img src="{{asset('frontend/img/svg/Artboard 19.svg')}}" width="111px" srcset="{{asset('frontend/img/svg/Artboard 19.svg')}} 2x" alt="Riva - ريفا" /></a></div>
+                <div class="navbar-brand d-md-none d-block"><a href="{{ route('frontend.home') }}" ><img src="{{asset('frontend/img/svg/Artboard 19.svg')}}" width="111" height="40" srcset="{{asset('frontend/img/svg/Artboard 19.svg')}} 2x" alt="Riva - ريفا" /></a></div>
                 <div class="navbar-other me-auto py-3 py-md-0">
                 <ul class="navbar-nav flex-row align-items-center">
                     <li class="nav-item d-lg-none">
@@ -18,7 +18,7 @@
                 <div class="navbar-collapse offcanvas offcanvas-nav offcanvas-start">
                 <div class="offcanvas-header d-lg-none">
                     <a href="{{ route('frontend.home') }}">
-                        <img src="{{asset('frontend/img/svg/Artboard 19.svg')}}"  width="111px" srcset="{{asset('frontend/img/svg/Artboard 19.svg')}} 2x" alt="Riva - ريفا" />
+                        <img src="{{asset('frontend/img/svg/Artboard 19.svg')}}"  width="111" height="40" srcset="{{asset('frontend/img/svg/Artboard 19.svg')}} 2x" alt="Riva - ريفا" loading="lazy" />
                         {{-- ريـفـا --}}
                     </a>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -27,7 +27,7 @@
                     <ul class="navbar-nav pe-0 ps-auto">
                         <li class="nav-item d-md-block d-none">
                             <a class="nav-link pe-0" href="{{ route('frontend.home') }}" style="padding: 15px 0 0 20px;">
-                                <img src="{{asset('frontend/img/svg/Artboard 18.svg')}}" width="155px" srcset="{{asset('frontend/img/svg/Artboard 18.svg')}} 2x" alt="Riva - ريفا" />
+                                <img src="{{asset('frontend/img/svg/Artboard 18.svg')}}" width="155" height="50" srcset="{{asset('frontend/img/svg/Artboard 18.svg')}} 2x" alt="Riva - ريفا" />
                                 {{-- ريـــــفــــــا --}}
                             </a>
                         </li>
@@ -51,7 +51,7 @@
                                                     <h6 class="dropdown-header h4 mb-0">خريطة مشاريعُنا</h6>
                                                     <a href="{{ route('frontend.projects.map') }}" class="dropdown-header text-start mb-0">عرض كل المشاريع<i class="uil uil-arrow-left"></i></a>
                                                 </div>
-                                                <img class="dropdown-header" style="max-width: 100%" src="{{ asset('frontend/Rectangle 5.png') }}" alt="Riva - ريفا">
+                                                <img class="dropdown-header" style="max-width: 100%" src="{{ asset('frontend/Rectangle 5.png') }}" alt="Riva - ريفا" loading="lazy">
                                             </div>
                                         </div>
                                         <!--/column -->
@@ -61,7 +61,7 @@
                                                 <div class="col-md-6 col-lg-4">
                                                     <a href="{{ route('frontend.projects') }}" class="d-flex flex-row">
                                                         <div>
-                                                            <img src="{{ asset('frontend/img/icons/Button4.png') }}" class="icon-svg icon-svg-sm text-pink ms-4" alt="Riva - ريفا">
+                                                            <img src="{{ asset('frontend/img/icons/Button4.png') }}" class="icon-svg icon-svg-sm text-pink ms-4" alt="Riva - ريفا" loading="lazy" width="40" height="40">
                                                         </div>
                                                         <div>
                                                             <h4 class="mb-1">مشاريعنا</h4>
@@ -76,7 +76,7 @@
                                                 <div class="col-md-6 col-lg-4">
                                                     <a href="{{ route('frontend.about') }}" class="d-flex flex-row">
                                                         <div>
-                                                            <img src="{{ asset('frontend/img/icons/Button.png') }}" class="icon-svg icon-svg-sm text-aqua ms-4" alt="Riva - ريفا">
+                                                            <img src="{{ asset('frontend/img/icons/Button.png') }}" class="icon-svg icon-svg-sm text-aqua ms-4" alt="Riva - ريفا" loading="lazy" width="40" height="40">
                                                         </div>
                                                         <div>
                                                             <h4 class="mb-1">تعرف على ريڤا</h4>
@@ -101,7 +101,7 @@
                                                 <div class="col-md-6 col-lg-4">
                                                     <a href="{{ route('frontend.blog') }}" class="d-flex flex-row">
                                                         <div>
-                                                            <img src="{{ asset('frontend/img/icons/Button5.png') }}" class="icon-svg icon-svg-sm text-green ms-4" alt="Riva - ريفا">
+                                                            <img src="{{ asset('frontend/img/icons/Button5.png') }}" class="icon-svg icon-svg-sm text-green ms-4" alt="Riva - ريفا" loading="lazy" width="40" height="40">
                                                         </div>
                                                         <div>
                                                             <h4 class="mb-1">الأحداث العقارية</h4>

@@ -98,6 +98,7 @@ class UnitPopup extends Component
 
         if ($this->selectedUnit->image) {
             $this->unitImages[] = [
+                'path' => $this->selectedUnit->image,
                 'url' => MediaHelper::getUrl($this->selectedUnit->image),
                 'is_main' => true,
             ];
@@ -105,6 +106,7 @@ class UnitPopup extends Component
 
         if ($this->selectedUnit->floor_plan) {
             $this->unitImages[] = [
+                'path' => $this->selectedUnit->floor_plan,
                 'url' => MediaHelper::getUrl($this->selectedUnit->floor_plan),
                 'is_main' => false,
             ];

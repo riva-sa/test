@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use App\Traits\Trackable;
+use App\Traits\BustsProjectsCache;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Unit extends Model
 {
-    use HasFactory, Trackable;
+    use HasFactory, Trackable, BustsProjectsCache;
 
     protected $fillable = [
         'title',

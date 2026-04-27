@@ -36,7 +36,7 @@
                                 <p class="small mb-1">المطور</p>
                             </div>
                             <div>
-                                <img src="{{ App\Helpers\MediaHelper::getUrl($project->developer->logo) }}" style="height: auto!important;max-width:100px" alt="Riva - ريفا">
+                                <img src="{{ App\Helpers\MediaHelper::getUrl($project->developer->logo, 'thumbnail') }}" loading="lazy" style="height: auto!important;max-width:100px" alt="Riva - ريفا" width="100" height="100">
                             </div>
                         </div>
                     </figcaption>
@@ -142,7 +142,11 @@
                                         <div class="swiper-slide">
                                             <a class="item-link" href="{{ App\Helpers\MediaHelper::getUrl($media->media_url) }}" data-glightbox data-gallery="product-group">
                                                 <figure class="rounded">
-                                                    <img src="{{ App\Helpers\MediaHelper::getUrl($media->media_url) }}" class="rounded" style="max-height:550px" srcset="{{ App\Helpers\MediaHelper::getUrl($media->media_url) }} 2x" alt="Riva - ريفا" />
+                                                    <img src="{{ App\Helpers\MediaHelper::getUrl($media->media_url, 'large') }}" class="rounded" style="max-height:550px" 
+                                                         srcset="{{ App\Helpers\MediaHelper::getUrl($media->media_url, 'medium') }} 800w,
+                                                                 {{ App\Helpers\MediaHelper::getUrl($media->media_url, 'large') }} 1200w"
+                                                         sizes="(max-width: 800px) 800px, 1200px"
+                                                         alt="Riva - ريفا" loading="lazy" decoding="async" fetchpriority="low" width="1200" height="550" />
                                                 </figure>
 
                                             </a>
@@ -161,7 +165,7 @@
                                     <p class="small mb-1">المطور</p>
                                 </div>
                                 <div>
-                                    <img src="{{ App\Helpers\MediaHelper::getUrl($project->developer->logo) }}" style="height: auto!important;max-width:100px" alt="Riva - ريفا">
+                                    <img src="{{ App\Helpers\MediaHelper::getUrl($project->developer->logo, 'thumbnail') }}" loading="lazy" style="height: auto!important;max-width:100px" alt="Riva - ريفا" width="100" height="100">
                                 </div>
                             </div>
                         </figcaption>
@@ -302,13 +306,16 @@
                                             <article class="post rounded border">
                                                 <figure class="rounded-top position-relative" data-unit-id="{{ $unit->id }}" wire:click="showUnitDetails({{ $unit->id }})">
                                                     @if ($unit->floor_plan)
-                                                        <img src="{{ App\Helpers\MediaHelper::getUrl($unit->floor_plan ) }}"
+                                                        <img src="{{ App\Helpers\MediaHelper::getUrl($unit->floor_plan, 'medium') }}"
+                                                        srcset="{{ App\Helpers\MediaHelper::getUrl($unit->floor_plan, 'thumbnail') }} 400w,
+                                                                {{ App\Helpers\MediaHelper::getUrl($unit->floor_plan, 'medium') }} 800w"
+                                                        sizes="(max-width: 600px) 400px, 800px"
                                                         style="max-height: 207px;"
-                                                        alt="{{ $unit->title }}" loading="lazy" />
+                                                        alt="{{ $unit->title }}" loading="lazy" decoding="async" width="400" height="207" />
                                                     @else
                                                         <img src="https://placehold.co/700x400"
                                                         style="max-height: 207px;"
-                                                        alt="{{ $unit->title }}" loading="lazy" />
+                                                        alt="{{ $unit->title }}" loading="lazy" width="700" height="400" />
                                                     @endif
 
                                                     @if($unit->case == 2)
