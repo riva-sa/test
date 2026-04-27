@@ -24,7 +24,7 @@ class IngestSocialMediaLead
         $attributes = [
             'name' => $data['name'],
             'email' => $data['email'] ?? null,
-            'phone' => (new NormalizePhoneAction())->execute($data['phone']),
+            'phone' => $data['phone'],
             'message' => $data['message'] ?? null,
             'marketing_source' => $data['marketing_source'],
             'campaign_name' => $data['campaign_name'] ?? null,

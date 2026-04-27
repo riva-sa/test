@@ -215,20 +215,20 @@ class LeadDistributionService
 
     public function normalizePhone(string $raw): string
     {
-        $digits = preg_replace('/\D+/', '', $raw) ?? '';
-        if (str_starts_with($digits, '966')) {
-            return '+'.$digits;
-        }
-        if (str_starts_with($digits, '0')) {
-            $digits = substr($digits, 1);
-        }
-        if (strlen($digits) === 9 && str_starts_with($digits, '5')) {
-            return '+966'.$digits;
-        }
-        if (strlen($digits) >= 9) {
-            return '+'.$digits;
-        }
+        // $digits = preg_replace('/\D+/', '', $raw) ?? '';
+        // if (str_starts_with($digits, '966')) {
+        //     return '+'.$digits;
+        // }
+        // if (str_starts_with($digits, '0')) {
+        //     $digits = substr($digits, 1);
+        // }
+        // if (strlen($digits) === 9 && str_starts_with($digits, '5')) {
+        //     return '+966'.$digits;
+        // }
+        // if (strlen($digits) >= 9) {
+        //     return '+'.$digits;
+        // }
 
-        return '';
+        return $raw;
     }
 }
