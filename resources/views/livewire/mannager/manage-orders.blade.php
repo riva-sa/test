@@ -93,6 +93,9 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
+                            <th>
+                                #
+                            </th>
                             <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" wire:click="sortBy('name')">
                                 <div class="flex items-center justify-start gap-1">
                                     <span>العميل</span>
@@ -169,6 +172,9 @@
                     <tbody class="bg-white divide-y divide-gray-200">
                         @forelse ($orders as $order)
                         <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4">
+                                {{ $order->id }}
+                            </td>
                             <!-- Customer Info -->
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <a href="{{ route('manager.order-details', $order->id) }}" class="flex flex-col">
