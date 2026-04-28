@@ -20,6 +20,7 @@ use App\Livewire\Frontend\Terms;
 use App\Livewire\Mannager\BulkLeadImport;
 use App\Livewire\Mannager\Campaigns;
 use App\Livewire\Mannager\CreateOrder;
+use App\Livewire\Mannager\CustomerProfile;
 use App\Livewire\Mannager\CustomersList;
 use App\Livewire\Mannager\ManageOrders;
 use App\Livewire\Mannager\ManagerDashboard;
@@ -56,6 +57,7 @@ Route::middleware(['auth', 'role:sales_manager,sales,Admin,developer,follow_up,p
     Route::get('/crm/orders/{id}', OrderDetails::class)->name('manager.order-details');
     // customerlist
     Route::get('/crm/customerlist', CustomersList::class)->name('manager.customerlist');
+    Route::get('/crm/customers/{phone}', CustomerProfile::class)->name('manager.customer-profile');
     Route::get('/crm/sales-managers', SalesManagers::class)->name('manager.sales-managers');
     Route::get('/crm/blocked-numbers', \App\Livewire\Mannager\BlockedNumbers::class)->name('manager.blocked-numbers');
     Route::get('/crm/{order}/permissions', OrderPermissions::class)->name('manager.permissions');
