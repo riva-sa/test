@@ -24,7 +24,7 @@ class ManageOrders extends Component
 
     public $sortDirection = 'desc';
 
-    public $perPage = 10;
+    public $perPage = 50;
 
     public $salesManagerFilter = '';
 
@@ -37,7 +37,7 @@ class ManageOrders extends Component
         'salesManagerFilter' => ['except' => ''],
         'sortField' => ['except' => 'created_at'],
         'sortDirection' => ['except' => 'desc'],
-        'perPage' => ['except' => 10],
+        'perPage' => ['except' => 100],
         'delayedFilter' => ['except' => ''],
     ];
 

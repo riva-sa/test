@@ -406,7 +406,20 @@
 
             <!-- Pagination -->
             <div class="px-4 py-3 bg-gray-50 border-t border-gray-200 sm:px-6">
-                {{ $orders->links() }}
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div class="flex items-center gap-2">
+                        <label for="perPage" class="text-sm text-gray-600">عرض:</label>
+                        <select wire:model.live="perPage" id="perPage" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-1">
+                            <option value="100">100</option>
+                            <option value="150">150</option>
+                            <option value="200">200</option>
+                        </select>
+                        <span class="text-sm text-gray-600">عنصر لكل صفحة</span>
+                    </div>
+                    <div class="w-full sm:w-auto">
+                        {{ $orders->links() }}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
