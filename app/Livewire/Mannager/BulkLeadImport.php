@@ -72,6 +72,27 @@ class BulkLeadImport extends Component
         session()->flash('bulk_import_message', 'اكتمل استيراد الملف.');
     }
 
+    public function downloadTemplate()
+    {
+        $headings = [
+            'اسم العميل',
+            'رقم الجوال',
+            'اسم المشروع',
+            'القناة (مصدر العميل)',
+            'اسم الموظف المسند له',
+            'نوع الوحدة',
+            'نوع الشراء',
+            'الغرض من الشراء',
+        ];
+
+        return Excel::download(new class($headings) implements \Maatwebsite\Excel\Concerns\WithHeadings, \Maatwebsite\Excel\Concerns\FromCollection {
+            protected $headings;
+            public function __construct($headings) { $this->headings = $headings; }
+            public function headings(): array { return $this->headings; }
+            public function collection() { return collect([]); }
+        }, 'leads_template.xlsx');
+    }
+
     public function render()
     {
         return view('livewire.mannager.bulk-lead-import')->layout('layouts.custom');

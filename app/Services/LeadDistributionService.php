@@ -43,11 +43,14 @@ class LeadDistributionService
         foreach ($validRows as $index => $row) {
             $rowNum = $index + 2;
             try {
-                $project = $this->resolveProject($row['project_name']);
-                if (! $project) {
-                    $failed[] = ['row' => $rowNum, 'reason' => 'المشروع غير موجود: '.$row['project_name']];
+                $project = null;
+                if (!empty($row['project_name'])) {
+                    $project = $this->resolveProject($row['project_name']);
+                    if (! $project) {
+                        $failed[] = ['row' => $rowNum, 'reason' => 'المشروع غير موجود: '.$row['project_name']];
 
-                    continue;
+                        continue;
+                    }
                 }
 
                 $phone = $this->normalizePhone($row['client_phone']);
@@ -63,7 +66,8 @@ class LeadDistributionService
                     continue;
                 }
 
-                $key = $phone.'|'.$project->id;
+                $project_id = $project ? $project->id : null;
+                $key = $phone.'|'.($project_id ?? 'null');
                 if (isset($seenKeys[$key])) {
                     $skipped[] = ['row' => $rowNum, 'reason' => 'تكرار في الملف لنفس الهاتف والمشروع'];
 
@@ -71,32 +75,51 @@ class LeadDistributionService
                 }
                 $seenKeys[$key] = true;
 
-                if (UnitOrder::where('project_id', $project->id)->where('phone', $phone)->exists()) {
+                if (UnitOrder::where('project_id', $project_id)->where('phone', $phone)->exists()) {
                     $skipped[] = ['row' => $rowNum, 'reason' => 'يوجد طلب بنفس الهاتف لهذا المشروع'];
 
                     continue;
                 }
 
-                $assignee = $pool[$rr % $poolSize];
-                $rr++;
+                $assignee = null;
+                if (!empty($row['assigned_employee'])) {
+                    $assignee = User::role(config('lead_import.sales_role', 'sales'))
+                        ->where('name', 'like', '%' . trim($row['assigned_employee']) . '%')
+                        ->first();
+                }
+
+                if (!$assignee) {
+                    $assignee = $pool[$rr % $poolSize];
+                    $rr++;
+                }
+
+                $purchaseType = $row['purchase_type'] ?? null;
+                if ($purchaseType === 'كاش') $purchaseType = 'cash';
+                elseif ($purchaseType === 'تقسيط') $purchaseType = 'installment';
+
+                $purchasePurpose = $row['purchase_purpose'] ?? null;
+                if ($purchasePurpose === 'استثمار') $purchasePurpose = 'investment';
+                elseif ($purchasePurpose === 'سكنى' || $purchasePurpose === 'سكني') $purchasePurpose = 'personal';
 
                 $email = 'import.'.Str::lower(Str::limit($batchId, 36, '')).'.'.$rowNum.'.'.Str::random(6).'@invalid.local';
 
-                DB::transaction(function () use ($row, $project, $phone, $email, $batchId, $assignee, $grantedByUserId, &$imported): void {
+                DB::transaction(function () use ($row, $project_id, $phone, $email, $batchId, $assignee, $grantedByUserId, $purchaseType, $purchasePurpose, &$imported): void {
                     $order = UnitOrder::create([
                         'name' => $row['client_name'],
                         'email' => $email,
                         'phone' => $phone,
                         'message' => null,
-                        'PurchaseType' => null,
-                        'PurchasePurpose' => null,
+                        'PurchaseType' => $purchaseType,
+                        'PurchasePurpose' => $purchasePurpose,
                         'unit_id' => null,
-                        'project_id' => $project->id,
+                        'project_id' => $project_id,
                         'support_type' => null,
                         'status' => 0,
                         'order_source' => UnitOrder::ORDER_SOURCE_BULK_IMPORT,
                         'import_batch_id' => $batchId,
                         'assigned_sales_user_id' => $assignee->id,
+                        'marketing_source' => $row['channel'] ?? null,
+                        'waiting_list_unit_type' => $row['unit_type'] ?? null,
                     ]);
 
                     OrderPermission::firstOrCreate(
@@ -139,8 +162,8 @@ class LeadDistributionService
         }
 
         $colMap = $this->mapHeaders($headerRow->toArray());
-        if (! isset($colMap['client_name'], $colMap['client_phone'], $colMap['project_name'])) {
-            return ['valid' => [], 'errors' => [['row' => 1, 'reason' => 'الأعمدة المطلوبة: Client Name, Client Phone Number, Project Name']]];
+        if (! isset($colMap['client_name'], $colMap['client_phone'])) {
+            return ['valid' => [], 'errors' => [['row' => 1, 'reason' => 'الأعمدة المطلوبة: Client Name, Client Phone Number']]];
         }
 
         $valid = [];
@@ -151,14 +174,14 @@ class LeadDistributionService
             $cells = Collection::make($row)->toArray();
             $name = trim((string) ($cells[$colMap['client_name']] ?? ''));
             $phoneRaw = trim((string) ($cells[$colMap['client_phone']] ?? ''));
-            $projectName = trim((string) ($cells[$colMap['project_name']] ?? ''));
+            $projectName = isset($colMap['project_name']) ? trim((string) ($cells[$colMap['project_name']] ?? '')) : '';
 
             if ($name === '' && $phoneRaw === '' && $projectName === '') {
                 continue;
             }
 
-            if ($name === '' || $phoneRaw === '' || $projectName === '') {
-                $errors[] = ['row' => $excelRowNum, 'reason' => 'صف غير مكتمل'];
+            if ($name === '' || $phoneRaw === '') {
+                $errors[] = ['row' => $excelRowNum, 'reason' => 'اسم العميل ورقم الجوال مطلوبان'];
 
                 continue;
             }
@@ -167,6 +190,11 @@ class LeadDistributionService
                 'client_name' => $name,
                 'client_phone' => $phoneRaw,
                 'project_name' => $projectName,
+                'channel' => trim((string) ($cells[$colMap['channel']] ?? '')),
+                'assigned_employee' => trim((string) ($cells[$colMap['assigned_employee']] ?? '')),
+                'unit_type' => trim((string) ($cells[$colMap['unit_type']] ?? '')),
+                'purchase_type' => trim((string) ($cells[$colMap['purchase_type']] ?? '')),
+                'purchase_purpose' => trim((string) ($cells[$colMap['purchase_purpose']] ?? '')),
             ];
         }
 
@@ -181,8 +209,13 @@ class LeadDistributionService
     {
         $aliases = [
             'client_name' => ['client name', 'اسم العميل', 'الاسم', 'name'],
-            'client_phone' => ['client phone number', 'phone', 'رقم الهاتف', 'الجوال', 'mobile'],
-            'project_name' => ['project name', 'المشروع', 'project'],
+            'client_phone' => ['client phone number', 'phone', 'رقم الهاتف', 'الجوال', 'mobile', 'رقم الجوال'],
+            'project_name' => ['project name', 'المشروع', 'project', 'اسم المشروع'],
+            'channel' => ['channel', 'source', 'القناة', 'مصدر العميل', 'القناة (مصدر العميل)'],
+            'assigned_employee' => ['assigned employee', 'employee', 'الموظف', 'اسم الموظف المسند له', 'اسم الموظف'],
+            'unit_type' => ['unit type', 'نوع الوحدة', 'unit'],
+            'purchase_type' => ['purchase type', 'نوع الشراء', 'purchase'],
+            'purchase_purpose' => ['purchase purpose', 'الغرض من الشراء', 'purpose'],
         ];
 
         $map = [];

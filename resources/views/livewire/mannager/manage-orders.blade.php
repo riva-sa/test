@@ -28,7 +28,7 @@
         <div class="bg-white rounded-xl shadow-sm p-4 mb-6 border border-gray-100">
             <h2 class="text-lg font-semibold text-gray-700 mb-4">تصفية النتائج</h2>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
                 <!-- Search Field -->
                 <div>
                     <label for="search" class="block text-sm font-medium text-gray-700 mb-1">بحث</label>
@@ -76,6 +76,19 @@
                         @endforeach
                     </select>
                 </div>
+
+                <!-- From Date -->
+                <div>
+                    <label for="fromDate" class="block text-sm font-medium text-gray-700 mb-1">من تاريخ</label>
+                    <input type="date" wire:model.live="fromDate" id="fromDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
+                </div>
+
+                <!-- To Date -->
+                <div>
+                    <label for="toDate" class="block text-sm font-medium text-gray-700 mb-1">إلى تاريخ</label>
+                    <input type="date" wire:model.live="toDate" id="toDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
+                </div>
+
                 <!-- Delayed Filter -->
                 <div>
                     <label for="delayedFilter" class="block text-sm font-medium text-gray-700 mb-1">الطلبات المتأخرة</label>
@@ -83,6 +96,16 @@
                         <option value="">الكل</option>
                         <option value="1">عرض المتأخرة فقط</option>
                     </select>
+                </div>
+
+                <!-- Export Button -->
+                <div class="flex items-end">
+                    <button wire:click="export" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
+                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                        تصدير Excel
+                    </button>
                 </div>
             </div>
         </div>

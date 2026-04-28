@@ -29,6 +29,8 @@ class ManageOrders extends Component
     public $salesManagerFilter = '';
 
     public $delayedFilter = '';
+    public $fromDate = '';
+    public $toDate = '';
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -39,6 +41,8 @@ class ManageOrders extends Component
         'sortDirection' => ['except' => 'desc'],
         'perPage' => ['except' => 100],
         'delayedFilter' => ['except' => ''],
+        'fromDate' => ['except' => ''],
+        'toDate' => ['except' => ''],
     ];
 
     public function updatingSearch()
@@ -102,6 +106,55 @@ class ManageOrders extends Component
         }
     }
 
+    public function export()
+    {
+        $query = UnitOrder::with([
+            'notes', 
+            'unit', 
+            'project.salesManager', 
+            'user', 
+            'permissions.user', 
+            'lastActionByUser', 
+            'assignedSalesUser'
+        ])->accessibleBy(auth()->user());
+
+        $query->when($this->search, function ($query) {
+            $query->where(function ($q) {
+                $q->where('name', 'like', '%'.$this->search.'%')
+                    ->orWhere('email', 'like', '%'.$this->search.'%')
+                    ->orWhere('phone', 'like', '%'.$this->search.'%')
+                    ->orWhere('bank_name', 'like', '%'.$this->search.'%')
+                    ->orWhere('bank_employee_name', 'like', '%'.$this->search.'%')
+                    ->orWhere('bank_employee_phone', 'like', '%'.$this->search.'%')
+                    ->orWhereHas('unit', function ($q) {
+                        $q->where('title', 'like', '%'.$this->search.'%');
+                    });
+            });
+        })
+            ->when($this->statusFilter !== '', function ($query) {
+                $query->where('status', $this->statusFilter);
+            })
+            ->when($this->projectFilter !== '', function ($query) {
+                $query->where('project_id', $this->projectFilter);
+            })
+            ->when($this->salesManagerFilter, function ($query) {
+                $selectedUser = \App\Models\User::find($this->salesManagerFilter);
+                if ($selectedUser) {
+                    $query->accessibleBy($selectedUser);
+                }
+            })
+            ->when($this->fromDate, function ($query) {
+                $query->whereDate('created_at', '>=', $this->fromDate);
+            })
+            ->when($this->toDate, function ($query) {
+                $query->whereDate('created_at', '<=', $this->toDate);
+            });
+
+        $records = $query->orderBy($this->sortField, $this->sortDirection)->get();
+
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\UnitOrdersExport($records), 'orders_export_' . now()->format('Y-m-d') . '.xlsx');
+    }
+
     public function render()
     {
         $query = UnitOrder::with([
@@ -139,6 +192,12 @@ class ManageOrders extends Component
                 if ($selectedUser) {
                     $query->accessibleBy($selectedUser);
                 }
+            })
+            ->when($this->fromDate, function ($query) {
+                $query->whereDate('created_at', '>=', $this->fromDate);
+            })
+            ->when($this->toDate, function ($query) {
+                $query->whereDate('created_at', '<=', $this->toDate);
             });
 
         if ($this->delayedFilter == '1') {

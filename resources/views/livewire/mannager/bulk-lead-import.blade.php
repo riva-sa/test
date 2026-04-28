@@ -1,10 +1,17 @@
 <div class="p-4 sm:p-6">
     <div class="max-w-3xl mx-auto">
-        <h1 class="text-2xl font-bold text-gray-900 mb-2">استيراد عملاء محتملين (Excel)</h1>
-        <p class="text-sm text-gray-600 mb-6">
-            الأعمدة المطلوبة في الصف الأول: <strong>Client Name</strong>، <strong>Client Phone Number</strong>، <strong>Project Name</strong>
-            (يمكنك استخدام العناوين العربية المكافئة).
-        </p>
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900 mb-2">استيراد عملاء محتملين (Excel)</h1>
+
+            </div>
+            <button wire:click="downloadTemplate" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
+                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                </svg>
+                تحميل القالب
+            </button>
+        </div>
 
         @if (session()->has('bulk_import_message'))
             <div class="mb-4 p-4 rounded-lg bg-green-50 border border-green-200 text-green-800 text-sm">
