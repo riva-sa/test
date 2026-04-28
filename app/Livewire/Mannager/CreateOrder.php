@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Mannager;
 
+use App\Models\BlockedNumber;
 use App\Models\Project;
 use App\Models\Unit;
 use App\Models\UnitOrder;
@@ -158,6 +159,13 @@ class CreateOrder extends Component
     public function createOrder()
     {
         $this->validate();
+
+        // Check for blocked numbers
+        $isBlocked = BlockedNumber::where('phone', $this->phone)->exists();
+        if ($isBlocked) {
+            session()->flash('error', 'عذراً، هذا الرقم محظور من تقديم طلبات.');
+            return;
+        }
 
         $isWaitingList = (bool) $this->isWaitingList;
 

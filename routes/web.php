@@ -57,6 +57,7 @@ Route::middleware(['auth', 'role:sales_manager,sales,Admin,developer,follow_up,p
     // customerlist
     Route::get('/crm/customerlist', CustomersList::class)->name('manager.customerlist');
     Route::get('/crm/sales-managers', SalesManagers::class)->name('manager.sales-managers');
+    Route::get('/crm/blocked-numbers', \App\Livewire\Mannager\BlockedNumbers::class)->name('manager.blocked-numbers');
     Route::get('/crm/{order}/permissions', OrderPermissions::class)->name('manager.permissions');
 
     Route::get('crm/create-order', CreateOrder::class)->name('manager.create-order');

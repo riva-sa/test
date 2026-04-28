@@ -90,6 +90,18 @@ class ManageOrders extends Component
         return redirect()->route('frontend.home');
     }
 
+    public function deleteOrder($orderId)
+    {
+        $order = UnitOrder::accessibleBy(auth()->user())->find($orderId);
+        
+        if ($order) {
+            $order->delete();
+            session()->flash('message', 'تم حذف الطلب بنجاح.');
+        } else {
+            session()->flash('error', 'لا تملك صلاحية حذف هذا الطلب.');
+        }
+    }
+
     public function render()
     {
         $query = UnitOrder::with([

@@ -9,6 +9,15 @@
         </div>
     @endif
 
+    @if (session()->has('error'))
+        <div class="mb-6 px-6 py-4 rounded-lg bg-red-50 border-r-4 border-red-500 flex items-center shadow-sm animate-fade-in-down">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 ml-3" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+            <span class="text-red-800 font-medium">{{ session('error') }}</span>
+        </div>
+    @endif
+
     <div class="bg-white rounded-xl shadow-lg overflow-hidden">
         <!-- Form Header -->
         <div class="bg-gradient-to-l from-gray-50 to-white px-6 py-4 border-b border-gray-200 flex justify-between items-center">

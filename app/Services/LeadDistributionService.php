@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\BlockedNumber;
 use App\Models\OrderPermission;
 use App\Models\Project;
 use App\Models\UnitOrder;
@@ -53,6 +54,12 @@ class LeadDistributionService
                 if ($phone === '') {
                     $failed[] = ['row' => $rowNum, 'reason' => 'رقم الهاتف غير صالح'];
 
+                    continue;
+                }
+
+                // Check for blocked numbers
+                if (BlockedNumber::where('phone', $phone)->exists()) {
+                    $failed[] = ['row' => $rowNum, 'reason' => 'هذا الرقم محظور من النظام'];
                     continue;
                 }
 

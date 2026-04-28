@@ -7,8 +7,19 @@
                     إدارة الطلبات
                 </h1>
                 <p class="text-sm text-gray-500 mt-1">عرض وتتبع جميع طلبات العملاء</p>
-
             </div>
+            
+            @if (session()->has('message'))
+                <div class="mt-4 p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50" role="alert">
+                    {{ session('message') }}
+                </div>
+            @endif
+
+            @if (session()->has('error'))
+                <div class="mt-4 p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50" role="alert">
+                    {{ session('error') }}
+                </div>
+            @endif
         </div>
     </div>
     <!-- Header Section -->
@@ -27,7 +38,7 @@
                                 <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
                             </svg>
                         </div>
-                        <input type="text" wire:model.live="search" id="search" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pr-10 p-2.5" placeholder="ابحث بالاسم أو الهاتف...">
+                        <input type="text" wire:model.live="search" id="search" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pr-10 p-2.5" placeholder="ابحث بالاسم، الهاتف، أو البريد...">
                     </div>
                 </div>
 
@@ -383,6 +394,14 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                             </svg>
                                         </a>
+                                    @endif
+
+                                    @if (auth()->user()->hasRole('Admin'))
+                                    <button wire:click="deleteOrder({{ $order->id }})" wire:confirm="هل أنت متأكد من حذف هذا الطلب؟" class="text-red-600 hover:text-red-900 flex items-center gap-1" title="حذف">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
                                     @endif
                                 </div>
                             </td>

@@ -4,6 +4,7 @@ namespace App\Livewire\Frontend\Conponents;
 
 use App\Helpers\MediaHelper;
 use App\Mail\UnitOrderNotification as MailUnitOrderNotification;
+use App\Models\BlockedNumber;
 use App\Models\OrderPermission;
 use App\Models\Unit;
 use App\Models\UnitOrder;
@@ -130,6 +131,16 @@ class UnitPopup extends Component
         try {
             // Save the interest to database
             $fullPhone = '+966'.$this->phone;
+            // Check for blocked numbers
+            $isBlocked = BlockedNumber::where('phone', $fullPhone)->exists();
+            if ($isBlocked) {
+                $this->alert('error', 'عذراً، لا يمكن تقدم طلب الان.', [
+                    'position' => 'bottom',
+                    'timer' => 5000,
+                ]);
+                return;
+            }
+
             $unit = Unit::where('id', $this->selectedUnit->id)->first();
             $project = $unit->project;
 

@@ -258,6 +258,13 @@
                     </svg>
                     استيراد عملاء (Excel)
                 </a>
+
+                <a href="{{ route('manager.blocked-numbers') }}" class="group flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-50 transition-all duration-200 text-gray-700 hover:text-primary-500 sidebar-item {{ request()->routeIs('manager.blocked-numbers') ? 'bg-gray-50 text-primary-500 border border-gray-200' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-3 text-gray-500 group-hover:text-primary-500 {{ request()->routeIs('manager.blocked-numbers') ? 'text-primary-500' : '' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728" />
+                    </svg>
+                    الأرقام المحظورة
+                </a>
                 @endif
 
                 <!-- Quick Actions Section -->

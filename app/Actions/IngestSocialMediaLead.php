@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use App\Models\BlockedNumber;
 use App\Models\UnitOrder;
 use App\Models\User;
 use App\Notifications\NewSocialMediaLead;
@@ -20,6 +21,19 @@ class IngestSocialMediaLead
     public function execute(array $data): UnitOrder
     {
         Log::debug('Incoming Zapier Lead Data:', $data);
+
+        // Check for blocked numbers
+        $isBlocked = BlockedNumber::where('phone', $data['phone'])->exists();
+        if ($isBlocked) {
+            Log::warning('Blocked number attempted to submit social media lead', [
+                'phone' => $data['phone'],
+                'name' => $data['name'] ?? 'Unknown'
+            ]);
+            
+            // Return a dummy order or handle specifically. 
+            // For now, let's throw an exception to be caught by the controller.
+            throw new \Exception('This phone number is blocked from submitting inquiries.');
+        }
 
         $attributes = [
             'name' => $data['name'],

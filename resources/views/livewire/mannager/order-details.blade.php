@@ -4,26 +4,30 @@
             @if($previousOrder || $nextOrder)
                 <div class="flex justify-between items-center mb-4" dir="ltr">
 
-                    <a href="{{ route('manager.order-details', $nextOrder->id ?? '#') }}"
-                        @if(!$nextOrder) style="pointer-events: none;cursor: default;color: gray;text-decoration: none;"  @endif
-                        type="button"
-                        class="inline-flex items-center @if($nextOrder) disabled @endif px-3 py-2 bg-gray-100 text-gray-700 text-sm rounded-md hover:bg-gray-200">
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                        </svg>
-                        السابق
-                    </a>
 
                     <a href="{{ route('manager.order-details', $previousOrder->id ?? '#') }}"
                         @if(!$previousOrder) style="pointer-events: none;cursor: default;color: gray;text-decoration: none;"  @endif
                         type="button"
                         class="inline-flex items-center @if($previousOrder) disabled @endif px-3 py-2 bg-gray-100 text-gray-700 text-sm rounded-md hover:bg-gray-200">
+
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
                         التالي
                         
-                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
                     </a>
+
+                    <a href="{{ route('manager.order-details', $nextOrder->id ?? '#') }}"
+                        @if(!$nextOrder) style="pointer-events: none;cursor: default;color: gray;text-decoration: none;"  @endif
+                        type="button"
+                        class="inline-flex items-center @if($nextOrder) disabled @endif px-3 py-2 bg-gray-100 text-gray-700 text-sm rounded-md hover:bg-gray-200">
+
+                        السابق
+                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+</svg>
+                    </a>
+
            
                 </div>
             @endif
