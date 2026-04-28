@@ -76,18 +76,20 @@
                         @endforeach
                     </select>
                 </div>
+                @if (auth()->user()->hasRole('Admin'))
+                
+                    <!-- From Date -->
+                    <div>
+                        <label for="fromDate" class="block text-sm font-medium text-gray-700 mb-1">من تاريخ</label>
+                        <input type="date" wire:model.live="fromDate" id="fromDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
+                    </div>
 
-                <!-- From Date -->
-                <div>
-                    <label for="fromDate" class="block text-sm font-medium text-gray-700 mb-1">من تاريخ</label>
-                    <input type="date" wire:model.live="fromDate" id="fromDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
-                </div>
-
-                <!-- To Date -->
-                <div>
-                    <label for="toDate" class="block text-sm font-medium text-gray-700 mb-1">إلى تاريخ</label>
-                    <input type="date" wire:model.live="toDate" id="toDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
-                </div>
+                    <!-- To Date -->
+                    <div>
+                        <label for="toDate" class="block text-sm font-medium text-gray-700 mb-1">إلى تاريخ</label>
+                        <input type="date" wire:model.live="toDate" id="toDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
+                    </div>
+                @endif
 
                 <!-- Delayed Filter -->
                 <div>
@@ -97,7 +99,7 @@
                         <option value="1">عرض المتأخرة فقط</option>
                     </select>
                 </div>
-
+                @if (auth()->user()->hasRole('Admin'))
                 <!-- Export Button -->
                 <div class="flex items-end">
                     <button wire:click="export" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
@@ -107,6 +109,7 @@
                         تصدير Excel
                     </button>
                 </div>
+                @endif
             </div>
         </div>
 
