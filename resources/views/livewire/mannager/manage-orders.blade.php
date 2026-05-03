@@ -340,9 +340,9 @@
                                     <i class="{{ $sourceData['icon'] }}"></i>
                                     {{ $sourceData['label'] }}
                                 </span>
-                                @if($order->ad_set)
+                                @if($order->ad_squad)
                                     <div class="text-xs text-gray-400 mt-1 font-medium">
-                                        {{ $order->ad_set }}
+                                        {{ $order->ad_squad }}
                                     </div>
                                 @endif
                             </td>
