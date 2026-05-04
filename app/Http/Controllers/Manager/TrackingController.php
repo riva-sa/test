@@ -27,7 +27,7 @@ class TrackingController extends Controller
         $validated = $request->validate([
             'type' => 'required|in:unit,project',
             'id' => 'required|integer',
-            'event' => 'required|in:visit,view,show,order',
+            'event' => 'required|in:visit,view,show,order,whatsapp,call',
             'metadata' => 'nullable|array',
         ]);
 
@@ -37,8 +37,6 @@ class TrackingController extends Controller
 
                 switch ($validated['event']) {
                     case 'visit':
-                        $this->trackingService->trackUnitView($unit);
-                        break;
                     case 'view':
                         $this->trackingService->trackUnitView($unit);
                         break;
@@ -47,6 +45,12 @@ class TrackingController extends Controller
                         break;
                     case 'order':
                         $this->trackingService->trackUnitOrder($unit, $validated['metadata'] ?? []);
+                        break;
+                    case 'whatsapp':
+                        $this->trackingService->trackWhatsAppClick($unit, $validated['metadata'] ?? []);
+                        break;
+                    case 'call':
+                        $this->trackingService->trackPhoneCall($unit, $validated['metadata'] ?? []);
                         break;
                 }
             } elseif ($validated['type'] === 'project') {
@@ -58,6 +62,12 @@ class TrackingController extends Controller
                         break;
                     case 'show':
                         $this->trackingService->trackProjectOrderShow($project);
+                        break;
+                    case 'whatsapp':
+                        $this->trackingService->trackWhatsAppClick($project, $validated['metadata'] ?? []);
+                        break;
+                    case 'call':
+                        $this->trackingService->trackPhoneCall($project, $validated['metadata'] ?? []);
                         break;
                 }
             }
@@ -83,7 +93,7 @@ class TrackingController extends Controller
     {
 
         $validated = $request->validate([
-            'event' => 'required|in:visit,view,show,order',
+            'event' => 'required|in:visit,view,show,order,whatsapp,call',
             'metadata' => 'nullable|array',
         ]);
 
@@ -98,6 +108,12 @@ class TrackingController extends Controller
                     break;
                 case 'order':
                     $this->trackingService->trackUnitOrder($unit, $validated['metadata'] ?? []);
+                    break;
+                case 'whatsapp':
+                    $this->trackingService->trackWhatsAppClick($unit, $validated['metadata'] ?? []);
+                    break;
+                case 'call':
+                    $this->trackingService->trackPhoneCall($unit, $validated['metadata'] ?? []);
                     break;
             }
 
@@ -123,7 +139,7 @@ class TrackingController extends Controller
     {
 
         $validated = $request->validate([
-            'event' => 'required|in:visit,show',
+            'event' => 'required|in:visit,show,whatsapp,call',
             'metadata' => 'nullable|array',
         ]);
 
@@ -134,6 +150,12 @@ class TrackingController extends Controller
                     break;
                 case 'show':
                     $this->trackingService->trackProjectOrderShow($project);
+                    break;
+                case 'whatsapp':
+                    $this->trackingService->trackWhatsAppClick($project, $validated['metadata'] ?? []);
+                    break;
+                case 'call':
+                    $this->trackingService->trackPhoneCall($project, $validated['metadata'] ?? []);
                     break;
             }
 

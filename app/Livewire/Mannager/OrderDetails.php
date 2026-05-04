@@ -3,7 +3,6 @@
 namespace App\Livewire\Mannager;
 
 use App\Models\OrderNote;
-use App\Models\OrderPermission;
 use App\Models\Project;
 use App\Models\Unit;
 use App\Models\UnitOrder;
@@ -26,7 +25,6 @@ class OrderDetails extends Component
     public $isEditingClient = false;
 
     public $clientData = [];
-
 
     public $isEditingUnitCase = false;
 
@@ -323,23 +321,9 @@ class OrderDetails extends Component
         $nextOrder = (clone $accessibleOrdersQuery)->where('id', '>', $this->order->id)->orderBy('id')->first();
 
         return view('livewire.mannager.order-details', [
-            'statusLabels' => [
-                0 => 'جديد',
-                1 => 'طلب مفتوح',
-                2 => 'معاملات بيعية',
-                3 => 'مغلق',
-                4 => 'مكتمل',
-                5 => 'قائمة انتظار',
-            ],
-            'purchaseTypes' => [
-                'cash' => 'كاش',
-                'installment' => 'تقسيط',
-                'bank' => 'تمويل بنكي',
-            ],
-            'purchasePurposes' => [
-                'investment' => 'استثمار',
-                'personal' => 'سكنى',
-            ],
+            'statusLabels' => UnitOrder::STATUS_LABELS,
+            'purchaseTypes' => UnitOrder::PURCHASE_TYPES,
+            'purchasePurposes' => UnitOrder::PURCHASE_PURPOSES,
             'supportTypes' => [
                 'مدعوم' => 'مدعوم',
                 'غير مدعوم' => 'غير مدعوم',

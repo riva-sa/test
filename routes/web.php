@@ -17,6 +17,7 @@ use App\Livewire\Frontend\ProjectsMap;
 use App\Livewire\Frontend\ProjectsPage;
 use App\Livewire\Frontend\Services;
 use App\Livewire\Frontend\Terms;
+use App\Livewire\Mannager\Announcements;
 use App\Livewire\Mannager\BulkLeadImport;
 use App\Livewire\Mannager\Campaigns;
 use App\Livewire\Mannager\CreateOrder;
@@ -24,6 +25,7 @@ use App\Livewire\Mannager\CustomerProfile;
 use App\Livewire\Mannager\CustomersList;
 use App\Livewire\Mannager\ManageOrders;
 use App\Livewire\Mannager\ManagerDashboard;
+use App\Livewire\Mannager\Notifications;
 use App\Livewire\Mannager\OrderDetails;
 use App\Livewire\Mannager\OrderPermissions;
 use App\Livewire\Mannager\SalesManagers;
@@ -60,6 +62,14 @@ Route::middleware(['auth', 'role:sales_manager,sales,Admin,developer,follow_up,p
     Route::get('/crm/customers/{phone}', CustomerProfile::class)->name('manager.customer-profile');
     Route::get('/crm/sales-managers', SalesManagers::class)->name('manager.sales-managers');
     Route::get('/crm/blocked-numbers', \App\Livewire\Mannager\BlockedNumbers::class)->name('manager.blocked-numbers');
+
+    // Notification routes
+    Route::get('/crm/notifications', Notifications::class)->name('manager.notifications');
+    Route::get('/crm/announcements', Announcements::class)->name('manager.announcements');
+
+    // Sales Targets & Leaderboard routes
+    Route::get('/crm/targets', \App\Livewire\Mannager\SalesTargets::class)->name('manager.targets');
+    Route::get('/crm/leaderboard', \App\Livewire\Mannager\Leaderboard::class)->name('manager.leaderboard');
     Route::get('/crm/{order}/permissions', OrderPermissions::class)->name('manager.permissions');
 
     Route::get('crm/create-order', CreateOrder::class)->name('manager.create-order');
@@ -104,6 +114,31 @@ Route::middleware(['auth', 'role:developer'])->prefix('developer')->group(functi
 Route::get('crm/login', [ManagerAuthController::class, 'showLoginForm'])->name('login');
 Route::post('crm/login', [ManagerAuthController::class, 'login']);
 Route::post('/logout', [ManagerAuthController::class, 'logout'])->name('logout');
+
+// CRM Password Reset
+Route::get('crm/reset-password/{token}', function (string $token) {
+    return view('auth.crm-reset-password', ['token' => $token, 'email' => request('email')]);
+})->name('password.reset');
+Route::post('crm/reset-password', function (\Illuminate\Http\Request $request) {
+    $request->validate([
+        'token' => 'required',
+        'email' => 'required|email',
+        'password' => 'required|min:8|confirmed',
+    ]);
+
+    $status = \Illuminate\Support\Facades\Password::reset(
+        $request->only('email', 'password', 'password_confirmation', 'token'),
+        function ($user, $password) {
+            $user->forceFill([
+                'password' => bcrypt($password),
+            ])->save();
+        }
+    );
+
+    return $status === \Illuminate\Support\Facades\Password::PASSWORD_RESET
+        ? redirect()->route('login')->with('status', 'تم تغيير كلمة المرور بنجاح. يمكنك تسجيل الدخول الآن.')
+        : back()->withErrors(['email' => __($status)]);
+})->name('password.update');
 
 // Route::get('/single/{slug}', function ($slug) {
 //     $projects = Project::all();

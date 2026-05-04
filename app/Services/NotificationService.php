@@ -34,7 +34,7 @@ class NotificationService
     public function notifyNewNote(UnitOrder $order, string $noteContent): void
     {
         $addedBy = auth()->user();
-        
+
         $notificationData = [
             'note_preview' => mb_substr($noteContent, 0, 50).'...',
             'added_by' => $addedBy->name,

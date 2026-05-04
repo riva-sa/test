@@ -21,7 +21,7 @@ class ApplicationForwardingService
         $allowedSources = config('order_forwarding.sources', []);
         $excludedSources = config('order_forwarding.exclude_sources', []);
 
-        if (! in_array($order->order_source, $allowedSources, true) || 
+        if (! in_array($order->order_source, $allowedSources, true) ||
             in_array($order->order_source, $excludedSources, true)) {
             return;
         }

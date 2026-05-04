@@ -54,4 +54,38 @@ class ProjectMedia extends Model
     {
         return $this->belongsTo(Project::class);
     }
+
+    /**
+     * Get the YouTube embed URL from the youtube_url field.
+     * Supports standard, shortened, embed, and shorts URL formats.
+     */
+    public function getYoutubeEmbedUrlAttribute(): ?string
+    {
+        $url = $this->youtube_url;
+
+        if (empty($url)) {
+            return null;
+        }
+
+        $videoId = null;
+
+        // Standard: youtube.com/watch?v=VIDEO_ID
+        if (preg_match('/youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/', $url, $matches)) {
+            $videoId = $matches[1];
+        }
+        // Shortened: youtu.be/VIDEO_ID
+        elseif (preg_match('/youtu\.be\/([a-zA-Z0-9_-]{11})/', $url, $matches)) {
+            $videoId = $matches[1];
+        }
+        // Embed: youtube.com/embed/VIDEO_ID
+        elseif (preg_match('/youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/', $url, $matches)) {
+            $videoId = $matches[1];
+        }
+        // Shorts: youtube.com/shorts/VIDEO_ID
+        elseif (preg_match('/youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/', $url, $matches)) {
+            $videoId = $matches[1];
+        }
+
+        return $videoId ? "https://www.youtube.com/embed/{$videoId}" : null;
+    }
 }

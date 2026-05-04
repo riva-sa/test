@@ -27,7 +27,7 @@ class ProjectUnitOrderSeeder extends Seeder
         }
 
         $cities = City::take(3)->get();
-        
+
         $salesManagers = User::whereHas('roles', function ($q) {
             $q->where('name', 'sales_manager');
         })->get();
@@ -87,7 +87,7 @@ class ProjectUnitOrderSeeder extends Seeder
 
         $unitTypes = ['شقة', 'فلة', 'تاون هاوس'];
         $Statuses = [0, 1, 2];
-        
+
         $unitsData = [
             ['title' => 'شقة رقم 101', 'unit_type' => 'شقة', 'floor' => 1, 'unit_area' => 150, 'unit_price' => 500000, 'beadrooms' => 3, 'bathrooms' => 2, 'building_number' => 'A', 'unit_number' => '101'],
             ['title' => 'شقة رقم 102', 'unit_type' => 'شقة', 'floor' => 1, 'unit_area' => 180, 'unit_price' => 600000, 'beadrooms' => 4, 'bathrooms' => 3, 'building_number' => 'A', 'unit_number' => '102'],
@@ -103,14 +103,14 @@ class ProjectUnitOrderSeeder extends Seeder
         foreach ($projects as $project) {
             foreach ($unitsData as $index => $unitData) {
                 $unitData['project_id'] = $project->id;
-                $unitData['slug'] = $project->slug . '-' . ($index + 1);
+                $unitData['slug'] = $project->slug.'-'.($index + 1);
                 $unitData['sale_type'] = 'cash';
                 $unitData['case'] = array_rand([0, 1, 2]);
                 $unitData['status'] = true;
                 $unitData['show_price'] = true;
                 $unitData['visits_count'] = rand(0, 100);
                 $unitData['views_count'] = rand(0, 500);
-                
+
                 $unit = Unit::firstOrCreate(
                     ['slug' => $unitData['slug']],
                     $unitData
@@ -122,7 +122,7 @@ class ProjectUnitOrderSeeder extends Seeder
 
         $statusLabels = [
             0 => 'جديد',
-            1 => 'طلب مفتوح', 
+            1 => 'طلب مفتوح',
             2 => 'معاملات بيعية',
             3 => 'مغلق',
             4 => 'مكتمل',
@@ -156,13 +156,13 @@ class ProjectUnitOrderSeeder extends Seeder
         $ordersCount = 0;
         foreach ($units as $index => $unit) {
             $numOrders = rand(1, 3);
-            
+
             for ($i = 0; $i < $numOrders; $i++) {
                 $orderData = [
                     'unit_id' => $unit->id,
                     'project_id' => $unit->project_id,
                     'name' => $names[array_rand($names)],
-                    'email' => 'customer' . ($ordersCount + 1) . '@example.com',
+                    'email' => 'customer'.($ordersCount + 1).'@example.com',
                     'phone' => $phones[array_rand($phones)],
                     'status' => array_rand([0, 1, 2, 3, 4]),
                     'marketing_source' => $marketingSources[array_rand($marketingSources)],
@@ -180,9 +180,9 @@ class ProjectUnitOrderSeeder extends Seeder
             }
         }
 
-        $this->command->info("Seeder completed!");
-        $this->command->info("- Projects: " . count($projects));
-        $this->command->info("- Units: " . count($units));
-        $this->command->info("- Orders: " . $ordersCount);
+        $this->command->info('Seeder completed!');
+        $this->command->info('- Projects: '.count($projects));
+        $this->command->info('- Units: '.count($units));
+        $this->command->info('- Orders: '.$ordersCount);
     }
 }

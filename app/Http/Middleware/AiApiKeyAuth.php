@@ -16,7 +16,7 @@ class AiApiKeyAuth
     {
         $apiKey = $request->header('X-AI-API-KEY');
         // dd($apiKey, config('services.ai_api_key'));
-        if (!$apiKey || $apiKey !== config('services.ai_api_key')) {
+        if (! $apiKey || $apiKey !== config('services.ai_api_key')) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized: invalid or missing API key.',

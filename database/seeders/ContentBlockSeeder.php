@@ -199,11 +199,11 @@ class ContentBlockSeeder extends Seeder
                 $block
             );
         }
-        
+
         if (DB::getDriverName() === 'pgsql') {
             DB::statement('SET CONSTRAINTS ALL IMMEDIATE');
         }
-        
+
         $this->command->info('Successfully seeded content blocks with keys for Riva Real Estate!');
     }
 }

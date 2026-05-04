@@ -2,10 +2,9 @@
 
 namespace App\Http\Requests\Api;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Auth\Access\AuthorizationException;
 
 class SocialMediaLeadRequest extends FormRequest
 {
@@ -17,16 +16,16 @@ class SocialMediaLeadRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'             => ['required', 'string', 'max:255'],
-            'email'            => ['nullable', 'string', 'max:255'],
-            'phone'            => ['required', 'string', 'max:50'],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['nullable', 'string', 'max:255'],
+            'phone' => ['required', 'string', 'max:50'],
             'marketing_source' => ['required', 'string', 'max:255'],
-            'campaign_name'    => ['nullable', 'string', 'max:255'],
-            'ad_squad'         => ['nullable', 'string', 'max:255'],
-            'ad_set'           => ['nullable', 'string', 'max:255'],
-            'ad_name'          => ['nullable', 'string', 'max:255'],
-            'external_id'      => ['nullable', 'string', 'max:255'],
-            'message'          => ['nullable', 'string'],
+            'campaign_name' => ['nullable', 'string', 'max:255'],
+            'ad_squad' => ['nullable', 'string', 'max:255'],
+            'ad_set' => ['nullable', 'string', 'max:255'],
+            'ad_name' => ['nullable', 'string', 'max:255'],
+            'external_id' => ['nullable', 'string', 'max:255'],
+            'message' => ['nullable', 'string'],
         ];
     }
 
@@ -35,14 +34,14 @@ class SocialMediaLeadRequest extends FormRequest
     {
         \Log::warning('Zapier Lead Validation Failed', [
             'errors' => $validator->errors()->toArray(),
-            'payload' => $this->all()
+            'payload' => $this->all(),
         ]);
 
         throw new HttpResponseException(
             response()->json([
-                'status'  => 'error',
+                'status' => 'error',
                 'message' => 'Validation failed.',
-                'errors'  => $validator->errors(),
+                'errors' => $validator->errors(),
             ], 422)
         );
     }
@@ -52,7 +51,7 @@ class SocialMediaLeadRequest extends FormRequest
     {
         throw new HttpResponseException(
             response()->json([
-                'status'  => 'error',
+                'status' => 'error',
                 'message' => 'Unauthorized.',
             ], 403)
         );

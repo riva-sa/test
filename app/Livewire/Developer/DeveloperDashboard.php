@@ -16,7 +16,7 @@ class DeveloperDashboard extends Component
         if (! $user->developer_id) {
             abort(403, 'لم يُربط حسابك بشركة مطور.');
         }
-        
+
         $developerId = $user->developer_id;
 
         $projectIds = Project::query()

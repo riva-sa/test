@@ -198,7 +198,7 @@
                                 @endforelse
                             </div>
                             <div class="flex flex-col items-start gap-3 text-sm font-medium">
-                                <div class="relative overflow-hidden rounded-2xl bg-slate-100 px-6 py-4 text-black">
+                                <div class="relative overflow-hidden rounded-2xl bg-zinc-100 px-6 py-4 text-black">
                                     <div class="mb-3 pb-2 text-xl font-semibold">
                                         Subscribe to our Newsletter
                                     </div>

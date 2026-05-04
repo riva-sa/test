@@ -8,7 +8,7 @@
                     <p class="text-sm text-slate-500">إدارة حسابات الفريق ووضع التوفر.</p>
                 </div>
                 <button wire:click="startAdding" 
-                        class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-slate-900 text-slate-50 shadow hover:bg-slate-900/90 h-9 px-4 py-2">
+                        class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-zinc-900 text-slate-50 shadow hover:bg-zinc-900/90 h-9 px-4 py-2">
                     <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                     إضافة مندوب
                 </button>
@@ -74,7 +74,7 @@
                                 <button type="button" 
                                         dir="ltr"
                                         wire:click="$set('editFields.is_active', {{ $editFields['is_active'] ? 'false' : 'true' }})"
-                                        class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 {{ $editFields['is_active'] ? 'bg-slate-900' : 'bg-slate-200' }}">
+                                        class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 {{ $editFields['is_active'] ? 'bg-zinc-900' : 'bg-zinc-200' }}">
                                     <span class="pointer-events-none block h-5 w-5 rounded-full bg-white shadow-lg ring-0 transition-transform {{ $editFields['is_active'] ? 'translate-x-[20px]' : 'translate-x-[2px]' }}"></span>
                                 </button>
                                 <span class="text-xs text-slate-500">{{ $editFields['is_active'] ? 'نشط' : 'معطل' }}</span>
@@ -84,7 +84,7 @@
                                 <button type="button" 
                                         dir="ltr"
                                         wire:click="$set('editFields.on_vacation', {{ $editFields['on_vacation'] ? 'false' : 'true' }})"
-                                        class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 {{ $editFields['on_vacation'] ? 'bg-slate-900' : 'bg-slate-200' }}">
+                                        class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 {{ $editFields['on_vacation'] ? 'bg-zinc-900' : 'bg-zinc-200' }}">
                                     <span class="pointer-events-none block h-5 w-5 rounded-full bg-white shadow-lg ring-0 transition-transform {{ $editFields['on_vacation'] ? 'translate-x-[20px]' : 'translate-x-[2px]' }}"></span>
                                 </button>
                                 <span class="text-xs text-slate-500">{{ $editFields['on_vacation'] ? 'في إجازة' : 'متوفر' }}</span>
@@ -94,11 +94,11 @@
 
                         <div class="pt-6 flex justify-end gap-2">
                             <button type="button" wire:click="{{ $isAdding ? 'cancelAdding' : 'cancelEditing' }}"
-                                    class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring border border-slate-200 bg-transparent shadow-sm hover:bg-slate-100 h-9 px-4 py-2">
+                                    class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring border border-slate-200 bg-transparent shadow-sm hover:bg-zinc-100 h-9 px-4 py-2">
                                 إلغاء
                             </button>
                             <button type="submit"
-                                    class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-slate-900 text-slate-50 shadow hover:bg-slate-900/90 h-9 px-4 py-2">
+                                    class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-zinc-900 text-slate-50 shadow hover:bg-zinc-900/90 h-9 px-4 py-2">
                                 {{ $isAdding ? 'إنشاء الحساب' : 'حفظ التغييرات' }}
                             </button>
                         </div>
@@ -110,44 +110,88 @@
         {{-- Table Section --}}
         <div class="rounded-md border border-slate-200 overflow-hidden bg-white shadow-sm">
             <table class="w-full text-right text-sm">
-                <thead class="bg-slate-50 border-b border-slate-200">
+                <thead class="bg-zinc-50 border-b border-slate-200">
                     <tr>
                         <th class="h-10 px-4 text-slate-500 font-medium text-xs">المندوب</th>
-                        <th class="h-10 px-4 text-slate-500 font-medium text-xs">البريد</th>
-                        <th class="h-10 px-4 text-slate-500 font-medium text-xs">الحالة</th>
+                        <th class="h-10 px-4 text-slate-500 font-medium text-xs">جديد</th>
+                        <th class="h-10 px-4 text-slate-500 font-medium text-xs">طلب مفتوح</th>
+                        <th class="h-10 px-4 text-slate-500 font-medium text-xs">معاملات بيعية</th>
+                        <th class="h-10 px-4 text-slate-500 font-medium text-xs">مغلق</th>
+                        <th class="h-10 px-4 text-slate-500 font-medium text-xs">مكتمل</th>
+                        <th class="h-10 px-4 text-slate-500 font-medium text-xs">قائمة انتظار</th>
                         <th class="h-10 px-4 text-slate-500 font-medium text-xs">التوفر</th>
                         <th class="h-10 px-4 text-slate-500 font-medium text-xs text-left">الإجراءات</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-200">
                     @forelse ($salesUsers as $user)
-                        <tr class="hover:bg-slate-50/50 transition-colors">
-                            <td class="p-4 align-middle font-medium">{{ $user->name }}</td>
-                            <td class="p-4 align-middle text-slate-500">{{ $user->email }}</td>
-                            <td class="p-4 align-middle">
-                                @if ($user->is_active)
-                                    <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-slate-900 text-slate-50 shadow">نشط</div>
-                                @else
-                                    <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-slate-100 text-slate-900">معطل</div>
-                                @endif
+                        <tr class="hover:bg-zinc-50/50 transition-colors">
+                            <td class="p-4 align-middle font-medium">
+                                <div class="flex flex-col">
+                                    <span>{{ $user->name }}</span>
+                                    <span class="text-xs text-slate-500">{{ $user->email }}</span>
+                                </div>
+                            </td>
+                            <td class="p-4 align-middle text-center">
+                                <span class="inline-flex items-center justify-center min-w-[2rem] px-2 py-1 rounded text-xs font-semibold" style="background-color: {{ \App\Models\UnitOrder::STATUS_COLORS[0] }}20; color: {{ \App\Models\UnitOrder::STATUS_COLORS[0] }};">
+                                    {{ $orderCounts[$user->id][0] ?? 0 }}
+                                </span>
+                            </td>
+                            <td class="p-4 align-middle text-center">
+                                <span class="inline-flex items-center justify-center min-w-[2rem] px-2 py-1 rounded text-xs font-semibold" style="background-color: {{ \App\Models\UnitOrder::STATUS_COLORS[1] }}20; color: {{ \App\Models\UnitOrder::STATUS_COLORS[1] }};">
+                                    {{ $orderCounts[$user->id][1] ?? 0 }}
+                                </span>
+                            </td>
+                            <td class="p-4 align-middle text-center">
+                                <span class="inline-flex items-center justify-center min-w-[2rem] px-2 py-1 rounded text-xs font-semibold" style="background-color: {{ \App\Models\UnitOrder::STATUS_COLORS[2] }}20; color: {{ \App\Models\UnitOrder::STATUS_COLORS[2] }};">
+                                    {{ $orderCounts[$user->id][2] ?? 0 }}
+                                </span>
+                            </td>
+                            <td class="p-4 align-middle text-center">
+                                <span class="inline-flex items-center justify-center min-w-[2rem] px-2 py-1 rounded text-xs font-semibold" style="background-color: {{ \App\Models\UnitOrder::STATUS_COLORS[3] }}20; color: {{ \App\Models\UnitOrder::STATUS_COLORS[3] }};">
+                                    {{ $orderCounts[$user->id][3] ?? 0 }}
+                                </span>
+                            </td>
+                            <td class="p-4 align-middle text-center">
+                                <span class="inline-flex items-center justify-center min-w-[2rem] px-2 py-1 rounded text-xs font-semibold" style="background-color: {{ \App\Models\UnitOrder::STATUS_COLORS[4] }}20; color: {{ \App\Models\UnitOrder::STATUS_COLORS[4] }};">
+                                    {{ $orderCounts[$user->id][4] ?? 0 }}
+                                </span>
+                            </td>
+                            <td class="p-4 align-middle text-center">
+                                <span class="inline-flex items-center justify-center min-w-[2rem] px-2 py-1 rounded text-xs font-semibold" style="background-color: {{ \App\Models\UnitOrder::STATUS_COLORS[5] }}20; color: {{ \App\Models\UnitOrder::STATUS_COLORS[5] }};">
+                                    {{ $orderCounts[$user->id][5] ?? 0 }}
+                                </span>
                             </td>
                             <td class="p-4 align-middle">
                                 @if ($user->on_vacation)
                                     <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold border-slate-200 text-slate-500">في إجازة</div>
                                 @else
-                                    <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold border-transparent bg-slate-100 text-slate-900">متوفر</div>
+                                    <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold border-transparent bg-zinc-100 text-slate-900">متوفر</div>
+                                @endif
+                                @if (!$user->is_active)
+                                    <div class="mt-1 inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-red-100 text-red-900">معطل</div>
                                 @endif
                             </td>
                             <td class="p-4 align-middle text-left">
-                                <button wire:click="startEditing({{ $user->id }})" 
-                                        class="inline-flex items-center justify-center rounded-md text-xs font-medium transition-colors border border-slate-200 hover:bg-slate-100 h-8 px-3">
-                                    تعديل
-                                </button>
+                                <div class="flex items-center gap-2">
+                                    <button wire:click="startEditing({{ $user->id }})" 
+                                            class="inline-flex items-center justify-center rounded-md text-xs font-medium transition-colors border border-slate-200 hover:bg-zinc-100 h-8 px-3">
+                                        تعديل
+                                    </button>
+                                    <button wire:click="resetPassword({{ $user->id }})"
+                                            wire:confirm="هل أنت متأكد من إرسال رابط إعادة تعيين كلمة المرور إلى {{ $user->email }}؟"
+                                            class="inline-flex items-center justify-center rounded-md text-xs font-medium transition-colors border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-700 h-8 px-3">
+                                        <svg class="w-3.5 h-3.5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L10 18H6v-4l3.257-3.257A6 6 0 1121 9z"/>
+                                        </svg>
+                                        إعادة تعيين كلمة المرور
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="p-8 text-center text-slate-500 italic">لا يوجد مندوبي مبيعات حالياً.</td>
+                            <td colspan="9" class="p-8 text-center text-slate-500 italic">لا يوجد مندوبي مبيعات حالياً.</td>
                         </tr>
                     @endforelse
                 </tbody>

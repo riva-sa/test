@@ -55,13 +55,14 @@ class CreateOrder extends Component
 
     // قوائم الخيارات
     public $purchaseTypes = [
-        'Cash' => 'كاش',
-        'Installment' => 'بنك',
+        'cash' => 'كاش',
+        'installment' => 'تقسيط',
+        'bank' => 'تمويل بنكي',
     ];
 
     public $purchasePurposes = [
-        'Residential' => 'سكني',
-        'Commercial' => 'استثماري',
+        'personal' => 'سكنى',
+        'investment' => 'استثمار',
     ];
 
     public $supportTypes = [
@@ -164,6 +165,7 @@ class CreateOrder extends Component
         $isBlocked = BlockedNumber::where('phone', $this->phone)->exists();
         if ($isBlocked) {
             session()->flash('error', 'عذراً، هذا الرقم محظور من تقديم طلبات.');
+
             return;
         }
 
@@ -184,9 +186,9 @@ class CreateOrder extends Component
             'waiting_list_budget' => $isWaitingList ? $this->waiting_list_budget : null,
             'waiting_list_location' => $isWaitingList ? $this->waiting_list_location : null,
             'waiting_list_notes' => $isWaitingList ? $this->waiting_list_notes : null,
-            'bank_employee_name' => (! $isWaitingList && $this->PurchaseType === 'Installment') ? $this->bank_employee_name : null,
-            'bank_employee_phone' => (! $isWaitingList && $this->PurchaseType === 'Installment') ? $this->bank_employee_phone : null,
-            'bank_name' => (! $isWaitingList && $this->PurchaseType === 'Installment') ? $this->bank_name : null,
+            'bank_employee_name' => (! $isWaitingList && $this->PurchaseType === 'bank') ? $this->bank_employee_name : null,
+            'bank_employee_phone' => (! $isWaitingList && $this->PurchaseType === 'bank') ? $this->bank_employee_phone : null,
+            'bank_name' => (! $isWaitingList && $this->PurchaseType === 'bank') ? $this->bank_name : null,
             'user_id' => Auth::id(), // مستخدم النظام الذي أنشأ الطلب
             'status' => $isWaitingList ? 5 : 1,
             'order_source' => UnitOrder::ORDER_SOURCE_MANAGER,

@@ -10,11 +10,16 @@ class SalesManagers extends Component
 {
     public $salesUsers = [];
 
+    public $orderCounts = [];
+
     public $editingUser = null;
 
     public $editFields = [];
+
     public $isEditing = false;
+
     public $isAdding = false;
+
     public $newFields = [
         'name' => '',
         'email' => '',
@@ -33,6 +38,22 @@ class SalesManagers extends Component
         $this->salesUsers = User::whereHas('roles', function ($query) {
             $query->where('name', 'sales');
         })->get();
+
+        // حساب عدد الطلبات لكل مندوب مبيعات حسب الحالة
+        foreach ($this->salesUsers as $user) {
+            // Get raw counts grouped by status
+            $counts = \App\Models\UnitOrder::where('assigned_sales_user_id', $user->id)
+                ->selectRaw('status, COUNT(*) as count')
+                ->groupBy('status')
+                ->pluck('count', 'status')
+                ->toArray();
+
+            // Ensure all 6 statuses have a value
+            $this->orderCounts[$user->id] = [];
+            for ($i = 0; $i <= 5; $i++) {
+                $this->orderCounts[$user->id][$i] = $counts[$i] ?? 0;
+            }
+        }
     }
 
     public function startAdding()
@@ -96,8 +117,8 @@ class SalesManagers extends Component
                 'name' => $user->name,
                 'email' => $user->email,
                 'phone' => $user->phone ?? '',
-                'is_active' => (bool)$user->is_active,
-                'on_vacation' => (bool)$user->on_vacation,
+                'is_active' => (bool) $user->is_active,
+                'on_vacation' => (bool) $user->on_vacation,
             ];
         }
     }
@@ -113,7 +134,7 @@ class SalesManagers extends Component
     {
         $this->validate([
             'editFields.name' => 'required|string|max:255',
-            'editFields.email' => 'required|email|unique:users,email,' . $userId,
+            'editFields.email' => 'required|email|unique:users,email,'.$userId,
             'editFields.phone' => 'nullable|string',
         ], [
             'editFields.name.required' => 'الاسم مطلوب',
@@ -132,8 +153,33 @@ class SalesManagers extends Component
 
         $this->isEditing = false;
         $this->editingUser = null;
-        session()->flash('status', 'تم تحديث بيانات الموزع بنجاح!');
+        session()->flash('status', __('crm.sales_manager_updated'));
         $this->mount();
+    }
+
+    public function resetPassword(int $userId)
+    {
+        if (! Auth::user()->hasAnyRole(['sales_manager', 'Admin'])) {
+            session()->flash('error', __('crm.unauthorized'));
+
+            return;
+        }
+
+        $user = User::find($userId);
+        if (! $user) {
+            session()->flash('error', __('crm.user_not_found'));
+
+            return;
+        }
+
+        $action = new \App\Actions\ResetEmployeePasswordAction;
+        $status = $action->execute($user);
+
+        if ($status === \Illuminate\Support\Facades\Password::RESET_LINK_SENT) {
+            session()->flash('status', __('crm.reset_link_sent').$user->email);
+        } else {
+            session()->flash('error', __('crm.reset_link_failed'));
+        }
     }
 
     public function render()

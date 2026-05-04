@@ -14,7 +14,9 @@ class AutoAssignmentReport extends Component
     use WithPagination;
 
     public $dateRange = 'today';
+
     public $startDate;
+
     public $endDate;
 
     public function mount()
@@ -49,7 +51,7 @@ class AutoAssignmentReport extends Component
                 break;
             case 'custom':
                 // Optional
-                if (!$this->startDate) {
+                if (! $this->startDate) {
                     $this->startDate = Carbon::today()->startOfDay();
                     $this->endDate = Carbon::today()->endOfDay();
                 }
@@ -62,17 +64,18 @@ class AutoAssignmentReport extends Component
         $salesUsers = User::role(config('lead_import.sales_role', 'sales'))->get();
 
         $counts = UnitOrder::whereNotNull('assigned_sales_user_id')
-                ->where('created_at', '>=', $this->startDate)
-                ->where('created_at', '<=', $this->endDate)
+            ->where('created_at', '>=', $this->startDate)
+            ->where('created_at', '<=', $this->endDate)
                 // Optionally exclude bulk import, assuming we only want to track frontend auto-assignments
-                ->where('order_source', '!=', UnitOrder::ORDER_SOURCE_BULK_IMPORT)
-                ->select('assigned_sales_user_id', DB::raw('count(*) as total_assigned'))
-                ->groupBy('assigned_sales_user_id')
-                ->get()
-                ->keyBy('assigned_sales_user_id');
+            ->where('order_source', '!=', UnitOrder::ORDER_SOURCE_BULK_IMPORT)
+            ->select('assigned_sales_user_id', DB::raw('count(*) as total_assigned'))
+            ->groupBy('assigned_sales_user_id')
+            ->get()
+            ->keyBy('assigned_sales_user_id');
 
         return $salesUsers->map(function ($user) use ($counts) {
             $user->total_assigned = $counts->has($user->id) ? $counts[$user->id]->total_assigned : 0;
+
             return $user;
         })->sortByDesc('total_assigned');
     }

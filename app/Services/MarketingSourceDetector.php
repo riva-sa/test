@@ -16,11 +16,11 @@ class MarketingSourceDetector
         'youtube' => ['youtube', 'youtu.be'],
     ];
 
-    public function detect(string $source = null, string $userAgent = null, string $referer = null): string
+    public function detect(?string $source = null, ?string $userAgent = null, ?string $referer = null): string
     {
         $input = strtolower(trim($source ?? ''));
 
-        if (!empty($input)) {
+        if (! empty($input)) {
             foreach ($this->platformPatterns as $platform => $patterns) {
                 foreach ($patterns as $pattern) {
                     if (str_contains($input, $pattern)) {
@@ -32,7 +32,7 @@ class MarketingSourceDetector
             return $source;
         }
 
-        $detectionSource = strtolower(trim($userAgent ?? '') . ' ' . trim($referer ?? ''));
+        $detectionSource = strtolower(trim($userAgent ?? '').' '.trim($referer ?? ''));
 
         foreach ($this->platformPatterns as $platform => $patterns) {
             foreach ($patterns as $pattern) {
@@ -47,6 +47,6 @@ class MarketingSourceDetector
 
     public static function make(): self
     {
-        return new self();
+        return new self;
     }
 }

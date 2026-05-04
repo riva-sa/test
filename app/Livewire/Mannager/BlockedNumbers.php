@@ -11,7 +11,9 @@ class BlockedNumbers extends Component
     use WithPagination;
 
     public $phone = '';
+
     public $reason = '';
+
     public $search = '';
 
     protected $rules = [
@@ -45,12 +47,12 @@ class BlockedNumbers extends Component
 
     public function render()
     {
-        $blockedNumbers = BlockedNumber::where('phone', 'like', '%' . $this->search . '%')
+        $blockedNumbers = BlockedNumber::where('phone', 'like', '%'.$this->search.'%')
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
         return view('livewire.mannager.blocked-numbers', [
-            'blockedNumbers' => $blockedNumbers
+            'blockedNumbers' => $blockedNumbers,
         ])->layout('layouts.custom');
     }
 }

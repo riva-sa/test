@@ -1,9 +1,9 @@
-<div class="min-h-screen py-10 px-4 sm:px-6 lg:px-8">
+<div class="min-h-screen py-5 px-4 sm:px-6 lg:px-8">
     <div class="max-w-7xl mx-auto space-y-8">
         <!-- Header Section -->
         <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
             <div class="space-y-1">
-                <h1 class="text-3xl font-semibold tracking-tight text-gray-900">إدارة العملاء</h1>
+                <h1 class="text-xl font-semibold tracking-tight text-gray-900">إدارة العملاء</h1>
                 <p class="text-sm text-gray-500">عرض وإدارة جميع العملاء وطلباتهم في النظام.</p>
             </div>
             
@@ -37,10 +37,10 @@
                             <tr class="transition-colors hover:bg-gray-50">
                                 <td class="px-6 py-4 align-middle">
                                     <div class="flex items-center">
-                                        <div class="h-9 w-9 flex-shrink-0 rounded-full bg-gray-100 flex items-center justify-center text-gray-900 font-semibold border border-gray-200 text-xs">
+                                        <!-- <div class="h-9 w-9 flex-shrink-0 rounded-full bg-gray-100 flex items-center justify-center text-gray-900 font-semibold border border-gray-200 text-xs">
                                             {{ substr($customer->name, 0, 1) }}
-                                        </div>
-                                        <div class="mr-3">
+                                        </div> -->
+                                        <div class="">
                                             <div class="font-medium text-gray-900">{{ $customer->name }}</div>
                                             <div class="text-xs text-gray-500">{{ $customer->email }}</div>
                                         </div>

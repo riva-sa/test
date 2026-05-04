@@ -8,15 +8,11 @@ use App\Models\User;
 use App\Notifications\NewSocialMediaLead;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
-use App\Actions\NormalizePhoneAction;
 
 class IngestSocialMediaLead
 {
     /**
      * Execute the lead ingestion action.
-     *
-     * @param array $data
-     * @return UnitOrder
      */
     public function execute(array $data): UnitOrder
     {
@@ -27,10 +23,10 @@ class IngestSocialMediaLead
         if ($isBlocked) {
             Log::warning('Blocked number attempted to submit social media lead', [
                 'phone' => $data['phone'],
-                'name' => $data['name'] ?? 'Unknown'
+                'name' => $data['name'] ?? 'Unknown',
             ]);
-            
-            // Return a dummy order or handle specifically. 
+
+            // Return a dummy order or handle specifically.
             // For now, let's throw an exception to be caught by the controller.
             throw new \Exception('This phone number is blocked from submitting inquiries.');
         }
@@ -51,11 +47,11 @@ class IngestSocialMediaLead
 
         // US8: Capture additional form fields into basic_order_notes
         $additionalFields = $this->captureAdditionalFields($data);
-        if (!empty($additionalFields)) {
-            $attributes['message'] = ($attributes['message'] ?? '') . "\n" . $additionalFields;
+        if (! empty($additionalFields)) {
+            $attributes['message'] = ($attributes['message'] ?? '')."\n".$additionalFields;
         }
 
-        if (!empty($data['external_id'])) {
+        if (! empty($data['external_id'])) {
             $order = UnitOrder::firstOrCreate(
                 ['external_id' => $data['external_id']],
                 $attributes
@@ -77,7 +73,7 @@ class IngestSocialMediaLead
         })->get();
 
         Notification::send($notifiableUsers, new NewSocialMediaLead($order));
-        
+
         return $order;
     }
 
@@ -87,17 +83,17 @@ class IngestSocialMediaLead
     protected function captureAdditionalFields(array $data): string
     {
         $notes = [];
-        
+
         // Define standard fields to exclude from additional notes
         $standardFields = [
-            'name', 'email', 'phone', 'marketing_source', 'campaign_name', 
+            'name', 'email', 'phone', 'marketing_source', 'campaign_name',
             'ad_squad', 'ad_set', 'ad_name', 'external_id', 'message',
-            'order_source', 'status', 'project_id', 'unit_id', 'user_id'
+            'order_source', 'status', 'project_id', 'unit_id', 'user_id',
         ];
 
         foreach ($data as $key => $value) {
             // If the field is not a standard field and is not empty
-            if (!in_array($key, $standardFields) && !empty($value)) {
+            if (! in_array($key, $standardFields) && ! empty($value)) {
                 // Prettify the key (replace underscores with spaces and capitalize)
                 $label = ucwords(str_replace(['_', '-'], ' ', $key));
                 $notes[] = "{$label}: {$value}";

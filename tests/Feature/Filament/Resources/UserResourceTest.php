@@ -13,7 +13,9 @@ use function Pest\Livewire\livewire;
 
 beforeEach(function () {
     /* The TestCase setup generates a user before each test, so we need to clear the table to make sure we have a clean slate. */
+    DB::statement('SET FOREIGN_KEY_CHECKS=0');
     DB::table('users')->truncate();
+    DB::statement('SET FOREIGN_KEY_CHECKS=1');
 });
 
 it('can render the index page', function () {

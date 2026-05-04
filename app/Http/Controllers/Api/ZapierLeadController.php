@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-
 use App\Actions\IngestSocialMediaLead;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\SocialMediaLeadRequest;
 
 class ZapierLeadController extends Controller
@@ -20,19 +18,19 @@ class ZapierLeadController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Lead created successfully.'
+                'message' => 'Lead created successfully.',
             ], 201);
         } catch (\Exception $e) {
             \Log::error('Zapier Lead Ingestion Failed', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
-                'payload' => $request->all()
+                'payload' => $request->all(),
             ]);
 
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage(),
-                'debug_message' => config('app.debug') ? $e->getTraceAsString() : null
+                'debug_message' => config('app.debug') ? $e->getTraceAsString() : null,
             ], 500);
         }
     }

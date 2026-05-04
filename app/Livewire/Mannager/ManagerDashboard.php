@@ -39,6 +39,7 @@ class ManagerDashboard extends Component
         $openOrders = $relevantOrders->where('status', 1)->count();
         $SalesTransactions = $relevantOrders->where('status', 2)->count();
         $closedOrders = $relevantOrders->where('status', 3)->count();
+        $waitingListCount = $relevantOrders->where('status', 5)->count();
 
         // *** التعديل الرئيسي هنا: استخدام دالة isDelayed من الـ Trait ***
         $delayedOrders = $relevantOrders->filter(function ($order) {
@@ -51,13 +52,19 @@ class ManagerDashboard extends Component
             ->take(10)
             ->get();
 
-        $statusConfig = [
-            0 => ['label' => 'جديد', 'color' => 'blue', 'hex' => '#3b82f6'],
-            1 => ['label' => 'طلب مفتوح', 'color' => 'yellow', 'hex' => '#f59e0b'],
-            2 => ['label' => 'معاملات بيعية', 'color' => 'green', 'hex' => '#22c55e'],
-            3 => ['label' => 'مغلق', 'color' => 'gray', 'hex' => '#6b7280'],
-            4 => ['label' => 'مكتمل', 'color' => 'teal', 'hex' => '#14b8a6'],
-        ];
+        $statusConfig = [];
+        foreach (\App\Models\UnitOrder::STATUS_LABELS as $key => $label) {
+            $statusConfig[$key] = [
+                'label' => $label,
+                'hex' => \App\Models\UnitOrder::STATUS_COLORS[$key] ?? '#6b7280',
+            ];
+        }
+
+        // Fetch targets if the user is a sales rep
+        $targetProgress = null;
+        if ($user->hasRole('sales')) {
+            $targetProgress = app(\App\Services\TargetTrackingService::class)->getAllProgress($user->id);
+        }
 
         return view('livewire.mannager.manager-dashboard', [
             'customersCount' => $customersCount,
@@ -66,10 +73,12 @@ class ManagerDashboard extends Component
             'delayedOrders' => $delayedOrders,
             'SalesTransactions' => $SalesTransactions,
             'closedOrders' => $closedOrders,
+            'waitingListCount' => $waitingListCount,
             'recentOrders' => $recentOrders,
             'allOrders' => $allOrders,
             'completedOrders' => $completedOrders,
             'statusConfig' => $statusConfig,
+            'targetProgress' => $targetProgress,
         ])->layout('layouts.custom');
     }
 }

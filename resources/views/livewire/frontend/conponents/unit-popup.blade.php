@@ -150,10 +150,12 @@
                                                 الوحدة مباعة
                                             @endif
                                         </a>
-                                        <a target="_blanck" href="https://wa.me/{{ isset($unit->project) && $unit->project->sales_manager_id ?
-                                            App\Models\User::where('id',$unit->project->sales_manager_id)->first()->phone ?? setting('site_phone') :
+                                        <a target="_blank"
+                                           wire:click="trackWhatsappClick({{ $selectedUnit->id }})"
+                                           href="https://wa.me/{{ isset($selectedUnit->project) && $selectedUnit->project->sales_manager_id ?
+                                            App\Models\User::where('id',$selectedUnit->project->sales_manager_id)->first()->phone ?? setting('site_phone') :
                                         setting('site_phone')
-                                        }}?text=انا مهتم بهذا المشروع {{ isset($unit->project) ? $unit->project->name : '' }} {{ isset($unit->project) ? route('frontend.projects.single', $unit->project->slug) : '' }}" class="btn btn-primary btn-icon btn-sm btn-icon-start rounded w-50">
+                                        }}?text=انا مهتم بهذا المشروع {{ isset($selectedUnit->project) ? $selectedUnit->project->name : '' }} {{ isset($selectedUnit->project) ? route('frontend.projects.single', $selectedUnit->project->slug) : '' }}" class="btn btn-primary btn-icon btn-sm btn-icon-start rounded w-50">
                                             تواصل واتس اب
                                             <i class="uil uil-whatsapp"></i>
                                         </a>

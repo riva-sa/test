@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Exceptions;
+
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 
@@ -47,9 +48,9 @@ class Handler extends ExceptionHandler
                 : 500;
 
             return response()->json([
-                'status'  => 'error',
+                'status' => 'error',
                 'message' => $exception->getMessage() ?: 'Server error.',
-                'debug'   => config('app.debug') ? $exception->getTraceAsString() : null,
+                'debug' => config('app.debug') ? $exception->getTraceAsString() : null,
             ], $statusCode);
         }
 

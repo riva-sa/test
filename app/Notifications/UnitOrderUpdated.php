@@ -35,12 +35,12 @@ class UnitOrderUpdated extends Notification implements ShouldQueue
     public function via($notifiable)
     {
         $channels = ['database'];
-        
+
         // Send email for new notes (sales manager statement)
         if (in_array($this->type, ['new_note', 'status_update', 'message_update'])) {
             $channels[] = 'mail';
         }
-        
+
         return $channels;
     }
 
@@ -87,7 +87,7 @@ class UnitOrderUpdated extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         $message = $this->generateMessage();
-        
+
         return (new \Illuminate\Notifications\Messages\MailMessage)
             ->subject("تحديث على الطلب #{$this->order->id}")
             ->line($message)

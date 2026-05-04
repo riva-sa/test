@@ -1,0 +1,122 @@
+<?php
+
+return [
+    // General
+    'unauthorized' => 'غير مصرح لك بتنفيذ هذا الإجراء',
+    'user_not_found' => 'المستخدم غير موجود',
+
+    // Notifications
+    'notifications' => 'الإشعارات',
+    'send_notification' => 'إرسال إشعار',
+    'create_notification' => 'إنشاء إشعار جديد',
+    'notification_type' => 'نوع الإشعار',
+    'individual' => 'فردي',
+    'group' => 'مجموعة',
+    'announcement' => 'إعلان عام',
+    'task' => 'مهمة',
+    'recipients' => 'المستلمون',
+    'notification_title' => 'عنوان الإشعار',
+    'notification_content' => 'المحتوى',
+    'send' => 'إرسال',
+    'sending' => 'جاري الإرسال...',
+    'notification_sent' => 'تم إرسال الإشعار بنجاح',
+    'sent_notifications' => 'الإشعارات المُرسلة',
+    'read' => 'مقروء',
+    'unread' => 'غير مقروء',
+    'recipient_count' => 'مستلم',
+    'deleted_user' => 'مستخدم محذوف',
+    'and_others' => 'آخرين',
+    'no_notifications_sent' => 'لم ترسل أي إشعارات بعد',
+    'group_notice' => 'سيُرسل هذا الإشعار لجميع موظفي المبيعات النشطين',
+    'announcement_notice' => 'سيُرسل هذا الإشعار لجميع مستخدمي النظام',
+    'multi_select_hint' => 'اضغط مع الضغط على Ctrl لاختيار أكثر من شخص',
+    'management_messages' => 'رسائل الإدارة',
+
+    // Announcements
+    'announcements' => 'الإعلانات',
+    'inbox' => 'صندوق الوارد',
+    'announcements_inbox' => 'صندوق الإشعارات',
+    'load_more' => 'تحميل المزيد',
+    'no_announcements' => 'لا توجد إشعارات',
+    'mark_as_read' => 'تحديد كمقروء',
+    'view_all_notifications' => 'عرض جميع الإشعارات',
+    'mark_all_read' => 'تحديد الكل كمقروء',
+    'unread_count' => 'إشعار غير مقروء',
+    'no_notifications' => 'لا توجد إشعارات',
+
+    // Sales Targets
+    'sales_targets' => 'أهداف المبيعات',
+    'monthly_orders' => 'الطلبات الشهرية',
+    'daily_orders' => 'الطلبات اليومية',
+    'reservations' => 'الحجوزات',
+    'sales' => 'المبيعات',
+    'target_value' => 'القيمة المستهدفة',
+    'current_progress' => 'التقدم الحالي',
+    'set_targets' => 'تعيين الأهداف',
+    'apply_default' => 'تطبيق القيمة الافتراضية للجميع',
+    'targets_saved' => 'تم حفظ الأهداف بنجاح',
+
+    // Leaderboard
+    'leaderboard' => 'لوحة المتصدرين',
+    'weights' => 'الأوزان',
+    'score' => 'النتيجة',
+    'composite_score' => 'النتيجة المركبة',
+    'rank' => 'الترتيب',
+    'weights_saved' => 'تم حفظ الأوزان بنجاح',
+    'weights_sum_error' => 'مجموع الأوزان يجب أن يساوي 100%',
+    'historical_view' => 'العرض التاريخي',
+    'select_month' => 'اختر الشهر',
+
+    // Status Columns
+    'new' => 'جديد',
+    'open_request' => 'طلب مفتوح',
+    'waiting_list' => 'قائمة انتظار',
+    'closed' => 'مغلق',
+    'completed' => 'مكتمل',
+    'sales_transactions' => 'معاملات بيعية',
+
+    // Sales Managers
+    'sales_managers' => 'مندوبي المبيعات',
+    'sales_manager_updated' => 'تم تحديث بيانات الموزع بنجاح!',
+    'add_sales_rep' => 'إضافة مندوب مبيعات',
+    'sales_rep_added' => 'تم إضافة مندوب مبيعات جديد بنجاح!',
+
+    // Password Reset
+    'reset_password' => 'إعادة تعيين كلمة المرور',
+    'reset_link_sent' => 'تم إرسال رابط إعادة تعيين كلمة المرور إلى ',
+    'reset_link_failed' => 'حدث خطأ أثناء إرسال رابط إعادة التعيين',
+    'reset_confirm' => 'هل أنت متأكد من إرسال رابط إعادة تعيين كلمة المرور؟',
+    'new_password' => 'كلمة المرور الجديدة',
+    'confirm_password' => 'تأكيد كلمة المرور',
+    'change_password' => 'تغيير كلمة المرور',
+    'back_to_login' => 'العودة لتسجيل الدخول',
+    'password_reset_title' => 'إعادة تعيين كلمة المرور',
+    'password_reset_subtitle' => 'قم بتعيين كلمة مرور جديدة قوية لحسابك',
+
+    // Customer Profile
+    'customer_profile' => 'الملف التعريفي للعميل',
+    'total_orders' => 'إجمالي الطلبات',
+    'latest_status' => 'آخر حالة',
+    'first_order' => 'أول طلب',
+    'last_activity' => 'آخر نشاط',
+    'order_source' => 'مصدر الطلب',
+    'ad_group' => 'المجموعة الاعلانية',
+    'notes_count' => 'عدد الملاحظات',
+    'creation_date' => 'تاريخ الإنشاء',
+    'last_update' => 'آخر تحديث',
+
+    // General Labels
+    'save' => 'حفظ',
+    'cancel' => 'إلغاء',
+    'edit' => 'تعديل',
+    'delete' => 'حذف',
+    'confirm' => 'تأكيد',
+    'name' => 'الاسم',
+    'email' => 'البريد الإلكتروني',
+    'phone' => 'رقم الهاتف',
+    'status' => 'الحالة',
+    'active' => 'نشط',
+    'inactive' => 'غير نشط',
+    'on_vacation' => 'في إجازة',
+    'actions' => 'إجراءات',
+];

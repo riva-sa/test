@@ -11,6 +11,7 @@ class CustomerProfile extends Component
     use WithPagination;
 
     public $phone;
+
     public $perPage = 10;
 
     public function mount($phone)
@@ -23,6 +24,7 @@ class CustomerProfile extends Component
         $allOrders = UnitOrder::accessibleBy(auth()->user())
             ->where('phone', $this->phone)
             ->with(['unit', 'project', 'assignedSalesUser'])
+            ->withCount('notes')
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -31,7 +33,7 @@ class CustomerProfile extends Component
         }
 
         $latestOrder = $allOrders->first();
-        
+
         $customerData = [
             'name' => $allOrders->pluck('name')->filter()->first() ?? 'Unknown',
             'email' => $allOrders->pluck('email')->filter()->first() ?? 'N/A',
@@ -43,19 +45,19 @@ class CustomerProfile extends Component
             'last_order_date' => $latestOrder->created_at,
         ];
 
-        // Paginated orders for the table
         $paginatedOrders = UnitOrder::accessibleBy(auth()->user())
             ->where('phone', $this->phone)
             ->with(['unit', 'project', 'assignedSalesUser'])
+            ->withCount('notes')
             ->orderBy('created_at', 'desc')
             ->paginate($this->perPage);
 
         return view('livewire.mannager.customer-profile', [
-            'customer' => (object)$customerData,
+            'customer' => (object) $customerData,
             'orders' => $paginatedOrders,
         ])->layout('layouts.custom', [
-            'title' => 'Customer Profile: ' . $customerData['name'],
-            'description' => 'Detailed profile and order history for ' . $customerData['name'],
+            'title' => 'Customer Profile: '.$customerData['name'],
+            'description' => 'Detailed profile and order history for '.$customerData['name'],
         ]);
     }
 }

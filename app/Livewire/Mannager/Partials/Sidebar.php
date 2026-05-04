@@ -2,7 +2,9 @@
 
 namespace App\Livewire\Mannager\Partials;
 
+use App\Models\CrmNotificationRecipient;
 use App\Notifications\UnitOrderUpdated;
+use App\Services\CrmNotificationService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -15,20 +17,19 @@ class Sidebar extends Component
 
     public $unreadCount = 0;
 
+    public $crmNotifications;
+
+    public $crmUnreadCount = 0;
+    public $newOrdersCount = 0;
     public $isLoading = false;
 
     public $lastRefresh;
 
-    protected $listeners = [
-        'refreshNotifications' => 'loadNotifications',
-        'notificationRead' => 'handleExternalNotificationRead',
-        'allNotificationsRead' => 'handleAllNotificationsRead',
-        'markNotificationAsRead' => 'markAsRead',
-    ];
-
     public function mount()
     {
         $this->loadNotifications();
+        $this->loadCrmNotifications();
+        $this->loadNewOrdersCount();
         $this->lastRefresh = now();
     }
 
@@ -88,6 +89,63 @@ class Sidebar extends Component
         } finally {
             $this->isLoading = false;
         }
+    }
+
+    public function loadCrmNotifications()
+    {
+        if (! Auth::check()) {
+            $this->crmNotifications = collect();
+            $this->crmUnreadCount = 0;
+
+            return;
+        }
+
+        $this->crmNotifications = CrmNotificationRecipient::where('user_id', Auth::id())
+            ->with('notification.sender')
+            ->latest('created_at')
+            ->take(10)
+            ->get();
+
+        $this->crmUnreadCount = Auth::user()->unreadCrmNotificationCount();
+    }
+
+    public function loadNewOrdersCount()
+    {
+        if (! Auth::check()) {
+            $this->newOrdersCount = 0;
+
+            return;
+        }
+
+        $this->newOrdersCount = Auth::user()->newOrdersCount();
+    }
+
+    public function markCrmAsRead(int $notificationId)
+    {
+        app(CrmNotificationService::class)->markAsRead($notificationId, Auth::id());
+        $this->loadCrmNotifications();
+    }
+
+    public function getListeners()
+    {
+        $listeners = [
+            'refreshNotifications' => 'loadNotifications',
+            'notificationRead' => 'handleExternalNotificationRead',
+            'allNotificationsRead' => 'handleAllNotificationsRead',
+            'markNotificationAsRead' => 'markAsRead',
+        ];
+
+        if (Auth::check()) {
+            $listeners['echo-private:notifications.'.Auth::id().',.new-notification'] = 'handleNewCrmNotification';
+        }
+
+        return $listeners;
+    }
+
+    public function handleNewCrmNotification($payload)
+    {
+        $this->crmUnreadCount = $payload['unreadCount'] ?? $this->crmUnreadCount + 1;
+        $this->loadCrmNotifications();
     }
 
     /**
@@ -508,6 +566,8 @@ class Sidebar extends Component
         // Only refresh if last refresh was more than 1 minute ago
         if ($this->lastRefresh && $this->lastRefresh->diffInMinutes(now()) >= 1) {
             $this->loadNotifications();
+            $this->loadCrmNotifications();
+            $this->loadNewOrdersCount();
         }
     }
 

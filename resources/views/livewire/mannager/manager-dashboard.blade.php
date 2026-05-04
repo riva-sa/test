@@ -1,18 +1,4 @@
 <div class="min-h-full bg-white">
-    <!-- Header -->
-    <div class="bg-white shadow-sm border-b border-gray-200">
-        <div class="mx-auto px-2 sm:px-4 lg:px-4 py-4">
-            <div class="flex justify-between items-center">
-                <h1 class="text-2xl font-bold text-gray-900 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-2 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
-                    </svg>
-                    لوحة التحكم
-                </h1>
-            </div>
-        </div>
-    </div>
-
     <!-- Main Content -->
     <div class="mx-auto px-2 sm:px-4 lg:px-4 py-4">
         <!-- Stats Cards -->
@@ -59,13 +45,13 @@
             <div class="bg-white overflow-hidden shadow rounded-xl border border-gray-100 hover:shadow-md transition-shadow duration-200">
                 <div class="px-3 py-3 sm:p-4">
                     <div class="flex items-center">
-                        <div class="flex-shrink-0 bg-indigo-100 rounded-xl p-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="flex-shrink-0 rounded-xl p-3" style="background-color: {{ \App\Models\UnitOrder::STATUS_COLORS[0] }}20; color: {{ \App\Models\UnitOrder::STATUS_COLORS[0] }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                             </svg>
                         </div>
                         <div class="mr-4 flex-1">
-                            <dt class="text-sm font-medium text-gray-500 truncate">طلبات جديدة</dt>
+                            <dt class="text-sm font-medium text-gray-500 truncate">{{ \App\Models\UnitOrder::STATUS_LABELS[0] }}</dt>
                             <dd class="mt-1 text-2xl font-semibold text-gray-900">
                                 {{ number_format($newOrders ) }}
                             </dd>
@@ -78,13 +64,13 @@
             <div class="bg-white overflow-hidden shadow rounded-xl border border-gray-100 hover:shadow-md transition-shadow duration-200">
                 <div class="px-3 py-3 sm:p-4">
                     <div class="flex items-center">
-                        <div class="flex-shrink-0 bg-yellow-100 rounded-xl p-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="flex-shrink-0 rounded-xl p-3" style="background-color: {{ \App\Models\UnitOrder::STATUS_COLORS[1] }}20; color: {{ \App\Models\UnitOrder::STATUS_COLORS[1] }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                         </div>
                         <div class="mr-4 flex-1">
-                            <dt class="text-sm font-medium text-gray-500 truncate">طلبات مفتوحة</dt>
+                            <dt class="text-sm font-medium text-gray-500 truncate">{{ \App\Models\UnitOrder::STATUS_LABELS[1] }}</dt>
                             <dd class="mt-1 text-2xl font-semibold text-gray-900">
                                 {{ number_format($openOrders ) }}
                             </dd>
@@ -93,7 +79,7 @@
                 </div>
             </div>
         </div>
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-4">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5 mb-4">
 
             <!-- Delayed Orders Card -->
             <div class="bg-white overflow-hidden shadow rounded-xl border border-gray-100 hover:shadow-md transition-shadow duration-200">
@@ -118,13 +104,13 @@
             <div class="bg-white overflow-hidden shadow rounded-xl border border-gray-100 hover:shadow-md transition-shadow duration-200">
                 <div class="px-3 py-3 sm:p-4">
                     <div class="flex items-center">
-                        <div class="flex-shrink-0 bg-green-100 rounded-xl p-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="flex-shrink-0 rounded-xl p-3" style="background-color: {{ \App\Models\UnitOrder::STATUS_COLORS[2] }}20; color: {{ \App\Models\UnitOrder::STATUS_COLORS[2] }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10l9-7 9 7v10a2 2 0 01-2 2h-4a2 2 0 01-2-2V13H9v7a2 2 0 01-2 2H3a2 2 0 01-2-2V10z" />
                             </svg>
                         </div>
                         <div class="mr-4 flex-1">
-                            <dt class="text-sm font-medium text-gray-500 truncate">عمليات بيعية</dt>
+                            <dt class="text-sm font-medium text-gray-500 truncate">{{ \App\Models\UnitOrder::STATUS_LABELS[2] }}</dt>
                             <dd class="mt-1 text-2xl font-semibold text-gray-900">
                                 {{ number_format($SalesTransactions ) }}
                             </dd>
@@ -137,13 +123,13 @@
             <div class="bg-white overflow-hidden shadow rounded-xl border border-gray-100 hover:shadow-md transition-shadow duration-200">
                 <div class="px-3 py-3 sm:p-4">
                     <div class="flex items-center">
-                        <div class="flex-shrink-0 bg-gray-100 rounded-xl p-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="flex-shrink-0 rounded-xl p-3" style="background-color: {{ \App\Models\UnitOrder::STATUS_COLORS[3] }}20; color: {{ \App\Models\UnitOrder::STATUS_COLORS[3] }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
                         <div class="mr-4 flex-1">
-                            <dt class="text-sm font-medium text-gray-500 truncate">طلبات مغلقة</dt>
+                            <dt class="text-sm font-medium text-gray-500 truncate">{{ \App\Models\UnitOrder::STATUS_LABELS[3] }}</dt>
                             <dd class="mt-1 text-2xl font-semibold text-gray-900">
                                 {{ number_format($closedOrders ) }}
                             </dd>
@@ -156,13 +142,13 @@
             <div class="bg-white overflow-hidden shadow rounded-xl border border-gray-100 hover:shadow-md transition-shadow duration-200">
                 <div class="px-3 py-3 sm:p-4">
                     <div class="flex items-center">
-                        <div class="flex-shrink-0 bg-teal-100 rounded-xl p-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="flex-shrink-0 rounded-xl p-3" style="background-color: {{ \App\Models\UnitOrder::STATUS_COLORS[4] }}20; color: {{ \App\Models\UnitOrder::STATUS_COLORS[4] }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                             </svg>
                         </div>
                         <div class="mr-4 flex-1">
-                            <dt class="text-sm font-medium text-gray-500 truncate">طلبات مكتملة</dt>
+                            <dt class="text-sm font-medium text-gray-500 truncate">{{ \App\Models\UnitOrder::STATUS_LABELS[4] }}</dt>
                             <dd class="mt-1 text-2xl font-semibold text-gray-900">
                                 {{ number_format($completedOrders ) }}
                             </dd>
@@ -170,7 +156,60 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Waiting List Card -->
+            <div class="bg-white overflow-hidden shadow rounded-xl border border-gray-100 hover:shadow-md transition-shadow duration-200">
+                <div class="px-3 py-3 sm:p-4">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 rounded-xl p-3" style="background-color: {{ \App\Models\UnitOrder::STATUS_COLORS[5] }}20; color: {{ \App\Models\UnitOrder::STATUS_COLORS[5] }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div class="mr-4 flex-1">
+                            <dt class="text-sm font-medium text-gray-500 truncate">{{ \App\Models\UnitOrder::STATUS_LABELS[5] }}</dt>
+                            <dd class="mt-1 text-2xl font-semibold text-gray-900">
+                                {{ number_format($waitingListCount ) }}
+                            </dd>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <!-- Sales Targets Progress (Only for Sales Role) -->
+        @if(isset($targetProgress))
+        <div class="mb-6">
+            <h3 class="text-sm font-semibold text-gray-900 flex items-center mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+                أهدافي الحالية
+            </h3>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                @foreach($targetProgress as $type => $progress)
+                <div class="bg-white overflow-hidden shadow rounded-xl border border-gray-100 p-4">
+                    <div class="flex justify-between items-end mb-2">
+                        <span class="text-sm font-medium text-gray-500">{{ $progress['label'] }}</span>
+                        <div class="text-right">
+                            <span class="text-sm font-bold text-gray-900">{{ $progress['current'] }}</span>
+                            <span class="text-xs text-gray-400">/ {{ $progress['target'] > 0 ? $progress['target'] : '—' }}</span>
+                        </div>
+                    </div>
+                    @if($progress['target'] > 0)
+                        <div class="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                            <div class="h-full rounded-full transition-all duration-500 {{ $progress['percentage'] >= 100 ? 'bg-green-500' : ($progress['percentage'] >= 50 ? 'bg-amber-500' : 'bg-blue-500') }}" style="width: {{ $progress['percentage'] }}%"></div>
+                        </div>
+                        <p class="text-[10px] text-gray-400 mt-1.5 font-medium text-left">{{ $progress['percentage'] }}%</p>
+                    @else
+                        <div class="w-full bg-gray-100 rounded-full h-2"></div>
+                        <p class="text-[10px] text-gray-400 mt-1.5 font-medium text-left">لم يحدد</p>
+                    @endif
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
 
         <!-- Recent activity and charts -->
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-3 mb-6">
@@ -178,7 +217,7 @@
             <div class="bg-white shadow rounded-xl border border-gray-100 lg:col-span-2">
                 <div class="px-5 py-4 border-b border-gray-100">
                     <div class="flex items-center justify-between">
-                        <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                        <h3 class="text-sm font-semibold text-gray-800 flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
@@ -240,7 +279,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {{-- <div class="bg-white shadow rounded-2xl p-4 mt-6">
-                                        <h3 class="text-lg font-bold mb-4">📜 سجل الأنشطة</h3>
+                                        <h3 class="text-sm font-bold mb-4">📜 سجل الأنشطة</h3>
 
                                         <div class="overflow-x-auto">
                                             <table class="min-w-full border border-gray-200 divide-y divide-gray-200">
@@ -387,9 +426,11 @@
                                 </td>
                          
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-{{ $statusConfig[$order->status]['color'] ?? 'gray' }}-100 text-{{ $statusConfig[$order->status]['color'] ?? 'gray' }}-800">
-                                        {{ $statusConfig[$order->status]['label'] ?? 'غير معروف' }}
-                                    </span>
+                                    <div class="flex items-center gap-2">
+                                        <span class="px-2 py-1 text-xs font-medium rounded-full" style="background-color: {{ \App\Models\UnitOrder::STATUS_COLORS[$order->status] ?? '#6B7280' }}20; color: {{ \App\Models\UnitOrder::STATUS_COLORS[$order->status] ?? '#6B7280' }}">
+                                            {{ \App\Models\UnitOrder::STATUS_LABELS[$order->status] ?? $order->status }}
+                                        </span>
+                                    </div>
                                 </td>
                                 <!-- Sales Manager / Permissions -->
                                 @if (auth()->user()->hasRole('sales_manager') || auth()->user()->hasRole('follow_up'))
@@ -447,7 +488,7 @@
                 <!-- Pie Chart -->
                 <div class="bg-white shadow rounded-xl border border-gray-100">
                     <div class="px-5 py-4 border-b border-gray-100">
-                        <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                        <h3 class="text-sm font-semibold text-gray-800 flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                             </svg>
@@ -460,9 +501,9 @@
                 </div>
 
                 <!-- Status Bars -->
-                <div class="bg-white shadow rounded-xl border border-gray-100">
+                <div class="bg-white shadow rounded-xl border border-gray-100 hidden">
                     <div class="px-5 py-4 border-b border-gray-100">
-                        <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                        <h3 class="text-sm font-semibold text-gray-800 flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                             </svg>
@@ -475,7 +516,7 @@
                             @php
                                 $count = match($key) {
                                     0 => $newOrders, 1 => $openOrders, 2 => $SalesTransactions,
-                                    3 => $closedOrders, 4 => $completedOrders, default => 0
+                                    3 => $closedOrders, 4 => $completedOrders, 5 => $waitingListCount, default => 0
                                 };
                                 $percentage = round(($count / $total) * 100, 2);
                             @endphp
@@ -485,7 +526,7 @@
                                     <span class="text-xs font-medium text-gray-500">{{ $count }}</span>
                                 </div>
                                 <div class="w-full bg-gray-200 rounded-full h-2.5">
-                                    <div class="bg-{{ $config['color'] }}-500 h-2.5 rounded-full" style="width: {{ $percentage }}%"></div>
+                                    <div class="h-2.5 rounded-full" style="width: {{ $percentage }}%; background-color: {{ $config['hex'] }}"></div>
                                 </div>
                             </div>
                         @endforeach
@@ -514,7 +555,8 @@
             {{ $openOrders }},
             {{ $SalesTransactions }},
             {{ $closedOrders }},
-            {{ $completedOrders }}
+            {{ $completedOrders }},
+            {{ $waitingListCount }}
         ];
 
         // 4. إنشاء الرسم البياني مع الإعدادات المحسّنة

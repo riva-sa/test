@@ -38,7 +38,7 @@ class NewSocialMediaLead extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('طلب مبيعات جديد - ' . $this->order->marketing_source)
+            ->subject('طلب مبيعات جديد - '.$this->order->marketing_source)
             ->view('emails.unit-order-notification', [
                 'emailData' => [
                     'customer_name' => $this->order->name,

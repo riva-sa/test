@@ -93,6 +93,12 @@ class ProjectSingle extends Component
         app(TrackingService::class)->trackProjectVisit($this->project);
     }
 
+    public function trackProjectWhatsappClick()
+    {
+        $this->trackingService->trackWhatsAppClick($this->project, ['context' => 'project_float_button']);
+        $this->dispatch('clientTrack', ['event' => 'WhatsAppClick', 'context' => 'project_page', 'project_id' => $this->project->id]);
+    }
+
     public function render()
     {
         $units = $this->getUnits();

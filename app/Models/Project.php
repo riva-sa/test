@@ -33,6 +33,7 @@ class Project extends Model
         'location',
         'virtualTour',
         'sales_manager_id',
+        'contact_phone',
         'visits_count',
         'views_count',
         'shows_count',

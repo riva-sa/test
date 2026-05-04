@@ -6,6 +6,7 @@ use App\Models\OrderPermission;
 use App\Models\UnitOrder;
 use App\Models\User;
 use App\Notifications\UnitOrderUpdated;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -29,9 +30,9 @@ class AutoAssignmentService
         ];
 
         // Also if we have no specific logic we should fallback. But let's check config if present.
-        if (!in_array($order->order_source, $allowedSources, true)) {
-            // Still we might want to auto assign everything that has no assigned sales user? 
-            // For now let's be flexible and just accept anything that doesn't have a user, 
+        if (! in_array($order->order_source, $allowedSources, true)) {
+            // Still we might want to auto assign everything that has no assigned sales user?
+            // For now let's be flexible and just accept anything that doesn't have a user,
             // except manager or legacy.
             if (in_array($order->order_source, [UnitOrder::ORDER_SOURCE_MANAGER, UnitOrder::ORDER_SOURCE_LEGACY])) {
                 return;
@@ -48,6 +49,7 @@ class AutoAssignmentService
 
                 if ($salesUsers->isEmpty()) {
                     Log::warning("AutoAssignmentService: No active sales representatives available for Order ID: {$order->id}");
+
                     return;
                 }
 
@@ -66,7 +68,7 @@ class AutoAssignmentService
                 $bestUser = null;
                 $minCount = PHP_INT_MAX;
 
-                // Pick the user with the minimum assignments today. In case of a tie, 
+                // Pick the user with the minimum assignments today. In case of a tie,
                 // the order of `$salesUsers` (usually by ID) will act as a secondary deterministic factor.
                 foreach ($salesUsers as $user) {
                     $userCount = $counts[$user->id] ?? 0;
@@ -79,8 +81,8 @@ class AutoAssignmentService
                 if ($bestUser) {
                     // Double check if not assigned yet
                     $order = UnitOrder::where('id', $order->id)->lockForUpdate()->first();
-                    
-                    if ($order && !$order->assigned_sales_user_id) {
+
+                    if ($order && ! $order->assigned_sales_user_id) {
                         $order->assigned_sales_user_id = $bestUser->id;
                         $order->save();
 
@@ -95,13 +97,15 @@ class AutoAssignmentService
 
                         // Notify the assigned sales user
                         $bestUser->notify(new UnitOrderUpdated($order, 'order_assigned'));
+                        Cache::forget("user_notifications_{$bestUser->id}");
+                        Cache::forget("user_notifications_unread_count_{$bestUser->id}");
 
                         Log::info("AutoAssignmentService: Order ID: {$order->id} automatically assigned to Sales User: {$bestUser->id}");
                     }
                 }
             });
         } catch (\Throwable $e) {
-            Log::error('AutoAssignmentService Error: ' . $e->getMessage());
+            Log::error('AutoAssignmentService Error: '.$e->getMessage());
         }
     }
 }

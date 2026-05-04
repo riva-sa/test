@@ -219,7 +219,7 @@ class EnhancedTrackingService extends TrackingService
         // Support both single project_id and multiple project_ids
         if (isset($filters['project_id']) || isset($filters['project_ids'])) {
             $projectIds = isset($filters['project_ids']) ? (array) $filters['project_ids'] : (array) $filters['project_id'];
-            
+
             $query->where(function ($q) use ($projectIds) {
                 $q->whereHasMorph('trackable', [Project::class], function ($query) use ($projectIds) {
                     $query->whereIn('id', $projectIds);
@@ -230,7 +230,7 @@ class EnhancedTrackingService extends TrackingService
         }
 
         // Support source filtering
-        if (isset($filters['sources']) && !empty($filters['sources'])) {
+        if (isset($filters['sources']) && ! empty($filters['sources'])) {
             $sources = (array) $filters['sources'];
             $query->whereHasMorph('trackable', [Project::class], function ($query) use ($sources) {
                 $query->whereIn('id', Campaign::whereIn('source', $sources)->pluck('project_id'));
@@ -252,17 +252,17 @@ class EnhancedTrackingService extends TrackingService
         }
 
         // Support search
-        if (isset($filters['search']) && !empty($filters['search'])) {
+        if (isset($filters['search']) && ! empty($filters['search'])) {
             $searchTerm = $filters['search'];
-            $query->where(function($q) use ($searchTerm) {
+            $query->where(function ($q) use ($searchTerm) {
                 $q->where('event_type', 'like', "%{$searchTerm}%")
-                  ->orWhereHasMorph('trackable', [Project::class], function($query) use ($searchTerm) {
-                      $query->where('name', 'like', "%{$searchTerm}%");
-                  })
-                  ->orWhereHasMorph('trackable', [Unit::class], function($query) use ($searchTerm) {
-                      $query->where('title', 'like', "%{$searchTerm}%")
+                    ->orWhereHasMorph('trackable', [Project::class], function ($query) use ($searchTerm) {
+                        $query->where('name', 'like', "%{$searchTerm}%");
+                    })
+                    ->orWhereHasMorph('trackable', [Unit::class], function ($query) use ($searchTerm) {
+                        $query->where('title', 'like', "%{$searchTerm}%")
                             ->orWhere('unit_number', 'like', "%{$searchTerm}%");
-                  });
+                    });
             });
         }
 

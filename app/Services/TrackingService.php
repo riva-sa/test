@@ -67,7 +67,7 @@ class TrackingService
     public function trackUnitOrder(Unit $unit, array $orderData = [])
     {
         $sessionId = request()->cookie('tracking_session_id', session()->getId());
-        
+
         $firstEvent = TrackingEvent::where('session_id', $sessionId)
             ->orderBy('created_at', 'asc')
             ->first();
@@ -736,7 +736,7 @@ class TrackingService
             $firstEvent = $events->first();
             $lastEvent = $events->last();
             $duration = $firstEvent->created_at->diffInSeconds($lastEvent->created_at);
-            
+
             $source = 'مباشر';
             if ($firstEvent->referrer) {
                 $metadata = is_string($firstEvent->metadata) ? json_decode($firstEvent->metadata, true) : $firstEvent->metadata;
@@ -754,11 +754,13 @@ class TrackingService
             $unitsSeen = [];
             $unitsShowed = [];
             $orderedUnit = null;
-            
+
             foreach ($events as $event) {
                 if ($event->trackable_type === 'App\Models\Project') {
                     $projectsSeen[$event->trackable_id] = ($projectsSeen[$event->trackable_id] ?? 0) + 1;
-                    if (!$mainProject) $mainProject = $event->trackable;
+                    if (! $mainProject) {
+                        $mainProject = $event->trackable;
+                    }
                 } elseif ($event->trackable_type === 'App\Models\Unit') {
                     $unitsSeen[$event->trackable_id] = ($unitsSeen[$event->trackable_id] ?? 0) + 1;
                     if ($event->event_type === 'show') {
@@ -772,11 +774,11 @@ class TrackingService
 
             if ($orderedUnit) {
                 $mainUnit = $orderedUnit;
-            } elseif (!empty($unitsShowed)) {
+            } elseif (! empty($unitsShowed)) {
                 arsort($unitsShowed);
                 $mainUnitId = array_key_first($unitsShowed);
                 $mainUnit = \App\Models\Unit::find($mainUnitId);
-            } elseif (!empty($unitsSeen)) {
+            } elseif (! empty($unitsSeen)) {
                 arsort($unitsSeen);
                 $mainUnitId = array_key_first($unitsSeen);
                 $mainUnit = \App\Models\Unit::find($mainUnitId);
@@ -784,7 +786,7 @@ class TrackingService
 
             if ($mainUnit && $mainUnit->project_id) {
                 $mainProject = \App\Models\Project::find($mainUnit->project_id);
-            } elseif (!empty($projectsSeen)) {
+            } elseif (! empty($projectsSeen)) {
                 arsort($projectsSeen);
                 $mainProjectId = array_key_first($projectsSeen);
                 $mainProject = \App\Models\Project::find($mainProjectId);

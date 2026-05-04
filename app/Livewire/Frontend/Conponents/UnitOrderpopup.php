@@ -37,7 +37,7 @@ class UnitOrderpopup extends Component
 
     public $purchaseType = 'cash'; // Default value
 
-    public $purchasePurpose = 'living'; // Default value
+    public $purchasePurpose = 'personal'; // Default value
 
     public $units = [];
 
@@ -51,8 +51,8 @@ class UnitOrderpopup extends Component
 
     // Purchase Purpose Options
     public $purchasePurposes = [
-        'living' => 'سكن',
-        'invest' => 'استثمار',
+        'personal' => 'سكنى',
+        'investment' => 'استثمار',
     ];
 
     // Validation Rules
@@ -63,7 +63,7 @@ class UnitOrderpopup extends Component
         'phone' => 'required|regex:/^5[0-9]{8}$/|size:9',
         'unit_id' => 'required|exists:units,id',
         'purchaseType' => 'required|in:cash,bank',
-        'purchasePurpose' => 'required|in:living,invest',
+        'purchasePurpose' => 'required|in:personal,investment',
         'support_type' => 'nullable',
     ];
 
@@ -104,7 +104,7 @@ class UnitOrderpopup extends Component
         $this->email = '';
         $this->phone = '';
         $this->purchaseType = 'cash';
-        $this->purchasePurpose = 'living';
+        $this->purchasePurpose = 'personal';
 
         $this->resetErrorBag();
     }
@@ -145,6 +145,7 @@ class UnitOrderpopup extends Component
                         'position' => 'bottom',
                         'timer' => 5000,
                     ]);
+
                     return;
                 }
 

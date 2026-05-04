@@ -131,6 +131,8 @@ trait Trackable
             'views' => $query->clone()->eventType('view')->count(),
             'shows' => $query->clone()->eventType('show')->count(),
             'orders' => $query->clone()->eventType('order')->count(),
+            'whatsapp' => $query->clone()->whereIn('event_type', ['whatsapp', 'WhatsAppClick'])->count(),
+            'calls' => $query->clone()->whereIn('event_type', ['call', 'PhoneCall'])->count(),
             'unique_sessions' => $query->clone()->distinct('session_id')->count('session_id'),
             'events_by_day' => $query->clone()
                 ->selectRaw('DATE(created_at) as date, COUNT(*) as count')

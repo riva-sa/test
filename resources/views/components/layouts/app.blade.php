@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 
         {{-- <title>{{ $title ?? 'ريفا العقارية' }}</title> --}}
 
@@ -133,10 +134,26 @@
                         window.dataLayer.push(Object.assign({ event: name }, data || {}));
                     }
                 }
+                function trackToInternal(type, id, event) {
+                    var token = document.querySelector('meta[name="csrf-token"]');
+                    if (!token || !id) return;
+                    fetch('/crm/tracking/track', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': token.getAttribute('content')
+                        },
+                        body: JSON.stringify({ type: type, id: parseInt(id), event: event })
+                    }).catch(function(){});
+                }
                 document.addEventListener('click', function(e){
                     var el = e.target.closest('a.whatsapp-float');
                     if (el) {
                         pushEvent('WhatsAppClick', { context: 'floating_button' });
+                        var projectEl = document.querySelector('[data-project-id]');
+                        if (projectEl) {
+                            trackToInternal('project', projectEl.getAttribute('data-project-id'), 'whatsapp');
+                        }
                     }
                 });
                 if (window.Livewire && typeof window.Livewire.on === 'function') {

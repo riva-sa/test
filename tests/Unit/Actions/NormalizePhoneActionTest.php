@@ -2,15 +2,15 @@
 
 namespace Tests\Unit\Actions;
 
-use Tests\TestCase;
 use App\Actions\NormalizePhoneAction;
+use Tests\TestCase;
 
 class NormalizePhoneActionTest extends TestCase
 {
     /** @test */
     public function it_formats_phone_numbers_correctly()
     {
-        $action = new NormalizePhoneAction();
+        $action = new NormalizePhoneAction;
 
         // Test various phone number formats
         $this->assertEquals('+966501234567', $action->execute('050 123 4567'));
@@ -23,7 +23,7 @@ class NormalizePhoneActionTest extends TestCase
     /** @test */
     public function it_returns_unformatable_numbers_as_is()
     {
-        $action = new NormalizePhoneAction();
+        $action = new NormalizePhoneAction;
 
         // Test numbers that cannot be formatted as valid Saudi mobile numbers
         // These should be returned as-is (to allow lead creation and flag for manual review)

@@ -260,8 +260,8 @@
                                 @error('support_type') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                             </div>
                         </div>
-                        @if($PurchaseType === 'Installment')
-                            <div class="p-4 border-t border-gray-100 grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4 bg-slate-50/50">
+                        @if($PurchaseType === 'bank')
+                            <div class="p-4 border-t border-gray-100 grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4 bg-zinc-50/50">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">اسم البنك</label>
                                     <input type="text" wire:model.live="bank_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5" placeholder="اختياري">

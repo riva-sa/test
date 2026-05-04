@@ -20,6 +20,9 @@
         "vite": "^6.0.0"
     },
     "dependencies": {
-        "leaflet": "^1.9.4"
+        "laravel-echo": "^2.3.4",
+        "leaflet": "^1.9.4",
+        "pusher-js": "^8.5.0",
+        "trix": "^2.1.18"
     }
 }

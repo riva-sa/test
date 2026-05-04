@@ -155,4 +155,37 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->belongsTo(Developer::class);
     }
+
+    public function sentNotifications()
+    {
+        return $this->hasMany(CrmNotification::class, 'sender_id');
+    }
+
+    public function crmNotificationRecipients()
+    {
+        return $this->hasMany(CrmNotificationRecipient::class);
+    }
+
+    public function unreadCrmNotificationCount(): int
+    {
+        return $this->crmNotificationRecipients()->unread()->count();
+    }
+
+    /**
+     * Get the count of new orders accessible by this user.
+     */
+    public function newOrdersCount(): int
+    {
+        return UnitOrder::accessibleBy($this)->where('status', 0)->count();
+    }
+
+    public function salesTargets()
+    {
+        return $this->hasMany(SalesTarget::class);
+    }
+
+    public function statusTransitions()
+    {
+        return $this->hasMany(OrderStatusTransition::class);
+    }
 }

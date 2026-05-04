@@ -8,6 +8,7 @@ use App\Models\Project;
 use App\Models\ProjectType;
 use App\Models\State;
 use App\Models\Unit;
+use App\Services\TrackingService;
 use Illuminate\Support\Facades\Cache;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Attributes\Title;
@@ -212,6 +213,10 @@ class ProjectsPage extends Component
 
     public function showUnitDetails($unitId)
     {
+        $unit = Unit::find($unitId);
+        if ($unit) {
+            app(TrackingService::class)->trackUnitShow($unit);
+        }
         $this->dispatch('loadUnit', [
             'unitId' => $unitId,
         ]);

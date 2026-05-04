@@ -1,0 +1,122 @@
+<?php
+
+return [
+    // General
+    'unauthorized' => 'You are not authorized to perform this action',
+    'user_not_found' => 'User not found',
+
+    // Notifications
+    'notifications' => 'Notifications',
+    'send_notification' => 'Send Notification',
+    'create_notification' => 'Create New Notification',
+    'notification_type' => 'Notification Type',
+    'individual' => 'Individual',
+    'group' => 'Group',
+    'announcement' => 'Announcement',
+    'task' => 'Task',
+    'recipients' => 'Recipients',
+    'notification_title' => 'Notification Title',
+    'notification_content' => 'Content',
+    'send' => 'Send',
+    'sending' => 'Sending...',
+    'notification_sent' => 'Notification sent successfully',
+    'sent_notifications' => 'Sent Notifications',
+    'read' => 'Read',
+    'unread' => 'Unread',
+    'recipient_count' => 'recipient(s)',
+    'deleted_user' => 'Deleted User',
+    'and_others' => 'others',
+    'no_notifications_sent' => 'No notifications sent yet',
+    'group_notice' => 'This notification will be sent to all active sales employees',
+    'announcement_notice' => 'This notification will be sent to all system users',
+    'multi_select_hint' => 'Hold Ctrl to select multiple recipients',
+    'management_messages' => 'Management Messages',
+
+    // Announcements
+    'announcements' => 'Announcements',
+    'inbox' => 'Inbox',
+    'announcements_inbox' => 'Notifications Inbox',
+    'load_more' => 'Load More',
+    'no_announcements' => 'No announcements',
+    'mark_as_read' => 'Mark as Read',
+    'view_all_notifications' => 'View All Notifications',
+    'mark_all_read' => 'Mark All as Read',
+    'unread_count' => 'unread notification(s)',
+    'no_notifications' => 'No notifications',
+
+    // Sales Targets
+    'sales_targets' => 'Sales Targets',
+    'monthly_orders' => 'Monthly Orders',
+    'daily_orders' => 'Daily Orders',
+    'reservations' => 'Reservations',
+    'sales' => 'Sales',
+    'target_value' => 'Target Value',
+    'current_progress' => 'Current Progress',
+    'set_targets' => 'Set Targets',
+    'apply_default' => 'Apply Default Value to All',
+    'targets_saved' => 'Targets saved successfully',
+
+    // Leaderboard
+    'leaderboard' => 'Leaderboard',
+    'weights' => 'Weights',
+    'score' => 'Score',
+    'composite_score' => 'Composite Score',
+    'rank' => 'Rank',
+    'weights_saved' => 'Weights saved successfully',
+    'weights_sum_error' => 'Weights must sum to 100%',
+    'historical_view' => 'Historical View',
+    'select_month' => 'Select Month',
+
+    // Status Columns
+    'new' => 'New',
+    'open_request' => 'Open Request',
+    'waiting_list' => 'Waiting List',
+    'closed' => 'Closed',
+    'completed' => 'Completed',
+    'sales_transactions' => 'Sales Transactions',
+
+    // Sales Managers
+    'sales_managers' => 'Sales Representatives',
+    'sales_manager_updated' => 'Sales representative updated successfully!',
+    'add_sales_rep' => 'Add Sales Rep',
+    'sales_rep_added' => 'New sales representative added successfully!',
+
+    // Password Reset
+    'reset_password' => 'Reset Password',
+    'reset_link_sent' => 'Password reset link sent to ',
+    'reset_link_failed' => 'Error sending password reset link',
+    'reset_confirm' => 'Are you sure you want to send a password reset link?',
+    'new_password' => 'New Password',
+    'confirm_password' => 'Confirm Password',
+    'change_password' => 'Change Password',
+    'back_to_login' => 'Back to Login',
+    'password_reset_title' => 'Reset Password',
+    'password_reset_subtitle' => 'Set a new strong password for your account',
+
+    // Customer Profile
+    'customer_profile' => 'Customer Profile',
+    'total_orders' => 'Total Orders',
+    'latest_status' => 'Latest Status',
+    'first_order' => 'First Order',
+    'last_activity' => 'Last Activity',
+    'order_source' => 'Order Source',
+    'ad_group' => 'Ad Group',
+    'notes_count' => 'Notes Count',
+    'creation_date' => 'Creation Date',
+    'last_update' => 'Last Update',
+
+    // General Labels
+    'save' => 'Save',
+    'cancel' => 'Cancel',
+    'edit' => 'Edit',
+    'delete' => 'Delete',
+    'confirm' => 'Confirm',
+    'name' => 'Name',
+    'email' => 'Email',
+    'phone' => 'Phone',
+    'status' => 'Status',
+    'active' => 'Active',
+    'inactive' => 'Inactive',
+    'on_vacation' => 'On Vacation',
+    'actions' => 'Actions',
+];

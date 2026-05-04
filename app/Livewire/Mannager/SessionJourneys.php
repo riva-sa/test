@@ -33,8 +33,9 @@ class SessionJourneys extends Component
 
     public function showJourneyDetails($sessionId)
     {
-        $journey = collect($this->journeys)->first(function($j) use ($sessionId) {
+        $journey = collect($this->journeys)->first(function ($j) use ($sessionId) {
             $id = is_array($j) ? $j['session_id'] : $j->session_id;
+
             return $id === $sessionId;
         });
 

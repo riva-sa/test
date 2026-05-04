@@ -11,6 +11,7 @@ use App\Models\UnitOrder;
 use App\Models\User;
 use App\Notifications\UnitOrderUpdated;
 use App\Services\TrackingService;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
@@ -37,7 +38,7 @@ class UnitPopup extends Component
 
     public $purchaseType = 'cash'; // Default value
 
-    public $purchasePurpose = 'living'; // Default value
+    public $purchasePurpose = 'personal'; // Default value
 
     public $support_type = null;
 
@@ -51,8 +52,8 @@ class UnitPopup extends Component
 
     // Purchase Purpose Options
     public $purchasePurposes = [
-        'living' => 'سكن',
-        'invest' => 'استثمار',
+        'personal' => 'سكنى',
+        'investment' => 'استثمار',
     ];
 
     // Validation Rules
@@ -62,7 +63,7 @@ class UnitPopup extends Component
         'email' => 'required|email',
         'phone' => 'required|regex:/^5[0-9]{8}$/|size:9',
         'purchaseType' => 'required|in:cash,bank',
-        'purchasePurpose' => 'required|in:living,invest',
+        'purchasePurpose' => 'required|in:personal,investment',
     ];
 
     // Custom Error Messages
@@ -119,7 +120,7 @@ class UnitPopup extends Component
         $this->email = '';
         $this->phone = '';
         $this->purchaseType = 'cash';
-        $this->purchasePurpose = 'living';
+        $this->purchasePurpose = 'personal';
         $this->support_type = null;
         $this->resetErrorBag();
     }
@@ -138,6 +139,7 @@ class UnitPopup extends Component
                     'position' => 'bottom',
                     'timer' => 5000,
                 ]);
+
                 return;
             }
 
@@ -226,6 +228,10 @@ class UnitPopup extends Component
                 // إرسال إشعار النظام
                 $user->notify(new UnitOrderUpdated($unitOrder, 'new_order', $notificationData));
 
+                // مسح كاش الإشعارات حتى يظهر فوراً في الشريط الجانبي
+                Cache::forget("user_notifications_{$user->id}");
+                Cache::forget("user_notifications_unread_count_{$user->id}");
+
                 Mail::to($user->email)->send(new MailUnitOrderNotification($emailData, 'sales_manager'));
 
             }
@@ -240,6 +246,9 @@ class UnitPopup extends Component
                             'customer_name' => $unitOrder->name,
                             'unit_type' => $emailData['unit']->type ?? 'غير محدد',
                         ]));
+
+                        Cache::forget("user_notifications_{$permission->user->id}");
+                        Cache::forget("user_notifications_unread_count_{$permission->user->id}");
 
                         Mail::to($permission->user->email)
                             ->send(new MailUnitOrderNotification($emailData, 'permission_user'));

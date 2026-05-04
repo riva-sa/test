@@ -2,16 +2,15 @@
 
 namespace Tests\Unit\Http\Requests\Api;
 
-use Tests\TestCase;
 use App\Http\Requests\Api\SocialMediaLeadRequest;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationException;
+use Tests\TestCase;
 
 class SocialMediaLeadRequestTest extends TestCase
 {
     public function test_email_is_optional_and_can_be_null(): void
     {
-        $request = new SocialMediaLeadRequest();
+        $request = new SocialMediaLeadRequest;
         $input = [
             'name' => 'John Doe',
             'email' => null,
@@ -26,7 +25,7 @@ class SocialMediaLeadRequestTest extends TestCase
 
     public function test_email_is_optional_and_can_be_omitted(): void
     {
-        $request = new SocialMediaLeadRequest();
+        $request = new SocialMediaLeadRequest;
         $input = [
             'name' => 'John Doe',
             'phone' => '1234567890',
@@ -40,7 +39,7 @@ class SocialMediaLeadRequestTest extends TestCase
 
     public function test_email_when_present_must_be_valid_email(): void
     {
-        $request = new SocialMediaLeadRequest();
+        $request = new SocialMediaLeadRequest;
         $input = [
             'name' => 'John Doe',
             'email' => 'john@example.com',
@@ -55,7 +54,7 @@ class SocialMediaLeadRequestTest extends TestCase
 
     public function test_email_when_present_and_invalid_fails_validation(): void
     {
-        $request = new SocialMediaLeadRequest();
+        $request = new SocialMediaLeadRequest;
         $input = [
             'name' => 'John Doe',
             'email' => 'invalid-email',

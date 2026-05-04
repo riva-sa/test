@@ -12,6 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/trix@2.1.12/dist/trix.css">
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -274,6 +275,19 @@
                 transform: rotate(360deg);
             }
         }
+
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 3px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.05);
+            border-radius: 10px;
+        }
+
+        [x-cloak] { display: none !important; }
     </style>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -298,6 +312,7 @@
             </div>
         </div>
 
+        <script src="https://unpkg.com/trix@2.1.12/dist/trix.umd.min.js"></script>
         @livewireScripts
         <script>
             Chart.defaults.font.family = 'Cairo, Tajawal, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';

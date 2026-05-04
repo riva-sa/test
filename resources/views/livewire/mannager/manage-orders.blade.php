@@ -3,7 +3,7 @@
     <div class="bg-white shadow-sm border-b border-gray-200">
         <div class="mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div class="flex justify-between items-center">
-                <h1 class="text-2xl font-bold text-gray-900 flex items-center">
+                <h1 class="text-xl font-bold text-gray-900 flex items-center">
                     إدارة الطلبات
                 </h1>
                 <p class="text-sm text-gray-500 mt-1">عرض وتتبع جميع طلبات العملاء</p>
@@ -26,8 +26,6 @@
     <div class="bg-white min-h-screen p-2 sm:p-4">
         <!-- Filters Card -->
         <div class="bg-white rounded-xl shadow-sm p-4 mb-6 border border-gray-100">
-            <h2 class="text-lg font-semibold text-gray-700 mb-4">تصفية النتائج</h2>
-
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
                 <!-- Search Field -->
                 <div>
@@ -350,18 +348,8 @@
                             <!-- Status -->
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center gap-2">
-                                    @php
-                                        $statusColors = [
-                                            0 => 'bg-green-300 text-green-800',
-                                            1 => 'bg-yellow-100 text-yellow-800',
-                                            2 => 'bg-green-100 text-green-800',
-                                            3 => 'bg-gray-100 text-gray-800',
-                                            4 => 'bg-green-100 text-green-800',
-                                            5 => 'bg-amber-100 text-amber-800',
-                                        ];
-                                    @endphp
-                                    <span class="px-2 py-1 text-xs font-medium rounded-full {{ $statusColors[$order->status] ?? 'bg-gray-100 text-gray-800' }}">
-                                        {{ $statusLabels[$order->status] ?? $order->status }}
+                                    <span class="px-2 py-1 text-xs font-medium rounded-full" style="background-color: {{ \App\Models\UnitOrder::STATUS_COLORS[$order->status] ?? '#6B7280' }}20; color: {{ \App\Models\UnitOrder::STATUS_COLORS[$order->status] ?? '#6B7280' }}">
+                                        {{ \App\Models\UnitOrder::STATUS_LABELS[$order->status] ?? $order->status }}
                                     </span>
                                 </div>
                             </td>

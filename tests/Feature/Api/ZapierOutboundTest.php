@@ -3,8 +3,6 @@
 namespace Tests\Feature\Api;
 
 use App\Models\UnitOrder;
-use App\Models\User;
-use App\Observers\UnitOrderObserver;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
@@ -17,16 +15,16 @@ class ZapierOutboundTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Enable forwarding and set a fake webhook URL
         Config::set('order_forwarding.enabled', true);
         Config::set('order_forwarding.webhook_url', 'https://hooks.zapier.com/fake-hook');
         Config::set('order_forwarding.sources', [
             UnitOrder::ORDER_SOURCE_MANAGER,
-            UnitOrder::ORDER_SOURCE_FRONTEND_UNIT
+            UnitOrder::ORDER_SOURCE_FRONTEND_UNIT,
         ]);
         Config::set('order_forwarding.exclude_sources', [
-            UnitOrder::ORDER_SOURCE_SOCIAL_MEDIA
+            UnitOrder::ORDER_SOURCE_SOCIAL_MEDIA,
         ]);
     }
 
@@ -41,7 +39,7 @@ class ZapierOutboundTest extends TestCase
             'phone' => '123456789',
             'order_source' => UnitOrder::ORDER_SOURCE_MANAGER,
             'marketing_source' => 'Manual',
-            'campaign_name' => 'Test Campaign'
+            'campaign_name' => 'Test Campaign',
         ]);
 
         Http::assertSent(function ($request) use ($order) {

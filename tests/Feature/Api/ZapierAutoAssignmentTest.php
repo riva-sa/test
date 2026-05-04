@@ -49,7 +49,7 @@ class ZapierAutoAssignmentTest extends TestCase
         $response->assertStatus(201);
 
         $order = UnitOrder::where('external_id', 'ext_123')->first();
-        
+
         // Verify assignment
         $this->assertEquals($salesUser->id, $order->assigned_sales_user_id);
 
@@ -58,7 +58,7 @@ class ZapierAutoAssignmentTest extends TestCase
             $salesUser,
             UnitOrderUpdated::class,
             function ($notification, $channels) use ($order) {
-                return $notification->type === 'order_assigned' && 
+                return $notification->type === 'order_assigned' &&
                        $notification->order->id === $order->id;
             }
         );

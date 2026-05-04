@@ -29,7 +29,9 @@ class ManageOrders extends Component
     public $salesManagerFilter = '';
 
     public $delayedFilter = '';
+
     public $fromDate = '';
+
     public $toDate = '';
 
     protected $queryString = [
@@ -97,7 +99,7 @@ class ManageOrders extends Component
     public function deleteOrder($orderId)
     {
         $order = UnitOrder::accessibleBy(auth()->user())->find($orderId);
-        
+
         if ($order) {
             $order->delete();
             session()->flash('message', 'تم حذف الطلب بنجاح.');
@@ -109,13 +111,13 @@ class ManageOrders extends Component
     public function export()
     {
         $query = UnitOrder::with([
-            'notes', 
-            'unit', 
-            'project.salesManager', 
-            'user', 
-            'permissions.user', 
-            'lastActionByUser', 
-            'assignedSalesUser'
+            'notes.user',
+            'unit',
+            'project.salesManager',
+            'user',
+            'permissions.user',
+            'lastActionByUser',
+            'assignedSalesUser',
         ])->accessibleBy(auth()->user());
 
         $query->when($this->search, function ($query) {
@@ -152,19 +154,19 @@ class ManageOrders extends Component
 
         $records = $query->orderBy($this->sortField, $this->sortDirection)->get();
 
-        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\UnitOrdersExport($records), 'orders_export_' . now()->format('Y-m-d') . '.xlsx');
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\UnitOrdersExport($records), 'orders_export_'.now()->format('Y-m-d').'.xlsx');
     }
 
     public function render()
     {
         $query = UnitOrder::with([
-            'notes', 
-            'unit', 
-            'project.salesManager', 
-            'user', 
-            'permissions.user', 
-            'lastActionByUser', 
-            'assignedSalesUser'
+            'notes',
+            'unit',
+            'project.salesManager',
+            'user',
+            'permissions.user',
+            'lastActionByUser',
+            'assignedSalesUser',
         ])->accessibleBy(auth()->user());
 
         // الخطوة 3: تطبيق فلاتر الواجهة (البحث، الحالة، المشروع، إلخ)
@@ -229,14 +231,7 @@ class ManageOrders extends Component
         return view('livewire.mannager.manage-orders', [
             'orders' => $pagedOrders,
             'delayedOrdersCount' => $delayedOrdersCount,
-            'statusLabels' => [
-                0 => 'جديد',
-                1 => 'طلب مفتوح',
-                2 => 'معاملات بيعية',
-                3 => 'مغلق',
-                4 => 'مكتمل',
-                5 => 'قائمة انتظار',
-            ],
+            'statusLabels' => UnitOrder::STATUS_LABELS,
             'purchaseTypes' => [
                 'cash' => 'كاش',
                 'installment' => 'تقسيط',

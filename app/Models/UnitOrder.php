@@ -15,23 +15,25 @@ class UnitOrder extends Model
             return $query->whereRaw('1=0');
         }
 
-        // Admins, sales managers, and follow-up users see all orders
+        // Admins, sales managers, follow-up, developers, and project managers see all orders
         if ($user->hasRole('sales_manager') || $user->hasRole('follow_up') || $user->hasRole('Admin') || $user->hasRole('developer') || $user->hasRole('project_manager')) {
             return $query;
         }
 
-        // Sales users are restricted to their projects or explicit permissions
+        // Sales users see orders they are directly assigned to, orders in projects they manage,
+        // or orders where they have an explicit (non-expired) permission.
         return $query->where(function ($q) use ($user) {
             $q->where('assigned_sales_user_id', $user->id)
-              ->orWhereHas('project', function ($subQ) use ($user) {
-                $subQ->where('sales_manager_id', $user->id);
-            })->orWhereHas('permissions', function ($subQ) use ($user) {
-                $subQ->where('user_id', $user->id)
-                    ->where(function ($expQ) {
-                        $expQ->whereNull('expires_at')
-                            ->orWhere('expires_at', '>', now());
-                    });
-            });
+                ->orWhereHas('project', function ($subQ) use ($user) {
+                    $subQ->where('sales_manager_id', $user->id);
+                })
+                ->orWhereHas('permissions', function ($subQ) use ($user) {
+                    $subQ->where('user_id', $user->id)
+                        ->where(function ($expQ) {
+                            $expQ->whereNull('expires_at')
+                                ->orWhere('expires_at', '>', now());
+                        });
+                });
         });
     }
 
@@ -66,6 +68,41 @@ class UnitOrder extends Model
         'ad_squad',
         'ad_set',
         'ad_name',
+    ];
+
+    public const STATUS_COLORS = [
+        0 => '#3B82F6', // جديد - blue
+        1 => '#F97316', // طلب مفتوح - orange
+        2 => '#5457E3', // معاملات بيعية - purple
+        3 => '#9CA3AF', // مغلق - gray
+        4 => '#22C55E', // مكتمل - green
+        5 => '#EAB308', // قائمة انتظار - yellow
+    ];
+
+    public const STATUS_LABELS = [
+        0 => 'جديد',
+        1 => 'طلب مفتوح',
+        2 => 'معاملات بيعية',
+        3 => 'مغلق',
+        4 => 'مكتمل',
+        5 => 'قائمة انتظار',
+    ];
+
+    public const PURCHASE_TYPES = [
+        'cash' => 'كاش',
+        'installment' => 'تقسيط',
+        'bank' => 'تمويل بنكي',
+        'Cash' => 'كاش', // Legacy
+        'Installment' => 'تمويل بنكي', // Legacy/Manager
+    ];
+
+    public const PURCHASE_PURPOSES = [
+        'investment' => 'استثمار',
+        'personal' => 'سكنى',
+        'invest' => 'استثمار', // Frontend
+        'living' => 'سكنى', // Frontend
+        'Residential' => 'سكنى', // Manager
+        'Commercial' => 'استثمار', // Manager
     ];
 
     public const ORDER_SOURCE_LEGACY = 'legacy';
@@ -119,6 +156,11 @@ class UnitOrder extends Model
     public function forwardEvents()
     {
         return $this->hasMany(OrderForwardEvent::class);
+    }
+
+    public function statusTransitions()
+    {
+        return $this->hasMany(OrderStatusTransition::class, 'unit_order_id');
     }
 
     public function activities()
@@ -215,30 +257,22 @@ class UnitOrder extends Model
 
     public function statusLabel()
     {
-        $statuses = [
-            0 => ['label' => 'جديد', 'color' => 'blue'],
-            1 => ['label' => 'طلب مفتوح', 'color' => 'green'],
-            2 => ['label' => 'معاملات بيعية', 'color' => 'yellow'],
-            3 => ['label' => 'مغلق', 'color' => 'red'],
-            4 => ['label' => 'مكتمل', 'color' => 'emerald'],
-            5 => ['label' => 'قائمة انتظار', 'color' => 'amber'],
-        ];
-
-        return $statuses[$this->status]['label'] ?? 'غير معروف';
+        return self::STATUS_LABELS[$this->status] ?? 'غير معروف';
     }
 
     public function statusColor()
     {
-        $statuses = [
-            0 => 'blue',
-            1 => 'green',
-            2 => 'yellow',
-            3 => 'red',
-            4 => 'emerald',
-            5 => 'amber',
-        ];
+        return self::STATUS_COLORS[$this->status] ?? '#6B7280';
+    }
 
-        return $statuses[$this->status] ?? 'gray';
+    public function purchaseTypeLabel()
+    {
+        return self::PURCHASE_TYPES[$this->PurchaseType] ?? $this->PurchaseType ?? '—';
+    }
+
+    public function purchasePurposeLabel()
+    {
+        return self::PURCHASE_PURPOSES[$this->PurchasePurpose] ?? $this->PurchasePurpose ?? '—';
     }
 
     public function orderSourceLabel()
@@ -261,7 +295,7 @@ class UnitOrder extends Model
     {
         $marketingSource = array_key_exists('marketing_source', $this->getAttributes()) ? $this->getAttribute('marketing_source') : null;
         $source = $marketingSource ?: ($this->order_source == self::ORDER_SOURCE_MANAGER ? 'إضافة يدوية' : 'مباشر');
-        
+
         $icons = [
             'Facebook' => 'fab fa-facebook text-blue-600',
             'Instagram' => 'fab fa-instagram text-pink-600',
@@ -274,12 +308,12 @@ class UnitOrder extends Model
             'إضافة يدوية' => 'fas fa-user-edit text-gray-600',
             'مباشر' => 'fas fa-link text-gray-500',
         ];
-        
+
         $icon = $icons[$source] ?? 'fas fa-globe text-gray-400';
-        
+
         return [
             'label' => $source,
-            'icon' => $icon
+            'icon' => $icon,
         ];
     }
 }

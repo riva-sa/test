@@ -270,9 +270,10 @@ class ProjectResource extends Resource
                                                     'pdf' => 'PDF',
                                                 ])
                                                 ->required(),
-                                            // TextInput::make('youtube_url')
-                                            //     ->label('YouTube URL')
-                                            //     ->placeholder('Optional if media is a video'),
+                                            TextInput::make('youtube_url')
+                                                ->label('YouTube URL')
+                                                ->placeholder('رابط فيديو يوتيوب (اختياري)')
+                                                ->url(),
 
                                             // TextInput::make('vimeo_url')
                                             //     ->label('Vimeo URL')
@@ -432,6 +433,13 @@ class ProjectResource extends Resource
                                 ->disabled(function () {
                                     return auth()->user()->hasRole('sales_manager');
                                 })
+                                ->columnSpan(1),
+
+                            Forms\Components\TextInput::make('contact_phone')
+                                ->label('رقم هاتف التواصل')
+                                ->nullable()
+                                ->maxLength(255)
+                                ->helperText('في حال تركه فارغاً سيتم استخدام رقم مدير المبيعات')
                                 ->columnSpan(1),
                             // images
 

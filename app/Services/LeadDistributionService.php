@@ -44,7 +44,7 @@ class LeadDistributionService
             $rowNum = $index + 2;
             try {
                 $project = null;
-                if (!empty($row['project_name'])) {
+                if (! empty($row['project_name'])) {
                     $project = $this->resolveProject($row['project_name']);
                     if (! $project) {
                         $failed[] = ['row' => $rowNum, 'reason' => 'المشروع غير موجود: '.$row['project_name']];
@@ -63,6 +63,7 @@ class LeadDistributionService
                 // Check for blocked numbers
                 if (BlockedNumber::where('phone', $phone)->exists()) {
                     $failed[] = ['row' => $rowNum, 'reason' => 'هذا الرقم محظور من النظام'];
+
                     continue;
                 }
 
@@ -82,24 +83,30 @@ class LeadDistributionService
                 }
 
                 $assignee = null;
-                if (!empty($row['assigned_employee'])) {
+                if (! empty($row['assigned_employee'])) {
                     $assignee = User::role(config('lead_import.sales_role', 'sales'))
-                        ->where('name', 'like', '%' . trim($row['assigned_employee']) . '%')
+                        ->where('name', 'like', '%'.trim($row['assigned_employee']).'%')
                         ->first();
                 }
 
-                if (!$assignee) {
+                if (! $assignee) {
                     $assignee = $pool[$rr % $poolSize];
                     $rr++;
                 }
 
                 $purchaseType = $row['purchase_type'] ?? null;
-                if ($purchaseType === 'كاش') $purchaseType = 'cash';
-                elseif ($purchaseType === 'تقسيط') $purchaseType = 'installment';
+                if ($purchaseType === 'كاش') {
+                    $purchaseType = 'cash';
+                } elseif ($purchaseType === 'تقسيط') {
+                    $purchaseType = 'installment';
+                }
 
                 $purchasePurpose = $row['purchase_purpose'] ?? null;
-                if ($purchasePurpose === 'استثمار') $purchasePurpose = 'investment';
-                elseif ($purchasePurpose === 'سكنى' || $purchasePurpose === 'سكني') $purchasePurpose = 'personal';
+                if ($purchasePurpose === 'استثمار') {
+                    $purchasePurpose = 'investment';
+                } elseif ($purchasePurpose === 'سكنى' || $purchasePurpose === 'سكني') {
+                    $purchasePurpose = 'personal';
+                }
 
                 $email = 'import.'.Str::lower(Str::limit($batchId, 36, '')).'.'.$rowNum.'.'.Str::random(6).'@invalid.local';
 
