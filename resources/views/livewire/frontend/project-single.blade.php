@@ -153,31 +153,7 @@
                             </div>
                         </div>
 
-                        {{-- YouTube Videos Section --}}
-                        @php
-                            $youtubeMedia = $project->projectMedia->filter(fn($m) => !empty($m->youtube_url) && $m->youtube_embed_url);
-                        @endphp
-                        @if($youtubeMedia->count() > 0)
-                        <div class="mt-4" dir="rtl">
-                            <h4 class="mb-3 text-right" style="font-weight: 600;">فيديوهات المشروع</h4>
-                            <div class="row g-3">
-                                @foreach($youtubeMedia as $media)
-                                <div class="col-md-{{ $youtubeMedia->count() === 1 ? '12' : '6' }}">
-                                    <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm">
-                                        <iframe
-                                            src="{{ $media->youtube_embed_url }}"
-                                            title="{{ $media->media_title ?? 'فيديو المشروع' }}"
-                                            frameborder="0"
-                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                            allowfullscreen
-                                            loading="lazy">
-                                        </iframe>
-                                    </div>
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-                        @endif
+                        
 
                     </div>
                     <div class="card col-lg-3 position-lg-sticky p-4 d-block d-lg-none" style="top: 5rem;" wire:ignore>
@@ -539,6 +515,32 @@
                             </div>
                         </div>
 
+                    @endif
+
+                    {{-- YouTube Videos Section --}}
+                    @php
+                        $youtubeMedia = $project->projectMedia->filter(fn($m) => !empty($m->youtube_url) && $m->youtube_embed_url);
+                    @endphp
+                    @if($youtubeMedia->count() > 0)
+                        <div class="mt-4" dir="rtl">
+                            <h4 class="mb-3 text-right" style="font-weight: 600;">فيديوهات المشروع</h4>
+                            <div class="row g-3">
+                                @foreach($youtubeMedia as $media)
+                                <div class="col-md-{{ $youtubeMedia->count() === 1 ? '12' : '6' }}">
+                                    <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm">
+                                        <iframe
+                                            src="{{ $media->youtube_embed_url }}"
+                                            title="{{ $media->media_title ?? 'فيديو المشروع' }}"
+                                            frameborder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowfullscreen
+                                            loading="lazy">
+                                        </iframe>
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
                     @endif
                 </div>
 
