@@ -5,8 +5,6 @@ namespace App\Services;
 use App\Models\OrderPermission;
 use App\Models\UnitOrder;
 use App\Models\User;
-use App\Notifications\UnitOrderUpdated;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -95,10 +93,10 @@ class AutoAssignmentService
                             'granted_by' => null, // System auto assignment doesn't have a granter
                         ]);
 
-                        // Notify the assigned sales user
-                        $bestUser->notify(new UnitOrderUpdated($order, 'order_assigned'));
-                        Cache::forget("user_notifications_{$bestUser->id}");
-                        Cache::forget("user_notifications_unread_count_{$bestUser->id}");
+                        // Notification is sent by NotificationService::notifyNewOrder()
+                        // after the observer refreshes the model — clearing cache here
+                        // would race with that send, so we leave it to notifyNewOrder.
+
 
                         Log::info("AutoAssignmentService: Order ID: {$order->id} automatically assigned to Sales User: {$bestUser->id}");
                     }

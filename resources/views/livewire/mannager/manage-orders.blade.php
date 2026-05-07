@@ -74,20 +74,17 @@
                         @endforeach
                     </select>
                 </div>
-                @if (auth()->user()->hasRole('Admin'))
-                
-                    <!-- From Date -->
-                    <div>
-                        <label for="fromDate" class="block text-sm font-medium text-gray-700 mb-1">من تاريخ</label>
-                        <input type="date" wire:model.live="fromDate" id="fromDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
-                    </div>
+                <!-- From Date -->
+                <div>
+                    <label for="fromDate" class="block text-sm font-medium text-gray-700 mb-1">من تاريخ</label>
+                    <input type="date" wire:model.live="fromDate" id="fromDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
+                </div>
 
-                    <!-- To Date -->
-                    <div>
-                        <label for="toDate" class="block text-sm font-medium text-gray-700 mb-1">إلى تاريخ</label>
-                        <input type="date" wire:model.live="toDate" id="toDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
-                    </div>
-                @endif
+                <!-- To Date -->
+                <div>
+                    <label for="toDate" class="block text-sm font-medium text-gray-700 mb-1">إلى تاريخ</label>
+                    <input type="date" wire:model.live="toDate" id="toDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
+                </div>
 
                 <!-- Delayed Filter -->
                 <div>
@@ -360,7 +357,7 @@
                             </td>
 
                             <!-- Sales Manager / Permissions -->
-                            @if (auth()->user()->hasRole('sales_manager') || auth()->user()->hasRole('follow_up'))
+                            @if (auth()->user()->hasRole('sales_manager') || auth()->user()->hasRole('follow_up') || auth()->user()->hasRole('Admin'))
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <div class="flex flex-col gap-1">
                                     @if($order->project?->salesManager)

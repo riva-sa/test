@@ -85,11 +85,11 @@
                         المحتوى <span class="text-red-500">*</span>
                     </label>
                     <div wire:ignore x-data="{}" @clear-trix.window="$refs.trixEditor.editor?.loadHTML('')">
-                        <input x-ref="hiddenInput" id="trix-content-{{ $this->getId() }}" type="hidden" wire:model="content">
+                        <input id="trix-content-{{ $this->getId() }}" type="hidden" wire:model="content">
                         <trix-editor
                             x-ref="trixEditor"
                             input="trix-content-{{ $this->getId() }}"
-                            x-on:trix-change="$refs.hiddenInput.dispatchEvent(new Event('input'))"
+                            x-on:trix-change="$wire.set('content', $event.target.value)"
                             class="trix-content border border-gray-200 rounded-lg min-h-[160px] text-sm"
                             placeholder="اكتب محتوى الإشعار هنا...">
                         </trix-editor>

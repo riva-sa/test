@@ -36,9 +36,9 @@ class UnitPopup extends Component
 
     public $currentStep = 1;
 
-    public $purchaseType = 'cash'; // Default value
+    public $purchaseType = ''; // Default value
 
-    public $purchasePurpose = 'personal'; // Default value
+    public $purchasePurpose = ''; // Default value
 
     public $support_type = null;
 
@@ -60,7 +60,7 @@ class UnitPopup extends Component
     protected $rules = [
         'firstName' => 'required|min:3|max:50',
         'lastName' => 'required|min:3|max:50',
-        'email' => 'required|email',
+        'email' => 'nullable|email',
         'phone' => 'required|regex:/^5[0-9]{8}$/|size:9',
         'purchaseType' => 'required|in:cash,bank',
         'purchasePurpose' => 'required|in:personal,investment',
@@ -74,7 +74,6 @@ class UnitPopup extends Component
         'lastName.required' => 'الرجاء إدخال الاسم',
         'lastName.min' => 'يجب أن يكون الاسم 3 أحرف على الأقل',
         'lastName.max' => 'يجب أن لا يتجاوز الاسم 50 حرفاً',
-        'email.required' => 'الرجاء إدخال البريد الإلكتروني',
         'email.email' => 'الرجاء إدخال بريد إلكتروني صحيح',
         'phone.required' => 'الرجاء إدخال رقم الهاتف',
         'phone.regex' => 'رقم الجوال يجب أن يبدأ بالرقم 5 ويكون 9 أرقام',
@@ -119,8 +118,8 @@ class UnitPopup extends Component
         $this->lastName = '';
         $this->email = '';
         $this->phone = '';
-        $this->purchaseType = 'cash';
-        $this->purchasePurpose = 'personal';
+        $this->purchaseType = '';
+        $this->purchasePurpose = '';
         $this->support_type = null;
         $this->resetErrorBag();
     }

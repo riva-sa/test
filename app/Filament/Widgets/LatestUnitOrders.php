@@ -18,9 +18,11 @@ class LatestUnitOrders extends BaseWidget
     public function table(Tables\Table $table): Tables\Table
     {
         return $table
-            ->query(UnitOrderResource::getEloquentQuery())
-            ->defaultPaginationPageOption(5) // Default pagination with 5 orders per page
-            ->defaultSort('created_at', 'desc') // Sort by latest created_at
+            ->query(
+                UnitOrderResource::getEloquentQuery()->with(['unit', 'user', 'project'])
+            )
+            ->defaultPaginationPageOption(5)
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('user_info')
                     ->label('المعلومات')

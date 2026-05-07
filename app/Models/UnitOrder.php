@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class UnitOrder extends Model
 {
+    use HasFactory;
     /**
      * Scope a query to only include orders accessible by the given user.
      */
@@ -35,6 +37,15 @@ class UnitOrder extends Model
                         });
                 });
         });
+    }
+
+    /**
+     * Scope for delayed orders (3+ days since last activity).
+     */
+    public function scopeDelayed($query)
+    {
+        return $query->whereNotIn('status', [3, 4])
+            ->where('updated_at', '<', now()->subDays(3));
     }
 
     protected $fillable = [

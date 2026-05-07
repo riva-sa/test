@@ -60,7 +60,7 @@
                             </div>
 
                             {{-- Rich text body --}}
-                            <div class="prose prose-sm max-w-none text-gray-600 trix-content line-clamp-3"
+                            <div class="prose prose-sm max-w-none text-gray-600 trix-content"
                                  x-data="{ expanded: false }"
                                  @click.stop>
                                 <div :class="expanded ? '' : 'line-clamp-3'">

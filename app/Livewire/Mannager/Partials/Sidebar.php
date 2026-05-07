@@ -665,6 +665,11 @@ class Sidebar extends Component
 
     public function render()
     {
+        // Always reload CRM notifications so that the eager-loaded `notification`
+        // relation is present. Livewire drops relation data when hydrating a
+        // serialised Collection from its snapshot, causing lazy-load violations.
+        $this->loadCrmNotifications();
+
         return view('livewire.mannager.partials.sidebar')->layout('layouts.custom');
     }
 }

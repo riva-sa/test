@@ -112,7 +112,7 @@
 
                                 </div>
                                 <hr style="margin: 10px;">
-                                @if ($selectedUnit->show_price)
+                                @if ($selectedUnit->show_price && $selectedUnit->case == 0)
                                     <h3 class="h3 mb-3 text-success px-2">
                                         <span class="text-muted small fs-15">السعر</span>
                                         {{ number_format($selectedUnit->unit_price)}} <img src="{{ asset('frontend/img/SaudiRiyal.svg') }}" width="14px" alt="">

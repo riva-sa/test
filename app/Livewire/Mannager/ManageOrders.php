@@ -203,33 +203,17 @@ class ManageOrders extends Component
             });
 
         if ($this->delayedFilter == '1') {
-            $query->whereNotIn('status', [3, 4]); // استبعاد الطلبات المغلقة والمكتملة فقط في البداية
+            $query->delayed();
         }
 
-        $allFilteredOrders = $query->orderBy($this->sortField, $this->sortDirection)->get();
-
-        if ($this->delayedFilter == '1') {
-            $finalOrders = $allFilteredOrders->filter(function ($order) {
-                return $this->isOrderDelayed($order);
-            });
-        } else {
-            $finalOrders = $allFilteredOrders;
-        }
+        $orders = $query->orderBy($this->sortField, $this->sortDirection)
+            ->paginate($this->perPage);
 
         $delayedOrdersCount = $this->getDelayedOrdersCount(auth()->user());
 
-        $currentPage = \Illuminate\Pagination\Paginator::resolveCurrentPage('page');
-        $pagedOrders = new \Illuminate\Pagination\LengthAwarePaginator(
-            $finalOrders->forPage($currentPage, $this->perPage),
-            $finalOrders->count(),
-            $this->perPage,
-            $currentPage,
-            ['path' => \Illuminate\Pagination\Paginator::resolveCurrentPath()]
-        );
-
         // الخطوة 9: إرجاع العرض مع كل البيانات المطلوبة
         return view('livewire.mannager.manage-orders', [
-            'orders' => $pagedOrders,
+            'orders' => $orders,
             'delayedOrdersCount' => $delayedOrdersCount,
             'statusLabels' => UnitOrder::STATUS_LABELS,
             'purchaseTypes' => [
@@ -254,15 +238,8 @@ class ManageOrders extends Component
 
     private function getDelayedOrdersCount($user)
     {
-        $query = UnitOrder::with(['project', 'permissions'])
-            ->whereNotIn('status', [3, 4])
-            ->accessibleBy($user);
-
-        // جلب كل الطلبات المحتملة وفلترتها
-        $potentialDelayed = $query->get();
-
-        return $potentialDelayed->filter(function ($order) {
-            return $this->isOrderDelayed($order);
-        })->count();
+        return UnitOrder::accessibleBy($user)
+            ->delayed()
+            ->count();
     }
 }

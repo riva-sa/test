@@ -23,8 +23,11 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:rotate-12 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                         </svg>
-                        @if($unreadCount + $crmUnreadCount > 0)
-                            <span class="absolute top-2 right-2 h-2.5 w-2.5 bg-primary-600 rounded-full border-2 border-white animate-pulse"></span>
+                        @php $totalUnread = $unreadCount + $crmUnreadCount; @endphp
+                        @if($totalUnread > 0)
+                            <span class="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[10px] font-bold rounded-full border-2 border-white flex items-center justify-center leading-none">
+                                {{ $totalUnread > 99 ? '99+' : $totalUnread }}
+                            </span>
                         @endif
                     </button>
                     
@@ -199,9 +202,14 @@
                     </svg>
                 </button>
                 <div x-show="open" x-collapse class="mr-5 border-r border-gray-100 pr-4 space-y-1 py-1">
-                    <a href="{{ route('manager.announcements') }}" class="relative block px-3 py-2 text-[13px] font-medium rounded-lg transition-all {{ request()->routeIs('manager.announcements') ? 'text-gray-900 bg-gray-50 font-bold' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50/50' }}">
+                    <a href="{{ route('manager.announcements') }}" class="relative flex items-center justify-between px-3 py-2 text-[13px] font-medium rounded-lg transition-all {{ request()->routeIs('manager.announcements') ? 'text-gray-900 bg-gray-50 font-bold' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50/50' }}">
                         @if(request()->routeIs('manager.announcements')) <span class="absolute -right-[17px] top-1/2 -translate-y-1/2 w-1 h-6 bg-primary-600 rounded-l-full"></span> @endif
-                        الإعلانات العامة
+                        <span>الإعلانات العامة</span>
+                        @if($crmUnreadCount > 0)
+                            <span class="mr-auto mr-1 min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
+                                {{ $crmUnreadCount > 99 ? '99+' : $crmUnreadCount }}
+                            </span>
+                        @endif
                     </a>
                     @if(auth()->user()->hasRole(['sales_manager', 'Admin']))
                         <a href="{{ route('manager.notifications') }}" class="relative block px-3 py-2 text-[13px] font-medium rounded-lg transition-all {{ request()->routeIs('manager.notifications') ? 'text-gray-900 bg-gray-50 font-bold' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50/50' }}">

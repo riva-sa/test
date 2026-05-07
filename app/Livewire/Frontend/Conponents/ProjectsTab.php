@@ -41,8 +41,9 @@ class ProjectsTab extends Component
                         'developer:id,name,logo',
                         'projectMedia:id,project_id,media_url,media_type,main',
                         'units:id,project_id,unit_price,unit_area,beadrooms,bathrooms,kitchen,case',
+                        'salesManager:id,phone',
                     ])
-                    ->select(['id', 'name', 'slug', 'project_type_id', 'developer_id', 'status', 'show_price'])
+                    ->select(['id', 'name', 'slug', 'project_type_id', 'developer_id', 'status', 'show_price', 'contact_phone', 'sales_manager_id'])
                     ->where('status', 1)
                     ->whereHas('units', function ($query) {
                         $query->where('case', 0);
@@ -56,8 +57,9 @@ class ProjectsTab extends Component
                     'developer:id,name,logo',
                     'projectMedia:id,project_id,media_url,media_type,main',
                     'units:id,project_id,unit_price,unit_area,beadrooms,bathrooms,kitchen,case',
+                    'salesManager:id,phone',
                 ])
-                ->select(['id', 'name', 'slug', 'project_type_id', 'developer_id', 'status', 'show_price'])
+                ->select(['id', 'name', 'slug', 'project_type_id', 'developer_id', 'status', 'show_price', 'contact_phone', 'sales_manager_id'])
                 ->where('status', 1)
                 ->whereHas('projectType', function ($query) {
                     $query->where('slug', $this->activeTab);

@@ -187,7 +187,7 @@
                             </div>
                             <div class="md:col-span-2">
                                 <label for="waiting_list_notes" class="block text-sm font-medium text-gray-700 mb-1">ملاحظات العميل لقائمة الانتظار</label>
-                                <textarea id="waiting_list_notes" wire:model.live="waiting_list_notes" rows="3" class="focus:ring-primary-500 focus:border-primary-500 block w-full rounded-md border-gray-300 shadow-sm p-2 border" placeholder="ملاحظات العميل لقائمة الانتظار"></textarea>
+                                <textarea id="waiting_list_notes" wire:model.live="waiting_list_notes" rows="3" class="focus:ring-primary-500 focus:border-primary-500 block w-full rounded-md border border-gray-300 p-3" placeholder="ملاحظات العميل لقائمة الانتظار"></textarea>
                                 @error('waiting_list_notes') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                             </div>
                         </div>
@@ -295,7 +295,7 @@
                         </div>
                         <div class="p-4">
                             <div class="relative">
-                                <textarea id="message" wire:model.live="message" rows="3" class="focus:ring-primary-500 focus:border-primary-500 block w-full rounded-md border-gray-300 shadow-sm" placeholder="أضف أي ملاحظات إضافية هنا..."></textarea>
+                                <textarea id="message" wire:model.live="message" rows="3" class="focus:ring-primary-500 focus:border-primary-500 block w-full rounded-md border border-gray-300 p-3" placeholder="أضف أي ملاحظات إضافية هنا..."></textarea>
                             </div>
                             @error('message') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                         </div>

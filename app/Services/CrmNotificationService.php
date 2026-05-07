@@ -16,14 +16,18 @@ class CrmNotificationService
     {
         $config = (new HtmlSanitizerConfig())
             ->allowElement('p')
+            ->allowElement('div')
+            ->allowElement('span')
             ->allowElement('br')
             ->allowElement('strong')
             ->allowElement('em')
             ->allowElement('ul')
             ->allowElement('ol')
             ->allowElement('li')
+            ->allowElement('h1')
             ->allowElement('h2')
             ->allowElement('h3')
+            ->allowElement('blockquote')
             ->allowElement('a', ['href', 'title', 'target']);
 
         return (new HtmlSanitizer($config))->sanitize($content);

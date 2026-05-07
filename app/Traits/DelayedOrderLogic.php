@@ -46,7 +46,7 @@ trait DelayedOrderLogic
             return $order->updated_at->lt(now()->subDays(3));
         }
 
-        $lastValidActionDate = $order->last_action_at ?? $order->created_at;
+        $lastValidActionDate = $order->updated_at ?? $order->created_at;
 
         return Carbon::parse($lastValidActionDate)->lt(now()->subDays(3));
     }

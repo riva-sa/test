@@ -34,10 +34,14 @@ class UnitOrderUpdated extends Notification implements ShouldQueue
      */
     public function via($notifiable)
     {
+        // new_order_admin: managers/admins receive email only (no in-app clutter)
+        if ($this->type === 'new_order_admin') {
+            return ['mail'];
+        }
+
         $channels = ['database'];
 
-        // Send email for new notes (sales manager statement)
-        if (in_array($this->type, ['new_note', 'status_update', 'message_update'])) {
+        if (in_array($this->type, ['new_order', 'order_assigned', 'new_note', 'status_update', 'message_update'])) {
             $channels[] = 'mail';
         }
 
@@ -67,7 +71,7 @@ class UnitOrderUpdated extends Notification implements ShouldQueue
         $userName = auth()->user()?->name ?? 'النظام';
 
         return match ($this->type) {
-            'new_order' => "تم إنشاء طلب جديد (#{$this->order->id}) للعميل {$this->order->name}",
+            'new_order', 'new_order_admin' => "تم إنشاء طلب جديد (#{$this->order->id}) للعميل {$this->order->name}",
             'status_update' => "قام {$userName} بتغيير حالة الطلب (#{$orderId}) إلى {$this->statusLabel()}",
             'new_note' => "أضاف {$userName} ملاحظة جديدة على الطلب (#{$orderId})",
             'client_update' => "قام {$userName} بتحديث بيانات العميل في الطلب (#{$orderId})",
@@ -82,16 +86,22 @@ class UnitOrderUpdated extends Notification implements ShouldQueue
     }
 
     /**
-     * Email message content
+     * Email message content — fetches fresh order data at dispatch time
      */
     public function toMail($notifiable)
     {
+        // Re-fetch with current data so the email reflects the latest order state
+        $order = $this->order->fresh(['unit', 'project', 'assignedSalesUser']) ?? $this->order;
         $message = $this->generateMessage();
 
+        $subject = $this->type === 'new_order' || $this->type === 'new_order_admin'
+            ? "طلب جديد #{$order->id} — {$order->name}"
+            : "تحديث على الطلب #{$order->id}";
+
         return (new \Illuminate\Notifications\Messages\MailMessage)
-            ->subject("تحديث على الطلب #{$this->order->id}")
+            ->subject($subject)
             ->line($message)
-            ->action('عرض الطلب', route('manager.order-details', $this->order->id))
+            ->action('عرض الطلب', route('manager.order-details', $order->id))
             ->line('شكراً لاستخدامك نظامنا');
     }
 

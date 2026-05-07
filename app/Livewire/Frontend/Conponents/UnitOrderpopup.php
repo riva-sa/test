@@ -35,9 +35,9 @@ class UnitOrderpopup extends Component
 
     public $currentStep = 1;
 
-    public $purchaseType = 'cash'; // Default value
+    public $purchaseType = ''; // Default value
 
-    public $purchasePurpose = 'personal'; // Default value
+    public $purchasePurpose = ''; // Default value
 
     public $units = [];
 
@@ -59,7 +59,7 @@ class UnitOrderpopup extends Component
     protected $rules = [
         'firstName' => 'required|min:3|max:50',
         'lastName' => 'required|min:3|max:50',
-        'email' => 'required|email',
+        'email' => 'nullable|email',
         'phone' => 'required|regex:/^5[0-9]{8}$/|size:9',
         'unit_id' => 'required|exists:units,id',
         'purchaseType' => 'required|in:cash,bank',
@@ -103,8 +103,8 @@ class UnitOrderpopup extends Component
         $this->lastName = '';
         $this->email = '';
         $this->phone = '';
-        $this->purchaseType = 'cash';
-        $this->purchasePurpose = 'personal';
+        $this->purchaseType = '';
+        $this->purchasePurpose = '';
 
         $this->resetErrorBag();
     }

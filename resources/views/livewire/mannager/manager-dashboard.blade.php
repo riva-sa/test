@@ -1,6 +1,7 @@
 <div class="min-h-full bg-white">
     <!-- Main Content -->
     <div class="mx-auto px-2 sm:px-4 lg:px-4 py-4">
+
         <!-- Stats Cards -->
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-4">
             <!-- Customers Card -->
@@ -206,6 +207,49 @@
                         <p class="text-[10px] text-gray-400 mt-1.5 font-medium text-left">لم يحدد</p>
                     @endif
                 </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
+        {{-- Full-width System Alerts card --}}
+        @if($systemAlerts->isNotEmpty() || $orderAlerts->isNotEmpty())
+        <div class="bg-white shadow rounded-xl border border-gray-100 mb-6">
+            <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+                <h3 class="text-sm font-semibold text-gray-800 flex items-center gap-2">
+                    <span class="inline-flex items-center justify-center w-6 h-6 bg-red-100 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                    </span>
+                    تنبيهات النظام
+                    <span class="text-[11px] font-normal text-red-500 bg-red-50 px-2 py-0.5 rounded-full">
+                        {{ $systemAlerts->count() + $orderAlerts->count() }} غير مقروء
+                    </span>
+                </h3>
+                <a href="{{ route('manager.announcements') }}" class="text-xs text-primary-600 hover:underline">عرض الكل</a>
+            </div>
+            <div class="divide-y divide-gray-50">
+                @foreach($systemAlerts as $recipient)
+                    @php $notif = $recipient->notification; @endphp
+                    <div class="flex items-start gap-4 px-5 py-3">
+                        <span class="mt-0.5 shrink-0 w-2 h-2 rounded-full {{ $notif->type === 'announcement' ? 'bg-blue-500' : 'bg-amber-400' }}"></span>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-semibold text-gray-800 truncate">{{ $notif->title }}</p>
+                            <p class="text-xs text-gray-500 mt-0.5 line-clamp-1">{!! strip_tags($notif->content) !!}</p>
+                        </div>
+                        <span class="shrink-0 text-[10px] text-gray-400 whitespace-nowrap">{{ $recipient->created_at->diffForHumans() }}</span>
+                    </div>
+                @endforeach
+                @foreach($orderAlerts as $notif)
+                    @php $data = $notif->data; @endphp
+                    <div class="flex items-start gap-4 px-5 py-3">
+                        <span class="mt-0.5 shrink-0 w-2 h-2 rounded-full bg-green-500"></span>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm text-gray-700 truncate">{{ $data['message'] ?? 'تحديث على طلب' }}</p>
+                        </div>
+                        <span class="shrink-0 text-[10px] text-gray-400 whitespace-nowrap">{{ $notif->created_at->diffForHumans() }}</span>
+                    </div>
                 @endforeach
             </div>
         </div>
@@ -483,7 +527,7 @@
                 </div>
             </div>
 
-            <!-- Order Status Chart -->
+            <!-- Right Column: Charts + Top Performers -->
             <div class="space-y-6">
                 <!-- Pie Chart -->
                 <div class="bg-white shadow rounded-xl border border-gray-100">
@@ -499,6 +543,11 @@
                         <canvas id="orderStatusChart" class="w-full h-64"></canvas>
                     </div>
                 </div>
+
+                {{-- Top Performers below the chart --}}
+                @if(auth()->user()->hasAnyRole(['sales_manager', 'Admin', 'sales']))
+                    @livewire('mannager.widgets.top-performers-widget')
+                @endif
 
                 <!-- Status Bars -->
                 <div class="bg-white shadow rounded-xl border border-gray-100 hidden">
