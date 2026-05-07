@@ -23,7 +23,8 @@ class UnitOrder extends Model
         }
 
         // Sales users see orders they are directly assigned to, orders in projects they manage,
-        // or orders where they have an explicit (non-expired) permission.
+        // orders where they have an explicit (non-expired) permission,
+        // or orders they previously interacted with (notes, status changes, last action).
         return $query->where(function ($q) use ($user) {
             $q->where('assigned_sales_user_id', $user->id)
                 ->orWhereHas('project', function ($subQ) use ($user) {
@@ -35,6 +36,16 @@ class UnitOrder extends Model
                             $expQ->whereNull('expires_at')
                                 ->orWhere('expires_at', '>', now());
                         });
+                })
+                // Orders the user was the last to act on
+                ->orWhere('last_action_by_user_id', $user->id)
+                // Orders where the user added notes
+                ->orWhereHas('notes', function ($subQ) use ($user) {
+                    $subQ->where('user_id', $user->id);
+                })
+                // Orders where the user changed the status
+                ->orWhereHas('statusTransitions', function ($subQ) use ($user) {
+                    $subQ->where('user_id', $user->id);
                 });
         });
     }

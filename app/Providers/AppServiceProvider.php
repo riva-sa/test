@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Project;
 use App\Models\UnitOrder;
+use App\Observers\ProjectObserver;
 use App\Observers\UnitOrderObserver;
 use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
 use Filament\Forms\Components\Field;
@@ -50,6 +52,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         UnitOrder::observe(UnitOrderObserver::class);
+        Project::observe(ProjectObserver::class);
 
         $this->configureCommands();
         $this->configureModels();

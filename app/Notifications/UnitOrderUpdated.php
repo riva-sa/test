@@ -94,10 +94,28 @@ class UnitOrderUpdated extends Notification implements ShouldQueue
         $order = $this->order->fresh(['unit', 'project', 'assignedSalesUser']) ?? $this->order;
         $message = $this->generateMessage();
 
-        $subject = $this->type === 'new_order' || $this->type === 'new_order_admin'
+        $subject = in_array($this->type, ['new_order', 'new_order_admin', 'order_assigned'])
             ? "طلب جديد #{$order->id} — {$order->name}"
             : "تحديث على الطلب #{$order->id}";
 
+        // Use the rich template for new/assigned order emails
+        if (in_array($this->type, ['order_assigned', 'new_order', 'new_order_admin'])) {
+            $marketingInfo = $order->formattedMarketingSource();
+
+            return (new \Illuminate\Notifications\Messages\MailMessage)
+                ->subject($subject)
+                ->view('emails.order-assigned', [
+                    'order' => $order,
+                    'statusLabel' => $order->statusLabel(),
+                    'orderSourceLabel' => $order->orderSourceLabel(),
+                    'purchaseTypeLabel' => $order->purchaseTypeLabel(),
+                    'purchasePurposeLabel' => $order->purchasePurposeLabel(),
+                    'marketingSource' => $marketingInfo['label'] ?? null,
+                    'orderUrl' => route('manager.order-details', $order->id),
+                ]);
+        }
+
+        // Simple format for other notification types
         return (new \Illuminate\Notifications\Messages\MailMessage)
             ->subject($subject)
             ->line($message)

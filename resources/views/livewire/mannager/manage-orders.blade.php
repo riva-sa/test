@@ -40,7 +40,7 @@
                     </div>
                 </div>
 
-                @if (auth()->user()->hasRole('sales_manager') || auth()->user()->hasRole('follow_up'))
+                @if (auth()->user()->hasRole('sales_manager') || auth()->user()->hasRole('follow_up')  || auth()->user()->hasRole('Admin'))
                 <!-- Sales Manager Filter -->
                 <div>
                     <label for="salesManagerFilter" class="block text-sm font-medium text-gray-700 mb-1">مندوب المبيعات</label>
