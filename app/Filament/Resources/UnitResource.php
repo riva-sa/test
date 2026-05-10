@@ -66,11 +66,10 @@ class UnitResource extends Resource
 
                         Forms\Components\TextInput::make('slug')
                             ->label('الرابط')
-                            ->nullable()
+                            ->required()
                             ->maxLength(255)
                             ->unique(Unit::class, 'slug', ignoreRecord: true)
-                            ->columnSpan(1)
-                            ->dehydrated(fn ($state) => filled($state)),
+                            ->columnSpan(1),
 
                         Forms\Components\Select::make('project_id')
                             ->label('المشروع')

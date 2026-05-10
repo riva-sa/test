@@ -10,6 +10,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 
 class ProjectTypeResource extends Resource
 {
@@ -41,7 +42,11 @@ class ProjectTypeResource extends Resource
                             ->label('الاسم')
                             ->required()
                             ->maxLength(255)
-                            ->columnSpan(2),
+                            ->columnSpan(2)
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function (string $state, Forms\Set $set) {
+                                $set('slug', Str::slug($state));
+                            }),
                         Forms\Components\Toggle::make('status')
                             ->label('الحالة')
                             ->onColor('success')
@@ -51,7 +56,7 @@ class ProjectTypeResource extends Resource
                             ->offColor('danger'),
                         Forms\Components\TextInput::make('slug')
                             ->label('الرابط')
-                            ->nullable()
+                            ->required()
                             ->maxLength(255)
                             ->unique(ProjectType::class, 'slug', ignoreRecord: true)
                             ->columnSpan(2),

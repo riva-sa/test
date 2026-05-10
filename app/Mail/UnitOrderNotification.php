@@ -12,6 +12,14 @@ class UnitOrderNotification extends Mailable
 {
     use Queueable, SerializesModels;
 
+    /**
+     * Get the middleware the mailable should be sent through.
+     */
+    public function middleware(): array
+    {
+        return [new \Illuminate\Queue\Middleware\RateLimited('emails')];
+    }
+
     public $emailData;
 
     public $recipientType;

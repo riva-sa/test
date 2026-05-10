@@ -246,7 +246,7 @@ class UnitOrderpopup extends Component
 
                 // إرسال إشعار النظام
                 $user->notify(new UnitOrderUpdated($unitOrder, 'new_order', $notificationData));
-                Mail::to($user->email)->send(new MailUnitOrderNotification($emailData, 'sales_manager'));
+                Mail::to($user->email)->queue(new MailUnitOrderNotification($emailData, 'sales_manager'));
 
                 // إرسال البريد الإلكتروني فقط لمدير المبيعات المسؤول
                 // if ($user->id === optional($salesManager)->id && $user->email) {
@@ -267,7 +267,7 @@ class UnitOrderpopup extends Component
                         ]));
 
                         Mail::to($permission->user->email)
-                            ->send(new MailUnitOrderNotification($emailData, 'permission_user'));
+                            ->queue(new MailUnitOrderNotification($emailData, 'permission_user'));
                     }
                 });
 

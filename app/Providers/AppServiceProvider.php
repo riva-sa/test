@@ -20,6 +20,8 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\RateLimiter;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -89,6 +91,11 @@ class AppServiceProvider extends ServiceProvider
 
         Blade::directive('endpermission', function () {
             return '<?php endif; ?>';
+        });
+
+        // Email Rate Limiting for Hostinger SMTP
+        RateLimiter::for('emails', function (object $job) {
+            return Limit::perMinute(5); // Adjust based on Hostinger limits (usually 200/hr)
         });
     }
 }

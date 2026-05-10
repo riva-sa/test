@@ -11,6 +11,14 @@ use Illuminate\Notifications\Notification;
 class NewSocialMediaLead extends Notification implements ShouldQueue
 {
     use Queueable;
+    
+    /**
+     * Get the middleware the notification should be sent through.
+     */
+    public function middleware(): array
+    {
+        return [new \Illuminate\Queue\Middleware\RateLimited('emails')];
+    }
 
     public $order;
 

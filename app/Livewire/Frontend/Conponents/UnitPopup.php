@@ -231,7 +231,7 @@ class UnitPopup extends Component
                 Cache::forget("user_notifications_{$user->id}");
                 Cache::forget("user_notifications_unread_count_{$user->id}");
 
-                Mail::to($user->email)->send(new MailUnitOrderNotification($emailData, 'sales_manager'));
+                Mail::to($user->email)->queue(new MailUnitOrderNotification($emailData, 'sales_manager'));
 
             }
 
@@ -250,7 +250,7 @@ class UnitPopup extends Component
                         Cache::forget("user_notifications_unread_count_{$permission->user->id}");
 
                         Mail::to($permission->user->email)
-                            ->send(new MailUnitOrderNotification($emailData, 'permission_user'));
+                            ->queue(new MailUnitOrderNotification($emailData, 'permission_user'));
                     }
                 });
 

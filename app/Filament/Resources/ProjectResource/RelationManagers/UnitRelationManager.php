@@ -33,12 +33,10 @@ class UnitRelationManager extends RelationManager
                             }),
 
                         Forms\Components\TextInput::make('slug')
-                            ->nullable()
+                            ->required()
                             ->maxLength(255)
                             ->unique(Unit::class, 'slug', ignoreRecord: true)
-                            ->columnSpan(1)
-                            ->disabled()
-                            ->dehydrated(fn ($state) => filled($state)),
+                            ->columnSpan(1),
 
                         Forms\Components\TextInput::make('unit_type')
                             ->required()

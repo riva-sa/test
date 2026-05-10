@@ -85,11 +85,10 @@ class ProjectResource extends Resource
 
                                             Forms\Components\TextInput::make('slug')
                                                 ->label('الرابط')
-                                                ->nullable()
+                                                ->required()
                                                 ->maxLength(255)
                                                 ->columnSpan(1)
-                                                ->unique(Project::class, 'slug', ignoreRecord: true)
-                                                ->dehydrated(fn ($state) => filled($state)),
+                                                ->unique(Project::class, 'slug', ignoreRecord: true),
                                             Forms\Components\TextInput::make('AdLicense')
                                                 ->label('رخصة الإعلان')
                                                 ->required()
