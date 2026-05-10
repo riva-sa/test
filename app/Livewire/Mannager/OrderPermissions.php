@@ -75,16 +75,15 @@ class OrderPermissions extends Component
             'granted_by' => auth()->user()->name,
         ]));
 
-        // إشعار المدراء أيضاً
-        $managers = User::whereHas('roles', function ($query) {
-            $query->whereIn('name', ['sales_manager', 'super_admin']);
-        })->where('id', '!=', auth()->id())->get();
-
-        foreach ($managers as $manager) {
-            $manager->notify(new UnitOrderUpdated($order, 'permission_granted', [
-                'user_name' => $user->name,
-                'granted_by' => auth()->user()->name,
-            ]));
+        // إشعار مدير مبيعات المشروع فقط بدلاً من الجميع
+        if ($order->project && $order->project->sales_manager_id) {
+            $projectManager = User::find($order->project->sales_manager_id);
+            if ($projectManager && $projectManager->id !== auth()->id() && $projectManager->id !== $user->id) {
+                $projectManager->notify(new UnitOrderUpdated($order, 'permission_granted', [
+                    'user_name' => $user->name,
+                    'granted_by' => auth()->user()->name,
+                ]));
+            }
         }
 
         $this->reset(['user_id', 'permission_type', 'expires_at']);

@@ -291,18 +291,6 @@ class UnitOrderResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        $query = parent::getEloquentQuery();
-        if (auth()->user()->hasRole('Admin')) {
-            return $query;
-        }
-        // Check if the user has the 'sales_manager' role
-        if (auth()->user()->hasRole('sales_manager')) {
-            // Filter unit orders based on the project's sales_manager_id through the unit relationship
-            $query->whereHas('unit.project', function ($query) {
-                $query->where('sales_manager_id', auth()->user()->id);
-            });
-        }
-
-        return $query;
+        return parent::getEloquentQuery()->accessibleBy(auth()->user());
     }
 }

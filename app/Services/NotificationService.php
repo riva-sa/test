@@ -40,13 +40,11 @@ class NotificationService
                 Cache::forget("user_notifications_unread_count_{$agent->id}");
             }
 
-            $managersAndAdmins = User::role(['sales_manager', 'Admin'])
-                ->where('is_active', true)
-                ->get();
-
-            foreach ($managersAndAdmins as $manager) {
-                if ($manager->id !== $agent?->id) {
-                    $manager->notify(new UnitOrderUpdated($order, 'new_order_admin', []));
+            // 2. Notify the Sales Manager of the Project (Owner of the project)
+            if ($order->project && $order->project->sales_manager_id) {
+                $projectManager = User::find($order->project->sales_manager_id);
+                if ($projectManager && $projectManager->is_active && $projectManager->id !== $agent?->id) {
+                    $projectManager->notify(new UnitOrderUpdated($order, 'new_order_admin', []));
                 }
             }
         } catch (\Exception $e) {
