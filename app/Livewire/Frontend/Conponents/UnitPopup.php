@@ -104,6 +104,16 @@ class UnitPopup extends Component
             ];
         }
 
+        // Add additional images from the 'images' JSON column
+        if ($this->selectedUnit->images && is_array($this->selectedUnit->images)) {
+            foreach ($this->selectedUnit->images as $additionalImage) {
+                $this->unitImages[] = [
+                    'url' => MediaHelper::getUrl($additionalImage),
+                    'is_main' => false,
+                ];
+            }
+        }
+
         if ($this->selectedUnit->floor_plan) {
             $this->unitImages[] = [
                 'url' => MediaHelper::getUrl($this->selectedUnit->floor_plan),

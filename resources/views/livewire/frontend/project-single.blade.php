@@ -116,6 +116,27 @@
 
                         </button>
                     </div>
+
+                    <div class="mt-2 w-100 d-flex align-items-center flex-column">
+                        @php
+                            $contactPhone = $project->contact_phone
+                                ?? optional($project->salesManager)->phone
+                                ?? setting('site_phone');
+                        @endphp
+                        @if($contactPhone)
+                        <div class="d-flex justify-content-between w-100">
+                            <a href="https://wa.me/{{ $contactPhone }}?text=انا مهتم بهذا المشروع {{ $project->name }} {{ route('frontend.projects.single', $project->slug) }}"
+                            target="_blank"
+                            class="btn btn-primary btn-sm rounded flex-1 d-flex align-items-center justify-content-center gap-1 w-50 fs-14">
+                                <i class="uil uil-whatsapp"></i> واتساب
+                            </a>
+                            <a href="tel:{{ $contactPhone }}"
+                            class="btn btn-outline-light btn-sm rounded flex-1 d-flex align-items-center justify-content-center gap-1 w-50 fs-14">
+                                <i class="uil uil-phone"></i> {{ $contactPhone }}
+                            </a>
+                        </div>
+                        @endif
+                    </div>
                 </div>
 
                 <!-- /column -->
@@ -243,6 +264,26 @@
 
                             </button>
                         </div>
+                        <div class="mt-2 w-100 d-flex align-items-center flex-column">
+                            @php
+                                $contactPhone = $project->contact_phone
+                                    ?? optional($project->salesManager)->phone
+                                    ?? setting('site_phone');
+                            @endphp
+                            @if($contactPhone)
+                            <div class="d-flex justify-content-between w-100">
+                                <a href="https://wa.me/{{ $contactPhone }}?text=انا مهتم بهذا المشروع {{ $project->name }} {{ route('frontend.projects.single', $project->slug) }}"
+                                target="_blank"
+                                class="btn btn-primary btn-sm rounded flex-1 d-flex align-items-center justify-content-center gap-1 w-50 fs-14">
+                                    <i class="uil uil-whatsapp"></i> واتساب
+                                </a>
+                                <a href="tel:{{ $contactPhone }}"
+                                class="btn btn-outline-light btn-sm rounded flex-1 d-flex align-items-center justify-content-center gap-1 w-50 fs-14">
+                                    <i class="uil uil-phone"></i> {{ $contactPhone }}
+                                </a>
+                            </div>
+                            @endif
+                        </div>
                     </div>
                     <!-- /.card -->
                     <div class="card mb-6">
@@ -336,7 +377,7 @@
                                                             <span class="badge bg-pale-ash text-dark rounded-pill">{{ $unit->unit_type }}</span>
                                                         </div>
                                                     </div>
-                                                    @if ($unit->show_price)
+                                                    @if ($unit->show_price && $unit->case == 0)
                                                         @if (number_format($unit->unit_price) != '0')
                                                         <ul class="post-meta mb-1" data-unit-id="{{ $unit->id }}" wire:click="showUnitDetails({{ $unit->id }})">
                                                             <li class="post-date">

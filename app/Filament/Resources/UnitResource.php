@@ -170,7 +170,7 @@ class UnitResource extends Resource
                 Forms\Components\Section::make('الوسائط')
                     ->schema([
                         Forms\Components\FileUpload::make('image')
-                            ->label('الصورة')
+                            ->label('الصورة الأساسية')
                             ->image()
                             ->imageResizeMode('contain')
                             ->imageResizeUpscale(false)
@@ -183,6 +183,23 @@ class UnitResource extends Resource
                                 '1:1',
                             ])
                             // ->directory('units/images')
+                            ->columnSpan(2),
+                        Forms\Components\FileUpload::make('images')
+                            ->label('صور إضافية')
+                            ->image()
+                            ->multiple()
+                            ->reorderable()
+                            ->appendFiles()
+                            ->imageResizeMode('contain')
+                            ->imageResizeUpscale(false)
+                            ->imageResizeTargetWidth('1600')
+                            ->imageResizeTargetHeight('1600')
+                            ->imageEditor()
+                            ->imageEditorAspectRatios([
+                                '16:9',
+                                '4:3',
+                                '1:1',
+                            ])
                             ->columnSpan(2),
                         Forms\Components\FileUpload::make('floor_plan')
                             ->label('مخطط الطابق')

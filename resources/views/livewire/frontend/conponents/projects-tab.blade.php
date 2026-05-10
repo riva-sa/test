@@ -85,24 +85,6 @@
                                     <span class="me-1">{{ $project->space_range }}</span>
                                 </li>
                             </ul>
-                            @php
-                                $contactPhone = $project->contact_phone
-                                    ?? optional($project->salesManager)->phone
-                                    ?? setting('site_phone');
-                            @endphp
-                            @if($contactPhone)
-                            <div class="d-flex gap-2 mt-3">
-                                <a href="https://wa.me/{{ $contactPhone }}?text=انا مهتم بهذا المشروع {{ $project->name }} {{ route('frontend.projects.single', $project->slug) }}"
-                                   target="_blank"
-                                   class="btn btn-soft-primary btn-sm rounded flex-1 d-flex align-items-center justify-content-center gap-1 fs-14">
-                                    <i class="uil uil-whatsapp"></i> واتساب
-                                </a>
-                                <a href="tel:{{ $contactPhone }}"
-                                   class="btn btn-outline-light btn-sm rounded flex-1 d-flex align-items-center justify-content-center gap-1 fs-14">
-                                    <i class="uil uil-phone"></i> {{ $contactPhone }}
-                                </a>
-                            </div>
-                            @endif
                         </figcaption>
 
                     </figure>

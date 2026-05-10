@@ -5,18 +5,10 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
 
 <style>
-    /* Floating Filter Styles */
-    .floating-filter {
-        position: fixed;
-        top: 85px;
-        left: 60px;
-        width: fit-content;
-        z-index: 1000;
-    }
-
     .leaflet-control-attribution{
         display: none !important;
     }
+    
     .side-sheet {
         position: fixed;
         right: -4010px;
@@ -28,7 +20,7 @@
         z-index: 1000;
         overflow-y: auto;
         direction: rtl;
-        top: 86.15px;
+        top: 13.15px !important;
         border-radius: 20px;
     }
     .side-sheet.active {
@@ -89,42 +81,392 @@
     .marker-cluster span {
         color: #FFF !important;
     }
+
+    /* Floating Filter Bar Styles */
+    .map-floating-bar-wrapper {
+        position: fixed;
+        bottom: 40px; /* Increased from 30px */
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1060; /* Higher than map controls */
+        width: fit-content;
+        max-width: 95vw;
+    }
+
+    .map-floating-bar {
+        background: #ffffff;
+        border: 1px solid rgba(18, 40, 24, 0.1);
+        border-radius: 100px;
+        display: flex;
+        align-items: center;
+        padding: 6px;
+        box-shadow: 0 10px 40px rgba(18, 40, 24, 0.15);
+        backdrop-filter: blur(12px);
+        overflow: visible;
+        direction: rtl;
+        position: relative;
+    }
+
+    .noise-container::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.02;
+        border-radius: 100px;
+        pointer-events: none;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E");
+    }
+
+    .filter-section {
+        display: flex !important;
+        align-items: center;
+        padding: 0 15px;
+        height: 40px;
+        position: relative;
+    }
+
+    .filter-btn {
+        background: transparent;
+        border: none;
+        color: #122818;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        padding: 0;
+        white-space: nowrap;
+        transition: all 0.2s;
+    }
+
+    .filter-btn:hover {
+        opacity: 0.8;
+    }
+
+    .filter-divider {
+        width: 1px;
+        height: 20px;
+        background: rgba(18, 40, 24, 0.1);
+    }
+
+    .dropdown-section.active .arrow-icon {
+        transform: rotate(180deg);
+    }
+
+    .arrow-icon {
+        transition: transform 0.2s;
+    }
+
+    .filter-dropdown {
+        position: absolute;
+        bottom: calc(100% + 15px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: #ffffff;
+        border: 1px solid rgba(18, 40, 24, 0.1);
+        border-radius: 20px;
+        padding: 8px;
+        min-width: 220px;
+        max-height: 350px;
+        overflow-y: auto;
+        box-shadow: 0 20px 50px rgba(18, 40, 24, 0.2);
+        direction: rtl;
+        z-index: 1070;
+    }
+
+    .dropdown-item {
+        padding: 10px 12px;
+        color: rgba(18, 40, 24, 0.8);
+        font-size: 13px;
+        cursor: pointer;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        transition: all 0.2s;
+    }
+
+    .dropdown-item:hover {
+        background: rgba(18, 40, 24, 0.05);
+        color: #122818;
+    }
+
+    .dropdown-item.selected {
+        background: rgba(18, 40, 24, 0.05);
+        color: #122818;
+    }
+
+    .dropdown-item .dot {
+        width: 8px;
+        height: 8px;
+        background: transparent;
+        border-radius: 50%;
+        margin-left: 12px;
+        flex-shrink: 0;
+    }
+
+    .dropdown-item.selected .dot {
+        background: #122818; 
+        box-shadow: 0 0 12px rgba(18, 40, 24, 0.3);
+    }
+
+    /* Help Tooltip Card */
+    .help-tooltip-card {
+        position: absolute;
+        bottom: calc(100% + 20px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: #122818;
+        color: white;
+        padding: 16px 20px;
+        border-radius: 18px;
+        width: 280px;
+        box-shadow: 0 15px 45px rgba(0, 0, 0, 0.4);
+        z-index: 1100;
+        text-align: right;
+    }
+
+    .help-tooltip-card::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 10px;
+        border-style: solid;
+        border-color: #122818 transparent transparent transparent;
+    }
+
+    .help-tooltip-card h6 {
+        color: #fff;
+        margin-bottom: 8px;
+        font-size: 15px;
+    }
+
+    .help-tooltip-card p {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 13px;
+        margin-bottom: 15px;
+        line-height: 1.5;
+    }
+
+    .help-card-btn {
+        background: #ffffff;
+        color: #122818;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 100px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+        text-decoration: none !important;
+    }
+
+    .help-card-btn:hover {
+        background: #f1f1f1;
+        transform: translateY(-2px);
+    }
+
+    @keyframes slideUpFade {
+        from { opacity: 0; transform: translate(-50%, 10px); }
+        to { opacity: 1; transform: translate(-50%, 0); }
+    }
+
+    .animate-help {
+        animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .map-highlight-green {
+        box-shadow: inset 0 0 100px rgba(18, 40, 24, 0.2);
+    }
+
+    @media (max-width: 768px) {
+        .map-floating-bar {
+            padding: 4px;
+            overflow-x: auto;
+            max-width: 95vw;
+            scrollbar-width: none;
+        }
+        .map-floating-bar::-webkit-scrollbar {
+            display: none;
+        }
+        .filter-section {
+            padding: 0 10px;
+        }
+        .filter-btn span {
+            display: none;
+        }
+        .filter-btn i {
+            font-size: 18px;
+            margin: 0 !important;
+        }
+    }
 </style>
 
 @endpush
 
-<div>
-     <!-- Floating Filter -->
-     {{-- <div class="floating-filter">
+<div class="projects-map-wrapper" style="width: 100vw; position: relative; margin-right: calc(-50vw + 50%); margin-left: calc(-50vw + 50%); left: 50%; transform: translateX(-50%);">
+    
+    <!-- Floating Filter Bar -->
+    <div class="map-floating-bar-wrapper" x-data="{ 
+        openFilter: null,
+        showHelp: false,
+        toggleFilter(name) {
+            this.openFilter = this.openFilter === name ? null : name;
+        }
+    }" @click.away="openFilter = null" 
+       @help-triggered.window="showHelp = true;">
+        
+        <!-- Help Card (No Results) -->
+        <template x-if="showHelp">
+            <div class="help-tooltip-card animate-help">
+                <h6>لم نجد نتائج؟</h6>
+                <p>لا تقلق، فريقنا متاح لمساعدتك في العثور على العقار المثالي لاحتياجاتك.</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="https://wa.me/{{ setting('site_phone') }}?text={{ urlencode('مرحباً، أود الحصول على مساعدة في العثور على عقار مناسب.') }}" target="_blank" class="help-card-btn">
+                        <i class="uil uil-whatsapp"></i> تواصل معنا
+                    </a>
+                    <button @click="showHelp = false" class="btn btn-link btn-sm text-white opacity-50 p-0 text-decoration-none">إغلاق</button>
+                </div>
+            </div>
+        </template>
+        <div class="map-floating-bar noise-container">
+            <!-- Project Count -->
+            <div class="filter-section count-section">
+                <span class="fs-13 opacity-75" style="color: #122818;">{{ count($projects) }} مشاريع</span>
+            </div>
+            
+            <div class="filter-divider"></div>
 
-        <div class="filter-body d-flex">
-
-            <!-- Project Types -->
-            <div class="form-select-wrapper">
-                <select class="form-select" wire:model.live="selected_projectTypes">
-                    <option selected>اختر نوع الوحدة</option>
+            <!-- Project Type Dropdown -->
+            <div class="filter-section dropdown-section" :class="{ 'active': openFilter === 'type' }">
+                <button class="filter-btn" @click="toggleFilter('type')">
+                    <i class="uil uil-apps me-1 opacity-60"></i>
+                    <span class="mx-1">{{ $selected_projectTypes ? ($projectTypes->firstWhere('id', $selected_projectTypes)->name ?? 'النوع') : 'النوع' }}</span>
+                    <i class="uil uil-angle-down ms-1 arrow-icon opacity-40"></i>
+                </button>
+                
+                <div class="filter-dropdown" x-show="openFilter === 'type'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-2" style="display: none;">
+                    <div class="dropdown-item" :class="{ 'selected': @js($selected_projectTypes) === '' }" wire:click="$set('selected_projectTypes', '')" @click="openFilter = null">
+                        <span class="dot"></span> الكل
+                    </div>
                     @foreach($projectTypes as $type)
-                        <option value="{{ $type->id }}">{{ $type->name }}</option>
+                        <div class="dropdown-item" :class="{ 'selected': @js((string)$selected_projectTypes) === @js((string)$type->id) }" wire:click="$set('selected_projectTypes', '{{ $type->id }}')" @click="openFilter = null">
+                            <span class="dot"></span> {{ $type->name }}
+                        </div>
                     @endforeach
-                </select>
+                </div>
             </div>
 
-            <div class="form-select-wrapper ms-3">
-                <select class="form-select" wire:model.live="selected_developer">
+            <div class="filter-divider"></div>
+
+            <!-- Developer Dropdown -->
+            <div class="filter-section dropdown-section" :class="{ 'active': openFilter === 'developer' }">
+                <button class="filter-btn" @click="toggleFilter('developer')">
+                    <i class="uil uil-building me-1 opacity-60"></i>
+                    <span class="mx-1">{{ $selected_developer ? (Str::limit($developers->firstWhere('id', $selected_developer)->name ?? 'المطور', 10)) : 'المطور' }}</span>
+                    <i class="uil uil-angle-down ms-1 arrow-icon opacity-40"></i>
+                </button>
+                
+                <div class="filter-dropdown" x-show="openFilter === 'developer'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-2" style="display: none;">
+                    <div class="dropdown-item" :class="{ 'selected': @js($selected_developer) === '' }" wire:click="$set('selected_developer', '')" @click="openFilter = null">
+                        <span class="dot"></span> الكل
+                    </div>
                     @foreach($developers as $developer)
-                        <option value="{{ $developer->id }}">
-                            {{ $developer->name }}
-                        </option>
+                        <div class="dropdown-item" :class="{ 'selected': @js((string)$selected_developer) === @js((string)$developer->id) }" wire:click="$set('selected_developer', '{{ $developer->id }}')" @click="openFilter = null">
+                            <span class="dot"></span> {{ $developer->name }}
+                        </div>
                     @endforeach
-                </select>
+                </div>
             </div>
 
-        </div>
+            <div class="filter-divider"></div>
 
-    </div> --}}
+            <!-- City Dropdown -->
+            <div class="filter-section dropdown-section" :class="{ 'active': openFilter === 'city' }">
+                <button class="filter-btn" @click="toggleFilter('city')">
+                    <i class="uil uil-map-marker me-1 opacity-60"></i>
+                    <span class="mx-1">{{ $selected_cities ? ($cities->firstWhere('id', $selected_cities)->name ?? 'المدينة') : 'المدينة' }}</span>
+                    <i class="uil uil-angle-down ms-1 arrow-icon opacity-40"></i>
+                </button>
+                
+                <div class="filter-dropdown" x-show="openFilter === 'city'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-2" style="display: none;">
+                    <div class="dropdown-item" :class="{ 'selected': @js($selected_cities) === null }" wire:click="$set('selected_cities', null)" @click="openFilter = null">
+                        <span class="dot"></span> الكل
+                    </div>
+                    @foreach($cities as $city)
+                        <div class="dropdown-item" :class="{ 'selected': @js((string)$selected_cities) === @js((string)$city->id) }" wire:click="$set('selected_cities', '{{ $city->id }}')" @click="openFilter = null">
+                            <span class="dot"></span> {{ $city->name }}
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+            @if($selected_cities)
+                <div class="filter-divider"></div>
+                <!-- Neighborhood Dropdown -->
+                <div class="filter-section dropdown-section" :class="{ 'active': openFilter === 'state' }">
+                    <button class="filter-btn" @click="toggleFilter('state')">
+                        <i class="uil uil-location-pin-alt me-1 opacity-60"></i>
+                        <span class="mx-1">{{ $selected_states ? ($states->firstWhere('id', $selected_states)->name ?? 'الحي') : 'الحي' }}</span>
+                        <i class="uil uil-angle-down ms-1 arrow-icon opacity-40"></i>
+                    </button>
+                    
+                    <div class="filter-dropdown" x-show="openFilter === 'state'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-2" style="display: none;">
+                        <div class="dropdown-item" :class="{ 'selected': @js($selected_states) === null }" wire:click="$set('selected_states', null)" @click="openFilter = null">
+                            <span class="dot"></span> الكل
+                        </div>
+                        @foreach($states as $state)
+                            <div class="dropdown-item" :class="{ 'selected': @js((string)$selected_states) === @js((string)$state->id) }" wire:click="$set('selected_states', '{{ $state->id }}')" @click="openFilter = null">
+                                <span class="dot"></span> {{ $state->name }}
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            <div class="filter-divider"></div>
+
+            <!-- Price Range Dropdown -->
+            <div class="filter-section dropdown-section" :class="{ 'active': openFilter === 'price' }">
+                <button class="filter-btn" @click="toggleFilter('price')">
+                    <i class="uil uil-usd-circle me-1 opacity-60"></i>
+                    <span class="mx-1">{{ $price_range ? 'أقل من ' . number_format($price_range) : 'السعر' }}</span>
+                    <i class="uil uil-angle-down ms-1 arrow-icon opacity-40"></i>
+                </button>
+                
+                <div class="filter-dropdown" x-show="openFilter === 'price'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-2" style="display: none;">
+                    <div class="dropdown-item" :class="{ 'selected': @js($price_range) == 0 }" wire:click="$set('price_range', 0)" @click="openFilter = null">
+                        <span class="dot"></span> الكل
+                    </div>
+                    @foreach([500000, 1000000, 2000000, 3000000, 5000000] as $price)
+                        <div class="dropdown-item" :class="{ 'selected': @js($price_range) == @js($price) }" wire:click="$set('price_range', {{ $price }})" @click="openFilter = null">
+                            <span class="dot"></span> أقل من {{ number_format($price) }}
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+            <div class="filter-divider d-none d-md-block"></div>
+
+            <!-- Reset Button -->
+            <div class="filter-section reset-section d-none d-md-block">
+                <button class="filter-btn text-danger" wire:click="resetFilters" @click="openFilter = null; showHelp = false;">
+                    <i class="uil uil-refresh"></i>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Map Container -->
-    <div wire:ignore id="map" style="height: calc(100vh - 76.15px); width: 100%;"></div>
+    <div wire:ignore id="map" 
+         :class="{ 'map-highlight-green': showHelp }"
+         style="height: calc(100vh - 76.15px); width: 100vw; position: relative; transition: all 0.5s ease;"></div>
 
     <div class="side-sheet {{ $showSideSheet ? 'active' : '' }}" style="max-width: 95% !important;max-height: 69vh !important;;overflow-y: scroll;">
 
@@ -173,14 +515,12 @@
                                     </ul>
                                 </div>
                                 <p class="mt-2">
-                                    {{-- {!! strip_tags($selectedProject->description) !!} --}}
                                     {!! Str::limit(strip_tags($selectedProject->description), 150) !!}
                                 </p>
                             </div>
 
                             <div class="mb-4">
                                 <a href="{{ route('frontend.projects.single', $selectedProject->slug) }}" class="btn btn-primary btn-sm rounded w-100">عرض تفاصيل المشروع</a>
-                                {{-- <a class="btn btn-soft-primary btn-icon btn-sm btn-icon-start rounded-pill">تسجيل اهتمام</a> --}}
                             </div>
                         </div>
                     </div>
@@ -199,132 +539,119 @@
 <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 
 <script>
-    // تمرير بيانات المشاريع من PHP إلى JavaScript
     const projects = @json($projects);
-
-    // Initialize map
     const map = L.map('map').setView([24.7136, 46.6753], 6);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        attribution: '© <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors',
         maxZoom: 19
     }).addTo(map);
 
-    // Create a MarkerClusterGroup to group markers
     const markersCluster = L.markerClusterGroup();
-
-    // Define bounds for zoom
-    const bounds = L.latLngBounds(); // Initialize empty bounds
-
-    // Add markers for each project
+    const bounds = L.latLngBounds();
     const markers = [];
-    projects.forEach(project => {
 
+    function addProjectToMap(project) {
         if (project.latitude && project.longitude) {
-            try {
-
-                const projectName = project.name.length > 20 ? project.name.substring(0, 20) + '...' : project.name;
-
-                const Dmarker = L.circleMarker([
-                    parseFloat(project.latitude),
-                    parseFloat(project.longitude)
-                ], {
-                    radius: 5, // حجم النقطة
-                    color: '#122818', // لون الحدود
-                    fillColor: '#122818', // لون التعبئة
-                    fillOpacity: 1 // اجعل النقطة معبأة تمامًا
-                });
-
-                // Create custom marker with the same style as popupContent
-                const customIcon = L.divIcon({
-                    className: 'custom-marker', // Add a custom class for styling
-                    html: `
-                        <div class="project-tooltip pt-2" style="position: relative;">
-                            <figcaption class="text-right px-2" dir="rtl">
-                                <div class="d-flex align-content-center justify-content-between">
-                                    <div>
-                                        <h6 class="post-title project-title fs-14" style="cursor: pointer;" data-project-id="${project.id}">
-                                            ${projectName} - ${project.developer.name.substring(0, 10)}
-                                        </h6>
-                                    </div>
-
+            const projectName = project.name.length > 20 ? project.name.substring(0, 20) + '...' : project.name;
+            const customIcon = L.divIcon({
+                className: 'custom-marker',
+                html: `
+                    <div class=\"project-tooltip pt-2\" style=\"position: relative;\">
+                        <figcaption class=\"text-right px-2\" dir=\"rtl\">
+                            <div class=\"d-flex align-content-center justify-content-between\">
+                                <div>
+                                    <h6 class=\"post-title project-title fs-14\" style=\"cursor: pointer;\" data-project-id=\"${project.id}\">
+                                        ${projectName}
+                                    </h6>
                                 </div>
-                            </figcaption>
-                        </div>
-                    `,
-                    iconSize: [200, 50], // Set size based on your design
-                    iconAnchor: [100, 65], // Position the icon relative to the point
-                });
+                            </div>
+                        </figcaption>
+                    </div>
+                `,
+                iconSize: [200, 50],
+                iconAnchor: [100, 65],
+            });
 
+            const marker = L.marker([parseFloat(project.latitude), parseFloat(project.longitude)], {icon: customIcon})
+            .on('click', () => {
+                Livewire.dispatch('showProject', { projectId: project.id });
+            });
 
-                // <div>
-                //     <img src="/storage/${project.developer?.logo}" class="mb-0" style="width: 60px !important;max-height:50px">
-                // </div>
-
-                // Create the marker using the custom icon
-                const marker = L.marker([parseFloat(project.latitude), parseFloat(project.longitude)], {icon: customIcon})
-                .on('click', function() {
-                    window.livewire.emit('selectProject', project.id);
-                });
-
-                markersCluster.addLayer(marker);  // Add marker to the cluster
-
-
-                // Extend bounds to include this marker's position
-                bounds.extend([project.latitude, project.longitude]);
-
-                // Add marker to the map
-                marker.addTo(map);
-                Dmarker.addTo(map);
-
-                // Attach click event to the custom marker
-                map.getContainer().addEventListener('click', (event) => {
-                    if (event.target.classList.contains('project-title')) {
-                        const projectId = event.target.getAttribute('data-project-id');
-                        Livewire.dispatch('showProject', { projectId: projectId });
-                    }
-                });
-
-                // Add click event to marker using Livewire v3 syntax
-                marker.on('click', () => {
-                    Livewire.dispatch('showProject', { projectId: project.id });
-                });
-
-                // استخدم bindTooltip بدلاً من bindPopup لعرض المحتوى دائمًا
-                marker.bindTooltip(popupContent, {
-                    className: 'custom-popup glass-white-card',
-                    direction: 'top',
-                    permanent: false,
-                    offset: [0, -15],
-                    maxWidth: 300,
-                    minWidth: 280
-                })
-                .addTo(map);
-
-            } catch (error) {
-                console.error('Error adding marker for project:', project.id, error);
-            }
+            markersCluster.addLayer(marker);
+            markers.push(marker);
+            bounds.extend([project.latitude, project.longitude]);
         }
-    });
-
-    // Fit bounds if we have markers
-    if (markers.length > 0) {
-        const group = L.featureGroup(markers);
-        map.fitBounds(group.getBounds());
     }
 
-    // Listen for side-sheet-updated event using Livewire v3 syntax
-    document.addEventListener('livewire:initialized', () => {
-        Livewire.on('side-sheet-updated', () => {
-            // console.log('Side sheet state updated');
-        });
-    });
+    let saGeoJsonLayer = null;
+    let saGeoJsonData = null;
 
-    // map.addLayer(markersCluster);
+    async function showSaHighlight() {
+        if (saGeoJsonLayer) return;
 
-    // Adjust the map view to fit all markers within the bounds
+        if (!saGeoJsonData) {
+            try {
+                const response = await fetch('https://raw.githubusercontent.com/mledoze/countries/master/data/sau.geo.json');
+                saGeoJsonData = await response.json();
+            } catch (error) {
+                console.error('Error fetching SA GeoJSON:', error);
+                return;
+            }
+        }
+
+        saGeoJsonLayer = L.geoJSON(saGeoJsonData, {
+            style: {
+                color: '#122818',
+                weight: 3,
+                fillColor: '#122818',
+                fillOpacity: 0.1,
+                dashArray: '5, 5',
+                lineJoin: 'round'
+            }
+        }).addTo(map);
+    }
+
+    function removeSaHighlight() {
+        if (saGeoJsonLayer) {
+            map.removeLayer(saGeoJsonLayer);
+            saGeoJsonLayer = null;
+        }
+    }
+
+    projects.forEach(addProjectToMap);
+    map.addLayer(markersCluster);
     if (projects.length > 0) {
         map.fitBounds(bounds);
     }
+
+    document.addEventListener('livewire:initialized', () => {
+        Livewire.on('projectsUpdated', (event) => {
+            const newProjects = event[0].projects;
+            markersCluster.clearLayers();
+            markers.length = 0;
+            const newBounds = L.latLngBounds();
+
+            newProjects.forEach(project => {
+                if (project.latitude && project.longitude) {
+                    addProjectToMap(project);
+                    newBounds.extend([project.latitude, project.longitude]);
+                }
+            });
+
+            if (newProjects.length === 0) {
+                map.setView([23.8859, 45.0792], 5);
+                showSaHighlight();
+                window.dispatchEvent(new CustomEvent('help-triggered'));
+            } else if (newProjects.length > 0) {
+                removeSaHighlight();
+                map.fitBounds(newBounds);
+            }
+        });
+
+        Livewire.on('side-sheet-updated', () => {
+            // Side sheet logic
+        });
+    });
 </script>
 @endpush

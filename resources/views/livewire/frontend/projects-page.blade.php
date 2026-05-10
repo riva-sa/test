@@ -308,7 +308,7 @@
                                                     <span class="badge bg-pale-ash text-dark rounded-pill">{{ $unit->unit_type }}</span>
                                                 </div>
                                             </div>
-                                            @if ($unit->show_price && $unit->unit_price)
+                                            @if ($unit->show_price && $unit->unit_price && $unit->case == 0)
                                                 <ul class="post-meta mb-3">
                                                     <li class="post-date">
                                                         <span class="fs-15 text-success">
@@ -317,7 +317,13 @@
                                                     </li>
                                                 </ul>
                                             @else
-                                                <span>---</span>
+                                                <ul class="post-meta mb-3">
+                                                    <li class="post-date">
+                                                        <span class="fs-15 text-success">
+                                                            تواصل معنا
+                                                        </span>
+                                                    </li>
+                                                </ul>
                                             @endif
                                             <ul class="post-meta mb-0  @if (!$unit->show_price) mt-4 @endif">
                                                 <li class="post-date">

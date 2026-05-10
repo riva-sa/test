@@ -43,6 +43,7 @@ class Unit extends Model
         'last_viewed_at',
         'last_shown_at',
         'last_ordered_at',
+        'images',
     ];
 
     protected $casts =
@@ -53,6 +54,7 @@ class Unit extends Model
             'last_viewed_at' => 'datetime',
             'last_shown_at' => 'datetime',
             'last_ordered_at' => 'datetime',
+            'images' => 'array',
         ];
 
     public function project()

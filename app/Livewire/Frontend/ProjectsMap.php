@@ -67,6 +67,15 @@ class ProjectsMap extends Component
         $this->dispatch('side-sheet-updated');
     }
 
+    public function resetFilters()
+    {
+        $this->selected_projectTypes = '';
+        $this->selected_developer = '';
+        $this->price_range = 0;
+        $this->selected_cities = null;
+        $this->selected_states = null;
+    }
+
     public function updatedSelectedCities($value)
     {
         $this->selected_states = null;

@@ -144,10 +144,12 @@
                                 @else
                                     <div class="mb-4 d-flex gap-2">
                                         <a class="btn btn-soft-orange btn-icon btn-sm btn-icon-start rounded w-50 disabled" disabled>
-                                            @if ($selectedUnit->case == 0)
+                                            @if ($selectedUnit->case == 1)
                                                 الوحدة محجوزة
-                                            @else
+                                            @elseif ($selectedUnit->case == 2)
                                                 الوحدة مباعة
+                                            @else
+                                                تحت الانشاء
                                             @endif
                                         </a>
                                         <a target="_blank"
