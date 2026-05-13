@@ -85,10 +85,10 @@ class TargetTrackingService
         $day = $date ?? $now;
 
         $types = [
-            'monthly_orders' => [$now->copy()->startOfMonth(), $now->copy()->endOfMonth()],
+            'monthly_orders' => [$day->copy()->startOfMonth(), $day->copy()->endOfMonth()],
             'daily_orders' => [$day->copy()->startOfDay(), $day->copy()->endOfDay()],
-            'reservations' => [$now->copy()->startOfMonth(), $now->copy()->endOfMonth()],
-            'sales' => [$now->copy()->startOfMonth(), $now->copy()->endOfMonth()],
+            'reservations' => [$day->copy()->startOfMonth(), $day->copy()->endOfMonth()],
+            'sales' => [$day->copy()->startOfMonth(), $day->copy()->endOfMonth()],
         ];
 
         $result = [];

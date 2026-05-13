@@ -34,13 +34,8 @@ class LeaderboardService
             return $this->applyAdjustments($snapshots, $targetDate);
         }
 
-        // Historical date with no snapshot → empty state (US4-SC3)
-        if (!$targetDate->isToday()) {
-            return collect();
-        }
-
-        // No snapshot yet for today → compute live and apply any adjustments saved so far
-        $liveData = $this->computeLeaderboardOnDemand($month ?? Carbon::now());
+        // No snapshot exists for this date (today or historical) -> compute live and apply adjustments
+        $liveData = $this->computeLeaderboardOnDemand($targetDate);
         return $this->applyAdjustmentsToLiveData($liveData, $targetDate);
     }
 
