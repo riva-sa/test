@@ -295,10 +295,9 @@
         }
         .map-floating-bar {
             padding: 4px 8px;
-            overflow-x: auto;
+            overflow: visible !important;
             max-width: 92vw;
-            scrollbar-width: none;
-            border-radius: 12px; /* Less rounded for better mobile space */
+            border-radius: 12px;
             box-shadow: 0 5px 20px rgba(18, 40, 24, 0.2);
         }
         .map-floating-bar::-webkit-scrollbar {
@@ -309,7 +308,7 @@
             height: 36px;
         }
         .count-section {
-            display: none !important; /* Hide count on mobile to save space */
+            display: none !important;
         }
         .filter-btn span {
             display: none;
@@ -317,6 +316,21 @@
         .filter-btn i {
             font-size: 18px;
             margin: 0 !important;
+        }
+        /* Make dropdowns open downwards on mobile */
+        .filter-dropdown {
+            bottom: unset !important;
+            top: calc(100% + 10px) !important;
+        }
+        /* Make help tooltip open downwards on mobile */
+        .help-tooltip-card {
+            bottom: unset !important;
+            top: calc(100% + 15px) !important;
+        }
+        .help-tooltip-card::after {
+            top: unset !important;
+            bottom: 100% !important;
+            border-color: transparent transparent #122818 transparent !important;
         }
     }
 </style>
