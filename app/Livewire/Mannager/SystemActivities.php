@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\UnitOrder;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Carbon\Carbon;
 
 class SystemActivities extends Component
 {
@@ -16,15 +17,24 @@ class SystemActivities extends Component
     public $actor_id = '';
     public $activity_type = '';
     public $order_id = '';
-    public $perPage = 25;
+    public $perPage = 50;
+
+    // Search terms for filters
+    public $orderSearch = '';
+    public $actorSearch = '';
 
     protected $queryString = [
         'search' => ['except' => ''],
         'actor_id' => ['except' => ''],
         'activity_type' => ['except' => ''],
         'order_id' => ['except' => ''],
-        'page' => ['except' => 1],
     ];
+
+    public function resetFilters()
+    {
+        $this->reset(['search', 'actor_id', 'activity_type', 'order_id', 'orderSearch', 'actorSearch']);
+        $this->resetPage();
+    }
 
     public function updatingSearch()
     {
@@ -53,7 +63,7 @@ class SystemActivities extends Component
             abort(403);
         }
 
-        $query = AuditLogEntry::query()->with(['actor', 'order']);
+        $query = AuditLogEntry::query()->with(['actor', 'order.project']);
 
         if ($this->actor_id) {
             $query->where('actor_id', $this->actor_id);
@@ -83,14 +93,60 @@ class SystemActivities extends Component
 
         $activities = $query->latest('created_at')->paginate($this->perPage);
 
-        return view('livewire.mannager.system-activities', [
-            'activities' => $activities,
-            'actors' => User::whereHas('roles', function($q) {
+        // Advanced Grouping: Date -> Order
+        $groupedActivities = [];
+        foreach ($activities as $activity) {
+            $date = Carbon::parse($activity->created_at);
+            if ($date->isToday()) $dateKey = 'اليوم';
+            elseif ($date->isYesterday()) $dateKey = 'أمس';
+            else $dateKey = $date->translatedFormat('j F Y');
+
+            $orderKey = $activity->order_id ?: 'system_' . $activity->id;
+            
+            if (!isset($groupedActivities[$dateKey])) {
+                $groupedActivities[$dateKey] = [];
+            }
+
+            if (!isset($groupedActivities[$dateKey][$orderKey])) {
+                $groupedActivities[$dateKey][$orderKey] = [
+                    'order' => $activity->order,
+                    'order_id' => $activity->order_id,
+                    'items' => []
+                ];
+            }
+
+            $groupedActivities[$dateKey][$orderKey]['items'][] = $activity;
+        }
+
+        // Fetch orders - Always load recent orders if search is empty
+        $orders = UnitOrder::query()
+            ->when($this->orderSearch, function($q) {
+                $q->where('name', 'like', '%' . $this->orderSearch . '%')
+                  ->orWhere('id', 'like', '%' . $this->orderSearch . '%');
+            })
+            ->latest()
+            ->take(20)
+            ->get();
+
+        // Fetch actors - Always load actors if search is empty
+        $actors = User::whereHas('roles', function($q) {
                 $q->whereIn('name', ['Admin', 'sales_manager', 'sales', 'follow_up']);
-            })->get(),
-            'orders' => UnitOrder::latest()->take(50)->get(), // Limited for performance, search should handle others
+            })
+            ->when($this->actorSearch, function($q) {
+                $q->where('name', 'like', '%' . $this->actorSearch . '%');
+            })
+            ->orderBy('name')
+            ->take(20)
+            ->get();
+
+        return view('livewire.mannager.system-activities', [
+            'groupedActivities' => $groupedActivities,
+            'activities' => $activities,
+            'actors' => $actors,
+            'orders' => $orders,
             'types' => [
                 'status_change' => 'تغيير حالة',
+                'data_change' => 'تعديل بيانات',
                 'permission_grant' => 'منح صلاحية',
                 'note_added' => 'إضافة ملاحظة',
                 'leaderboard_adjustment' => 'تعديل لوحة الصدارة',

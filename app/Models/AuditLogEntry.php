@@ -33,6 +33,7 @@ class AuditLogEntry extends Model
             'permission_grant' => 'منح صلاحية',
             'note_added' => 'إضافة ملاحظة',
             'leaderboard_adjustment' => 'تعديل لوحة الصدارة',
+            'data_change' => 'تعديل بيانات',
             default => $this->activity_type,
         };
     }
