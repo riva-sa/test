@@ -83,6 +83,7 @@ Route::middleware(['auth', 'role:sales_manager,sales,Admin,developer,follow_up,p
     Route::get('/crm/analytics/projects/{id}', \App\Livewire\Mannager\ProjectAnalyticsDetail::class)->name('manager.analytics.projects.detail');
     Route::get('/crm/analytics/units/{id}', \App\Livewire\Mannager\UnitAnalyticsDetail::class)->name('manager.analytics.units.detail');
     Route::get('/crm/journeys', SessionJourneys::class)->name('manager.journeys');
+    Route::get('/crm/activities', \App\Livewire\Mannager\SystemActivities::class)->name('manager.activities');
     Route::prefix('crm/tracking')->group(function () {
 
         // Public tracking endpoints (no authentication required)

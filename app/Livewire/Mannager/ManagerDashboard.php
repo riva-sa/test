@@ -45,6 +45,12 @@ class ManagerDashboard extends Component
             ->take(10)
             ->get();
 
+        $recentActivities = \App\Models\AuditLogEntry::query()
+            ->with(['actor', 'order'])
+            ->latest('created_at')
+            ->take(8)
+            ->get();
+
         $statusConfig = [];
         foreach (UnitOrder::STATUS_LABELS as $key => $label) {
             $statusConfig[$key] = [
@@ -81,6 +87,7 @@ class ManagerDashboard extends Component
             'closedOrders' => $closedOrders,
             'waitingListCount' => $waitingListCount,
             'recentOrders' => $recentOrders,
+            'recentActivities' => $recentActivities,
             'allOrders' => $allOrders,
             'completedOrders' => $completedOrders,
             'statusConfig' => $statusConfig,

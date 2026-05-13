@@ -583,6 +583,71 @@
                 </div>
             </div>
         </div>
+
+        <!-- Recent System Activities -->
+        @if(auth()->user()->hasRole(['Admin', 'sales_manager']))
+        <div class="bg-white shadow rounded-xl border border-gray-100 mb-6 mt-6 px-4">
+            <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+                <h3 class="text-sm font-semibold text-gray-800 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    سجل عمليات النظام (آخر التحديثات)
+                </h3>
+                <a href="{{ route('manager.activities') }}" class="text-xs text-primary-600 hover:underline">عرض السجل الكامل</a>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">نوع العملية</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">بواسطة</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">التفاصيل</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">التاريخ</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @forelse($recentActivities as $activity)
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-3 whitespace-nowrap">
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold 
+                                        {{ $activity->activity_type === 'status_change' ? 'bg-zinc-100 text-zinc-800' : '' }}
+                                        {{ $activity->activity_type === 'permission_grant' ? 'bg-emerald-100 text-emerald-800' : '' }}
+                                        {{ $activity->activity_type === 'note_added' ? 'bg-blue-100 text-blue-800' : '' }}
+                                        {{ $activity->activity_type === 'leaderboard_adjustment' ? 'bg-amber-100 text-amber-800' : '' }}
+                                    ">
+                                        {{ $activity->getActivityLabel() }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-3 whitespace-nowrap text-sm text-gray-700">
+                                    {{ $activity->actor->name ?? 'النظام' }}
+                                </td>
+                                <td class="px-6 py-3 text-sm text-gray-600">
+                                    @if($activity->activity_type === 'status_change')
+                                        @php
+                                            preg_match('/Changed status from (\d+) to (\d+)/', $activity->description, $matches);
+                                            $from = \App\Models\UnitOrder::STATUS_LABELS[$matches[1] ?? ''] ?? ($matches[1] ?? '');
+                                            $to = \App\Models\UnitOrder::STATUS_LABELS[$matches[2] ?? ''] ?? ($matches[2] ?? '');
+                                        @endphp
+                                        تغيير الحالة من [{{ $from }}] إلى [{{ $to }}]
+                                    @else
+                                        {{ Str::limit($activity->description, 60) }}
+                                    @endif
+                                </td>
+                                <td class="px-6 py-3 whitespace-nowrap text-xs text-gray-400">
+                                    {{ $activity->created_at->diffForHumans() }}
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد عمليات مسجلة</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        @endif
     </div>
 </div>
 @push('scripts')
