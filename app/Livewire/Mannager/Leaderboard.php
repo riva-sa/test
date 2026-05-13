@@ -9,6 +9,7 @@ use App\Services\TargetTrackingService;
 use Carbon\Carbon;
 use Livewire\Component;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Artisan;
 
 class Leaderboard extends Component
 {
@@ -206,6 +207,19 @@ class Leaderboard extends Component
     {
         $this->showHistoryModal = false;
         $this->reset(['adjustmentHistory']);
+    }
+
+    public function refreshLeaderboard(): void
+    {
+        if (!auth()->user()->hasRole('Admin') && !auth()->user()->hasRole('sales_manager')) {
+            return;
+        }
+
+        Artisan::call('leaderboard:refresh', [
+            '--date' => $this->selectedDate,
+        ]);
+
+        session()->flash('success', __('leaderboard.refresh_success') ?? 'تم تحديث البيانات بنجاح');
     }
 
     public function render()

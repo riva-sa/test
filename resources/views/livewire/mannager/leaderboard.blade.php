@@ -22,6 +22,13 @@
                 title="{{ __('leaderboard.select_date') }}">
 
             @if($isAdmin || auth()->user()->hasRole('sales_manager'))
+            <button wire:click="refreshLeaderboard" wire:loading.attr="disabled"
+               class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50">
+                <i class="fas fa-sync-alt" wire:loading.class="fa-spin"></i>
+                <span wire:loading.remove>{{ __('leaderboard.refresh') ?? 'تحديث البيانات' }}</span>
+                <span wire:loading>{{ __('leaderboard.refreshing') ?? 'جاري التحديث...' }}</span>
+            </button>
+
             <button wire:click="openHistoryModal"
                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                 <i class="fas fa-history"></i>

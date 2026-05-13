@@ -50,4 +50,7 @@ return [
     'admin' => 'Admin',
     'metric_type' => 'Metric',
     'change' => 'Change',
+    'refresh' => 'Refresh Data',
+    'refreshing' => 'Refreshing...',
+    'refresh_success' => 'Data for the selected date has been refreshed successfully',
 ];
