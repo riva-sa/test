@@ -24,6 +24,70 @@
     </div>
     <!-- Header Section -->
     <div class="bg-white min-h-screen p-2 sm:p-4">
+        <!-- Bulk Actions Bar -->
+        @if(!empty($selectedOrders))
+        <div class="fixed bottom-12 left-1/2 -translate-x-1/2 z-50 w-full max-w-2xl px-4 pointer-events-none" dir="rtl">
+            <div class="flex flex-col items-start pointer-events-auto animate-in fade-in slide-in-from-bottom-8 duration-700">
+                {{-- Top Tab (Right aligned for RTL) --}}
+                <div class="bg-[#2A2A2A] text-zinc-300 px-3 py-1.5 rounded-t-xl text-[11px] font-medium flex items-center gap-2 border-x border-t border-white/5 shadow-lg ml-4">
+                    <svg class="w-3 h-3 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span>{{ count($selectedOrders) }} طلبات مختارة</span>
+                </div>
+
+                {{-- Main Bar --}}
+                <div class="w-full bg-[#1A1A1A] border border-white/10 text-white rounded-2xl rounded-tr-none shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-2.5 pr-4 flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-4 flex-1 min-w-0">
+                        {{-- Icon (Right side) --}}
+                        <div class="w-10 h-10 shrink-0 bg-[#0A0A0A] border border-white/10 rounded-xl flex items-center justify-center relative group overflow-hidden">
+                            <div class="absolute inset-0 bg-blue-500/20 opacity-100 transition-opacity"></div>
+                            <svg class="w-5 h-5 text-blue-400 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                        </div>
+
+                        {{-- Content --}}
+                        <div class="flex flex-col gap-1.5 flex-1 min-w-0">
+                            <span class="text-[13px] font-bold text-zinc-100">توزيع الطلبات المختارة..</span>
+                            
+                            <div class="flex items-center gap-4">
+                                {{-- Clearer Select --}}
+                                <div class="relative min-w-[180px]">
+                                    <select wire:model="bulkAssigneeId" 
+                                        class="w-full bg-white/5 border border-white/10 text-zinc-300 text-[11px] rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 cursor-pointer appearance-none">
+                                        <option value="" class="bg-[#1A1A1A]">اختر موظف المبيعات من هنا</option>
+                                        @foreach($salesManagers as $manager)
+                                            <option value="{{ $manager->id }}" class="bg-[#1A1A1A]">{{ $manager->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <div class="absolute inset-y-0 left-2 flex items-center pointer-events-none text-zinc-500">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                    </div>
+                                </div>
+
+                                <label class="flex items-center gap-2 cursor-pointer group">
+                                    <input type="checkbox" wire:model="clearOldPermissions" class="w-3.5 h-3.5 rounded border-white/20 bg-white/5 text-blue-500 focus:ring-0">
+                                    <span class="text-[10px] text-zinc-500 group-hover:text-zinc-400 transition-colors">إزالة الصلاحيات القديمة</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Actions (Left side) --}}
+                    <div class="flex items-center gap-3 shrink-0">
+                        <button wire:click="bulkAssign" 
+                            class="bg-white/10 hover:bg-white/20 text-zinc-100 px-6 py-2 rounded-full text-xs font-bold border border-white/10 transition-all active:scale-95 flex items-center gap-2 shadow-lg group">
+                            <svg class="w-3.5 h-3.5 text-blue-400 group-hover:rotate-12 transition-transform" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/></svg>
+                            تعيين الآن
+                        </button>
+                        
+                        <button wire:click="$set('selectedOrders', [])" 
+                            class="p-2 text-zinc-500 hover:text-zinc-200 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+
         <!-- Filters Card -->
         <div class="bg-white rounded-xl shadow-sm p-4 mb-6 border border-gray-100">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -112,73 +176,59 @@
         <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+                    <thead class="bg-zinc-50/50 border-b border-zinc-200">
                         <tr>
-                            <th>
-                                #
+                            <th class="px-6 py-4 text-right w-10">
+                                <div class="flex items-center justify-center">
+                                    <input type="checkbox" 
+                                           x-on:click="$wire.set('selectedOrders', $event.target.checked ? {{ json_encode($orders->pluck('id')->toArray()) }} : [])"
+                                           class="h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900">
+                                </div>
                             </th>
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" wire:click="sortBy('name')">
-                                <div class="flex items-center justify-start gap-1">
+                            <th scope="col" class="px-6 py-4 text-right text-[11px] font-bold text-zinc-500 uppercase tracking-wider cursor-pointer group" wire:click="sortBy('name')">
+                                <div class="flex items-center justify-start gap-1 group-hover:text-zinc-900 transition-colors">
                                     <span>العميل</span>
                                     @if($sortField === 'name')
-                                        @if($sortDirection === 'asc')
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
-                                            </svg>
-                                        @else
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                            </svg>
-                                        @endif
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $sortDirection === 'asc' ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7' }}"></path>
+                                        </svg>
                                     @endif
                                 </div>
                             </th>
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" class="px-6 py-4 text-right text-[11px] font-bold text-zinc-500 uppercase tracking-wider">
                                 الوحدة
                             </th>
 
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">
+                            <th scope="col" class="px-6 py-4 text-right text-[11px] font-bold text-zinc-500 uppercase tracking-wider">
                                 <span>التحديثات</span>
                             </th>
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" class="px-6 py-4 text-right text-[11px] font-bold text-zinc-500 uppercase tracking-wider">
                                 مصدر الطلب
                             </th>
 
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" wire:click="sortBy('status')">
-                                <div class="flex items-center justify-start gap-1">
+                            <th scope="col" class="px-6 py-4 text-right text-[11px] font-bold text-zinc-500 uppercase tracking-wider cursor-pointer group" wire:click="sortBy('status')">
+                                <div class="flex items-center justify-start gap-1 group-hover:text-zinc-900 transition-colors">
                                     <span>الحالة</span>
                                     @if($sortField === 'status')
-                                        @if($sortDirection === 'asc')
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
-                                            </svg>
-                                        @else
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                            </svg>
-                                        @endif
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $sortDirection === 'asc' ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7' }}"></path>
+                                        </svg>
                                     @endif
                                 </div>
                             </th>
 
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" wire:click="sortBy('created_at')">
-                                <div class="flex items-center justify-start gap-1">
+                            <th scope="col" class="px-6 py-4 text-right text-[11px] font-bold text-zinc-500 uppercase tracking-wider cursor-pointer group" wire:click="sortBy('created_at')">
+                                <div class="flex items-center justify-start gap-1 group-hover:text-zinc-900 transition-colors">
                                     <span>التاريخ</span>
                                     @if($sortField === 'created_at')
-                                        @if($sortDirection === 'asc')
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
-                                            </svg>
-                                        @else
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                            </svg>
-                                        @endif
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $sortDirection === 'asc' ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7' }}"></path>
+                                        </svg>
                                     @endif
                                 </div>
                             </th>
 
-                            @if (auth()->user()->hasRole('sales_manager') || auth()->user()->hasRole('follow_up'))
+                            @if (auth()->user()->hasRole('sales_manager') || auth()->user()->hasRole('follow_up') || auth()->user()->hasRole('Admin'))
                             <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 مندوب المبيعات
                             </th>
@@ -192,20 +242,22 @@
 
                     <tbody class="bg-white divide-y divide-gray-200">
                         @forelse ($orders as $order)
-                        <tr class="hover:bg-gray-50 transition-colors">
+                        <tr class="hover:bg-zinc-50/80 transition-colors border-b border-zinc-100 {{ in_array($order->id, $selectedOrders) ? 'bg-zinc-50' : '' }}">
                             <td class="px-6 py-4">
-                                {{ $order->id }}
+                                <div class="flex items-center justify-center">
+                                    <input type="checkbox" wire:model.live="selectedOrders" value="{{ $order->id }}"
+                                           class="h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900">
+                                </div>
                             </td>
                             <!-- Customer Info -->
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <a href="{{ route('manager.order-details', $order->id) }}" class="flex flex-col">
-                                    <span class="font-medium text-gray-900">{{ $order->name }}</span>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[10px] text-zinc-400 font-mono font-bold tracking-tighter">#{{ $order->id }}</span>
+                                        <span class="font-semibold text-zinc-900 text-sm tracking-tight">{{ $order->name }}</span>
+                                    </div>
                                     <div class="flex flex-col sm:flex-row sm:gap-2 text-sm text-gray-500 mt-1">
                                         <span>{{ $order->phone }}</span>
-                                        {{-- @if($order->email)
-                                        <span class="hidden sm:inline">•</span>
-                                        <span>{{ $order->email }}</span>
-                                        @endif --}}
                                     </div>
                                 </a>
                             </td>
@@ -360,15 +412,20 @@
                             @if (auth()->user()->hasRole('sales_manager') || auth()->user()->hasRole('follow_up') || auth()->user()->hasRole('Admin'))
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <div class="flex flex-col gap-1">
-                                    @if($order->project?->salesManager)
+                                    @if($order->assignedSalesUser)
                                         <div class="flex items-center gap-1.5">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                                            <span class="font-medium text-gray-900">{{ $order->assignedSalesUser->name }}</span>
+                                        </div>
+                                    @elseif($order->project?->salesManager)
+                                        <div class="flex items-center gap-1.5 opacity-60">
                                             <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
                                             <span class="font-medium text-gray-900">{{ $order->project->salesManager->name }}</span>
                                         </div>
                                     @endif
                                     
                                     @foreach($order->permissions as $permission)
-                                        @if(!$order->project?->salesManager || $permission->user_id !== $order->project->sales_manager_id)
+                                        @if($permission->user_id !== ($order->assigned_sales_user_id ?? $order->project?->sales_manager_id))
                                             <div class="flex items-center gap-1.5 text-xs text-gray-500">
                                                 <span class="w-1.5 h-1.5 rounded-full bg-gray-300"></span>
                                                 <span>{{ $permission->user->name }}</span>
@@ -376,7 +433,7 @@
                                         @endif
                                     @endforeach
 
-                                    @if(!$order->project?->salesManager && $order->permissions->isEmpty())
+                                    @if(!$order->assignedSalesUser && !$order->project?->salesManager && $order->permissions->isEmpty())
                                         <span class="text-gray-400">-</span>
                                     @endif
                                 </div>
@@ -425,7 +482,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="{{ auth()->user()->hasRole('sales_manager') || auth()->user()->hasRole('follow_up') ? '8' : '7' }}" class="px-6 py-4 text-center">
+                            <td colspan="{{ auth()->user()->hasRole('sales_manager') || auth()->user()->hasRole('follow_up') ? '9' : '8' }}" class="px-6 py-4 text-center">
                                 <div class="flex flex-col items-center justify-center py-8">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />

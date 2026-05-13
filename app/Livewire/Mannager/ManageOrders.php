@@ -34,6 +34,11 @@ class ManageOrders extends Component
 
     public $toDate = '';
 
+    // Bulk actions
+    public $selectedOrders = [];
+    public $bulkAssigneeId = '';
+    public bool $clearOldPermissions = true;
+
     protected $queryString = [
         'search' => ['except' => ''],
         'statusFilter' => ['except' => ''],
@@ -85,6 +90,48 @@ class ManageOrders extends Component
     public function updated()
     {
         $this->resetPage();
+    }
+
+    public function bulkAssign()
+    {
+        if (empty($this->selectedOrders)) {
+            session()->flash('error', 'الرجاء تحديد طلبات للتعيين.');
+            return;
+        }
+
+        if (empty($this->bulkAssigneeId)) {
+            session()->flash('error', 'الرجاء اختيار موظف مبيعات.');
+            return;
+        }
+
+        $orders = UnitOrder::accessibleBy(auth()->user())
+            ->whereIn('id', $this->selectedOrders)
+            ->get();
+
+        foreach ($orders as $order) {
+            // Remove existing permissions only if requested
+            if ($this->clearOldPermissions) {
+                $order->permissions()->delete();
+            }
+
+            // Update assigned_sales_user_id
+            $order->update([
+                'assigned_sales_user_id' => $this->bulkAssigneeId,
+                'last_action_by_user_id' => auth()->id()
+            ]);
+
+            // Create/update permission for this user
+            \App\Models\OrderPermission::create([
+                'unit_order_id' => $order->id, 
+                'user_id' => $this->bulkAssigneeId,
+                'permission_type' => 'manage', 
+                'granted_by' => auth()->id()
+            ]);
+        }
+
+        $this->selectedOrders = [];
+        $this->bulkAssigneeId = '';
+        session()->flash('message', 'تم تعيين الطلبات بنجاح.');
     }
 
     public function logout()
@@ -142,7 +189,7 @@ class ManageOrders extends Component
             ->when($this->salesManagerFilter, function ($query) {
                 $selectedUser = \App\Models\User::find($this->salesManagerFilter);
                 if ($selectedUser) {
-                    $query->accessibleBy($selectedUser);
+                    $query->where("assigned_sales_user_id", $this->salesManagerFilter);
                 }
             })
             ->when($this->fromDate, function ($query) {
@@ -192,7 +239,7 @@ class ManageOrders extends Component
             ->when($this->salesManagerFilter, function ($query) {
                 $selectedUser = \App\Models\User::find($this->salesManagerFilter);
                 if ($selectedUser) {
-                    $query->accessibleBy($selectedUser);
+                    $query->where("assigned_sales_user_id", $this->salesManagerFilter);
                 }
             })
             ->when($this->fromDate, function ($query) {
@@ -230,9 +277,7 @@ class ManageOrders extends Component
                 'general' => 'عام',
             ],
             'projects' => Project::all(),
-            'salesManagers' => \App\Models\User::whereHas('roles', function ($q) {
-                $q->where('name', 'sales');
-            })->get(),
+            'salesManagers' => \App\Models\User::role('sales')->get(),
         ])->layout('layouts.custom');
     }
 
