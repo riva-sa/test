@@ -74,7 +74,7 @@ class LeaderboardService
 
             $progress = [
                 'monthly_orders' => [
-                    'current' => $userSnapshots->sum('monthly_orders'),
+                    'current' => $latest->monthly_orders,
                     'target' => $targets['monthly_orders'] ?? 0,
                     'weight' => $weights['monthly_orders'] ?? 25.0,
                 ],

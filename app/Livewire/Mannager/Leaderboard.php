@@ -5,6 +5,7 @@ namespace App\Livewire\Mannager;
 use App\Models\LeaderboardAdjustment;
 use App\Models\LeaderboardConfig;
 use App\Services\LeaderboardService;
+use App\Services\TargetTrackingService;
 use Carbon\Carbon;
 use Livewire\Component;
 use Illuminate\Support\Facades\Log;
@@ -27,6 +28,17 @@ class Leaderboard extends Component
     public float|string $editingOriginalValue = 0;
     public float|string $editingAdjustedValue = 0;
     public string $editingReason = '';
+
+    // Details modal state
+    public bool $showDetailsModal = false;
+    public ?int $detailsUserId = null;
+    public string $detailsUserName = '';
+    public string $detailsMetric = '';
+    public $detailsData = [];
+
+    // History modal state
+    public bool $showHistoryModal = false;
+    public $adjustmentHistory = [];
 
     public function mount(): void
     {
@@ -124,7 +136,7 @@ class Leaderboard extends Component
             return;
         }
 
-        $original = (int) $this->editingOriginalValue;
+        $original = (int) $intOriginalValue = (int) $this->editingOriginalValue;
 
         LeaderboardAdjustment::create([
             'adjusted_by' => auth()->id(),
@@ -132,7 +144,7 @@ class Leaderboard extends Component
             'period_type' => $this->editingPeriodType,
             'period_date' => $this->editingPeriodDate,
             'metric_type' => $this->editingMetric,
-            'original_value' => $original,
+            'original_value' => $intOriginalValue,
             'adjusted_value' => $adjusted,
             'reason' => trim($this->editingReason),
         ]);
@@ -143,7 +155,7 @@ class Leaderboard extends Component
             'period_date' => $this->editingPeriodDate,
             'period_type' => $this->editingPeriodType,
             'metric_type' => $this->editingMetric,
-            'original_value' => $original,
+            'original_value' => $intOriginalValue,
             'adjusted_value' => $adjusted,
             'reason' => trim($this->editingReason),
         ]);
@@ -157,6 +169,43 @@ class Leaderboard extends Component
     {
         $this->showAdjustmentModal = false;
         $this->reset(['editingUserId', 'editingUserName', 'editingReason', 'editingAdjustedValue', 'editingOriginalValue']);
+    }
+
+    public function openDetailsModal(int $userId, string $metric): void
+    {
+        $this->detailsUserId = $userId;
+        $this->detailsMetric = $metric;
+
+        $entry = collect($this->leaderboard)->first(fn($e) => $e['user']->id === $userId);
+        $this->detailsUserName = $entry ? $entry['user']->name : '';
+
+        $date = Carbon::parse($this->selectedDate);
+        $start = ($metric === 'daily_orders') ? $date->copy()->startOfDay() : $date->copy()->startOfMonth();
+        $end = ($metric === 'daily_orders') ? $date->copy()->endOfDay() : $date->copy()->endOfMonth();
+
+        $this->detailsData = app(TargetTrackingService::class)->getTransitionsDetail($userId, $metric, $start, $end);
+        $this->showDetailsModal = true;
+    }
+
+    public function closeDetailsModal(): void
+    {
+        $this->showDetailsModal = false;
+        $this->reset(['detailsUserId', 'detailsUserName', 'detailsMetric', 'detailsData']);
+    }
+
+    public function openHistoryModal(): void
+    {
+        $this->adjustmentHistory = LeaderboardAdjustment::with(['admin', 'agent'])
+            ->latest()
+            ->take(50)
+            ->get();
+        $this->showHistoryModal = true;
+    }
+
+    public function closeHistoryModal(): void
+    {
+        $this->showHistoryModal = false;
+        $this->reset(['adjustmentHistory']);
     }
 
     public function render()

@@ -132,7 +132,7 @@
                             </a>
                             <a href="tel:{{ $contactPhone }}"
                             class="btn btn-outline-light btn-sm rounded flex-1 d-flex align-items-center justify-content-center gap-1 w-50 fs-14">
-                                <i class="uil uil-phone"></i> {{ $contactPhone }}
+                                <i class="uil uil-phone"></i> اتصال
                             </a>
                         </div>
                         @endif
@@ -279,7 +279,7 @@
                                 </a>
                                 <a href="tel:{{ $contactPhone }}"
                                 class="btn btn-outline-light btn-sm rounded flex-1 d-flex align-items-center justify-content-center gap-1 w-50 fs-14">
-                                    <i class="uil uil-phone"></i> {{ $contactPhone }}
+                                    <i class="uil uil-phone"></i> اتصال
                                 </a>
                             </div>
                             @endif

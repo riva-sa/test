@@ -11,6 +11,7 @@ class OrderStatusTransition extends Model
     protected $fillable = [
         'unit_order_id',
         'user_id',
+        'attributed_user_id',
         'from_status',
         'to_status',
         'created_at',

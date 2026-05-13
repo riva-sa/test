@@ -37,6 +37,7 @@ class UnitOrderObserver
         OrderStatusTransition::create([
             'unit_order_id' => $order->id,
             'user_id' => $userId,
+            'attributed_user_id' => $order->assigned_sales_user_id,
             'from_status' => $order->getOriginal('status'),
             'to_status' => $order->status,
         ]);
