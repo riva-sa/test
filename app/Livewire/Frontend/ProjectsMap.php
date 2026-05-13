@@ -138,7 +138,10 @@ class ProjectsMap extends Component
         $query = Project::query()
             ->with(['projectType:id,name,slug', 'developer:id,name,logo'])
             ->select(['id', 'name', 'slug', 'developer_id', 'project_type_id', 'latitude', 'longitude', 'address', 'status'])
-            ->where('status', 1);
+            ->where('status', 1)
+            ->whereHas('units', function ($query) {
+                $query->where('case', 0);
+            });
 
         $query = $this->applyFilters($query);
 

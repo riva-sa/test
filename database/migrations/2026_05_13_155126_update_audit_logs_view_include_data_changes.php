@@ -62,7 +62,7 @@ return new class extends Migration
                 'data_change' as activity_type,
                 user_id as actor_id,
                 unit_order_id as order_id,
-                CONCAT('Modified field [', field, '] from \"', IFNULL(old_value, 'empty'), '\" to \"', IFNULL(new_value, 'empty'), '\"') as description,
+                CONCAT('Modified field [', field, '] from \"', COALESCE(old_value, 'empty'), '\" to \"', COALESCE(new_value, 'empty'), '\"') as description,
                 created_at
             FROM order_data_changes
         ");

@@ -286,17 +286,30 @@
     }
 
     @media (max-width: 768px) {
+        .map-floating-bar-wrapper {
+            bottom: unset;
+            top: 15px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
         .map-floating-bar {
-            padding: 4px;
+            padding: 4px 8px;
             overflow-x: auto;
-            max-width: 95vw;
+            max-width: 92vw;
             scrollbar-width: none;
+            border-radius: 12px; /* Less rounded for better mobile space */
+            box-shadow: 0 5px 20px rgba(18, 40, 24, 0.2);
         }
         .map-floating-bar::-webkit-scrollbar {
             display: none;
         }
         .filter-section {
-            padding: 0 10px;
+            padding: 0 8px;
+            height: 36px;
+        }
+        .count-section {
+            display: none !important; /* Hide count on mobile to save space */
         }
         .filter-btn span {
             display: none;
