@@ -14,22 +14,62 @@ use Illuminate\Support\Collection;
 class TargetTrackingService
 {
     /**
-     * Count transitions for a specific user/type within a date range.
-     * - monthly_orders / daily_orders: from_status = 0 (جديد → anything)
-     * - reservations: to_status = 2 (→ معاملات بيعية)
-     * - sales: to_status = 4 (→ مكتمل)
+     * Count net transitions for a specific user/type within a date range.
+     * Logic:
+     * - monthly_orders / daily_orders: (transitions FROM 0) - (transitions TO 0)
+     * - reservations: (transitions TO 2) - (transitions FROM 2)
+     * - sales: (transitions TO 4) - (transitions FROM 4)
+     * 
+     * This ensures that if a status is reverted (e.g. 4 -> 3), the point is subtracted.
      */
     public function getProgress(int $userId, string $type, Carbon $periodStart, Carbon $periodEnd): int
     {
-        $query = OrderStatusTransition::where('user_id', $userId)
+        $baseQuery = OrderStatusTransition::where('attributed_user_id', $userId)
             ->whereBetween('created_at', [$periodStart->startOfDay(), $periodEnd->endOfDay()]);
 
         return match ($type) {
-            'monthly_orders', 'daily_orders' => (int) $query->where('from_status', 0)->count(),
-            'reservations' => (int) $query->where('to_status', 2)->count(),
-            'sales' => (int) $query->where('to_status', 4)->count(),
+            'monthly_orders', 'daily_orders' => (int) (
+                (clone $baseQuery)->where('from_status', 0)->count() - 
+                (clone $baseQuery)->where('to_status', 0)->count()
+            ),
+            'reservations' => (int) (
+                (clone $baseQuery)->where('to_status', 2)->count() - 
+                (clone $baseQuery)->where('from_status', 2)->count()
+            ),
+            'sales' => (int) (
+                (clone $baseQuery)->where('to_status', 4)->count() - 
+                (clone $baseQuery)->where('from_status', 4)->count()
+            ),
             default => 0,
         };
+    }
+
+    /**
+     * Get actual transition records for a specific user/type within a date range.
+     * For details view, we show the "Forward" transitions that added the points.
+     * Note: In a real "Net" view, we might want to show subtractions too, 
+     * but for now we show the positive actions.
+     */
+    public function getTransitionsDetail(int $userId, string $type, Carbon $periodStart, Carbon $periodEnd): Collection
+    {
+        $query = OrderStatusTransition::with(['order', 'user'])
+            ->where('attributed_user_id', $userId)
+            ->whereBetween('created_at', [$periodStart->startOfDay(), $periodEnd->endOfDay()]);
+
+        switch ($type) {
+            case 'monthly_orders':
+            case 'daily_orders':
+                $query->where('from_status', 0);
+                break;
+            case 'reservations':
+                $query->where('to_status', 2);
+                break;
+            case 'sales':
+                $query->where('to_status', 4);
+                break;
+        }
+
+        return $query->latest()->get();
     }
 
     /**
