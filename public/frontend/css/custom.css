@@ -1730,3 +1730,7 @@ html[dir="ltr"] .btn-icon.btn-icon-start i {
 .side-sheet {
     z-index: 2210 !important;
 }
+
+html[dir="rtl"] .swiper-controls .swiper-navigation .swiper-button.swiper-button-prev {
+    right: 0;
+}
