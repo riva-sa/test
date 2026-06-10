@@ -1732,5 +1732,6 @@ html[dir="ltr"] .btn-icon.btn-icon-start i {
 }
 
 html[dir="rtl"] .swiper-controls .swiper-navigation .swiper-button.swiper-button-prev {
-    right: 0;
+    left: 1rem !important;
+    right: unset !important;
 }

@@ -41217,7 +41217,7 @@ button.hamburger span {
 }
 
 .swiper-controls .swiper-navigation .swiper-button.swiper-button-next {
-  /* right: 1rem; */
+  right: 1rem;
 }
 
 .swiper-controls .swiper-navigation .swiper-button.swiper-button-next:after {
