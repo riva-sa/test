@@ -115,7 +115,7 @@
     }
 </style>
 @endpush
-<section class="section-frame mx-xxl-5 position-relative projectspage" dir="rtl"
+<section class="section-frame mx-xxl-5 position-relative projectspage" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}"
     x-data="{ showSidebar: $wire.entangle('showSidebar') }"
     x-init="$watch('showSidebar', value => document.body.classList.toggle('filter-sidebar--open', value))">
     
@@ -127,36 +127,36 @@
 
     <div class="row">
         <!-- Main Content -->
-        <div class="col-lg-10 me-auto">
+        <div class="col-lg-10">
             <div class="container-fluid py-7 py-md-10 pe-md-8">
                 <!-- Header -->
                 <div class="row align-items-center mb-5 position-relative zindex-1">
                     <div class="col-md-7 col-xl-8 ps-xl-20 d-flex">
-                        <ul class="nav nav-tabs nav-pills tab-box" dir="rtl" style="width: fit-content;">
+                        <ul class="nav nav-tabs nav-pills tab-box" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}" style="width: fit-content;">
                             <li class="nav-item">
                                 <a wire:click.prevent="setViewType('projects')"
                                    class="nav-link px-4 {{ $view_type === 'projects' ? 'active noise-container' : '' }}"
                                    style="cursor: pointer;">
-                                    المشاريع
+                                    @lang('public.projects.title')
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a wire:click.prevent="setViewType('units')"
                                    class="nav-link px-4 {{ $view_type === 'units' ? 'active noise-container' : '' }}"
                                    style="cursor: pointer;">
-                                    الوحدات
+                                    @lang('public.projects.units')
                                 </a>
                             </li>
                         </ul>
                         <div class="my-auto">
                             <p class="mb-0 me-3">
                                 <span class="h2 text-main mb-0">{{ $items->total() }}</span>
-                                <span class="text-muted small">متاح</span>
+                                <span class="text-muted small">@lang('public.projects.available')</span>
                             </p>
                         </div>
                         <div wire:loading class="my-auto">
                             <div class="spinner-border spinner-border-sm me-4" role="status">
-                                <span class="visually-hidden">Loading...</span>
+                                <span class="visually-hidden">@lang('public.projects.loading')</span>
                             </div>
                         </div>
                     </div>
@@ -166,15 +166,14 @@
                         <button class="btn btn-primary rounded-pill d-lg-none position-fixed bottom-0 start-50 translate-middle-x mb-4 px-4"
                                 style="z-index: 1040;"
                                 @click="showSidebar = true">
-                            <i class="uil uil-filter me-1"></i> فلترة
+                            <i class="uil uil-filter me-1"></i> @lang('public.projects.filter')
                         </button>
 
                         <div class="form-select-wrapper">
                             <select wire:change="sortBy($event.target.value)" class="form-select">
-                                <option selected disabled>ترتيب</option>
-                                <option value="unit_price" {{ $sort_by === 'unit_price' ? 'selected' : '' }}>ترتيب حسب السعر {{ $sort_by === 'unit_price' && $sort_direction === 'asc' ? '▲' : '▼' }}</option>
-                                {{-- <option value="name" {{ $sort_by === 'name' ? 'selected' : '' }}>ترتيب حسب الاسم {{ $sort_by === 'name' && $sort_direction === 'asc' ? '▲' : '▼' }}</option> --}}
-                                <option value="created_at" {{ $sort_by === 'created_at' ? 'selected' : '' }}>ترتيب حسب وقت النشر {{ $sort_by === 'created_at' && $sort_direction === 'asc' ? '▲' : '▼' }}</option>
+                                <option selected disabled>@lang('public.projects.sort')</option>
+                                <option value="unit_price" {{ $sort_by === 'unit_price' ? 'selected' : '' }}>@lang('public.projects.sort_by_price') {{ $sort_by === 'unit_price' && $sort_direction === 'asc' ? '▲' : '▼' }}</option>
+                                <option value="created_at" {{ $sort_by === 'created_at' ? 'selected' : '' }}>@lang('public.projects.sort_by_date') {{ $sort_by === 'created_at' && $sort_direction === 'asc' ? '▲' : '▼' }}</option>
                             </select>
                         </div>
                     </div>
@@ -186,14 +185,14 @@
                         <div class="row" wire:loading.class="opacity-50">
 
                             @forelse($items as $project)
-                                <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 mb-3" wire:key="{{ $project->id }}" data-tracking='{"type":"project","id":{{ $project->id }}}' data-project-id="{{ $project->id }}">
+                                <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 mb-3 px-1" wire:key="{{ $project->id }}" data-tracking='{"type":"project","id":{{ $project->id }}}' data-project-id="{{ $project->id }}">
                                     <article class="post">
 
                                         <figure class="rounded-top position-relative">
-                                            <a href="{{ route('frontend.projects.single', $project->slug) }}">
+                                            <a href="{{ route('frontend.projects.single', ['slug' => $project->slug]) }}">
                                                 <img src="{{ App\Helpers\MediaHelper::getUrl(optional($project->getMainImages())->media_url ?? optional($project->projectMedia->first())->media_url) }}" style="max-height: 200px" alt="{{ $project->name }}" loading="lazy" decoding="async" fetchpriority="low" />
                                             </a>
-                                            <figcaption class="noise-container text-right heroTop position-absolute" style="top: 6px;right: 6px;" dir="rtl">
+                                            <figcaption class="noise-container text-right heroTop position-absolute" style="top: 6px;right: 6px;" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
                                                 <span class="badge badge-lg text-white d-flex align-content-center align-items-center">
                                                     <i class="uil uil-map-marker fs-15 ms-1"></i>
                                                     {{ $project->address }}
@@ -205,7 +204,7 @@
                                         <div class="post-header project-data-card rounded-bottom bg-white">
                                             <div class="d-flex align-content-start justify-content-between w-100">
                                                 <h2 class="post-title h6 mt-0">
-                                                    <a href="{{ route('frontend.projects.single', $project->slug) }}">
+                                                    <a href="{{ route('frontend.projects.single', ['slug' => $project->slug]) }}">
                                                         {{ $project->name }}
                                                         {{-- <span class="badge rounded-pill  @if($project->dynamic_project_status == 'متاح') bg-pale-leaf text-leaf @elseif ($project->dynamic_project_status == 'تحت الانشاء') bg-pale-red text-danger @else bg-pale-yellow text-yellow @endif">{{ $project->dynamic_project_status }}</span> --}}
                                                         <span class="badge rounded-pill
@@ -260,8 +259,8 @@
 
                                 <div class="col-12 text-center m-auto">
                                     <img src="{{ asset('frontend/img/EmptyInbox.png') }}" alt="Riva - ريفا">
-                                    <p class="text-main fs-bold mb-1">تعذر وجود نتائج!</p>
-                                    <p class="text-muted fs-15">لم نتمكن من العثور على أي عقارات تتناسب مع جميع <br> المعايير التي حددتها.</p>
+                                    <p class="text-main fs-bold mb-1">@lang('public.projects.no_results')</p>
+                                    <p class="text-muted fs-15">@lang('public.projects.no_results_desc')</p>
                                 </div>
 
                             @endforelse
@@ -274,18 +273,18 @@
                         <div class="row" wire:loading.class="opacity-50">
                             <!-- Units grid -->
                             @forelse($items as $unit)
-                                <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 mb-3" wire:key="{{ $unit->id }}">
+                                <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 mb-3 px-1" wire:key="{{ $unit->id }}">
                                     <article class="post">
 
                                         <figure class="rounded-top position-relative">
                                             <a wire:click="showUnitDetails({{ $unit->id }})" data-unit-id="{{ $unit->id }}">
-                                                @if ($unit->floor_plan)
-                                                    <img src="{{ App\Helpers\MediaHelper::getUrl($unit->floor_plan) }}" style="max-height: 200px" alt="{{ $unit->title }}" loading="lazy" decoding="async" fetchpriority="low" />
+                                                @if ($unit->image)
+                                                    <img src="{{ App\Helpers\MediaHelper::getUrl($unit->image) }}" style="max-height: 200px" alt="{{ $unit->title }}" loading="lazy" decoding="async" fetchpriority="low" />
                                                 @else
                                                     <img src="{{ App\Helpers\MediaHelper::getUrl(optional($unit->project->getMainImages())->media_url ?? optional($unit->project->projectMedia->first())->media_url) }}" style="max-height: 200px" alt="{{ $unit->title }}" loading="lazy" decoding="async" fetchpriority="low" />
                                                 @endif
                                             </a>
-                                            <figcaption class="glass-white-card text-right heroTop position-absolute" style="top: 6px;right: 6px;" dir="rtl">
+                                            <figcaption class="glass-white-card text-right heroTop position-absolute" style="top: 6px;right: 6px;" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
                                                 <span class="badge badge-lg text-main d-flex align-content-center align-items-center">
                                                     <i class="uil uil-map-marker fs-15 ms-1"></i>
                                                     {{ $unit->project->name }}
@@ -300,7 +299,7 @@
                                                     <a wire:click="showUnitDetails({{ $unit->id }})" data-unit-id="{{ $unit->id }}">
                                                         {{ $unit->title }}
                                                         <span class="badge rounded-pill  @if($unit->case == 1) bg-pale-yellow text-yellow @elseif($unit->case == 2) bg-pale-red text-red @else bg-pale-leaf text-leaf @endif">
-                                                            @if($unit->case == 1) محجوزة @elseif($unit->case == 2) مباعة @else متاحة @endif
+                                                            @if($unit->case == 1) @lang('public.projects.reserved') @elseif($unit->case == 2) @lang('public.projects.sold') @else @lang('public.projects.available') @endif
                                                         </span>
                                                     </a>
                                                 </h2>
@@ -320,7 +319,7 @@
                                                 <ul class="post-meta mb-3">
                                                     <li class="post-date">
                                                         <span class="fs-15 text-success">
-                                                            تواصل معنا
+                                                            @lang('public.nav.contact')
                                                         </span>
                                                     </li>
                                                 </ul>
@@ -340,7 +339,7 @@
                                                 </li> --}}
                                                 <li class="post-comments">
                                                     <img src="{{ asset('frontend/img/icons/move.png') }}" class="dark-image" style="width: 20px;" alt="Riva - ريفا">
-                                                    <span class="me-1 fs-15 text-gray-800">{{ $unit->unit_area . ' م²' }}</span>
+                                                    <span class="me-1 fs-15 text-gray-800">{{ $unit->unit_area . __('public.projects.area_suffix') }}</span>
                                                 </li>
                                             </ul>
                                             <!-- /.post-meta -->
@@ -352,8 +351,8 @@
                             @empty
                                 <div class="col-12 text-center m-auto">
                                     <img src="{{ asset('frontend/img/EmptyInbox.png') }}" alt="Riva - ريفا">
-                                    <p class="text-main fs-bold mb-1">تعذر وجود نتائج!</p>
-                                    <p class="text-muted fs-15">لم نتمكن من العثور على أي عقارات تتناسب مع جميع <br> المعايير التي حددتها.</p>
+                                    <p class="text-main fs-bold mb-1">@lang('public.projects.no_results')</p>
+                                    <p class="text-muted fs-15">@lang('public.projects.no_results_desc')</p>
                                 </div>
                             @endforelse
                         </div>
@@ -375,8 +374,8 @@
         <div class="filter-sidebar__container" style="border: 1px solid #e6e6e6;border-radius: 15px;">
 
             <div class="filter-sidebar__header border-bottom border-muted pb-2">
-                <h3 class="filter-sidebar__title">فلتر مُخصص</h3>
-                <a href="{{route('frontend.projects')}}" class="text-warning fs-12 mb-0">اعداة تعيين</a>
+                <h3 class="filter-sidebar__title">@lang('public.projects.custom_filter')</h3>
+                <a href="{{route('frontend.projects')}}" class="text-warning fs-12 mb-0">@lang('public.projects.reset_filter')</a>
                 <!-- Mobile Close Button -->
                 <div class="widget d-lg-none">
                     <button class="filter-sidebar__close-btn" @click="showSidebar = false"></button>
@@ -385,7 +384,7 @@
 
             <!-- Project Types -->
             <div class="widget mt-3 border-bottom border-muted pb-2">
-                <h6 class="text-gray-700 fs-13 mb-3">حالات المشاريع</h6>
+                <h6 class="text-gray-700 fs-13 mb-3">@lang('public.projects.project_cases')</h6>
                 <ul class="list-unstyled pe-0">
                     <li class="mb-1">
                         <div class="form-check">
@@ -397,7 +396,7 @@
                                 <!-- Custom Checkbox -->
                                 <span class="custom-checkbox-checkmark"></span>
                                 <span class="form-check-label fw-light text-main">
-                                    عرض المتاح فقط
+                                    @lang('public.projects.show_available')
                                 </span>
                             </label>
                         </div>
@@ -406,7 +405,7 @@
             </div>
 
             <div class="widget mt-3 border-bottom border-muted pb-2">
-                <h6 class="fs-13 mb-3 text-gray-700">السعر</h6>
+                <h6 class="fs-13 mb-3 text-gray-700">@lang('public.project.price')</h6>
                 <div class="position-relative multi-range-slider">
                     <!-- Min price range -->
                     <input type="range" class="form-range range-min position-absolute w-100"
@@ -425,7 +424,7 @@
             </div>
 
             <div class="widget mt-3 border-bottom border-muted pb-2">
-                <h6 class="text-gray-700 fs-13 mb-3">المساحة</h6>
+                <h6 class="text-gray-700 fs-13 mb-3">@lang('public.project.area')</h6>
                 <div class="position-relative multi-range-slider">
                     <!-- Min space range -->
                     <input type="range" class="form-range range-min position-absolute w-100"
@@ -445,18 +444,18 @@
 
             <!-- State Dropdown -->
             <div class="widget mt-3 border-bottom border-muted pb-2">
-                <h6 class="text-gray-700 fs-13 mb-3">الموقع</h6>
+                <h6 class="text-gray-700 fs-13 mb-3">@lang('public.project.location')</h6>
                 <div class="d-flex">
                     <!-- City Dropdown -->
                     <select wire:model.live="selected_cities" class="form-select shadow-0 ms-2">
-                        <option value="">المدينة</option>
+                        <option value="">@lang('public.project.city')</option>
                         @foreach($cities as $city)
                             <option value="{{ $city->id }}">{{ $city->name }}</option>
                         @endforeach
                     </select>
 
                     <select wire:model.live="selected_states" class="form-select shadow-0">
-                        <option value="">الحي</option>
+                        <option value="">@lang('public.project.district')</option>
                         @foreach($states as $state)
                             <option value="{{ $state->id }}">{{ $state->name }}</option>
                         @endforeach
@@ -466,7 +465,7 @@
 
             <!-- Project Types -->
             <div class="widget mt-3 border-bottom border-muted pb-2">
-                <h6 class="text-gray-700 fs-13 mb-3">نوع الوحدة</h6>
+                <h6 class="text-gray-700 fs-13 mb-3">@lang('public.project.unit_type')</h6>
                 <ul class="list-unstyled pe-0">
                     @foreach($projectTypes as $type)
                         <li class="mb-1">
@@ -494,7 +493,7 @@
                 <div class="card plain accordion-item">
                     <div class="card-header" id="headingSimpleOne">
                         <button class="collapsed text-gray-700 fs-13 mb-32 text-right" data-bs-toggle="collapse" data-bs-target="#collapseSimpleOne" aria-expanded="false" aria-controls="collapseSimpleOne">
-                            المطور
+                            @lang('public.project.developer')
                         </button>
                     </div>
                     <!--/.card-header -->
@@ -524,7 +523,7 @@
 
 
             <div class="widget mt-3">
-                <h6 class="text-gray-700 fs-13 mb-3">غرف النوم</h6>
+                <h6 class="text-gray-700 fs-13 mb-3">@lang('public.project.bedrooms')</h6>
                 <div class="form-check d-inline p-0 mb-1">
                     <input class="form-check-input d-none" type="checkbox"
                            wire:model.live="selected_bedrooms" value="2"
@@ -559,7 +558,7 @@
             </div>
 
             <div class="widget mt-3">
-                <h6 class="text-gray-700 fs-13 mb-3">الحمامات</h6>
+                <h6 class="text-gray-700 fs-13 mb-3">@lang('public.project.bathrooms')</h6>
                 <div class="form-check d-inline p-0 mb-1">
                     <input class="form-check-input d-none" type="checkbox"
                            wire:model.live="selected_bathrooms" value="2"
@@ -592,7 +591,7 @@
             </div>
 
             <div class="widget mt-3">
-                <h6 class="text-gray-700 fs-13 mb-3">المطابخ</h6>
+                <h6 class="text-gray-700 fs-13 mb-3">@lang('public.project.kitchens')</h6>
                 <div class="form-check d-inline p-0 mb-1">
                     <input class="form-check-input d-none" type="checkbox"
                            wire:model.live="selected_kitchens" value="2"

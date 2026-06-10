@@ -1,5 +1,7 @@
 @push('styles')
 
+<!-- Leaflet base CSS (no longer loaded globally; MarkerCluster depends on it) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <!-- Leaflet MarkerCluster CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
@@ -352,20 +354,20 @@
         <!-- Help Card (No Results) -->
         <template x-if="showHelp">
             <div class="help-tooltip-card animate-help">
-                <h6>لم نجد نتائج؟</h6>
-                <p>لا تقلق، فريقنا متاح لمساعدتك في العثور على العقار المثالي لاحتياجاتك.</p>
+                <h6>@lang('public.map.no_results')</h6>
+                <p>@lang('public.map.no_results_desc')</p>
                 <div class="d-flex justify-content-between align-items-center">
-                    <a href="https://wa.me/{{ setting('site_phone') }}?text={{ urlencode('مرحباً، أود الحصول على مساعدة في العثور على عقار مناسب.') }}" target="_blank" class="help-card-btn">
-                        <i class="uil uil-whatsapp"></i> تواصل معنا
+                    <a href="https://wa.me/{{ setting('site_phone') }}?text={{ urlencode(__('public.map.whatsapp_help')) }}" target="_blank" class="help-card-btn">
+                        <i class="uil uil-whatsapp"></i> @lang('public.map.contact_us')
                     </a>
-                    <button @click="showHelp = false" class="btn btn-link btn-sm text-white opacity-50 p-0 text-decoration-none">إغلاق</button>
+                    <button @click="showHelp = false" class="btn btn-link btn-sm text-white opacity-50 p-0 text-decoration-none">@lang('public.map.close')</button>
                 </div>
             </div>
         </template>
         <div class="map-floating-bar noise-container">
             <!-- Project Count -->
             <div class="filter-section count-section">
-                <span class="fs-13 opacity-75" style="color: #122818;">{{ count($projects) }} مشاريع</span>
+                <span class="fs-13 opacity-75" style="color: #122818;">{{ count($projects) }} @lang('public.map.projects_count')</span>
             </div>
             
             <div class="filter-divider"></div>
@@ -374,13 +376,13 @@
             <div class="filter-section dropdown-section" :class="{ 'active': openFilter === 'type' }">
                 <button class="filter-btn" @click="toggleFilter('type')">
                     <i class="uil uil-apps me-1 opacity-60"></i>
-                    <span class="mx-1">{{ $selected_projectTypes ? ($projectTypes->firstWhere('id', $selected_projectTypes)->name ?? 'النوع') : 'النوع' }}</span>
+                    <span class="mx-1">{{ $selected_projectTypes ? ($projectTypes->firstWhere('id', $selected_projectTypes)->name ?? __('public.map.type')) : __('public.map.type') }}</span>
                     <i class="uil uil-angle-down ms-1 arrow-icon opacity-40"></i>
                 </button>
                 
                 <div class="filter-dropdown" x-show="openFilter === 'type'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-2" style="display: none;">
                     <div class="dropdown-item" :class="{ 'selected': @js($selected_projectTypes) === '' }" wire:click="$set('selected_projectTypes', '')" @click="openFilter = null">
-                        <span class="dot"></span> الكل
+                        <span class="dot"></span> @lang('public.map.all')
                     </div>
                     @foreach($projectTypes as $type)
                         <div class="dropdown-item" :class="{ 'selected': @js((string)$selected_projectTypes) === @js((string)$type->id) }" wire:click="$set('selected_projectTypes', '{{ $type->id }}')" @click="openFilter = null">
@@ -396,13 +398,13 @@
             <div class="filter-section dropdown-section" :class="{ 'active': openFilter === 'developer' }">
                 <button class="filter-btn" @click="toggleFilter('developer')">
                     <i class="uil uil-building me-1 opacity-60"></i>
-                    <span class="mx-1">{{ $selected_developer ? (Str::limit($developers->firstWhere('id', $selected_developer)->name ?? 'المطور', 10)) : 'المطور' }}</span>
+                    <span class="mx-1">{{ $selected_developer ? (Str::limit($developers->firstWhere('id', $selected_developer)->name ?? __('public.map.developer'), 10)) : __('public.map.developer') }}</span>
                     <i class="uil uil-angle-down ms-1 arrow-icon opacity-40"></i>
                 </button>
                 
                 <div class="filter-dropdown" x-show="openFilter === 'developer'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-2" style="display: none;">
                     <div class="dropdown-item" :class="{ 'selected': @js($selected_developer) === '' }" wire:click="$set('selected_developer', '')" @click="openFilter = null">
-                        <span class="dot"></span> الكل
+                        <span class="dot"></span> @lang('public.map.all')
                     </div>
                     @foreach($developers as $developer)
                         <div class="dropdown-item" :class="{ 'selected': @js((string)$selected_developer) === @js((string)$developer->id) }" wire:click="$set('selected_developer', '{{ $developer->id }}')" @click="openFilter = null">
@@ -418,13 +420,13 @@
             <div class="filter-section dropdown-section" :class="{ 'active': openFilter === 'city' }">
                 <button class="filter-btn" @click="toggleFilter('city')">
                     <i class="uil uil-map-marker me-1 opacity-60"></i>
-                    <span class="mx-1">{{ $selected_cities ? ($cities->firstWhere('id', $selected_cities)->name ?? 'المدينة') : 'المدينة' }}</span>
+                    <span class="mx-1">{{ $selected_cities ? ($cities->firstWhere('id', $selected_cities)->name ?? __('public.map.city')) : __('public.map.city') }}</span>
                     <i class="uil uil-angle-down ms-1 arrow-icon opacity-40"></i>
                 </button>
                 
                 <div class="filter-dropdown" x-show="openFilter === 'city'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-2" style="display: none;">
                     <div class="dropdown-item" :class="{ 'selected': @js($selected_cities) === null }" wire:click="$set('selected_cities', null)" @click="openFilter = null">
-                        <span class="dot"></span> الكل
+                        <span class="dot"></span> @lang('public.map.all')
                     </div>
                     @foreach($cities as $city)
                         <div class="dropdown-item" :class="{ 'selected': @js((string)$selected_cities) === @js((string)$city->id) }" wire:click="$set('selected_cities', '{{ $city->id }}')" @click="openFilter = null">
@@ -440,13 +442,13 @@
                 <div class="filter-section dropdown-section" :class="{ 'active': openFilter === 'state' }">
                     <button class="filter-btn" @click="toggleFilter('state')">
                         <i class="uil uil-location-pin-alt me-1 opacity-60"></i>
-                        <span class="mx-1">{{ $selected_states ? ($states->firstWhere('id', $selected_states)->name ?? 'الحي') : 'الحي' }}</span>
+                        <span class="mx-1">{{ $selected_states ? ($states->firstWhere('id', $selected_states)->name ?? __('public.map.district')) : __('public.map.district') }}</span>
                         <i class="uil uil-angle-down ms-1 arrow-icon opacity-40"></i>
                     </button>
                     
                     <div class="filter-dropdown" x-show="openFilter === 'state'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-2" style="display: none;">
                         <div class="dropdown-item" :class="{ 'selected': @js($selected_states) === null }" wire:click="$set('selected_states', null)" @click="openFilter = null">
-                            <span class="dot"></span> الكل
+                            <span class="dot"></span> @lang('public.map.all')
                         </div>
                         @foreach($states as $state)
                             <div class="dropdown-item" :class="{ 'selected': @js((string)$selected_states) === @js((string)$state->id) }" wire:click="$set('selected_states', '{{ $state->id }}')" @click="openFilter = null">
@@ -463,17 +465,17 @@
             <div class="filter-section dropdown-section" :class="{ 'active': openFilter === 'price' }">
                 <button class="filter-btn" @click="toggleFilter('price')">
                     <i class="uil uil-usd-circle me-1 opacity-60"></i>
-                    <span class="mx-1">{{ $price_range ? 'أقل من ' . number_format($price_range) : 'السعر' }}</span>
+                    <span class="mx-1">{{ $price_range ? __('public.map.less_than') . number_format($price_range) : __('public.map.price') }}</span>
                     <i class="uil uil-angle-down ms-1 arrow-icon opacity-40"></i>
                 </button>
                 
                 <div class="filter-dropdown" x-show="openFilter === 'price'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-2" style="display: none;">
                     <div class="dropdown-item" :class="{ 'selected': @js($price_range) == 0 }" wire:click="$set('price_range', 0)" @click="openFilter = null">
-                        <span class="dot"></span> الكل
+                        <span class="dot"></span> @lang('public.map.all')
                     </div>
                     @foreach([500000, 1000000, 2000000, 3000000, 5000000] as $price)
                         <div class="dropdown-item" :class="{ 'selected': @js($price_range) == @js($price) }" wire:click="$set('price_range', {{ $price }})" @click="openFilter = null">
-                            <span class="dot"></span> أقل من {{ number_format($price) }}
+                            <span class="dot"></span> @lang('public.map.less_than') {{ number_format($price) }}
                         </div>
                     @endforeach
                 </div>
@@ -500,7 +502,7 @@
         @if($selectedProject)
             <div class="d-lg-flex flex-row align-items-lg-center p-4">
                 <a class="btn btn-circle btn-soft-primary closeSideSheet side-sheet-close" wire:click="closeSideSheet"><i class="uil uil-multiply"></i></a>
-                <h6 class="mb-0">تفاصيل المشروع</h6>
+                <h6 class="mb-0">@lang('public.map.project_details')</h6>
             </div>
 
             <section class="wrapper bg-light">
@@ -512,8 +514,8 @@
                             </figure>
                             <div class="post-header mb-5 mt-5">
                                 <h4 class="post-title">
-                                    <a href="{{ route('frontend.projects.single', $selectedProject->slug) }}" class="link-dark ms-2">{{ $selectedProject->name }}</a>
-                                    <span class="text-muted fs-15">رخصة الاعلان : <span>{{ $selectedProject->AdLicense ?? '7200206576' }}</span></span>
+                                    <a href="{{ route('frontend.projects.single', ['slug' => $selectedProject->slug]) }}" class="link-dark ms-2">{{ $selectedProject->name }}</a>
+                                    <span class="text-muted fs-15">@lang('public.map.ad_license') <span>{{ $selectedProject->AdLicense ?? '7200206576' }}</span></span>
                                 </h4>
                                 <p class="fe-20 mb-1 d-flex">
                                     <i class="uil uil-map-marker-alt text-muted h3 mb-0 ms-1"></i>
@@ -547,7 +549,7 @@
                             </div>
 
                             <div class="mb-4">
-                                <a href="{{ route('frontend.projects.single', $selectedProject->slug) }}" class="btn btn-primary btn-sm rounded w-100">عرض تفاصيل المشروع</a>
+                                <a href="{{ route('frontend.projects.single', ['slug' => $selectedProject->slug]) }}" class="btn btn-primary btn-sm rounded w-100">@lang('public.map.view_details')</a>
                             </div>
                         </div>
                     </div>
@@ -585,7 +587,7 @@
                 className: 'custom-marker',
                 html: `
                     <div class=\"project-tooltip pt-2\" style=\"position: relative;\">
-                        <figcaption class=\"text-right px-2\" dir=\"rtl\">
+                        <figcaption class=\"text-right px-2\" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}\">
                             <div class=\"d-flex align-content-center justify-content-between\">
                                 <div>
                                     <h6 class=\"post-title project-title fs-14\" style=\"cursor: pointer;\" data-project-id=\"${project.id}\">

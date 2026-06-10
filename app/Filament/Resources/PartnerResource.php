@@ -30,6 +30,10 @@ class PartnerResource extends Resource
                     ->required()
                     ->maxLength(255)
                     ->columnSpan(2),
+                Forms\Components\TextInput::make('name_en')
+                    ->label('الاسم (English)')
+                    ->maxLength(255)
+                    ->columnSpan(2),
                 // logo
                 Forms\Components\FileUpload::make('logo')
                     ->label('الشعار')

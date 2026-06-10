@@ -46,6 +46,10 @@ class DeveloperResource extends Resource
                             ->required()
                             ->maxLength(255)
                             ->columnSpan(2), // Span across 2 columns
+                        TextInput::make('name_en')
+                            ->label('الاسم (English)')
+                            ->maxLength(255)
+                            ->columnSpan(2),
                         FileUpload::make('logo')
                             ->label('الشعار')
                             ->image()

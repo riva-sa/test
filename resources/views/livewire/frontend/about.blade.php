@@ -1,3 +1,4 @@
+{{-- TODO: Bilingual ContentBlock -- content remains Arabic in this phase, deferred to future phase --}}
 <div>
     <section class="wrapper bg-gray" >
         <div class="container pt-10 pt-md-14 pb-13 text-center">
@@ -66,7 +67,8 @@
         </div>
     </section>
       <!-- /section -->
-      <section class="wrapper bg-light mb-10" dir="rtl">
+<!-- TODO: Bilingual ContentBlock -- deferred to future phase -->
+      <section class="wrapper bg-light mb-10">
         <div class="container py-14 py-md-16">
           <div class="row gx-lg-8 gx-xl-12 gy-10 mb-14 mb-md-17 align-items-center">
             <div class="col-lg-6 position-relative order-lg-2">

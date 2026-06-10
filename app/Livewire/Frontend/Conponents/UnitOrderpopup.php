@@ -68,27 +68,31 @@ class UnitOrderpopup extends Component
     ];
 
     // Custom Error Messages
-    protected $messages = [
-        'unit_id.required' => 'الرجاء اختيار الوحدة',
-        'unit_id.exists' => 'الوحدة المختارة غير موجودة',
-        'firstName.required' => 'الرجاء إدخال الاسم',
-        'firstName.min' => 'يجب أن يكون الاسم 3 أحرف على الأقل',
-        'firstName.max' => 'يجب أن لا يتجاوز الاسم 50 حرفاً',
+    protected $messages = [];
 
-        'lastName.required' => 'الرجاء إدخال الاسم',
-        'lastName.min' => 'يجب أن يكون الاسم 3 أحرف على الأقل',
-        'lastName.max' => 'يجب أن لا يتجاوز الاسم 50 حرفاً',
-        'email.required' => 'الرجاء إدخال البريد الإلكتروني',
-        'email.email' => 'الرجاء إدخال بريد إلكتروني صحيح',
-        'phone.required' => 'الرجاء إدخال رقم الهاتف',
-        'phone.regex' => 'رقم الجوال يجب أن يبدأ بالرقم 5 ويكون 9 أرقام',
-        'phone.size' => 'رقم الجوال يجب أن يكون 9 أرقام بالضبط',
-        'phone.min' => 'يجب أن يكون رقم الهاتف 10 أرقام على الأقل',
-        'purchaseType.required' => 'الرجاء اختيار طريقة الشراء',
-        'purchaseType.in' => 'طريقة الشراء غير صحيحة',
-        'purchasePurpose.required' => 'الرجاء اختيار الغرض من الشراء',
-        'purchasePurpose.in' => 'الغرض من الشراء غير صحيح',
-    ];
+    public function getOrderMessages(): array
+    {
+        return [
+            'unit_id.required' => __('public.unit.validation.unit_required'),
+            'unit_id.exists' => __('public.unit.validation.unit_exists'),
+            'firstName.required' => __('public.unit.validation.first_name_required'),
+            'firstName.min' => __('public.unit.validation.first_name_min'),
+            'firstName.max' => __('public.unit.validation.first_name_max'),
+            'lastName.required' => __('public.unit.validation.last_name_required'),
+            'lastName.min' => __('public.unit.validation.last_name_min'),
+            'lastName.max' => __('public.unit.validation.last_name_max'),
+            'email.required' => __('public.unit.validation.email_required'),
+            'email.email' => __('public.unit.validation.email_email'),
+            'phone.required' => __('public.unit.validation.phone_required'),
+            'phone.regex' => __('public.unit.validation.phone_regex'),
+            'phone.size' => __('public.unit.validation.phone_size'),
+            'phone.min' => __('public.unit.validation.phone_min'),
+            'purchaseType.required' => __('public.unit.validation.purchase_type_required'),
+            'purchaseType.in' => __('public.unit.validation.purchase_type_in'),
+            'purchasePurpose.required' => __('public.unit.validation.purchase_purpose_required'),
+            'purchasePurpose.in' => __('public.unit.validation.purchase_purpose_in'),
+        ];
+    }
 
     protected $trackingService;
 
@@ -130,7 +134,7 @@ class UnitOrderpopup extends Component
 
     public function submitOrderUnit()
     {
-        $this->validate();
+        $this->validate($this->rules, $this->getOrderMessages());
 
         try {
             $unit = Unit::where('id', $this->unit_id)->first();

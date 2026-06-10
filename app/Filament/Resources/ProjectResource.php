@@ -83,6 +83,11 @@ class ProjectResource extends Resource
                                                     $set('slug', Str::slug($state));
                                                 }),
 
+                                            Forms\Components\TextInput::make('name_en')
+                                                ->label('الاسم (English)')
+                                                ->maxLength(255)
+                                                ->columnSpan(1),
+
                                             Forms\Components\TextInput::make('slug')
                                                 ->label('الرابط')
                                                 ->required()
@@ -98,6 +103,11 @@ class ProjectResource extends Resource
                                             TextInput::make('address')
                                                 ->label('العنوان')
                                                 ->required()
+                                                ->maxLength(255)
+                                                ->columnSpan(1),
+
+                                            TextInput::make('address_en')
+                                                ->label('العنوان (English)')
                                                 ->maxLength(255)
                                                 ->columnSpan(1),
 
@@ -138,6 +148,10 @@ class ProjectResource extends Resource
                                                 ->label('الوصف')
                                                 ->required()
                                                 ->columnSpan(2),
+
+                                            RichEditor::make('description_en')
+                                                ->label('الوصف (English)')
+                                                ->columnSpan(2),
                                         ]),
                                 ]),
 
@@ -161,6 +175,10 @@ class ProjectResource extends Resource
                                             TextInput::make('bulding_style')
                                                 ->label('نمط البناء')
                                                 ->required()
+                                                ->maxLength(255)
+                                                ->columnSpan(1),
+                                            TextInput::make('bulding_style_en')
+                                                ->label('نمط البناء (English)')
                                                 ->maxLength(255)
                                                 ->columnSpan(1),
                                         ]),
@@ -395,7 +413,7 @@ class ProjectResource extends Resource
                                             'min-height: 50vh',
                                             'border-radius: 7px',
                                         ])
-                                        ->liveLocation(true, true, 1000)
+                                        ->liveLocation(false)
                                         ->showMarker()
                                         ->markerColor('#000000')
                                         ->showFullscreenControl()

@@ -9,7 +9,7 @@ class MediaHelper
     public static function getUrl($path)
     {
         if (! is_string($path) || empty($path)) {
-            return 'https://placehold.co/800x600?text=No+Image';
+            return 'https://placehold.co/1000x600?text=No+Image';
         }
 
         /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */

@@ -1,12 +1,12 @@
-<footer dir="rtl" class="">
-    <div class="container-fluid p-7 pt-md-0">
+<footer class="">
+    <div class="container-fluid p-5 pt-md-0">
         <div class="d-md-flex align-items-center justify-content-between">
             <img class="mb-4" src="{{asset('frontend/img/logoyy.png')}}" width="50px" srcset="{{asset('frontend/img/logoyy.png')}} 2x" alt="Riva - ريفا">
-            <p class="mb-2 mb-lg-0">© 2025 جميع الحقوق محفوظة لشركة ريفا العقارية.</p>
+            <p class="mb-2 mb-lg-0">@lang('public.footer.copyright')</p>
 
             <div class="">
-                <a href="{{ route('frontend.privacy') }}" class="ms-3">سياسة الخصوصية</a>
-                <a href="{{ route('frontend.terms') }}">الشروط والاحكام</a>
+                <a href="{{ route('frontend.privacy') }}" class="ms-3">@lang('public.footer.privacy')</a>
+                <a href="{{ route('frontend.terms') }}">@lang('public.footer.terms')</a>
             </div>
             <nav class="nav social social-muted mb-0 text-md-end">
                 <a href="https://twitter.com/riva_aqar" target="_blank" >

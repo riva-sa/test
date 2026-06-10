@@ -2,25 +2,36 @@
 
 namespace App\Models;
 
+use App\Traits\HasTranslations;
 use App\Traits\Trackable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Unit extends Model
 {
-    use HasFactory, Trackable;
+    use HasFactory, HasTranslations, Trackable;
+
+    /**
+     * Visitor-facing columns with English (`*_en`) translations.
+     *
+     * @var array<int, string>
+     */
+    protected $translatable = ['title', 'unit_type', 'description'];
 
     protected $fillable = [
         'title',
+        'title_en',
         'slug',
         'living_rooms',
         'sale_type',
         'user_id',
         'project_id',
         'unit_type',
+        'unit_type_en',
         'building_number',
         'unit_number',
         'description',
+        'description_en',
         'floor',
         'unit_area',
         'unit_price',

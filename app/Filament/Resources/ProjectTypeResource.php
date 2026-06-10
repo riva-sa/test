@@ -47,6 +47,10 @@ class ProjectTypeResource extends Resource
                             ->afterStateUpdated(function (string $state, Forms\Set $set) {
                                 $set('slug', Str::slug($state));
                             }),
+                        Forms\Components\TextInput::make('name_en')
+                            ->label('الاسم (English)')
+                            ->maxLength(255)
+                            ->columnSpan(2),
                         Forms\Components\Toggle::make('status')
                             ->label('الحالة')
                             ->onColor('success')

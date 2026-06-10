@@ -9,17 +9,17 @@ use App\Models\ProjectType;
 use App\Models\State;
 use Illuminate\Support\Facades\Cache;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
-use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Title;
-use Livewire\Attributes\Url;
 use Livewire\Component;
 
-// #[Lazy]
-#[Title('المشاريع')]
 class ProjectsMap extends Component
 {
     use LivewireAlert;
+
+    public function title(): string
+    {
+        return __('public.projects_map.title');
+    }
 
     public bool $showSideSheet = false;
 

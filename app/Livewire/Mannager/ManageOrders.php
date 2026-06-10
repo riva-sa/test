@@ -87,9 +87,23 @@ class ManageOrders extends Component
         }
     }
 
-    public function updated()
+    public function updated($property)
     {
-        $this->resetPage();
+        // Only reset pagination when a filter/search field changes.
+        // Selecting orders (checkboxes) or changing other UI state must
+        // NOT send the user back to page 1.
+        if (in_array($property, [
+            'search',
+            'statusFilter',
+            'projectFilter',
+            'salesManagerFilter',
+            'delayedFilter',
+            'fromDate',
+            'toDate',
+            'perPage',
+        ], true)) {
+            $this->resetPage();
+        }
     }
 
     public function bulkAssign()

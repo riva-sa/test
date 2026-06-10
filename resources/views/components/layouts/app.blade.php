@@ -1,33 +1,43 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ \App\Helpers\LocalizationHelper::getHtmlLang() }}" dir="{{ \App\Helpers\LocalizationHelper::getDirection() }}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        {{-- <title>{{ $title ?? 'ريفا العقارية' }}</title> --}}
+        <title>@yield('title', $title ?? __('public.seo.default_title'))</title>
 
-        <title>@yield('title', $title ?? 'ريفا العقارية')</title>
-        <link rel="stylesheet" href="https://sets.hugeicons.com/YOUR-SET-ID.css" crossorigin="anonymous">
+        <!-- Speed up handshakes to the third-party origins used below -->
+        <link rel="preconnect" href="https://unpkg.com" crossorigin>
+        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+        <link rel="dns-prefetch" href="https://unpkg.com">
+        <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+
         <!-- SEO Meta Tags -->
-        <meta name="description" content="@yield('description', 'رحلة سكن')">
-        <meta name="keywords" content="@yield('keywords', 'ريفا العقارية')">
+        <meta name="description" content="@yield('description', __('public.seo.default_description'))">
+        <meta name="keywords" content="@yield('keywords', __('public.seo.default_keywords'))">
         <!-- Open Graph Tags -->
-        <meta property="og:title" content="@yield('og:title', 'ريفا العقارية')" />
-        <meta property="og:description" content="@yield('og:description', 'رحلة سكن')" />
+        <meta property="og:title" content="@yield('og:title', __('public.seo.default_title'))" />
+        <meta property="og:description" content="@yield('og:description', __('public.seo.default_description'))" />
         <meta property="og:image" content="@yield('og:image', asset('frontend/img/riva2.jpg'))" />
+
+        <!-- Hreflang & Canonical -->
+        {!! \App\Helpers\LocalizationHelper::getAlternateLinks() !!}
+        <link rel="canonical" href="{{ \App\Helpers\LocalizationHelper::getCanonicalUrl() }}" />
 
         <!-- Twitter Card Tags -->
         <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:title" content="@yield('twitter:title', 'ريفا العقارية')">
-        <meta name="twitter:description" content="@yield('twitter:description', 'رحلة سكن')">
+        <meta name="twitter:title" content="@yield('twitter:title', __('public.seo.default_title'))">
+        <meta name="twitter:description" content="@yield('twitter:description', __('public.seo.default_description'))">
         <meta name="twitter:image" content="@yield('twitter:image', asset('frontend/img/riva2.jpg'))">
 
         <!-- @vite('resources/css/app.css')
         @vite(['resources/js/app.js']) -->
 
         <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        {{-- Leaflet CSS is render-blocking and only the map / project-single
+             pages use it, so each of those pushes it via @stack('styles')
+             instead of loading it on every page. --}}
 
         <link rel="shortcut icon" href="{{ asset('frontend/img/logoyy.png') }}">
         <link rel="stylesheet" href="{{ asset('frontend/css/plugins.css') }}">
@@ -35,7 +45,6 @@
         <link rel="stylesheet" href="{{ asset('frontend/css/custom.css') }}">
         <link rel="stylesheet" href="{{ asset('frontend/css/colors/navy.css') }}">
         <link rel="preload" href="{{ asset('frontend/css/fonts/urbanist.css') }}" as="style" onload="this.rel='stylesheet'">
-        <script src="https://cdn.jsdelivr.net/npm/progressbar.js"></script>
 
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -101,6 +110,9 @@
             </svg>
         </div>
         <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
+        {{-- Moved out of <head> so it no longer blocks rendering. Must stay
+             before theme.js, which relies on the global ProgressBar. --}}
+        <script src="https://cdn.jsdelivr.net/npm/progressbar.js"></script>
         <script src="{{ asset('frontend/js/plugins.js') }}"></script>
 
         <script src="{{ asset('frontend/js/theme.js') }}"></script>

@@ -24,7 +24,7 @@
         <!-- /.container -->
         </section>
         <!-- /section -->
-        <section class="wrapper bg-light" dir="rtl">
+        <section class="wrapper bg-light">
         <div class="container pb-14 pb-md-16">
             <div class="row">
             <div class="col-lg-10 mx-auto">
@@ -51,11 +51,11 @@
                             </div>
                             <div class="mb-0 mb-md-2">
                                 <div class="dropdown share-dropdown btn-group">
-                                    <button class="btn btn-sm btn-red rounded-pill btn-icon btn-icon-start dropdown-toggle mb-0 me-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="uil uil-share-alt"></i> مشاركة </button>
+                                    <button class="btn btn-sm btn-red rounded-pill btn-icon btn-icon-start dropdown-toggle mb-0 me-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="uil uil-share-alt"></i> @lang('public.blog.share') </button>
                                     <div class="dropdown-menu">
-                                        <a class="dropdown-item" href="#"><i class="uil uil-twitter"></i>Twitter</a>
-                                        <a class="dropdown-item" href="#"><i class="uil uil-facebook-f"></i>Facebook</a>
-                                        <a class="dropdown-item" href="#"><i class="uil uil-linkedin"></i>Linkedin</a>
+                                        <a class="dropdown-item" href="#"><i class="uil uil-twitter"></i>@lang('public.blog.twitter')</a>
+                                        <a class="dropdown-item" href="#"><i class="uil uil-facebook-f"></i>@lang('public.blog.facebook')</a>
+                                        <a class="dropdown-item" href="#"><i class="uil uil-linkedin"></i>@lang('public.blog.linkedin')</a>
                                     </div>
                                     <!--/.dropdown-menu -->
                                 </div>

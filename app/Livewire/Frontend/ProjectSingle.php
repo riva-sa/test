@@ -54,7 +54,7 @@ class ProjectSingle extends Component
         $query = Unit::query()->toBase()
             ->where('project_id', $this->project->id)
             ->where('status', 1)
-            ->select(['id', 'title', 'unit_type', 'unit_price', 'unit_area', 'beadrooms', 'bathrooms', 'floor_plan', 'case', 'show_price']);
+            ->select(['id', 'title','image', 'unit_type', 'unit_price', 'unit_area', 'beadrooms', 'bathrooms', 'floor_plan', 'case', 'show_price']);
 
         if ($this->case !== 'all') {
             $query->where('case', (int) $this->case);

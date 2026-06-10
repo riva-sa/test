@@ -35,7 +35,11 @@ class ContentBlockResource extends Resource
                 Forms\Components\Textarea::make('description')
                     ->maxLength(255),
                 Forms\Components\RichEditor::make('content')
+                    ->label('المحتوى')
                     ->required()
+                    ->columnSpanFull(),
+                Forms\Components\RichEditor::make('content_en')
+                    ->label('المحتوى (English)')
                     ->columnSpanFull(),
             ]);
     }

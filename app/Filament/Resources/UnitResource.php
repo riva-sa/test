@@ -64,6 +64,11 @@ class UnitResource extends Resource
                                 $set('slug', $slug);
                             }),
 
+                        Forms\Components\TextInput::make('title_en')
+                            ->label('العنوان (English)')
+                            ->maxLength(255)
+                            ->columnSpan(1),
+
                         Forms\Components\TextInput::make('slug')
                             ->label('الرابط')
                             ->required()
@@ -90,6 +95,10 @@ class UnitResource extends Resource
                             ->required()
                             ->maxLength(255)
                             ->columnSpan(1),
+                        Forms\Components\TextInput::make('unit_type_en')
+                            ->label('نوع الوحدة (English)')
+                            ->maxLength(255)
+                            ->columnSpan(1),
                         Forms\Components\TextInput::make('building_number')
                             ->label('رقم المبنى')
                             ->required()
@@ -106,6 +115,10 @@ class UnitResource extends Resource
                             ->columnSpan(1),
                         Forms\Components\RichEditor::make('description')
                             ->label('الوصف')
+                            ->nullable()
+                            ->columnSpanFull(),
+                        Forms\Components\RichEditor::make('description_en')
+                            ->label('الوصف (English)')
                             ->nullable()
                             ->columnSpanFull(),
                     ])

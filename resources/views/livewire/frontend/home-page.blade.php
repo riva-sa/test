@@ -10,14 +10,14 @@
                 <div class="col-lg-4">
                     <div class="px-md-15 px-lg-3">
                         <figure class="mb-6"><img class="noise-container" src="{{ asset('frontend/img/PNG/tag.png') }}" style="width: 60px !important" srcset="{{ asset('frontend/img/PNG/tag.png') }} 2x" alt="Riva - ريفا" /></figure>
-                        <h3>الاحترافية</h3>
+                        <h3>@lang('public.home.professionalism')</h3>
                         {{-- <p class="mb-2">نسعى دائما الى خلق بيئة احترافية لنجعل مخرجتنا لها صدى طويل في القطاع العقاري.</p> --}}
                     </div>
                 </div>
                     <div class="col-lg-4">
                     <div class="px-md-15 px-lg-3">
                         <figure class="mb-6"><img class="noise-container" src="{{ asset('frontend/img/PNG/lamba.png') }}" style="width: 60px !important" srcset="{{ asset('frontend/img/PNG/lamba.png') }} 2x" alt="Riva - ريفا" /></figure>
-                        <h3>الإبداع</h3>
+                        <h3>@lang('public.home.creativity')</h3>
                         {{-- <p class="mb-2">نسعى دائما الى خلق بيئة احترافية لنجعل مخرجتنا لها صدى طويل في القطاع العقاري.</p> --}}
                     </div>
                 </div>
@@ -25,7 +25,7 @@
                 <div class="col-lg-4">
                     <div class="px-md-15 px-lg-3">
                         <figure class="mb-6"><img class="noise-container" src="{{ asset('frontend/img/PNG/Button(8).png') }}" style="width: 60px !important" srcset="{{ asset('frontend/img/PNG/Button(8).png') }} 2x" alt="Riva - ريفا" /></figure>
-                        <h3>الالتزام</h3>
+                        <h3>@lang('public.home.commitment')</h3>
                         {{-- <p class="mb-2">نسعى دائما الى خلق بيئة احترافية لنجعل مخرجتنا لها صدى طويل في القطاع العقاري.</p> --}}
                     </div>
                 </div>
@@ -42,7 +42,7 @@
                     <div class="card image-wrapper bg-full bg-image bg-overlay bg-overlay-400 noise-container" data-image-src="{{ asset('frontend/img/cta.png') }}">
                         <div class="card-body p-6 p-md-11 d-lg-flex flex-row align-items-lg-center justify-content-md-between text-center text-lg-end">
                             <div>
-                                <h3 class="display-6 mb-6 mb-lg-0 ps-lg-10 ps-xl-5 ps-xxl-18 text-white">تواصل معنا الان</h3>
+                                <h3 class="display-6 mb-6 mb-lg-0 ps-lg-10 ps-xl-5 ps-xxl-18 text-white">@lang('public.nav.contact')</h3>
                                 <p class="mb-0 text-white"> إذا تطابقت اهتماماتك مع أحد مشاريعنا سنقوم بالتواصل معك فورًا بإذن الله.</p>
                             </div>
                             <a href="{{ route('frontend.contactus') }}" class="btn btn-white rounded-pill mb-0 text-nowrap px-7">شاركنا آمالك لبيت أحلامك <i class="uil uil-arrow-up-left me-2"></i></a>

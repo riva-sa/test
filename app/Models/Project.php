@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasTranslations;
 use App\Traits\Trackable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,15 +11,25 @@ use Illuminate\Support\Facades\URL;
 
 class Project extends Model
 {
-    use HasFactory, Trackable;
+    use HasFactory, HasTranslations, Trackable;
+
+    /**
+     * Visitor-facing columns with English (`*_en`) translations.
+     *
+     * @var array<int, string>
+     */
+    protected $translatable = ['name', 'description', 'address', 'bulding_style'];
 
     protected $fillable = [
         'name',
+        'name_en',
         'slug',
         'description',
+        'description_en',
         'developer_id',
         'project_type_id',
         'address',
+        'address_en',
         'city_id',
         'state_id',
         'country',
@@ -28,6 +39,7 @@ class Project extends Model
         'show_price',
         'price',
         'bulding_style',
+        'bulding_style_en',
         'is_featured',
         'AdLicense',
         'location',
@@ -399,7 +411,7 @@ class Project extends Model
             // return number_format($minPrice);
         }
 
-        return number_format($minPrice).' الي '.number_format($maxPrice);
+        return number_format($minPrice). ' ' . __('public.projects.to'). ' ' .number_format($maxPrice);
     }
 
     public function getSpaceRangeAttribute()
@@ -408,10 +420,10 @@ class Project extends Model
         $maxSpace = $this->units->max('unit_area');
 
         if ($minSpace === $maxSpace) {
-            return $minSpace.' م²';
+            return $minSpace.' ' . __('public.unit.area_suffix');
         }
 
-        return $minSpace.' - '.$maxSpace.' م²';
+        return $minSpace.' - '.$maxSpace.' ' . __('public.unit.area_suffix');
     }
 
     public function getBedroomRangeAttribute()

@@ -62,6 +62,9 @@ class NavBar extends Component
 
     public function render()
     {
-        return view('livewire.frontend.partials.nav-bar');
+        return view('livewire.frontend.partials.nav-bar', [
+            'currentLocale' => app()->getLocale(),
+            'isRtl' => app()->getLocale() === 'ar',
+        ]);
     }
 }

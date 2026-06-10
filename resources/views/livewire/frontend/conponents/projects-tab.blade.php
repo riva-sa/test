@@ -1,21 +1,21 @@
-<section class="section-frame mx-xxl-5" dir="rtl">
+<section class="section-frame mx-xxl-5">
     <div class="container-fluid py-14 py-md-10">
         <div class="d-md-flex justify-content-between align-items-center mb-10">
             <div class="d-flex align-items-center">
-                <h3 class="display-4 text-main">اسكتشف مشاريعُنا</h3>
+                <h3 class="display-4 text-main">@lang('public.projects_tab.explore')</h3>
                 <div wire:loading wire:target="setActiveTab">
                     <div class="spinner-border spinner-border-sm me-4 mb-2" role="status">
-                        <span class="visually-hidden">Loading...</span>
+                        <span class="visually-hidden">@lang('public.projects.loading')</span>
                     </div>
                 </div>
             </div>
 
             <!-- /column -->
-            <ul class="nav nav-tabs nav-pills tab-box" dir="rtl">
+            <ul class="nav nav-tabs nav-pills tab-box">
 
                 <li class="nav-item" wire:click="setActiveTab('all')">
                     <a wire:click="setActiveTab('all')" class="nav-link px-4 {{ $activeTab ==='all' ? 'active noise-container' : '' }}">
-                        الكل
+                        @lang('public.projects_tab.all')
                     </a>
                 </li>
 
@@ -32,17 +32,17 @@
         <!-- /.row -->
         <div class="row" wire:loading.class="opacity-50">
             @foreach($projects as $project)
-                <div class="col-md-4 mb-3" dir="rtl">
+                <div class="col-md-4 mb-3">
                     <figure class="overlay caption caption-overlay rounded-xl mb-0">
                         <div class="d-flex mainCardHeader">
 
                             <h3 class="post-title h3">
-                                <a href="{{ route('frontend.projects.single', $project->slug) }}" class="d-flex align-content-center">{{ $project->name }} <span class="badge noise-container mb-0 text-dark rounded-pill fs-15 me-2">متاح</span></a>
+                                <a href="{{ route('frontend.projects.single', ['slug' => $project->slug]) }}" class="d-flex align-content-center">{{ $project->name }} <span class="badge noise-container mb-0 text-dark rounded-pill fs-15 me-2">@lang('public.projects_tab.available')</span></a>
                             </h3>
 
-                            <a href="{{ route('frontend.projects.single', $project->slug) }}" class="noise-container arrowToSingle"><i class="uil uil-arrow-up-left"></i></a>
+                            <a href="{{ route('frontend.projects.single', ['slug' => $project->slug]) }}" class="noise-container arrowToSingle"><i class="uil uil-arrow-up-left"></i></a>
                         </div>
-                        <a href="{{ route('frontend.projects.single', $project->slug) }}"
+                        <a href="{{ route('frontend.projects.single', ['slug' => $project->slug]) }}"
                             class="project-image-link d-block"
                             style="height: 500px;">
                             <img src="{{ App\Helpers\MediaHelper::getUrl(optional($project->getMainImages())->media_url ?? optional($project->projectMedia->first())->media_url) }}"
@@ -53,14 +53,13 @@
                                 decoding="async"
                                 fetchpriority="low">
                         </a>
-                        {{-- <a href="{{ route('frontend.projects.single', $project->slug) }}"
+                        {{-- <a href="{{ route('frontend.projects.single', ['slug' => $project->slug]) }}"
                             style="height: 500px; background:url('@if($project->getMainImages() !== null ) {{ Storage::disk('public')->url($project->getMainImages()->media_url) }} @else {{ Storage::disk('public')->url($project->projectMedia()->first()->media_url) }} @endif');background-size: cover;background-position: center;"></a> --}}
-                            <figcaption class="noise-container text-right tap" dir="rtl">
-
-                            <div class="d-flex align-content-start justify-content-between w-100">
-                                <h2 class="post-title h4 mt-1 mb-3">
-                                    <a href="{{ route('frontend.projects.single', $project->slug) }}">نظرة عامة</a>
-                                </h2>
+                            <figcaption class="noise-container text-right tap">
+                                <div class="d-flex align-content-start justify-content-between w-100">
+                                    <h2 class="post-title h4 mt-1 mb-3">
+                                        <a href="{{ route('frontend.projects.single', ['slug' => $project->slug]) }}">@lang('public.projects_tab.overview')</a>
+                                    </h2>
                                 <div>
                                     <img src="{{ App\Helpers\MediaHelper::getUrl(optional($project->developer)->logo) }}" style="width: 50px !important;max-height:50px" alt="Logo" loading="lazy">
                                 </div>
@@ -96,8 +95,8 @@
     <!-- /.container -->
     <div class="text-center mb-10">
         <a href="{{ route('frontend.projects') }}" class="btn btn-expand btn-soft-primary rounded-pill">
-            <span>عرض كل المشاريع</span>
-            <i class="uil uil-arrow-left"></i>
+            <span>@lang('public.projects_tab.view_all')</span>
+            <i class="uil uil-arrow-{{ app()->getLocale() === 'ar' ? 'left' : 'right' }}"></i>
         </a>
     </div>
 </section>
