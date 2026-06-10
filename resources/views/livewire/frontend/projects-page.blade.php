@@ -127,7 +127,7 @@
 
     <div class="row">
         <!-- Main Content -->
-        <div class="col-lg-10">
+        <div class="col-lg-10 me-auto">
             <div class="container-fluid py-7 py-md-10 pe-md-8">
                 <!-- Header -->
                 <div class="row align-items-center mb-5 position-relative zindex-1">
