@@ -251,7 +251,7 @@
                             };
                         @endphp
 
-                        <div class="lang-switcher ms-3 align-content-center" x-data="{ open: false }" @click.away="open = false" @keydown.escape="open = false">
+                        <div class="lang-switcher align-content-center" x-data="{ open: false }" @click.away="open = false" @keydown.escape="open = false">
                             <button
                                 type="button"
                                 class="lang-switcher__toggle"
