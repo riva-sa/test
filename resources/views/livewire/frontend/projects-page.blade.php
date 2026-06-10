@@ -280,6 +280,8 @@
                                             <a wire:click="showUnitDetails({{ $unit->id }})" data-unit-id="{{ $unit->id }}">
                                                 @if ($unit->image)
                                                     <img src="{{ App\Helpers\MediaHelper::getUrl($unit->image) }}" style="max-height: 200px" alt="{{ $unit->title }}" loading="lazy" decoding="async" fetchpriority="low" />
+                                                @elseif($unit->floor_plan)
+                                                    <img src="{{ App\Helpers\MediaHelper::getUrl($unit->floor_plan) }}" style="max-height: 200px" alt="{{ $unit->title }}" loading="lazy" decoding="async" fetchpriority="low" />
                                                 @else
                                                     <img src="{{ App\Helpers\MediaHelper::getUrl(optional($unit->project->getMainImages())->media_url ?? optional($unit->project->projectMedia->first())->media_url) }}" style="max-height: 200px" alt="{{ $unit->title }}" loading="lazy" decoding="async" fetchpriority="low" />
                                                 @endif

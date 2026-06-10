@@ -348,7 +348,11 @@
                                                         <img src="{{ App\Helpers\MediaHelper::getUrl($unit->image ) }}"
                                                         style="max-height: 207px;"
                                                         alt="{{ $unit->title }}" loading="lazy" />
-                                                    @else
+                                                    @elseif ($unit->floor_plan)
+                                                        <img src="{{ App\Helpers\MediaHelper::getUrl($unit->floor_plan ) }}"
+                                                        style="max-height: 207px;"
+                                                        alt="{{ $unit->title }}" loading="lazy" />
+                                                    @else 
                                                         <img src="https://placehold.co/700x400"
                                                         style="max-height: 207px;"
                                                         alt="{{ $unit->title }}" loading="lazy" />
