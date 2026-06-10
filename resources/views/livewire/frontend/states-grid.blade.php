@@ -1,8 +1,8 @@
-<section class="wrapper bg-light twons" dir="rtl">
+<section class="wrapper bg-light twons">
     <div class="container py-10 py-md-10 mt-md-15">
         <div class="row">
             <div class="col-md-11 col-lg-10 col-xl-9 col-xxl-8 mx-auto text-center position-relative">
-                <h3 class="display-3 mb-11 px-xl-10 px-xxl-13 text-main">وإلى سكان المملكة</h3>
+                <h3 class="display-3 mb-11 px-xl-10 px-xxl-13 text-main">@lang('public.states_grid.heading')</h3>
             </div>
         </div>
 
@@ -13,7 +13,7 @@
                         <div class="icon btn btn-circle btn-sm pe-none mx-auto ms-2 mb-xl-0"> <img src="{{ $state['photo'] }}" width="100%" alt=""> </div>
                         {{ $state['name'] }}
                         {{-- @if ($state['projects_count'] > 0) --}}
-                            <span class="badge text-dark rounded-pill mb-0 me-1">{{ $state['projects_count'] }} مشروع</span>
+                            <span class="badge text-dark rounded-pill mb-0 me-1">{{ $state['projects_count'] }} @lang('public.states_grid.project')</span>
                             <i class="uil uil-arrow-up-left me-3"></i>
                         {{-- @endif --}}
                     </a>
@@ -32,7 +32,7 @@
                                             <h2 class="mb-2">ريڤا العقارية</h2>
                                             <h2 class="mb-4 fw-bold">تـــــــفــهـمــــــــك</h2>
                                             <a class="btn btn-primary btn-icon btn-icon-start rounded">
-                                                <i class="uil uil-file ms-1"></i> حمل الملف التعريفي للشركة
+                                                <i class="uil uil-file ms-1"></i> @lang('public.states_grid.download_brochure')
                                             </a>
                                         </div>
                                     </div>

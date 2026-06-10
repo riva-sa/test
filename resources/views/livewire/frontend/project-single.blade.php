@@ -30,19 +30,19 @@
             <div class="row d-flex align-items-start gy-10">
 
                 <div class="card col-lg-3 position-lg-sticky p-4 mobile-hidden" style="top: 5rem;" wire:ignore>
-                    <figcaption class="text-right" dir="rtl">
+                    <figcaption class="text-right">
                         <div class="d-flex align-content-start justify-content-between w-100">
                             <div>
-                                <p class="small mb-1">المطور</p>
+                                <p class="small mb-1">@lang('public.project.developer')</p>
                             </div>
                             <div>
                                 <img src="{{ App\Helpers\MediaHelper::getUrl($project->developer->logo) }}" style="height: auto!important;max-width:100px" alt="Riva - ريفا">
                             </div>
                         </div>
                     </figcaption>
-                    <div class="p-2 py-3 shadow mt-2 rounded" dir="rtl" style="background: #f1f1f19e !important;">
+                    <div class="p-2 py-3 shadow mt-2 rounded" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}" style="background: #f1f1f19e !important;">
                         <ul class="post-meta row mb-2">
-                            <p class="mb-1 text-gray-800">مواصفات المشروع</p>
+                            <p class="mb-1 text-gray-800">@lang('public.project.specifications')</p>
 
                             <li class="col-md-6">
                                 <img src="{{ asset('frontend/img/icons/move.png') }}" class="dark-image" style="width: 20px;" alt="Riva - ريفا">
@@ -73,20 +73,20 @@
                             </li>
                         </ul>
                     </div>
-                    <div class="p-2 py-3 shadow mt-2 rounded" dir="rtl" style="background: #f1f1f19e !important;">
+                    <div class="p-2 py-3 shadow mt-2 rounded" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}" style="background: #f1f1f19e !important;">
                         <ul class="post-meta row mb-4">
                             <li class="col-md-6">
-                                <p class="mb-1 text-gray-800">رخصة الاعلان</p>
+                                <p class="mb-1 text-gray-800">@lang('public.project.ad_license')</p>
                                 <span class="text-dark fs-14">{{ $project->AdLicense }}</span>
                             </li>
                             <li class="col-md-6">
-                                <p class="mb-1 text-gray-800">تاريخ النشر</p>
+                                <p class="mb-1 text-gray-800">@lang('public.project.publish_date')</p>
                                 <span class="text-dark fs-14">{{ $project->created_at->format('y-m-d') }}</span>
                             </li>
                         </ul>
                         <ul class="post-meta row">
                             <li class="col-md-12">
-                                <p class="mb-1 text-gray-800">السعر</p>
+                                <p class="mb-1 text-gray-800">@lang('public.project.price')</p>
                                 <span class="text-success fs-14">{{ $project->price_range }}  <img src="{{ asset('frontend/img/SaudiRiyal.svg') }}" width="14px" alt=""></span>
                             </li>
                         </ul>
@@ -95,7 +95,7 @@
                     <div class="mt-4 d-flex gap-2 actions">
                         @if($pdfUrl)
                             <button wire:click="dispatch('showPdf', ['{{ $pdfUrl }}'])" class="btn btn-soft-ash btn-sm btn-icon-end rounded w-50">
-                                <i class="uil uil-eye me-1"></i> عرض ملف المشروع
+                                <i class="uil uil-eye me-1"></i> @lang('public.project.view_profile')
                             </button>
                         @endif
 
@@ -107,11 +107,11 @@
                             class="btn btn-primary btn-sm btn-icon-end rounded w-50 @if($pdfUrl) w-50 @else w-100 @endif">
 
                             <span wire:loading.remove wire:target="showOrderPopup">
-                                <i class="uil uil-fire me-1"></i> تسجيل اهتمام
+                                <i class="uil uil-fire me-1"></i> @lang('public.project.register_interest')
                             </span>
 
                             <span wire:loading wire:target="showOrderPopup">
-                                <i class="uil uil-spinner-alt fa-spin me-1"></i> جاري التحميل...
+                                <i class="uil uil-spinner-alt fa-spin me-1"></i> @lang('public.project.loading')
                             </span>
 
                         </button>
@@ -125,14 +125,14 @@
                         @endphp
                         @if($contactPhone)
                         <div class="d-flex justify-content-between w-100">
-                            <a href="https://wa.me/{{ $contactPhone }}?text=انا مهتم بهذا المشروع {{ $project->name }} {{ route('frontend.projects.single', $project->slug) }}"
+                                <a href="https://wa.me/{{ $contactPhone }}?text={{ urlencode(__('public.project.whatsapp_interest')) }} {{ $project->name }} {{ route('frontend.projects.single', ['slug' => $project->slug]) }}"
                             target="_blank"
                             class="btn btn-primary btn-sm rounded flex-1 d-flex align-items-center justify-content-center gap-1 w-50 fs-14">
-                                <i class="uil uil-whatsapp"></i> واتساب
+                                <i class="uil uil-whatsapp"></i> @lang('public.project.whatsapp')
                             </a>
                             <a href="tel:{{ $contactPhone }}"
                             class="btn btn-outline-light btn-sm rounded flex-1 d-flex align-items-center justify-content-center gap-1 w-50 fs-14">
-                                <i class="uil uil-phone"></i> اتصال
+                                <i class="uil uil-phone"></i> @lang('public.project.call')
                             </a>
                         </div>
                         @endif
@@ -143,14 +143,14 @@
                 <div class="col-lg-9 ms-auto">
                     <div class="card mb-6" style="box-shadow:unset" wire:ignore>
                         @if($pdfUrl)
-                        <a href="{{ $pdfUrl }}" download class="noise-container text-right " dir="rtl" style="position: absolute;top: 10px;left: 66px;z-index:100">
+                        <a href="{{ $pdfUrl }}" download class="noise-container text-right" style="position: absolute;top: 10px;left: 66px;z-index:100">
                             <span  class="badge badge-lg text-white d-flex align-content-center align-items-center">
-                                حمل الملف التعريفي
+                                @lang('public.project.download_brochure')
                                 <i class="uil uil-file-download-alt fs-25 me-2"></i>
                             </span>
                         </a>
                         @endif
-                        <a href="https://www.google.com/maps?q={{ $project->latitude }},{{ $project->longitude }}" target="_blank" class="noise-container text-right heroTop" dir="rtl" style="position: absolute;top: 10px;left: 10px;z-index:100">
+                        <a href="https://www.google.com/maps?q={{ $project->latitude }},{{ $project->longitude }}" target="_blank" class="noise-container text-right heroTop" style="position: absolute;top: 10px;left: 10px;z-index:100">
                             <span class="badge badge-lg text-white d-flex align-content-center align-items-center">
                                 <i class="uil uil-map-pin fs-25"></i>
                             </span>
@@ -178,19 +178,19 @@
 
                     </div>
                     <div class="card col-lg-3 position-lg-sticky p-4 d-block d-lg-none" style="top: 5rem;" wire:ignore>
-                        <figcaption class="text-right" dir="rtl">
+                        <figcaption class="text-right">
                             <div class="d-flex align-content-start justify-content-between w-100">
                                 <div>
-                                    <p class="small mb-1">المطور</p>
+                                    <p class="small mb-1">@lang('public.project.developer')</p>
                                 </div>
                                 <div>
                                     <img src="{{ App\Helpers\MediaHelper::getUrl($project->developer->logo) }}" style="height: auto!important;max-width:100px" alt="Riva - ريفا">
                                 </div>
                             </div>
                         </figcaption>
-                        <div class="p-2 py-3 shadow mt-2 rounded" dir="rtl" style="background: #f1f1f19e !important;">
+                        <div class="p-2 py-3 shadow mt-2 rounded" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}" style="background: #f1f1f19e !important;">
                             <ul class="post-meta row mb-2">
-                                <p class="mb-1 text-gray-800">مواصفات المشروع</p>
+                            <p class="mb-1 text-gray-800">@lang('public.project.specifications')</p>
 
                                 <li class="col-md-6">
                                     <img src="{{ asset('frontend/img/icons/move.png') }}" class="dark-image" style="width: 20px;" alt="Riva - ريفا">
@@ -221,20 +221,20 @@
                                 </li>
                             </ul>
                         </div>
-                        <div class="p-2 py-3 shadow mt-2 rounded" dir="rtl" style="background: #f1f1f19e !important;">
+                        <div class="p-2 py-3 shadow mt-2 rounded" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}" style="background: #f1f1f19e !important;">
                             <ul class="post-meta row mb-4">
                                 <li class="col-md-6">
-                                    <p class="mb-1 text-gray-800">رخصة الاعلان</p>
+                                    <p class="mb-1 text-gray-800">@lang('public.project.ad_license')</p>
                                     <span class="text-dark fs-14">{{ $project->AdLicense }}</span>
                                 </li>
                                 <li class="col-md-6">
-                                    <p class="mb-1 text-gray-800">تاريخ النشر</p>
+                                    <p class="mb-1 text-gray-800">@lang('public.project.publish_date')</p>
                                     <span class="text-dark fs-14">{{ $project->created_at->format('y-m-d') }}</span>
                                 </li>
                             </ul>
                             <ul class="post-meta row">
                                 <li class="col-md-12">
-                                    <p class="mb-1 text-gray-800">السعر</p>
+                                    <p class="mb-1 text-gray-800">@lang('public.project.price')</p>
                                     <span class="text-success fs-14">{{ $project->price_range }}</span>
                                 </li>
                             </ul>
@@ -243,7 +243,7 @@
                         <div class="mt-4 d-flex gap-2 actions">
                             @if($pdfUrl)
                                 <button wire:click="dispatch('showPdf', ['{{ $pdfUrl }}'])" class="btn btn-soft-ash btn-sm btn-icon-end rounded w-50">
-                                    <i class="uil uil-eye me-1"></i> عرض ملف المشروع
+                                    <i class="uil uil-eye me-1"></i> @lang('public.project.view_profile')
                                 </button>
                             @endif
 
@@ -255,11 +255,11 @@
                                 class="btn btn-primary btn-sm btn-icon-end rounded w-50 @if($pdfUrl) w-50 @else w-100 @endif">
 
                                 <span wire:loading.remove wire:target="showOrderPopup">
-                                    <i class="uil uil-fire me-1"></i> تسجيل اهتمام
+                                    <i class="uil uil-fire me-1"></i> @lang('public.project.register_interest')
                                 </span>
 
                                 <span wire:loading wire:target="showOrderPopup">
-                                    <i class="uil uil-spinner-alt fa-spin me-1"></i> جاري التحميل...
+                                    <i class="uil uil-spinner-alt fa-spin me-1"></i> @lang('public.project.loading')
                                 </span>
 
                             </button>
@@ -272,14 +272,14 @@
                             @endphp
                             @if($contactPhone)
                             <div class="d-flex justify-content-between w-100">
-                                <a href="https://wa.me/{{ $contactPhone }}?text=انا مهتم بهذا المشروع {{ $project->name }} {{ route('frontend.projects.single', $project->slug) }}"
+                            <a href="https://wa.me/{{ $contactPhone }}?text={{ urlencode(__('public.project.whatsapp_interest')) }} {{ $project->name }} {{ route('frontend.projects.single', ['slug' => $project->slug]) }}"
                                 target="_blank"
                                 class="btn btn-primary btn-sm rounded flex-1 d-flex align-items-center justify-content-center gap-1 w-50 fs-14">
-                                    <i class="uil uil-whatsapp"></i> واتساب
+                                    <i class="uil uil-whatsapp"></i> @lang('public.project.whatsapp')
                                 </a>
                                 <a href="tel:{{ $contactPhone }}"
                                 class="btn btn-outline-light btn-sm rounded flex-1 d-flex align-items-center justify-content-center gap-1 w-50 fs-14">
-                                    <i class="uil uil-phone"></i> اتصال
+                                    <i class="uil uil-phone"></i> @lang('public.project.call')
                                 </a>
                             </div>
                             @endif
@@ -287,10 +287,10 @@
                     </div>
                     <!-- /.card -->
                     <div class="card mb-6">
-                        <div class="card-body d-flex flex-row" dir="rtl">
+                        <div class="card-body d-flex flex-row" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
                             <div class="post-header">
                                 <h4 class="post-title">
-                                    <a href="{{ route('frontend.projects.single', $project->slug) }}" class="link-dark ms-2">{{ $project->name }}</a>
+                                    <a href="{{ route('frontend.projects.single', ['slug' => $project->slug]) }}" class="link-dark ms-2">{{ $project->name }}</a>
                                     <span class="badge bg-pale-ash text-dark rounded-pill">{{ $project->projectType->name }}</span>
                                 </h4>
 
@@ -307,31 +307,31 @@
                     </div>
 
                     <div class="card mb-6">
-                        <div class="card-body p-0 p-lg-3" dir="rtl">
+                        <div class="card-body p-0 p-lg-3" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
 
-                            <ul class="nav nav-tabs nav-pills tab-box w-fit" dir="rtl">
+                            <ul class="nav nav-tabs nav-pills tab-box w-fit">
                                 <li class="nav-item">
                                     <a wire:click="$set('case', 'all')"
                                        class="nav-link px-4 cursor-pointer {{ $case === 'all' ? 'active noise-container bg-primary text-white' : '' }}">
-                                       <i class="uil uil-apps ms-2 fs-15"></i> الكل
+                                       <i class="uil uil-apps ms-2 fs-15"></i> @lang('public.project.all')
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a wire:click="$set('case', '0')"
                                        class="nav-link px-4 cursor-pointer {{ $case === '0' ? 'active noise-container bg-success text-white' : '' }}">
-                                       <i class="uil uil-map-pin ms-2 fs-15"></i> متاح
+                                       <i class="uil uil-map-pin ms-2 fs-15"></i> @lang('public.project.available')
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a wire:click="$set('case', '1')"
                                        class="nav-link px-4 cursor-pointer {{ $case === '1' ? 'active noise-container bg-warning text-dark' : '' }}">
-                                       <i class="uil uil-clock ms-2 fs-15"></i> محجوز
+                                       <i class="uil uil-clock ms-2 fs-15"></i> @lang('public.project.reserved')
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a wire:click="$set('case', '2')"
                                        class="nav-link px-4 cursor-pointer {{ $case === '2' ? 'active noise-container bg-danger text-white' : '' }}">
-                                       <i class="uil uil-bill ms-2 fs-15"></i> مباع
+                                       <i class="uil uil-bill ms-2 fs-15"></i> @lang('public.project.sold')
                                     </a>
                                 </li>
                             </ul>
@@ -344,8 +344,8 @@
 
                                             <article class="post rounded border">
                                                 <figure class="rounded-top position-relative" data-unit-id="{{ $unit->id }}" wire:click="showUnitDetails({{ $unit->id }})">
-                                                    @if ($unit->floor_plan)
-                                                        <img src="{{ App\Helpers\MediaHelper::getUrl($unit->floor_plan ) }}"
+                                                    @if ($unit->image)
+                                                        <img src="{{ App\Helpers\MediaHelper::getUrl($unit->image ) }}"
                                                         style="max-height: 207px;"
                                                         alt="{{ $unit->title }}" loading="lazy" />
                                                     @else
@@ -357,12 +357,12 @@
                                                     @if($unit->case == 2)
                                                         <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
                                                             style="background-color: rgba(0, 0, 0, 0.587);">
-                                                            <span class="badge bg-danger">تم البيع</span>
+                                                            <span class="badge bg-danger">@lang('public.project.sold')</span>
                                                         </div>
                                                     @elseif($unit->case == 1)
                                                         <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
                                                             style="background-color: rgba(0, 0, 0, 0.5);">
-                                                            <span class="badge bg-warning">محجوزة</span>
+                                                            <span class="badge bg-warning">@lang('public.project.reserved')</span>
                                                         </div>
                                                     @endif
                                                 </figure>
@@ -370,7 +370,7 @@
                                                 <div class="post-header project-data-card rounded-bottom bg-white">
                                                     <div class="d-flex align-content-start justify-content-between w-100">
                                                         <h2 class="post-title h6 mt-0 mb-0" data-unit-id="{{ $unit->id }}" wire:click="showUnitDetails({{ $unit->id }})">
-                                                            {{ $unit->title }} <span class="badge bg-pale-ash text-dark rounded-pill">عرض بيانات الوحدة</span>
+                                                            {{ $unit->title }} <span class="badge bg-pale-ash text-dark rounded-pill">@lang('public.project.unit_details')</span>
                                                             <div class="spinner-border spinner-border-sm me-1" wire:loading wire:target="showUnitDetails({{ $unit->id }})" role="status"></div>
                                                         </h2>
                                                         <div>
@@ -387,21 +387,21 @@
                                                         @else
                                                         <ul class="post-meta mb-1" data-unit-id="{{ $unit->id }}" wire:click="showUnitDetails({{ $unit->id }})">
                                                             <li class="post-date">
-                                                                <span class="fs-15 text-success">تواصل معنا</span>
+                                                                <span class="fs-15 text-success">@lang('public.project.contact_us')</span>
                                                             </li>
                                                         </ul>
                                                         @endif
                                                     @else
                                                         <ul class="post-meta mb-1" data-unit-id="{{ $unit->id }}" wire:click="showUnitDetails({{ $unit->id }})">
                                                             <li class="post-date">
-                                                                <span class="fs-15 text-success">تواصل معنا</span>
+                                                                <span class="fs-15 text-success">@lang('public.project.contact_us')</span>
                                                             </li>
                                                         </ul>
                                                     @endif
                                                     <ul class="post-meta mb-0" data-unit-id="{{ $unit->id }}" wire:click="showUnitDetails({{ $unit->id }})">
                                                         <li class="post-comments">
                                                             <img src="{{ asset('frontend/img/icons/move.png') }}" class="dark-image" style="width: 20px;" alt="Riva - ريفا">
-                                                            <span class="me-1 fs-15 text-gray-800">{{ $unit->unit_area . ' م²' }}</span>
+                                                            <span class="me-1 fs-15 text-gray-800">{{ $unit->unit_area . __('public.project.area_suffix') }}</span>
                                                         </li>
                                                         <li class="post-author">
                                                             <img src="{{ asset('frontend/img/icons/bed.png') }}" class="dark-image" style="width: 20px;" alt="Riva - ريفا">
@@ -419,8 +419,8 @@
                                     @empty
                                         <div class="col-12 text-center m-auto">
                                             <img src="{{ asset('frontend/img/EmptyInbox.png') }}" alt="Riva - ريفا">
-                                            <p class="text-main fs-bold mb-1">تعذر وجود نتائج!</p>
-                                            <p class="text-muted fs-15">لم نتمكن من العثور على أي وحدات</p>
+                                            <p class="text-main fs-bold mb-1">@lang('public.project.no_units')</p>
+                                            <p class="text-muted fs-15">@lang('public.project.no_units_desc')</p>
                                         </div>
                                     @endforelse
                                 </div>
@@ -429,11 +429,11 @@
                     </div>
 
                     <div class="card mb-6" wire:ignore>
-                        <div class="card-body p-5" dir="rtl">
+                        <div class="card-body p-5" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
                             <div class="row">
                                 <div class="col-md-6 border-start border-gray mb-md-0 mb-4">
                                     <div class="text-right">
-                                        <h2 class="text-uppercase fs-20 mb-5">المميزات</h2>
+                                        <h2 class="text-uppercase fs-20 mb-5">@lang('public.project.features')</h2>
                                     </div>
                                     <div class="row">
                                         @foreach ($project->features as $features)
@@ -458,7 +458,7 @@
 
                                 <div class="col-md-6">
                                     <div class="text-right">
-                                        <h2 class="text-uppercase fs-20 mb-5">الضمانات</h2>
+                                        <h2 class="text-uppercase fs-20 mb-5">@lang('public.project.guarantees')</h2>
                                     </div>
                                     <div class="row">
                                         @foreach ($project->guarantees as $guarante)
@@ -485,9 +485,9 @@
 
                     <!-- Add this card after the landmarks card and before the virtual tour card -->
                     <div class="card mb-6" wire:ignore>
-                        <div class="card-body p-5" dir="rtl">
+                        <div class="card-body p-5" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
                             <div class="text-right mb-4">
-                                <h2 class="text-uppercase fs-20 mb-1">موقع المشروع</h2>
+                                <h2 class="text-uppercase fs-20 mb-1">@lang('public.project.location')</h2>
                                 <p class="text-muted mb-0">{{ $project->address }}</p>
                             </div>
 
@@ -501,7 +501,7 @@
                                     target="_blank"
                                     class="btn btn-primary btn-sm d-flex align-items-center">
                                         <i class="uil uil-external-link-alt ms-1"></i>
-                                        فتح في خرائط google
+                                        @lang('public.project.open_in_maps')
                                     </a>
                                 </div>
 
@@ -511,7 +511,7 @@
                                     target="_blank"
                                     class="btn btn-primary btn-sm d-flex align-items-center">
                                         <i class="uil uil-directions ms-1"></i>
-                                        الاتجاهات
+                                        @lang('public.project.directions')
                                     </a>
                                 </div>
                             </div>
@@ -525,9 +525,9 @@
 
 
                     <div class="card mb-6" wire:ignore>
-                        <div class="card-body p-5" dir="rtl">
+                        <div class="card-body p-5" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
                             <div class="text-right">
-                                <h2 class="text-uppercase fs-20 mb-5">المعالم القريبة</h2>
+                                <h2 class="text-uppercase fs-20 mb-5">@lang('public.project.nearby_landmarks')</h2>
                             </div>
                             <div class="row">
                                 @foreach ($project->landmarks as $landmark)
@@ -539,7 +539,7 @@
                                         <h4 class="mb-0 fs-12">{{$landmark->name}}</h4>
                                         {{-- <p class="mb-0 fs-14">{{ $landmark->description }}</p> --}}
                                         @if($landmark->pivot->distance)
-                                            <p class="mb-0 fs-11"><span class="text-muted">المسافة:</span> {{ $landmark->pivot->distance }} كم</p>
+                                            <p class="mb-0 fs-11"><span class="text-muted">@lang('public.project.distance')</span> {{ $landmark->pivot->distance }} كم</p>
                                         @endif
                                     </div>
                                 </div>
@@ -551,7 +551,7 @@
                     @if($project->virtualTour)
 
                         <div class="card mb-6 rounded">
-                            <div class="card-body p-0 rounded" dir="rtl">
+                            <div class="card-body p-0 rounded" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
                                 <livewire:frontend.conponents.virtual-tour-viewer :project="$project" />
                             </div>
                         </div>
@@ -563,15 +563,15 @@
                         $youtubeMedia = $project->projectMedia->filter(fn($m) => !empty($m->youtube_url) && $m->youtube_embed_url);
                     @endphp
                     @if($youtubeMedia->count() > 0)
-                        <div class="mt-4" dir="rtl">
-                            <h4 class="mb-3 text-right" style="font-weight: 600;">فيديوهات المشروع</h4>
+                        <div class="mt-4" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
+                            <h4 class="mb-3 text-right" style="font-weight: 600;">@lang('public.project.videos')</h4>
                             <div class="row g-3">
                                 @foreach($youtubeMedia as $media)
                                 <div class="col-md-{{ $youtubeMedia->count() === 1 ? '12' : '6' }}">
                                     <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm">
                                         <iframe
                                             src="{{ $media->youtube_embed_url }}"
-                                            title="{{ $media->media_title ?? 'فيديو المشروع' }}"
+                                            title="{{ $media->media_title ?? __('public.project.video_default_title') }}"
                                             frameborder="0"
                                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                             allowfullscreen
@@ -600,7 +600,7 @@
 
     <!-- WhatsApp Fixed Icon -->
     <a wire:click="trackProjectWhatsappClick"
-       href="https://wa.me/{{ isset($project) ? ($project->contact_phone ?? optional($project->salesManager)->phone ?? setting('site_phone')) : setting('site_phone') }}?text=انا مهتم بهذا المشروع {{ isset($project) ? $project->name : '' }} {{ isset($project) ? route('frontend.projects.single', $project->slug) : '' }}" class="whatsapp-float glass-card" target="_blank">
+       href="https://wa.me/{{ isset($project) ? ($project->contact_phone ?? optional($project->salesManager)->phone ?? setting('site_phone')) : setting('site_phone') }}?text={{ urlencode(__('public.project.whatsapp_interest')) }} {{ isset($project) ? $project->name : '' }} {{ isset($project) ? route('frontend.projects.single', ['slug' => $project->slug]) : '' }}" class="whatsapp-float glass-card" target="_blank">
     <i class="uil uil-whatsapp"></i>
     </a>
 </div>
@@ -640,7 +640,7 @@
 
         // Add popup to marker
         marker.bindPopup(`
-            <div class="text-center" dir="rtl">
+            <div class="text-center" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
                 <h5 class="mb-2">{{ $project->name }}</h5>
                 <span class="mb-2">{{ $project->address }}</span>
             </div>

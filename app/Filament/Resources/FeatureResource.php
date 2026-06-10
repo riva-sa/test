@@ -31,8 +31,13 @@ class FeatureResource extends Resource
                         Forms\Components\TextInput::make('name')
                             ->label('الاسم')
                             ->required(),
+                        Forms\Components\TextInput::make('name_en')
+                            ->label('الاسم (English)'),
                         Forms\Components\Textarea::make('description')
                             ->label('الوصف')
+                            ->columnSpanFull(),
+                        Forms\Components\Textarea::make('description_en')
+                            ->label('الوصف (English)')
                             ->columnSpanFull(),
                         Forms\Components\FileUpload::make('icon')
                             ->label('الأيقونة')

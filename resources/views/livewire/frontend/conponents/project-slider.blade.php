@@ -8,15 +8,15 @@
                         <figure class="overlay caption caption-overlay rounded-xl mb-0">
                             <a class="wrapper image-wrapper bg-image bg-cover bg-overlay"
                                style="height: 700px"
-                               href="{{ route('frontend.projects.single', $project->slug) }}"
+                               href="{{ route('frontend.projects.single', ['slug' => $project->slug]) }}"
                                loading="lazy"
                                data-image-src="{{ App\Helpers\MediaHelper::getUrl(optional($project->getMainImages())->media_url ?? optional($project->projectMedia->first())->media_url) }}">
                             </a>
 
-                            <figcaption class="noise-container text-right hero" dir="rtl">
+                            <figcaption class="noise-container text-right hero" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
                                 <div class="d-flex align-content-start justify-content-between w-100">
                                     <h2 class="post-title h3 mt-1 mb-3">
-                                        <a href="{{ route('frontend.projects.single', $project->slug) }}">{{ $project->name }}</a>
+                                        <a href="{{ route('frontend.projects.single', ['slug' => $project->slug]) }}">{{ $project->name }}</a>
                                     </h2>
                                     <div>
                                         <img src="{{ App\Helpers\MediaHelper::getUrl($project->developer->logo) }}"
@@ -28,7 +28,7 @@
                                     {!! Str::limit(strip_tags($project->description), 150) !!}
                                 </p>
                                 <span class="badge badge-lg text-white mt-3 d-flex align-content-center">
-                                    عرض كل التفاصيل
+                                    @lang('public.project_slider.view_details')
                                     <i class="uil uil-arrow-up-left fs-15 me-2"></i>
                                 </span>
                             </figcaption>
@@ -38,9 +38,9 @@
                             @endphp
                             @if($pdfUrl)
 
-                            <div class="text-right" style="position: absolute;z-index: 4;top: 1rem;left: 1rem;" dir="rtl">
-                                <a href="{{ $pdfUrl }}" download class="noise-container badge badge-lg text-white d-flex align-content-center align-items-center p-2" dir="rtl">
-                                    حمل الملف التعريفي للمشروع
+                            <div class="text-right" style="position: absolute;z-index: 4;top: 1rem;left: 1rem;" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
+                                <a href="{{ $pdfUrl }}" download class="noise-container badge badge-lg text-white d-flex align-content-center align-items-center p-2">
+                                    @lang('public.project_slider.download_brochure')
                                     <i class="uil uil-file-download-alt fs-25 me-2"></i>
                                 </a>
                             </div>
@@ -52,8 +52,8 @@
                     </div>
 
                 @empty
-                    <div class="swiper-slide">
-                        <p>لا توجد مشاريع متاحة</p>
+                    <div class="w-100 p-2 d-flex justify-content-center">
+                        <p>{{ __('public.project_slider.no_projects') }}</p>
                     </div>
                 @endforelse
             </div>

@@ -24,19 +24,24 @@ class ContactUs extends Component
         'message' => 'required|min:10',
     ];
 
-    protected $messages = [
-        'name.required' => 'الاسم مطلوب',
-        'name.min' => 'الاسم يجب أن يكون على الأقل 3 أحرف',
-        'email.required' => 'البريد الإلكتروني مطلوب',
-        'email.email' => 'يرجى إدخال بريد إلكتروني صحيح',
-        'department.required' => 'يرجى اختيار القسم',
-        'message.required' => 'الرسالة مطلوبة',
-        'message.min' => 'الرسالة يجب أن تكون على الأقل 10 أحرف',
-    ];
+    protected $messages = [];
+
+    public function getMessages(): array
+    {
+        return [
+            'name.required' => __('public.contact.validation.name_required'),
+            'name.min' => __('public.contact.validation.name_min'),
+            'email.required' => __('public.contact.validation.email_required'),
+            'email.email' => __('public.contact.validation.email_email'),
+            'department.required' => __('public.contact.validation.department_required'),
+            'message.required' => __('public.contact.validation.message_required'),
+            'message.min' => __('public.contact.validation.message_min'),
+        ];
+    }
 
     public function submit()
     {
-        $this->validate();
+        $this->validate($this->rules, $this->getMessages());
 
         Contact::create([
             'name' => $this->name,

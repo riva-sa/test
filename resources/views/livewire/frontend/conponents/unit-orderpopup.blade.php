@@ -2,7 +2,7 @@
     <div class="side-sheet border {{ $showOrderSheet ? 'active' : '' }}" style="max-width: 91% !important;max-height: 92vh;overflow-y: scroll;">
         <div class="d-lg-flex flex-row align-items-lg-center p-4">
             <a class="btn btn-circle btn-soft-primary closeSideSheet side-sheet-close" wire:click="closeSideSheet"><i class="uil uil-multiply"></i></a>
-            <h6 class="mb-0"> تقديم اهتمام لشراء الوحدة </h6>
+            <h6 class="mb-0">@lang('public.unit_order.submit_interest')</h6>
         </div>
 
         <section class="wrapper bg-light">
@@ -12,9 +12,9 @@
                         <div class="post-header mb-5 mt-md-5">
                             <form wire:submit.prevent="submitOrderUnit">
                                 <div class="form-select-wrapper mb-4">
-                                    <label for="unit_id" class="form-label text-gray-900">اختر الوحدة</label>
+                                    <label for="unit_id" class="form-label text-gray-900">@lang('public.unit_order.select_unit')</label>
                                     <select wire:model="unit_id" class="form-select" id="unit_id">
-                                        <option selected>اختر الوحدة</option>
+                                        <option selected>@lang('public.unit_order.select_unit')</option>
                                         @foreach ($units as $unit)
                                             <option value="{{ $unit->id }}">{{ $unit->title . ' ' . $unit->building_number . '-' .  $unit->unit_number }}</option>
                                         @endforeach
@@ -28,7 +28,7 @@
 
                                 <div class="row mb-3">
                                     <div class="col-6 mb-4">
-                                        <label for="firstName" class="form-label text-gray-900">اسمك الاول</label>
+                                        <label for="firstName" class="form-label text-gray-900">@lang('public.unit_order.first_name')</label>
                                         <input type="text"
                                                 id="firstName"
                                                 class="form-control @error('firstName') is-invalid @enderror"
@@ -40,7 +40,7 @@
                                         @enderror
                                     </div>
                                     <div class="col-6 mb-4">
-                                        <label for="lastName" class="form-label text-gray-900">الاسم الاخير</label>
+                                        <label for="lastName" class="form-label text-gray-900">@lang('public.unit_order.last_name')</label>
                                         <input type="text"
                                                 id="lastName"
                                                 class="form-control @error('lastName') is-invalid @enderror"
@@ -52,25 +52,25 @@
                                         @enderror
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="phone" class="form-label text-gray-900">رقم الهاتف</label>
+                                        <label for="phone" class="form-label text-gray-900">@lang('public.unit_order.phone')</label>
                                         {{-- <input type="text"
                                                 id="phone"
                                                 class="form-control @error('phone') is-invalid @enderror"
                                                 wire:model="phone"> --}}
-                                            <div class="input-group" dir="rtl">
+                                            <div class="input-group" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
                                                 <input type="text"
                                                     id="phone"
                                                     name="phone"
                                                     class="form-control @error('phone') is-invalid @enderror"
                                                     wire:model="phone"
-                                                    placeholder="5xxxxxxxx"
+                                                    placeholder="{{ __('public.unit_order.phone_placeholder') }}"
                                                     maxlength="9"
                                                     pattern="5[0-9]{8}"
                                                     oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/^[^5]/, '5')">
-                                                <span class="input-group-text">+966</span>
+                                                <span class="input-group-text">{{ __('public.unit_order.phone_prefix') }}</span>
 
                                             </div>
-                                            <small class="text-muted">أدخل رقم الجوال بدون رمز الدولة (يبدأ بـ 5)</small>
+                                            <small class="text-muted">@lang('public.unit_order.phone_help')</small>
                                         @error('phone')
                                             <div class="invalid-feedback">
                                                 {{ $message }}
@@ -79,7 +79,7 @@
                                     </div>
 
                                     <div class="col-md-6">
-                                        <label for="email" class="form-label text-gray-900">بريد الكتروني</label>
+                                        <label for="email" class="form-label text-gray-900">@lang('public.unit_order.email')</label>
                                         <input type="email"
                                                 id="email"
                                                 class="form-control @error('email') is-invalid @enderror"
@@ -94,7 +94,7 @@
 
                                 <div class="row mb-6">
                                     <div class="col-12 mb-3">
-                                        <label class="form-label text-gray-900 mb-3">طريقة الشراء</label>
+                                        <label class="form-label text-gray-900 mb-3">@lang('public.unit_order.purchase_type')</label>
                                         <div class="custom-radio-group">
                                             @foreach($purchaseTypes as $value => $label)
                                                 <div class="custom-radio-item">
@@ -120,10 +120,10 @@
 
                                     @if($purchaseType === 'bank')
                                         <div class="col-12 mb-3">
-                                            <label for="support_type" class="form-label text-gray-900">نوع الدعم</label>
+                                            <label for="support_type" class="form-label text-gray-900">@lang('public.unit_order.support_type')</label>
                                             <select wire:model="support_type" class="form-select" id="support_type">
-                                                <option value="مدعوم">مدعوم</option>
-                                                <option value="غير مدعوم">غير مدعوم</option>
+                                                <option value="مدعوم">@lang('public.unit_order.supported')</option>
+                                                <option value="غير مدعوم">@lang('public.unit_order.unsupported')</option>
                                             </select>
                                             @error('support_type')
                                                 <div class="invalid-feedback">
@@ -134,7 +134,7 @@
                                     @endif
 
                                     <div class="col-12">
-                                        <label class="form-label text-gray-900 mb-3">الغرض من الشراء</label>
+                                        <label class="form-label text-gray-900 mb-3">@lang('public.unit_order.purchase_purpose')</label>
                                         <div class="custom-radio-group">
                                             @foreach($purchasePurposes as $value => $label)
                                                 <div class="custom-radio-item">
@@ -161,13 +161,13 @@
 
                                 <button type="submit" class="btn btn-primary btn-icon btn-sm btn-icon-start rounded w-100" wire:loading.attr="disabled" wire:target="submitOrderUnit">
                                     <span wire:loading.remove wire:target="submitOrderUnit">
-                                        إرسال
+                                        @lang('public.unit_order.submit')
                                     </span>
                                     <div wire:loading wire:target="submitOrderUnit">
                                         <div class="spinner-border spinner-border-sm me-4 mb-2" role="status">
-                                            <span class="visually-hidden">جاري الإرسال...</span>
+                                            <span class="visually-hidden">@lang('public.unit_order.sending')</span>
                                         </div>
-                                        جاري الإرسال...
+                                        @lang('public.unit_order.sending')
                                     </div>
                                 </button>
 

@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\RateLimiter;
+use Livewire\Livewire;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -59,6 +60,22 @@ class AppServiceProvider extends ServiceProvider
         $this->configureCommands();
         $this->configureModels();
         $this->translatableComponents();
+
+        // Re-run SetLocale on Livewire update requests (/livewire/update), which
+        // bypass the public route groups. Without this, URL::defaults(['locale'])
+        // is unset during component re-renders and route('frontend.projects.single', $slug)
+        // misassigns the slug to the optional {locale?} segment.
+        Livewire::addPersistentMiddleware([
+            \App\Http\Middleware\SetLocale::class,
+        ]);
+
+        // Keep the cached setting() helper (app/Helpers.php) fresh: drop the
+        // per-key cache entry whenever a setting is edited in Filament.
+        $forgetSetting = function (\TomatoPHP\FilamentSettingsHub\Models\Setting $setting): void {
+            \Illuminate\Support\Facades\Cache::forget('settings_hub.'.$setting->name);
+        };
+        \TomatoPHP\FilamentSettingsHub\Models\Setting::saved($forgetSetting);
+        \TomatoPHP\FilamentSettingsHub\Models\Setting::deleted($forgetSetting);
 
         if (! app()->runningInConsole() && Schema::hasTable('fblog_settings')) {
             try {

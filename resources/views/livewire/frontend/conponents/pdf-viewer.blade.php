@@ -25,7 +25,7 @@
             <div class="modal-content">
                 <div class="modal-header py-2 px-3">
                     <button type="button" class="btn-close me-auto ms-0 p-0" wire:click="closeModal"></button>
-                    <h5 class="modal-title">عرض ملف المشروع</h5>
+                    <h5 class="modal-title">@lang('public.project.view_profile')</h5>
                 </div>
                 {{-- Modal Body with PDF Viewer --}}
 <div class="modal-body p-0">

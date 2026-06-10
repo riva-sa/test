@@ -11,16 +11,20 @@ use App\Models\Unit;
 use App\Services\TrackingService;
 use Illuminate\Support\Facades\Cache;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
-use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-#[Title('المشاريع')]
 class ProjectsPage extends Component
 {
     use LivewireAlert;
     use WithPagination;
+
+    public function title(): string
+    {
+        return __('public.projects.title');
+    }
 
     // Pagination theme
     protected $paginationTheme = 'bootstrap';
@@ -280,7 +284,6 @@ class ProjectsPage extends Component
                 ->leftJoinSub($unitCounts, 'unit_counts', 'projects.id', '=', 'unit_counts.project_id')
                 ->select('projects.*', 'unit_counts.available_units_count', 'unit_counts.reserved_units_count', 'unit_counts.sold_units_count')
                 ->where('status', 1)
-                ->where('unit_counts.available_units_count', '>', 0) // Hide sold out or empty projects
                 ->orderByRaw('
                 CASE
                     WHEN unit_counts.available_units_count > 0 THEN 1
@@ -315,9 +318,16 @@ class ProjectsPage extends Component
                 });
             }
 
+            // Availability filter:
+            // - "show available only" (checked): project must have at least one available unit.
+            // - otherwise: show projects that still have available OR reserved units,
+            //   while hiding fully sold-out / empty projects.
             if ($this->projectCaseAvilable == true) {
-                $query->whereHas('units', function ($q) {
-                    $q->where('case', 0);
+                $query->where('unit_counts.available_units_count', '>', 0);
+            } else {
+                $query->where(function ($q) {
+                    $q->where('unit_counts.available_units_count', '>', 0)
+                        ->orWhere('unit_counts.reserved_units_count', '>', 0);
                 });
             }
 
@@ -387,7 +397,7 @@ class ProjectsPage extends Component
             $cacheKey = 'projects_page:units:'.md5(json_encode($filters)).':page:'.$page.':v:'.$globalVersion;
             $query = Unit::with([
                 'project:id,name,slug,developer_id,status',
-                'project.developer:id,name,logo',
+                'project.developer:id,name,name_en,logo',
                 'project.projectMedia:id,project_id,media_url,media_type,main',
             ])
                 ->whereHas('project', function ($q) {
@@ -395,7 +405,7 @@ class ProjectsPage extends Component
                 })
                 ->where('status', 1)
                 ->whereIn('case', [0, 1])
-                ->select(['id', 'title', 'unit_type', 'unit_price', 'unit_area', 'beadrooms', 'bathrooms', 'floor_plan', 'case', 'show_price', 'project_id'])
+                ->select(['id', 'title', 'image', 'unit_type', 'unit_price', 'unit_area', 'beadrooms', 'bathrooms', 'floor_plan', 'case', 'show_price', 'project_id'])
                 ->addSelect([
                     'available_units_count' => Unit::selectRaw('count(*)')
                         ->whereColumn('project_id', 'units.project_id')

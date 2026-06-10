@@ -2,11 +2,19 @@
 
 namespace App\Models;
 
+use App\Traits\HasTranslations;
 use Illuminate\Database\Eloquent\Model;
 
 class Landmark extends Model
 {
-    protected $fillable = ['name', 'description', 'distance', 'type'];
+    use HasTranslations;
+
+    /**
+     * @var array<int, string>
+     */
+    protected $translatable = ['name', 'description'];
+
+    protected $fillable = ['name', 'name_en', 'description', 'description_en', 'distance', 'type'];
 
     public function projects()
     {

@@ -31,6 +31,9 @@ class StateResource extends Resource
                             ->label('الاسم')
                             ->required()
                             ->maxLength(255),
+                        Forms\Components\TextInput::make('name_en')
+                            ->label('الاسم (English)')
+                            ->maxLength(255),
                         Forms\Components\TextInput::make('country')
                             ->label('الدولة')
                             ->required()

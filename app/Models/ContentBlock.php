@@ -2,12 +2,23 @@
 
 namespace App\Models;
 
+use App\Traits\HasTranslations;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class ContentBlock extends Model
 {
-    protected $fillable = ['key', 'content', 'description'];
+    use HasTranslations;
+
+    /**
+     * Only the visitor-facing content is translated; `description` is an
+     * admin-side label used for key generation.
+     *
+     * @var array<int, string>
+     */
+    protected $translatable = ['content'];
+
+    protected $fillable = ['key', 'content', 'content_en', 'description'];
 
     protected static function boot()
     {

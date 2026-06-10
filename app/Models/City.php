@@ -2,12 +2,18 @@
 
 namespace App\Models;
 
+use App\Traits\HasTranslations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class City extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTranslations;
+
+    /**
+     * @var array<int, string>
+     */
+    protected $translatable = ['name'];
 
     protected $guarded = [];
 

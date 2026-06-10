@@ -1,5 +1,5 @@
 <div class="">
-    <nav class="navbar navbar-expand-lg extended navbar-light navbar-bg-light" dir="rtl">
+    <nav class="navbar navbar-expand-lg extended navbar-light navbar-bg-light" dir="{{ \App\Helpers\LocalizationHelper::getDirection() }}">
         <div class="container-fluid flex-lg-column">
             <div class="topbar d-flex flex-row w-100 justify-content-between align-items-center">
                 <div class="navbar-brand d-md-none d-block"><a href="{{ route('frontend.home') }}" ><img src="{{asset('frontend/img/svg/Artboard 19.svg')}}" width="111px" srcset="{{asset('frontend/img/svg/Artboard 19.svg')}} 2x" alt="Riva - ريفا" /></a></div>
@@ -33,23 +33,46 @@
                         </li>
                         <div class="d-lg-none text-end">
                             <ul class="list-unstyled pe-0">
-                                <li><a class="dropdown-item mb-2" href="{{ route('frontend.about') }}">تعرف على ريڤا</a></li>
-                                <li><a class="dropdown-item mb-2" href="{{ route('frontend.projects') }}">مشاريعنا</a></li>
-                                {{-- <li><a class="dropdown-item" href="{{ route('frontend.about') }}">ماذا نُقدم؟</a></li> --}}
-                                {{-- <li><a class="dropdown-item" href="{{ route('frontend.home') }}">اطلب عقارك</a></li> --}}
-                                <li><a class="dropdown-item mb-2" href="{{ route('frontend.contactus') }}">تواصل معنا</a></li>
-                                <li><a class="dropdown-item mb-2" href="{{ route('frontend.blog') }}">الأحداث العقارية</a></li>
+                                <li><a class="dropdown-item mb-2" href="{{ route('frontend.about') }}">@lang('public.nav.about')</a></li>
+                                <li><a class="dropdown-item mb-2" href="{{ route('frontend.projects') }}">@lang('public.nav.projects')</a></li>
+                                <li><a class="dropdown-item mb-2" href="{{ route('frontend.contactus') }}">@lang('public.nav.contact')</a></li>
+                                <li><a class="dropdown-item mb-2" href="{{ route('frontend.blog') }}">@lang('public.nav.events')</a></li>
                             </ul>
+
+                            @php
+                                $mRouteParams = request()->route()?->parameters() ?? [];
+                                $mCurrentRoute = Route::currentRouteName();
+                                $mCurrentLocale = app()->getLocale();
+                                $mLanguages = [
+                                    'ar' => ['native' => 'العربية', 'abbr' => 'ع'],
+                                    'en' => ['native' => 'English', 'abbr' => 'EN'],
+                                ];
+                            @endphp
+                            <div class="lang-switcher-mobile">
+                                @foreach($mLanguages as $mCode => $mLang)
+                                    <a
+                                        href="{{ $mCurrentRoute ? route($mCurrentRoute, array_merge($mRouteParams, ['locale' => $mCode])) : url('/' . $mCode) }}"
+                                        hreflang="{{ $mCode }}"
+                                        class="lang-switcher-mobile__option @if($mCurrentLocale === $mCode) is-active @endif"
+                                    >
+                                        <!-- <span class="lang-switcher__flag">{{ $mLang['abbr'] }}</span> -->
+                                        <span>{{ $mLang['native'] }}</span>
+                                        @if($mCurrentLocale === $mCode)
+                                            <i class="uil uil-check ms-auto"></i>
+                                        @endif
+                                    </a>
+                                @endforeach
+                            </div>
                         </div>
-                        <li class="nav-item dropdown dropdown-mega d-md-block d-none"><a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">اكتشف المزيد</a>
-                            <ul class="dropdown-menu mega-menu" dir="rtl">
+                        <li class="nav-item dropdown dropdown-mega d-md-block d-none"><a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">@lang('public.nav.discover_more')</a>
+                            <ul class="dropdown-menu mega-menu" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
                                 <li class="mega-menu-content">
                                     <div class="row gx-4 gx-lg-4">
                                         <div class="col-lg-4">
                                             <div class="text-end mapbody">
                                                 <div class="d-flex justify-content-between align-items-center">
-                                                    <h6 class="dropdown-header h4 mb-0">خريطة مشاريعُنا</h6>
-                                                    <a href="{{ route('frontend.projects.map') }}" class="dropdown-header text-start mb-0">عرض كل المشاريع<i class="uil uil-arrow-left"></i></a>
+                                                    <h6 class="dropdown-header h4 mb-0">@lang('public.nav.project_map')</h6>
+                                                    <a href="{{ route('frontend.projects.map') }}" class="dropdown-header text-start mb-0">@lang('public.nav.view_all_projects')<i class="uil uil-arrow-{{ app()->getLocale() === 'ar' ? 'left' : 'right' }}"></i></a>
                                                 </div>
                                                 <img class="dropdown-header" style="max-width: 100%" src="{{ asset('frontend/Rectangle 5.png') }}" alt="Riva - ريفا">
                                             </div>
@@ -64,10 +87,8 @@
                                                             <img src="{{ asset('frontend/img/icons/Button4.png') }}" class="icon-svg icon-svg-sm text-pink ms-4" alt="Riva - ريفا">
                                                         </div>
                                                         <div>
-                                                            <h4 class="mb-1">مشاريعنا</h4>
-                                                            <p class="mb-0">
-                                                                نقدم مجموعة متنوعة من المشاريع العقارية المصممة بعناية لتواكب احتياجات العملاء وتطلعاتهم نحو السكن والاستثمار الأمثل.
-                                                            </p>
+                                                            <h4 class="mb-1">@lang('public.nav.projects')</h4>
+                                                            <p class="mb-0">@lang('public.nav.project_description')</p>
                                                         </div>
                                                     </a>
 
@@ -79,8 +100,8 @@
                                                             <img src="{{ asset('frontend/img/icons/Button.png') }}" class="icon-svg icon-svg-sm text-aqua ms-4" alt="Riva - ريفا">
                                                         </div>
                                                         <div>
-                                                            <h4 class="mb-1">تعرف على ريڤا</h4>
-                                                            <p class="mb-0">نحن في ريفا العقارية نتميز بالاحترافية والإتقان في إدارة المبيعات العقارية.</p>
+                                                            <h4 class="mb-1">@lang('public.nav.about')</h4>
+                                                            <p class="mb-0">@lang('public.nav.about_description')</p>
                                                         </div>
                                                     </a>
                                                 </div>
@@ -104,8 +125,8 @@
                                                             <img src="{{ asset('frontend/img/icons/Button5.png') }}" class="icon-svg icon-svg-sm text-green ms-4" alt="Riva - ريفا">
                                                         </div>
                                                         <div>
-                                                            <h4 class="mb-1">الأحداث العقارية</h4>
-                                                            <p class="mb-0">تابع آخر الأخبار والمستجدات والمقالات المتخصصة في القطاع العقاري لتبقى على اطلاع بكل ما هو جديد.</p>
+                                                            <h4 class="mb-1">@lang('public.nav.events')</h4>
+                                                            <p class="mb-0">@lang('public.nav.events_description')</p>
                                                         </div>
                                                     </a>
                                                 </div>
@@ -121,12 +142,12 @@
 
                         <li class="nav-item border-right">
                             <a href="{{ route('frontend.projects.map') }}" class="nav-link">
-                                خريطة مشاريعُنا
+                                @lang('public.nav.project_map')
                             </a>
                         </li>
                         <li class="nav-item border-right">
                             <a href="{{ route('frontend.projects') }}" class="nav-link">
-                                تصفح المشاريع
+                                @lang('public.nav.browse_projects')
                             </a>
                         </li>
                     </ul>
@@ -162,7 +183,7 @@
                                     wire:model.live.debounce.300ms="search"
                                     type="text"
                                     class="form-control"
-                                    placeholder="ابحث عن عقارك"
+                                    placeholder="@lang('public.search.placeholder')"
                                     @focus="isOpen = true"
                                     @click.away="isOpen = false"
                                 >
@@ -192,7 +213,7 @@
                                             <li class="result-item">
                                                 <button class="result-btn">
                                                     <div class="result-title">
-                                                        <a class="fs-15" href="{{ route('frontend.projects.single', $property->slug) }}">
+                                                        <a class="fs-15" href="{{ route('frontend.projects.single', ['slug' => $property->slug]) }}">
                                                             <i class="uil uil-windsock fs-15"></i> {{ $property->name }}
                                                         </a>
                                                     </div>
@@ -203,7 +224,7 @@
                                 @else
                                     @if(count($results) > 0)
                                         <div class="no-results">
-                                            لا توجد نتائج للبحث
+                                            @lang('public.search.no_results')
                                         </div>
                                     @endif
                                 @endif
@@ -211,9 +232,70 @@
                         </div>
 
                         <a href="{{ route('frontend.contactus') }}" class="btn btn-expand btn-soft-primary rounded-pill">
-                            <i class="uil uil-arrow-left"></i>
-                            <span>تواصل معنا</span>
+                            <i class="uil uil-arrow-{{ app()->getLocale() === 'ar' ? 'left' : 'right' }}"></i>
+                            <span>@lang('public.nav.contact')</span>
                         </a>
+
+                        @php
+                            $routeParams = request()->route()?->parameters() ?? [];
+                            $currentRoute = Route::currentRouteName();
+                            $currentLocale = app()->getLocale();
+                            $languages = [
+                                'ar' => ['native' => 'العربية', 'label' => 'Arabic',  'abbr' => 'ع'],
+                                'en' => ['native' => 'English', 'label' => 'English', 'abbr' => 'EN'],
+                            ];
+                            $localeUrl = function ($locale) use ($currentRoute, $routeParams) {
+                                return $currentRoute
+                                    ? route($currentRoute, array_merge($routeParams, ['locale' => $locale]))
+                                    : url('/' . $locale);
+                            };
+                        @endphp
+
+                        <div class="lang-switcher ms-3 align-content-center" x-data="{ open: false }" @click.away="open = false" @keydown.escape="open = false">
+                            <button
+                                type="button"
+                                class="lang-switcher__toggle"
+                                @click="open = !open"
+                                :aria-expanded="open.toString()"
+                                aria-haspopup="listbox"
+                            >
+                                <i class="uil uil-globe lang-switcher__globe"></i>
+                                <span class="lang-switcher__current">{{ $languages[$currentLocale]['abbr'] }}</span>
+                                <i class="uil uil-angle-down lang-switcher__caret" :class="{ 'is-open': open }"></i>
+                            </button>
+
+                            <div
+                                class="lang-switcher__menu"
+                                role="listbox"
+                                x-show="open"
+                                x-cloak
+                                x-transition:enter="transition ease-out duration-200"
+                                x-transition:enter-start="opacity-0 transform -translate-y-1 scale-95"
+                                x-transition:enter-end="opacity-100 transform translate-y-0 scale-100"
+                                x-transition:leave="transition ease-in duration-100"
+                                x-transition:leave-start="opacity-100 transform translate-y-0 scale-100"
+                                x-transition:leave-end="opacity-0 transform -translate-y-1 scale-95"
+                            >
+                                @foreach($languages as $code => $lang)
+                                    <a
+                                        href="{{ $localeUrl($code) }}"
+                                        hreflang="{{ $code }}"
+                                        role="option"
+                                        aria-selected="{{ $currentLocale === $code ? 'true' : 'false' }}"
+                                        class="lang-switcher__option @if($currentLocale === $code) is-active @endif"
+                                    >
+                                        <span class="lang-switcher__flag">{{ $lang['abbr'] }}</span>
+                                        <span class="lang-switcher__names">
+                                            <span class="lang-switcher__native">{{ $lang['native'] }}</span>
+                                            <!-- <span class="lang-switcher__sub">{{ $lang['label'] }}</span> -->
+                                        </span>
+                                        @if($currentLocale === $code)
+                                            <i class="uil uil-check lang-switcher__check"></i>
+                                        @endif
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
 
                     </nav>
                     <!-- /.social -->
@@ -228,16 +310,16 @@
     <div class="offcanvas offcanvas-end text-inverse" id="offcanvas-info" data-bs-scroll="true">
         <div class="offcanvas-header">
         <a href="{{ route('frontend.home') }}">
-            <img src="{{asset('frontend/img/svg/Artboard 19.svg')}}" srcset="{{asset('frontend/img/svg/Artboard 19.svg')}} 2x" alt="Riva - ريفا" />ريفا</a>
+            <img src="{{asset('frontend/img/svg/Artboard 19.svg')}}" srcset="{{asset('frontend/img/svg/Artboard 19.svg')}} 2x" alt="Riva - ريفا" />@lang('public.common.site_name')</a>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
         <div class="widget mb-8">
-            <p>ريفا.</p>
+            <p>@lang('public.common.site_title').</p>
         </div>
         <!-- /.widget -->
         <div class="widget mb-8">
-            <h4 class="widget-title text-white mb-3">تواصل معنا</h4>
+            <h4 class="widget-title text-white mb-3">@lang('public.nav.contact')</h4>
             <address> {{ setting('site_address') }} </address>
             <a href="mailto:{{ setting('site_email') }}">{{ setting('site_email') }}</a><br /> {{ setting('site_phone') }}
         </div>
@@ -245,12 +327,12 @@
         <div class="widget mb-8">
             <h4 class="widget-title text-white mb-3"></h4>
             <ul class="list-unstyled">
-                <li><a href="{{ route('frontend.home') }}">تعرف على ريڤا</a></li>
-                <li><a href="{{ route('frontend.projects') }}">مشاريعنا</a></li>
-                <li><a href="{{ route('frontend.home') }}">ماذا نُقدم؟</a></li>
-                <li><a href="{{ route('frontend.home') }}">اطلب عقارك</a></li>
-                <li><a href="{{ route('frontend.home') }}">اعرض عقارك</a></li>
-                <li><a href="{{ route('frontend.home') }}">الأحداث العقارية</a></li>
+                <li><a href="{{ route('frontend.about') }}">@lang('public.nav.about')</a></li>
+                <li><a href="{{ route('frontend.projects') }}">@lang('public.nav.projects')</a></li>
+                <li><a href="{{ route('frontend.services') }}">@lang('public.nav.services')</a></li>
+                <li><a href="{{ route('frontend.home') }}">@lang('public.nav.request_property')</a></li>
+                <li><a href="{{ route('frontend.home') }}">@lang('public.nav.list_property')</a></li>
+                <li><a href="{{ route('frontend.blog') }}">@lang('public.nav.events')</a></li>
             </ul>
         </div>
         <!-- /.widget -->

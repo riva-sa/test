@@ -22,10 +22,10 @@
 
 **Purpose**: Create translation file skeletons and new service/middleware files
 
-- [ ] T001 Create `lang/ar/public.php` with all existing hardcoded Arabic strings extracted from public Blade views
-- [ ] T002 Create `lang/en/public.php` with professional English translations matching all keys in `lang/ar/public.php`
-- [ ] T003 Create `app/Http/Middleware/SetLocale.php` — locale detection from URL prefix, cookie fallback, session storage
-- [ ] T004 [P] Create `app/Helpers/LocalizationHelper.php` — hreflang and canonical tag generation helpers
+- [x] T001 Create `lang/ar/public.php` with all existing hardcoded Arabic strings extracted from public Blade views
+- [x] T002 Create `lang/en/public.php` with professional English translations matching all keys in `lang/ar/public.php`
+- [x] T003 Create `app/Http/Middleware/SetLocale.php` — locale detection from URL prefix, cookie fallback, session storage
+- [x] T004 [P] Create `app/Helpers/LocalizationHelper.php` — hreflang and canonical tag generation helpers
 
 ---
 
@@ -37,14 +37,14 @@
 
 ### Tests
 
-- [ ] T005 Write Pest test for `SetLocale` middleware in `tests/Feature/SetLocaleTest.php` — verify locale detection from URL prefix, cookie fallback, invalid locale redirect, non-public routes unaffected. MUST FAIL before T006.
+- [x] T005 Write Pest test for `SetLocale` middleware in `tests/Feature/SetLocaleTest.php` — verify locale detection from URL prefix, cookie fallback, invalid locale redirect, non-public routes unaffected. MUST FAIL before T006.
 
 ### Implementation
 
-- [ ] T006 Register `SetLocale` middleware as `set.locale` alias in `bootstrap/app.php`
-- [ ] T007 Add structured JSON logging in `SetLocale` middleware for invalid locale attempts and unexpected locale resolution failures via `Log::channel('stack')->warning(...)` with context (request URI, detected locale, IP)
-- [ ] T008 Update `routes/web.php` — wrap all 11 public frontend routes in locale prefix group (`/en`, `/ar`, no prefix)
-- [ ] T009 Update `resources/views/components/layouts/app.blade.php` — add dynamic `lang`/`dir` attributes on `<html>`, inject hreflang alternates and canonical link via `LocalizationHelper`
+- [x] T006 Register `SetLocale` middleware as `set.locale` alias in `bootstrap/app.php`
+- [x] T007 Add structured JSON logging in `SetLocale` middleware for invalid locale attempts and unexpected locale resolution failures via `Log::channel('stack')->warning(...)` with context (request URI, detected locale, IP)
+- [x] T008 Update `routes/web.php` — wrap all 11 public frontend routes in locale prefix group (`/en`, `/ar`, no prefix)
+- [x] T009 Update `resources/views/components/layouts/app.blade.php` — add dynamic `lang`/`dir` attributes on `<html>`, inject hreflang alternates and canonical link via `LocalizationHelper`
 
 **Checkpoint**: Foundation ready — translation files exist, middleware routes locale correctly with logging, layout reflects locale. User story implementation can begin.
 
@@ -58,19 +58,19 @@
 
 ### Tests
 
-- [ ] T010 [P] [US1] Write Pest test for language switcher and locale persistence in `tests/Feature/LanguageSwitcherTest.php` — verify language toggle, locale persistence across navigation, URL prefix routing. MUST FAIL before T011.
+- [x] T010 [P] [US1] Write Pest test for language switcher and locale persistence in `tests/Feature/LanguageSwitcherTest.php` — verify language toggle, locale persistence across navigation, URL prefix routing. MUST FAIL before T011.
 
 ### Implementation
 
-- [ ] T011 [P] [US1] Update `resources/views/livewire/frontend/partials/nav-bar.blade.php` — replace hardcoded Arabic with `@lang('public.*')`, remove hardcoded `dir="rtl"`, add two text links ("English" / "العربية") as language switcher. The search input placeholder uses key `search.placeholder` (covers FR-012).
-- [ ] T012 [US1] Update `app/Livewire/Frontend/Partials/NavBar.php` — add language switching logic (emit locale change, update session)
-- [ ] T013 [P] [US1] Update `resources/views/livewire/frontend/partials/footer.blade.php` — replace hardcoded Arabic with `@lang('public.*')`
-- [ ] T014 [P] [US1] Update `resources/views/livewire/frontend/home-page.blade.php` — replace hardcoded Arabic with `@lang('public.*')`
-- [ ] T015 [P] [US1] Update `resources/views/livewire/frontend/about.blade.php` — replace hardcoded Arabic with `@lang('public.*')`, add `<!-- TODO: Bilingual ContentBlock -->` comment
-- [ ] T016 [P] [US1] Update `resources/views/livewire/frontend/services.blade.php` — replace hardcoded Arabic with `@lang('public.*')`
-- [ ] T017 [P] [US1] Update `resources/views/livewire/frontend/blog.blade.php` and `blog-single.blade.php` — replace hardcoded Arabic with `@lang('public.*')`
-- [ ] T018 [P] [US1] Update `resources/views/livewire/frontend/privacy.blade.php` and `terms.blade.php` — add `<!-- TODO: Bilingual ContentBlock -->` comments, content remains Arabic
-- [ ] T019 [P] [US1] Update `resources/views/livewire/frontend/conponents/client-logos.blade.php` — replace hardcoded Arabic with `@lang('public.*')`
+- [x] T011 [P] [US1] Update `resources/views/livewire/frontend/partials/nav-bar.blade.php` — replace hardcoded Arabic with `@lang('public.*')`, remove hardcoded `dir="rtl"`, add two text links ("English" / "العربية") as language switcher. The search input placeholder uses key `search.placeholder` (covers FR-012).
+- [x] T012 [US1] Update `app/Livewire/Frontend/Partials/NavBar.php` — add language switching logic (emit locale change, update session)
+- [x] T013 [P] [US1] Update `resources/views/livewire/frontend/partials/footer.blade.php` — replace hardcoded Arabic with `@lang('public.*')`
+- [x] T014 [P] [US1] Update `resources/views/livewire/frontend/home-page.blade.php` — replace hardcoded Arabic with `@lang('public.*')`
+- [x] T015 [P] [US1] Update `resources/views/livewire/frontend/about.blade.php` — replace hardcoded Arabic with `@lang('public.*')`, add `<!-- TODO: Bilingual ContentBlock -->` comment
+- [x] T016 [P] [US1] Update `resources/views/livewire/frontend/services.blade.php` — replace hardcoded Arabic with `@lang('public.*')`
+- [x] T017 [P] [US1] Update `resources/views/livewire/frontend/blog.blade.php` and `blog-single.blade.php` — replace hardcoded Arabic with `@lang('public.*')`
+- [x] T018 [P] [US1] Update `resources/views/livewire/frontend/privacy.blade.php` and `terms.blade.php` — add `<!-- TODO: Bilingual ContentBlock -->` comments, content remains Arabic
+- [x] T019 [P] [US1] Update `resources/views/livewire/frontend/conponents/client-logos.blade.php` — replace hardcoded Arabic with `@lang('public.*')`
 
 **Checkpoint**: All general public pages render in both Arabic and English. Language switcher works on all pages. Locale persists across navigation. Pest tests pass.
 

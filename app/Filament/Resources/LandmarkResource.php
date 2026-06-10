@@ -30,9 +30,13 @@ class LandmarkResource extends Resource
                         TextInput::make('name')
                             ->label('الاسم')
                             ->required(),
+                        TextInput::make('name_en')
+                            ->label('الاسم (English)'),
                         TextInput::make('description')
                             ->label('الوصف')
                             ->required(),
+                        TextInput::make('description_en')
+                            ->label('الوصف (English)'),
                         // TextInput::make('distance')
                         //     ->label('المسافة من المشروع')
                         //     ->numeric()

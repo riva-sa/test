@@ -35,22 +35,28 @@ use App\Models\Project;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', HomePage::class)->name('frontend.home');
-// Route::get('/units/create', [CreateUnit::class, 'render'])->name('filament.resources.units.create');
+$registerPublicRoutes = function () {
+    Route::get('/', HomePage::class)->name('frontend.home');
+    Route::get('/projects', ProjectsPage::class)->name('frontend.projects');
+    Route::get('/projects-map', ProjectsMap::class)->name('frontend.projects.map');
+    Route::get('/project/{slug}', ProjectSingle::class)->name('frontend.projects.single');
+    Route::get('/privacy', Privacy::class)->name('frontend.privacy');
+    Route::get('/terms', Terms::class)->name('frontend.terms');
+    Route::get('/about', About::class)->name('frontend.about');
+    Route::get('/blog', Blog::class)->name('frontend.blog');
+    Route::get('/blog/{slug}', BlogSingle::class)->name('frontend.blog.single');
+    Route::get('/services', Services::class)->name('frontend.services');
+    Route::get('/contact-us', ContactUs::class)->name('frontend.contactus');
+};
 
-Route::get('/projects', ProjectsPage::class)->name('frontend.projects');
-Route::get('/projects-map', ProjectsMap::class)->name('frontend.projects.map');
-Route::get('/project/{slug}', ProjectSingle::class)->name('frontend.projects.single');
+// Unprefixed routes — registered first so they win inbound matching for /projects, /about, etc.
+Route::middleware('set.locale')->group($registerPublicRoutes);
+
+// Locale-prefixed routes — registered second so they own the name lookups used by route(...).
+// {locale?} is optional, so route('frontend.projects') yields /projects and route(..., ['locale'=>'en']) yields /en/projects.
+Route::middleware('set.locale')->prefix('{locale?}')->where(['locale' => 'ar|en'])->group($registerPublicRoutes);
+
 Route::get('/media/{path}', [ImageController::class, 'show'])->where('path', '.*')->name('media.show');
-
-Route::get('/privacy', Privacy::class)->name('frontend.privacy');
-Route::get('/terms', Terms::class)->name('frontend.terms');
-
-Route::get('/about', About::class)->name('frontend.about');
-Route::get('/blog', Blog::class)->name('frontend.blog');
-Route::get('/blog/{slug}', BlogSingle::class)->name('frontend.blog.single');
-Route::get('/services', Services::class)->name('frontend.services');
-Route::get('/contact-us', ContactUs::class)->name('frontend.contactus');
 
 // Manager routes protected by the 'manager' role
 Route::middleware(['auth', 'role:sales_manager,sales,Admin,developer,follow_up,project_manager'])->group(function () {

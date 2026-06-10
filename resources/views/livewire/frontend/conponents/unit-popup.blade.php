@@ -3,7 +3,7 @@
         @if($selectedUnit)
             <div class="d-lg-flex flex-row align-items-lg-center p-4">
                 <a class="btn btn-circle btn-soft-primary closeSideSheet side-sheet-close" wire:click="closeSideSheet"><i class="uil uil-multiply"></i></a>
-                <h6 class="mb-0"> تفاصيل الوحدة</h6>
+                <h6 class="mb-0">@lang('public.unit.details')</h6>
             </div>
 
             <section class="wrapper bg-light">
@@ -69,7 +69,7 @@
                                             </li>
                                             <li class="post-comments">
                                                 <img src="{{ asset('frontend/img/icons/move.png') }}" class="dark-image" style="width: 20px;" alt="Riva - ريفا">
-                                                <span class="me-1 fs-15 text-gray-800">{{ $selectedUnit->unit_area . ' م²' }}</span>
+                                                <span class="me-1 fs-15 text-gray-800">{{ $selectedUnit->unit_area . __('public.unit.area_suffix') }}</span>
                                             </li>
                                             <li class="post-comments">
                                                 {{-- <img src="{{ asset('frontend/img/icons/pan-03(1).png') }}" class="dark-image" style="width: 17px;" alt="Riva - ريفا"> --}}
@@ -83,7 +83,7 @@
                                                 <span class="me-1 fs-15 text-gray-800">{{ $selectedUnit->kitchen}}</span>
                                             </li>
                                             <li class="post-comments">
-                                                <span class="text-dark fs-15">الدور :</span>
+                                                <span class="text-dark fs-15">@lang('public.unit.floor')</span>
                                                 <span class="me-1 fs-15 text-gray-800">{{ $selectedUnit->floor}}</span>
                                             </li>
                                         </ul>
@@ -93,7 +93,7 @@
                                     </p>
                                     <div class="mb-3">
                                         <div class="text-right">
-                                            <h2 class="text-uppercase fs-20 mb-3">المميزات</h2>
+                                            <h2 class="text-uppercase fs-20 mb-3">@lang('public.unit.features')</h2>
                                         </div>
                                         <div class="d-flex gap-4">
                                             @foreach ($selectedUnit->features as $features)
@@ -114,29 +114,29 @@
                                 <hr style="margin: 10px;">
                                 @if ($selectedUnit->show_price && $selectedUnit->case == 0)
                                     <h3 class="h3 mb-3 text-success px-2">
-                                        <span class="text-muted small fs-15">السعر</span>
+                                        <span class="text-muted small fs-15">@lang('public.unit.price')</span>
                                         {{ number_format($selectedUnit->unit_price)}} <img src="{{ asset('frontend/img/SaudiRiyal.svg') }}" width="14px" alt="">
                                     </h3>
                                 @endif
                                 @if ($selectedUnit->case == 0)
                                     <div class="mb-4">
-                                        <a wire:click="goToFormStep" class="btn btn-primary btn-icon btn-sm btn-icon-start rounded w-100 mb-2">تسجيل اهتمام بالوحدة <i class="uil uil-fire"></i></a>
+                                        <a wire:click="goToFormStep" class="btn btn-primary btn-icon btn-sm btn-icon-start rounded w-100 mb-2">@lang('public.unit.register_interest') <i class="uil uil-fire"></i></a>
                                         <div class=" d-flex gap-2">
                                             <a target="_blanck" 
                                             wire:click="trackWhatsappClick({{ $selectedUnit->id }})"
                                             href="https://wa.me/{{ isset($selectedUnit->project) && $selectedUnit->project->sales_manager_id ?
                                                 App\Models\User::where('id',$selectedUnit->project->sales_manager_id)->first()->phone ?? setting('site_phone') :
                                             setting('site_phone')
-                                            }}?text=انا مهتم بهذا المشروع {{ isset($selectedUnit->project) ? $selectedUnit->project->name : '' }} {{ isset($selectedUnit->project) ? route('frontend.projects.single', $selectedUnit->project->slug) : '' }}"
+                                            }}?text=انا مهتم بهذا المشروع {{ isset($selectedUnit->project) ? $selectedUnit->project->name : '' }} {{ isset($selectedUnit->project) ? route('frontend.projects.single', ['slug' => $selectedUnit->project->slug]) : '' }}"
                                              class="btn btn-soft-primary btn-icon btn-sm btn-icon-start rounded w-100">
-                                                تواصل واتس اب
+                                                @lang('public.unit.whatsapp')
                                                 <i class="uil uil-whatsapp"></i>
                                             </a>
                                             <a wire:click="trackCallClick({{ $selectedUnit->id }})"
                                                 href="tel:{{ isset($selectedUnit->project) && $selectedUnit->project->sales_manager_id ?
                                                 App\Models\User::where('id',$selectedUnit->project->sales_manager_id)->first()->phone : setting('site_phone') }}"
                                                 class="btn btn-soft-primary btn-icon btn-sm btn-icon-start rounded w-100 text-dark">
-                                                اتصال
+                                                @lang('public.unit.call')
                                                 <i class="uil uil-phone"></i>
                                             </a>
                                         </div>
@@ -145,11 +145,11 @@
                                     <div class="mb-4 d-flex gap-2">
                                         <a class="btn btn-soft-orange btn-icon btn-sm btn-icon-start rounded w-50 disabled" disabled>
                                             @if ($selectedUnit->case == 1)
-                                                الوحدة محجوزة
+                                                @lang('public.unit.reserved')
                                             @elseif ($selectedUnit->case == 2)
-                                                الوحدة مباعة
+                                                @lang('public.unit.sold')
                                             @else
-                                                تحت الانشاء
+                                                @lang('public.unit.under_construction')
                                             @endif
                                         </a>
                                         <a target="_blank"
@@ -157,8 +157,8 @@
                                            href="https://wa.me/{{ isset($selectedUnit->project) && $selectedUnit->project->sales_manager_id ?
                                             App\Models\User::where('id',$selectedUnit->project->sales_manager_id)->first()->phone ?? setting('site_phone') :
                                         setting('site_phone')
-                                        }}?text=انا مهتم بهذا المشروع {{ isset($selectedUnit->project) ? $selectedUnit->project->name : '' }} {{ isset($selectedUnit->project) ? route('frontend.projects.single', $selectedUnit->project->slug) : '' }}" class="btn btn-primary btn-icon btn-sm btn-icon-start rounded w-50">
-                                            تواصل واتس اب
+                                        }}?text=انا مهتم بهذا المشروع {{ isset($selectedUnit->project) ? $selectedUnit->project->name : '' }} {{ isset($selectedUnit->project) ? route('frontend.projects.single', ['slug' => $selectedUnit->project->slug]) : '' }}" class="btn btn-primary btn-icon btn-sm btn-icon-start rounded w-50">
+                                            @lang('public.unit.whatsapp')
                                             <i class="uil uil-whatsapp"></i>
                                         </a>
                                     </div>
@@ -169,11 +169,11 @@
                             <!-- Step 2: Show Interest Form -->
                             @if($currentStep == 2)
                                 <div class="post-header mb-5 mt-5">
-                                    <h4 class="post-title">تقديم اهتمام لشراء الوحدة</h4>
+                                    <h4 class="post-title">@lang('public.unit.submit_interest')</h4>
                                     <form wire:submit.prevent="submitInterest" data-unit-order-form data-unit-id="{{ $selectedUnit->id }}">
                                         <div class="row mb-3">
                                             <div class="col-md-6">
-                                                <label for="firstName" class="form-label text-gray-900">الاسم الاول</label>
+                                                <label for="firstName" class="form-label text-gray-900">@lang('public.unit.first_name')</label>
                                                 <input type="text"
                                                        id="firstName"
                                                        class="form-control @error('firstName') is-invalid @enderror"
@@ -185,7 +185,7 @@
                                                 @enderror
                                             </div>
                                             <div class="col-md-6">
-                                                <label for="lastName" class="form-label text-gray-900">الاسم الاخير</label>
+                                                <label for="lastName" class="form-label text-gray-900">@lang('public.unit.last_name')</label>
                                                 <input type="text"
                                                        id="lastName"
                                                        class="form-control @error('lastName') is-invalid @enderror"
@@ -197,7 +197,7 @@
                                                 @enderror
                                             </div>
                                             <div class="col-md-12">
-                                                <label for="email" class="form-label text-gray-900">بريد الكتروني</label>
+                                                <label for="email" class="form-label text-gray-900">@lang('public.unit.email')</label>
                                                 <input type="email"
                                                        id="email"
                                                        class="form-control @error('email') is-invalid @enderror"
@@ -210,21 +210,21 @@
                                             </div>
                                         </div>
                                         <div class="mb-3">
-                                            <label for="phone" class="form-label text-gray-900">رقم الهاتف</label>
-                                            <div class="input-group" dir="rtl">
+                                            <label for="phone" class="form-label text-gray-900">@lang('public.unit.phone')</label>
+                                            <div class="input-group" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
                                                 <input type="text"
                                                     id="phone"
                                                     name="phone"
                                                     class="form-control @error('phone') is-invalid @enderror"
                                                     wire:model="phone"
-                                                    placeholder="5xxxxxxxx"
+                                                    placeholder="{{ __('public.unit.phone_placeholder') }}"
                                                     maxlength="9"
                                                     pattern="5[0-9]{8}"
                                                     oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/^[^5]/, '5')">
-                                                <span class="input-group-text">+966</span>
+                                                <span class="input-group-text">{{ __('public.unit.phone_prefix') }}</span>
 
                                             </div>
-                                            <small class="text-muted">أدخل رقم الجوال بدون رمز الدولة (يبدأ بـ 5)</small>
+                                            <small class="text-muted">@lang('public.unit.phone_help')</small>
 
                                             @error('phone')
                                                 <div class="invalid-feedback">
@@ -234,7 +234,7 @@
                                         </div>
                                         <div class="row mb-6">
                                             <div class="col-12 mb-3">
-                                                <label class="form-label text-gray-900 mb-3">طريقة الشراء</label>
+                                                <label class="form-label text-gray-900 mb-3">@lang('public.unit.purchase_type')</label>
                                                 <div class="custom-radio-group">
                                                     @foreach($purchaseTypes as $value => $label)
                                                         <div class="custom-radio-item">
@@ -260,10 +260,10 @@
 
                                             @if($purchaseType === 'bank')
                                                 <div class="col-12 mb-3">
-                                                    <label for="support_type" class="form-label text-gray-900">نوع الدعم</label>
+                                                    <label for="support_type" class="form-label text-gray-900">@lang('public.unit.support_type')</label>
                                                     <select wire:model="support_type" class="form-select" id="support_type">
-                                                        <option value="مدعوم">مدعوم</option>
-                                                        <option value="غير مدعوم">غير مدعوم</option>
+                                                        <option value="مدعوم">@lang('public.unit.supported')</option>
+                                                        <option value="غير مدعوم">@lang('public.unit.unsupported')</option>
                                                     </select>
                                                     @error('support_type')
                                                         <div class="invalid-feedback">
@@ -274,7 +274,7 @@
                                             @endif
 
                                             <div class="col-12">
-                                                <label class="form-label text-gray-900 mb-3">الغرض من الشراء</label>
+                                                <label class="form-label text-gray-900 mb-3">@lang('public.unit.purchase_purpose')</label>
                                                 <div class="custom-radio-group">
                                                     @foreach($purchasePurposes as $value => $label)
                                                         <div class="custom-radio-item">
@@ -312,13 +312,13 @@
 
                                         <button type="submit" class="btn btn-primary btn-icon btn-sm btn-icon-start rounded w-100" wire:loading.attr="disabled">
                                             <span wire:loading.remove wire:target="submitInterest">
-                                                إرسال
+                                                @lang('public.unit.submit')
                                             </span>
                                             <div wire:loading wire:target="submitInterest">
                                                 <div class="spinner-border spinner-border-sm me-4 mb-2" role="status">
-                                                    <span class="visually-hidden">جاري الإرسال...</span>
+                                                    <span class="visually-hidden">@lang('public.unit.sending')</span>
                                                 </div>
-                                                جاري الإرسال...
+                                                @lang('public.unit.sending')
                                             </div>
                                         </button>
 
