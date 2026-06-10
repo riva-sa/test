@@ -38493,7 +38493,7 @@ button:focus {
   }
 
   .navbar-expand-lg.extended:not(.extended-alt):not(.fixed) .navbar-collapse-wrapper {
-    padding: 0 1.5rem 0 0.5rem;
+    padding: 0 0.5rem 0 0.5rem;
   }
 
   .navbar-expand-lg.extended.extended-alt:not(.fixed) .navbar-collapse-wrapper {

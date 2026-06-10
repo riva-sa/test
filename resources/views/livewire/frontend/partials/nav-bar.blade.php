@@ -18,7 +18,11 @@
                 <div class="navbar-collapse offcanvas offcanvas-nav offcanvas-start">
                 <div class="offcanvas-header d-lg-none">
                     <a href="{{ route('frontend.home') }}">
-                        <img src="{{asset('frontend/img/svg/Artboard 19.svg')}}"  width="111px" srcset="{{asset('frontend/img/svg/Artboard 19.svg')}} 2x" alt="Riva - ريفا" />
+                        @if (\App\Helpers\LocalizationHelper::getDirection() === 'ltr')
+                            <img src="{{asset('frontend/img/svg/riva-logo-ltr.svg')}}"  width="111px" srcset="{{asset('frontend/img/svg/riva-logo-ltr.svg')}} 2x" alt="Riva" />
+                        @else 
+                            <img src="{{asset('frontend/img/svg/Artboard 19.svg')}}"  width="111px" srcset="{{asset('frontend/img/svg/Artboard 19.svg')}} 2x" alt="ريفا" />
+                        @endif
                         {{-- ريـفـا --}}
                     </a>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -27,7 +31,11 @@
                     <ul class="navbar-nav pe-0 ps-auto">
                         <li class="nav-item d-md-block d-none">
                             <a class="nav-link pe-0" href="{{ route('frontend.home') }}" style="padding: 15px 0 0 20px;">
-                                <img src="{{asset('frontend/img/svg/Artboard 18.svg')}}" width="155px" srcset="{{asset('frontend/img/svg/Artboard 18.svg')}} 2x" alt="Riva - ريفا" />
+                                @if (\App\Helpers\LocalizationHelper::getDirection() === 'ltr')
+                                    <img src="{{asset('frontend/img/svg/riva-logo-ltr.svg')}}" width="155px" srcset="{{asset('frontend/img/svg/riva-logo-ltr.svg')}} 2x" alt="Riva - ريفا" />
+                                @else 
+                                    <img src="{{asset('frontend/img/svg/Artboard 18.svg')}}" width="155px" srcset="{{asset('frontend/img/svg/Artboard 18.svg')}} 2x" alt="Riva - ريفا" />
+                                @endif
                                 {{-- ريـــــفــــــا --}}
                             </a>
                         </li>
