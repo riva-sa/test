@@ -120,7 +120,7 @@ return [
         'ad_license' => 'Advertisement License',
         'publish_date' => 'Publish Date',
         'price' => 'Price',
-        'view_profile' => 'View Project Profile',
+        'view_profile' => 'Project Profile',
         'register_interest' => 'Register Interest',
         'loading' => 'Loading...',
         'whatsapp' => 'WhatsApp',

@@ -117,21 +117,21 @@
                         </button>
                     </div>
 
-                    <div class="mt-2 w-100 d-flex align-items-center flex-column">
+                    <div>
                         @php
                             $contactPhone = $project->contact_phone
                                 ?? optional($project->salesManager)->phone
                                 ?? setting('site_phone');
                         @endphp
                         @if($contactPhone)
-                        <div class="d-flex justify-content-between w-100">
+                        <div class="mt-2 d-flex gap-2 actions">
                                 <a href="https://wa.me/{{ $contactPhone }}?text={{ urlencode(__('public.project.whatsapp_interest')) }} {{ $project->name }} {{ route('frontend.projects.single', ['slug' => $project->slug]) }}"
                             target="_blank"
                             class="btn btn-primary btn-sm rounded flex-1 d-flex align-items-center justify-content-center gap-1 w-50 fs-14">
                                 <i class="uil uil-whatsapp"></i> @lang('public.project.whatsapp')
                             </a>
                             <a href="tel:{{ $contactPhone }}"
-                            class="btn btn-outline-light btn-sm rounded flex-1 d-flex align-items-center justify-content-center gap-1 w-50 fs-14">
+                            class="btn btn-soft-ash btn-sm btn-icon-end rounded w-50">
                                 <i class="uil uil-phone"></i> @lang('public.project.call')
                             </a>
                         </div>
@@ -264,24 +264,24 @@
 
                             </button>
                         </div>
-                        <div class="mt-2 w-100 d-flex align-items-center flex-column">
+                        <div class="">
                             @php
                                 $contactPhone = $project->contact_phone
                                     ?? optional($project->salesManager)->phone
                                     ?? setting('site_phone');
                             @endphp
                             @if($contactPhone)
-                            <div class="d-flex justify-content-between w-100">
-                            <a href="https://wa.me/{{ $contactPhone }}?text={{ urlencode(__('public.project.whatsapp_interest')) }} {{ $project->name }} {{ route('frontend.projects.single', ['slug' => $project->slug]) }}"
-                                target="_blank"
-                                class="btn btn-primary btn-sm rounded flex-1 d-flex align-items-center justify-content-center gap-1 w-50 fs-14">
-                                    <i class="uil uil-whatsapp"></i> @lang('public.project.whatsapp')
+                            <div class="mt-4 d-flex gap-2 actions">
+                                <a href="https://wa.me/{{ $contactPhone }}?text={{ urlencode(__('public.project.whatsapp_interest')) }} {{ $project->name }} {{ route('frontend.projects.single', ['slug' => $project->slug]) }}"
+                                    target="_blank"
+                                    class="btn btn-primary btn-sm rounded flex-1 d-flex align-items-center justify-content-center gap-1 w-50 fs-14">
+                                        <i class="uil uil-whatsapp"></i> @lang('public.project.whatsapp')
                                 </a>
                                 <a href="tel:{{ $contactPhone }}"
-                                class="btn btn-outline-light btn-sm rounded flex-1 d-flex align-items-center justify-content-center gap-1 w-50 fs-14">
-                                    <i class="uil uil-phone"></i> @lang('public.project.call')
-                                </a>
-                            </div>
+                                    class="btn btn-outline-light btn-sm rounded flex-1 d-flex align-items-center justify-content-center gap-1 w-50 fs-14">
+                                        <i class="uil uil-phone"></i> @lang('public.project.call')
+                                    </a>
+                                </div>
                             @endif
                         </div>
                     </div>

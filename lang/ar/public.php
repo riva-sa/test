@@ -121,7 +121,7 @@ return [
         'ad_license' => 'رخصة الاعلان',
         'publish_date' => 'تاريخ النشر',
         'price' => 'السعر',
-        'view_profile' => 'عرض ملف المشروع',
+        'view_profile' => 'ملف المشروع',
         'register_interest' => 'تسجيل اهتمام',
         'loading' => 'جاري التحميل...',
         'whatsapp' => 'واتساب',
