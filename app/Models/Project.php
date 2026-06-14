@@ -252,9 +252,10 @@ class Project extends Model
     public function getDynamicProjectStatusAttribute()
     {
         $unitCases = $this->getUnitCasesCollection();
+        $isAr = app()->getLocale() === 'ar';
 
         if ($unitCases->isEmpty()) {
-            return 'تحت الانشاء';
+            return $isAr ? 'تحت الانشاء' : 'Under Construction';
         }
         $availableCount = $unitCases->filter(fn ($case) => $case == 0)->count();
         $reservedCount = $unitCases->filter(fn ($case) => $case == 1)->count();
@@ -262,35 +263,36 @@ class Project extends Model
         $underConstructionCount = $unitCases->filter(fn ($case) => $case == 3)->count();
 
         $totalUnits = $unitCases->count();
+        $unitWord = $isAr ? 'وحدة' : ($totalUnits === 1 ? 'unit' : 'units');
 
         if ($availableCount == $totalUnits) {
-            return "متاح ($totalUnits وحدة)";
+            return $isAr ? "متاح ($totalUnits وحدة)" : "Available ($totalUnits $unitWord)";
         }
 
         if ($soldCount == $totalUnits) {
-            return "مباع بالكامل ($totalUnits وحدة)";
+            return $isAr ? "مباع بالكامل ($totalUnits وحدة)" : "Fully Sold ($totalUnits $unitWord)";
         }
 
         if ($reservedCount == $totalUnits) {
-            return "محجوز بالكامل ($totalUnits وحدة)";
+            return $isAr ? "محجوز بالكامل ($totalUnits وحدة)" : "Fully Reserved ($totalUnits $unitWord)";
         }
 
         if ($underConstructionCount == $totalUnits) {
-            return "تحت الانشاء ($totalUnits وحدة)";
+            return $isAr ? "تحت الانشاء ($totalUnits وحدة)" : "Under Construction ($totalUnits $unitWord)";
         }
 
         if ($availableCount > 0) {
             $statusParts = [];
-            $statusParts[] = "متاح $availableCount";
+            $statusParts[] = $isAr ? "متاح $availableCount" : "Available $availableCount";
 
             if ($reservedCount > 0) {
-                $statusParts[] = "محجوز $reservedCount";
+                $statusParts[] = $isAr ? "محجوز $reservedCount" : "Reserved $reservedCount";
             }
             if ($soldCount > 0) {
-                $statusParts[] = "مباع $soldCount";
+                $statusParts[] = $isAr ? "مباع $soldCount" : "Sold $soldCount";
             }
             if ($underConstructionCount > 0) {
-                $statusParts[] = "تحت الإنشاء $underConstructionCount";
+                $statusParts[] = $isAr ? "تحت الإنشاء $underConstructionCount" : "Under Construction $underConstructionCount";
             }
 
             return implode(' | ', $statusParts);
@@ -300,19 +302,19 @@ class Project extends Model
             $statusParts = [];
 
             if ($reservedCount > 0) {
-                $statusParts[] = "محجوز $reservedCount";
+                $statusParts[] = $isAr ? "محجوز $reservedCount" : "Reserved $reservedCount";
             }
             if ($soldCount > 0) {
-                $statusParts[] = "مباع $soldCount";
+                $statusParts[] = $isAr ? "مباع $soldCount" : "Sold $soldCount";
             }
             if ($underConstructionCount > 0) {
-                $statusParts[] = "تحت الإنشاء $underConstructionCount";
+                $statusParts[] = $isAr ? "تحت الإنشاء $underConstructionCount" : "Under Construction $underConstructionCount";
             }
 
             return implode(' | ', $statusParts);
         }
 
-        return "المجموع $totalUnits وحدة";
+        return $isAr ? "المجموع $totalUnits وحدة" : "Total $totalUnits $unitWord";
     }
 
     public function getProjectStatusDetailsAttribute()

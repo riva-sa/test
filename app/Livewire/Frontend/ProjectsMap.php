@@ -166,7 +166,7 @@ class ProjectsMap extends Component
         });
 
         $projectTypes = Cache::remember('project_types_active', 3600, function () {
-            return ProjectType::where('status', 1)->select(['id', 'name', 'slug'])->get();
+            return ProjectType::where('status', 1)->select(['id', 'name', 'name_en', 'slug'])->get();
         });
 
         return view('livewire.frontend.projects-map', [
