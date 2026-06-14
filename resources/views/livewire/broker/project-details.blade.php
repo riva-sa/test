@@ -87,14 +87,6 @@
                         <option value="{{ $type }}">{{ $type }}</option>
                     @endforeach
                 </select>
-                <div class="flex bg-gray-50 rounded-xl p-1">
-                    @foreach (['all' => 'الكل', '0' => 'متاحة', '1' => 'محجوزة', '2' => 'مباعة'] as $value => $label)
-                        <button wire:click="$set('unitCase', '{{ $value }}')"
-                                class="px-3 py-1.5 text-[11px] font-black rounded-lg transition-all {{ $unitCase === $value ? 'bg-gray-900 text-white' : 'text-gray-500 hover:text-gray-900' }}">
-                            {{ $label }}
-                        </button>
-                    @endforeach
-                </div>
             </div>
         </div>
 

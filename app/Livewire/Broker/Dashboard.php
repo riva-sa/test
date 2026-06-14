@@ -21,7 +21,9 @@ class Dashboard extends Component
             'processing' => (clone $base)->whereIn('status', [0, 1, 2, 5])->count(),
             'completed' => (clone $base)->where('status', 4)->count(),
             'not_interested' => (clone $base)->where('status', 3)->count(),
-            'projects' => Project::where('status', true)->count(),
+            'projects' => Project::where('status', true)
+                ->whereHas('units', fn ($q) => $q->where('case', '0'))
+                ->count(),
             'units' => Unit::where('case', '0')->count(),
         ];
 

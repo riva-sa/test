@@ -6,7 +6,7 @@
 
     {{-- Filters --}}
     <div class="bg-white rounded-2xl border border-gray-100 p-4 mb-6">
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-3">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
             <div class="col-span-2 lg:col-span-2 relative">
                 <i class="fas fa-search absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 text-xs"></i>
                 <input type="text" wire:model.live.debounce.400ms="search"
@@ -30,12 +30,6 @@
                 @foreach ($unitTypes as $type)
                     <option value="{{ $type }}">{{ $type }}</option>
                 @endforeach
-            </select>
-            <select wire:model.live="unitCaseFilter" class="px-3 py-2.5 rounded-xl border border-gray-200 focus:border-gray-900 focus:ring-0 text-sm">
-                <option value="">كل حالات الوحدات</option>
-                <option value="0">متاحة</option>
-                <option value="1">محجوزة</option>
-                <option value="2">مباعة</option>
             </select>
             <div class="flex gap-2 col-span-2 lg:col-span-1">
                 <input type="number" wire:model.live.debounce.600ms="minPrice" class="w-1/2 px-3 py-2.5 rounded-xl border border-gray-200 focus:border-gray-900 focus:ring-0 text-sm" placeholder="من سعر">

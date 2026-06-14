@@ -1,9 +1,11 @@
 <div class="p-4 md:p-6 min-h-screen bg-gray-50/50">
 
-    {{-- PDF.js loaded only as fallback when Ghostscript is unavailable --}}
+    {{-- PDF.js loaded only as fallback when Ghostscript is unavailable.
+         Self-hosted from /public so it works on hosts that block CDNs (e.g.
+         Laravel Cloud) — and the bundled cMaps ensure Arabic renders correctly. --}}
     @if (empty($pageImages) && $tempPdfUrl)
     <div wire:ignore>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+        <script src="{{ asset('vendor/pdfjs/pdf.min.js') }}"></script>
     </div>
     @endif
 
@@ -24,7 +26,7 @@
                 return;
             }
 
-            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+            pdfjsLib.GlobalWorkerOptions.workerSrc = '{{ asset('vendor/pdfjs/pdf.worker.min.js') }}';
 
             const container = document.getElementById('pdf-js-container');
             if (!container) return;
@@ -32,9 +34,9 @@
 
             const loadingTask = pdfjsLib.getDocument({
                 url: this.pdfUrl,
-                cMapUrl: 'https://unpkg.com/pdfjs-dist@3.11.174/cmaps/',
+                cMapUrl: '{{ asset('vendor/pdfjs/cmaps/') }}/',
                 cMapPacked: true,
-                standardFontDataUrl: 'https://unpkg.com/pdfjs-dist@3.11.174/standard_fonts/',
+                standardFontDataUrl: '{{ asset('vendor/pdfjs/standard_fonts/') }}/',
                 fontExtraProperties: true,
             });
 
@@ -189,12 +191,12 @@
 
                 {{-- Rendering quality indicator --}}
                 @if ($tempPdfUrl)
-                    <div class="mt-3 flex items-center gap-1.5 text-[10px] font-bold {{ count($pageImages) > 0 ? 'text-green-600' : 'text-amber-600' }}">
-                        <i class="fas {{ count($pageImages) > 0 ? 'fa-check-circle' : 'fa-exclamation-circle' }}"></i>
+                    <div class="mt-3 flex items-center gap-1.5 text-[10px] font-bold {{ count($pageImages) > 0 ? 'text-green-600' : 'text-blue-600' }}">
+                        <i class="fas {{ count($pageImages) > 0 ? 'fa-check-circle' : 'fa-eye' }}"></i>
                         @if (count($pageImages) > 0)
                             عرض عالي الجودة ({{ count($pageImages) }} {{ count($pageImages) === 1 ? 'صفحة' : 'صفحات' }})
                         @else
-                            عرض أساسي — ثبّت Ghostscript للعربية الصحيحة
+                            عرض داخل المتصفح
                         @endif
                     </div>
                 @endif
