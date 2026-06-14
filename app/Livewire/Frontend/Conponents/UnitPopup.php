@@ -45,16 +45,10 @@ class UnitPopup extends Component
     public $unitImages = [];
 
     // Purchase Type Options
-    public $purchaseTypes = [
-        'cash' => 'كاش',
-        'bank' => 'تمويل بنكي',
-    ];
+    public $purchaseTypes = [];
 
     // Purchase Purpose Options
-    public $purchasePurposes = [
-        'personal' => 'سكنى',
-        'investment' => 'استثمار',
-    ];
+    public $purchasePurposes = [];
 
     // Validation Rules
     protected $rules = [
@@ -95,6 +89,14 @@ class UnitPopup extends Component
     public function boot(TrackingService $trackingService)
     {
         $this->trackingService = $trackingService;
+        $this->purchaseTypes = [
+            'cash' => __('public.unit.cash'),
+            'bank' => __('public.unit.bank'),
+        ];
+        $this->purchasePurposes = [
+            'personal' => __('public.unit.personal'),
+            'investment' => __('public.unit.investment'),
+        ];
     }
 
     // Add this method to load images

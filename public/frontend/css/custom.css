@@ -1728,3 +1728,8 @@ html[dir="rtl"] .swiper-controls .swiper-navigation .swiper-button.swiper-button
     left: 1rem !important;
     right: unset !important;
 }
+
+html[dir="ltr"] .radio-icon {
+    margin-left: 0;
+    margin-right: 0.75rem;
+}

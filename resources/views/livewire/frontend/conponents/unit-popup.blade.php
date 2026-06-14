@@ -212,6 +212,9 @@
                                         <div class="mb-3">
                                             <label for="phone" class="form-label text-gray-900">@lang('public.unit.phone')</label>
                                             <div class="input-group" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
+                                                @if(app()->getLocale() !== 'ar')
+                                                    <span class="input-group-text">{{ __('public.unit.phone_prefix') }}</span>
+                                                @endif
                                                 <input type="text"
                                                     id="phone"
                                                     name="phone"
@@ -221,8 +224,9 @@
                                                     maxlength="9"
                                                     pattern="5[0-9]{8}"
                                                     oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/^[^5]/, '5')">
-                                                <span class="input-group-text">{{ __('public.unit.phone_prefix') }}</span>
-
+                                                @if(app()->getLocale() === 'ar')
+                                                    <span class="input-group-text">{{ __('public.unit.phone_prefix') }}</span>
+                                                @endif
                                             </div>
                                             <small class="text-muted">@lang('public.unit.phone_help')</small>
 
