@@ -1,13 +1,8 @@
 <div class="p-4 md:p-6 min-h-screen bg-gray-50/50">
 
-    {{-- PDF.js loaded only as fallback when Ghostscript is unavailable.
-         Self-hosted from /public so it works on hosts that block CDNs (e.g.
-         Laravel Cloud) — and the bundled cMaps ensure Arabic renders correctly. --}}
-    @if (empty($pageImages) && $tempPdfUrl)
-    <div wire:ignore>
-        <script src="{{ asset('vendor/pdfjs/pdf.min.js') }}"></script>
-    </div>
-    @endif
+    {{-- PDF.js is loaded dynamically from JS (see loadPdfJs) so we can disable
+         any AMD loader during load — otherwise pdf.js registers as an AMD module
+         and never sets the global, leaving the preview silently blank. --}}
 
 <div
      x-data="{
@@ -16,21 +11,47 @@
         pdfUrl:       @entangle('tempPdfUrl'),
         pageImages:   @entangle('pageImages'),
 
-        initPdf() {
-            if (!this.pdfUrl || this.pageImages.length > 0) return;
-            // The pdf.js library is loaded async via a <script> tag; if it hasn't
-            // finished loading yet, retry shortly instead of bailing out (which
-            // previously left the preview area blank).
-            if (typeof pdfjsLib === 'undefined') {
-                setTimeout(() => this.initPdf(), 200);
-                return;
-            }
+        /* Load pdf.js exactly once, forcing the UMD global branch by hiding any
+           AMD loader (window.define) during evaluation. Returns the pdfjsLib. */
+        loadPdfJs() {
+            if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+            if (window._pdfjsLoading) return window._pdfjsLoading;
 
-            pdfjsLib.GlobalWorkerOptions.workerSrc = '{{ asset('vendor/pdfjs/pdf.worker.min.js') }}';
+            window._pdfjsLoading = new Promise((resolve, reject) => {
+                const savedDefine = window.define;
+                if (savedDefine) window.define = undefined;        // force global, not AMD
+                const restore = () => { if (savedDefine) window.define = savedDefine; };
+
+                const s = document.createElement('script');
+                s.src = '{{ asset('vendor/pdfjs/pdf.min.js') }}';
+                s.onload  = () => { restore(); window.pdfjsLib ? resolve(window.pdfjsLib) : reject(new Error('pdfjsLib global not set')); };
+                s.onerror = () => { restore(); reject(new Error('failed to download pdf.min.js')); };
+                document.head.appendChild(s);
+            });
+            return window._pdfjsLoading;
+        },
+
+        showPdfError(msg) {
+            const c = document.getElementById('pdf-js-container');
+            if (c) c.innerHTML = '<div class=\'text-center py-12 text-red-500\'><i class=\'fas fa-exclamation-triangle text-3xl\'></i><p class=\'text-xs mt-2\'>' + msg + '</p></div>';
+        },
+
+        async initPdf() {
+            if (!this.pdfUrl || this.pageImages.length > 0) return;
 
             const container = document.getElementById('pdf-js-container');
             if (!container) return;
             container.innerHTML = '<div class=\'text-center py-12\'><i class=\'fas fa-circle-notch fa-spin text-3xl text-gray-300\'></i><p class=\'text-xs text-gray-400 mt-2\'>جاري تحميل صفحات العقد...</p></div>';
+
+            let pdfjsLib;
+            try {
+                pdfjsLib = await this.loadPdfJs();
+            } catch (e) {
+                this.showPdfError('تعذّر تحميل مكتبة العرض: ' + e.message);
+                return;
+            }
+
+            pdfjsLib.GlobalWorkerOptions.workerSrc = '{{ asset('vendor/pdfjs/pdf.worker.min.js') }}';
 
             const loadingTask = pdfjsLib.getDocument({
                 url: this.pdfUrl,
@@ -81,8 +102,8 @@
                         $wire.setFieldCoordinates(this.activeField, pageNum, x, y);
                     });
                 }
-            }).catch(() => {
-                container.innerHTML = '<div class=\'text-center py-12 text-red-500\'><i class=\'fas fa-exclamation-triangle text-3xl\'></i><p class=\'text-xs mt-2\'>فشل تحميل ملف الـ PDF.</p></div>';
+            }).catch((e) => {
+                this.showPdfError('فشل تحميل ملف الـ PDF: ' + (e && e.message ? e.message : 'تعذّر الوصول للملف'));
             });
         },
 
