@@ -17,33 +17,7 @@
     {{-- <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css"> --}}
 
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            50: '#122818',
-                            100: '#122818',
-                            200: '#122818',
-                            300: '#122818',
-                            400: '#122818',
-                            500: '#122818',
-                            600: '#122818',
-                            700: '#122818',
-                            800: '#122818',
-                            900: '#122818',
-                        },
-                    },
-
-                    fontFamily: {
-                        sans: ['IBM Plex Sans Arabic', 'sans-serif'],
-                    },
-                },
-            },
-        }
-    </script>
+    @vite(['resources/css/app.css'])
     <style>
         .login-card {
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
@@ -69,7 +43,7 @@
         <div class="w-full max-w-md">
             <!-- Logo/Brand -->
             <div class="text-center mb-10">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14 mx-auto text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14 mx-auto text-[#122818]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
                 </svg>
                 <h2 class="mt-4 text-3xl font-extrabold text-gray-900">
@@ -113,7 +87,7 @@
                         </label>
                         <div class="mt-1">
                             <input id="email" name="email" type="email" autocomplete="email" required
-                                   class="form-input appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                   class="form-input appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#122818] focus:border-[#122818] sm:text-sm"
                                    value="{{ old('email') }}" placeholder="your@email.com">
                         </div>
                     </div>
@@ -125,7 +99,7 @@
                         </label>
                         <div class="mt-1">
                             <input id="password" name="password" type="password" autocomplete="current-password" required
-                                   class="form-input appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                   class="form-input appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#122818] focus:border-[#122818] sm:text-sm"
                                    placeholder="••••••••">
                         </div>
                     </div>
@@ -151,7 +125,7 @@
 
                     <div>
                         <button type="submit"
-                                class="btn-primary w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                                class="btn-primary w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#122818] hover:bg-[#0c1a10] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#122818]">
                                 تسجيل الدخول
                         </button>
                     </div>

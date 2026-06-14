@@ -12,40 +12,9 @@
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            50: '#fafafa',
-                            100: '#f4f4f5',
-                            200: '#e4e4e7',
-                            300: '#d4d4d8',
-                            400: '#a1a1aa',
-                            500: '#71717a',
-                            600: '#52525b',
-                            700: '#3f3f46',
-                            800: '#27272a',
-                            900: '#18181b'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['IBM Plex Sans Arabic', 'sans-serif']
-                    }
-                }
-            }
-        }
-    </script>
+    @vite(['resources/css/broker.css'])
 
     @livewireStyles
-    <style>
-        body { font-family: 'IBM Plex Sans Arabic', sans-serif; background: #fafafa; }
-        .scrollbar-thin::-webkit-scrollbar { width: 4px; }
-        .scrollbar-thin::-webkit-scrollbar-thumb { background: #d4d4d8; border-radius: 4px; }
-        [x-cloak] { display: none !important; }
-    </style>
 </head>
 <body class="antialiased text-gray-900">
     <div class="flex h-screen overflow-hidden">

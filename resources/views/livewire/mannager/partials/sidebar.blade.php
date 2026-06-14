@@ -187,6 +187,10 @@
                             @if(request()->routeIs('manager.broker-applications')) <span class="absolute -right-[17px] top-1/2 -translate-y-1/2 w-1 h-6 bg-primary-600 rounded-l-full"></span> @endif
                             طلبات الوسطاء
                         </a>
+                        <a href="{{ route('manager.broker-contract-template') }}" class="relative block px-3 py-2 text-[13px] font-medium rounded-lg transition-all {{ request()->routeIs('manager.settings.broker-contract-template') ? 'text-gray-900 bg-gray-50 font-bold' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50/50' }}">
+                            @if(request()->routeIs('manager.broker-contract-template')) <span class="absolute -right-[17px] top-1/2 -translate-y-1/2 w-1 h-6 bg-primary-600 rounded-l-full"></span> @endif
+                            نسخة العقد
+                        </a>
                     @endif
                     @if(auth()->user()->hasRole(['Admin', 'sales_manager']))
                         <a href="{{ route('manager.activities') }}" class="relative block px-3 py-2 text-[13px] font-medium rounded-lg transition-all {{ request()->routeIs('manager.activities') ? 'text-gray-900 bg-gray-50 font-bold' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50/50' }}">

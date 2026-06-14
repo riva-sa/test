@@ -4,12 +4,18 @@
             <h1 class="text-xl font-black text-gray-900">طلبات الوسطاء</h1>
             <p class="text-xs text-gray-500 mt-1">مراجعة واعتماد طلبات تسجيل الوسطاء العقاريين</p>
         </div>
-        @if ($pendingCount > 0)
-            <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-yellow-50 border border-yellow-200 text-yellow-700 text-xs font-black rounded-full w-fit">
-                <span class="h-2 w-2 bg-yellow-500 rounded-full animate-pulse"></span>
-                {{ $pendingCount }} طلب بانتظار المراجعة
-            </span>
-        @endif
+        <div class="flex items-center gap-3">
+            @if ($pendingCount > 0)
+                <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-yellow-50 border border-yellow-200 text-yellow-700 text-xs font-black rounded-full w-fit">
+                    <span class="h-2 w-2 bg-yellow-500 rounded-full animate-pulse"></span>
+                    {{ $pendingCount }} طلب بانتظار المراجعة
+                </span>
+            @endif
+            <a href="{{ route('manager.broker-contract-template') }}" 
+               class="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-black rounded-xl transition-all flex items-center gap-1.5">
+                <i class="fas fa-file-contract"></i> إعداد قالب العقد
+            </a>
+        </div>
     </div>
 
     @if (session('message'))
@@ -190,15 +196,20 @@
                                 @elseif ($selectedBroker->contractSent())
                                     <span class="px-2.5 py-1 bg-yellow-500 text-white text-[10px] font-black rounded-full">بانتظار توقيع الوسيط</span>
                                 @else
-                                    <span class="px-2.5 py-1 bg-gray-400 text-white text-[10px] font-black rounded-full">لم يُرسل بعد</span>
+                                    <span class="px-2.5 py-1 bg-gray-400 text-white text-[10px] font-black rounded-full">جاري التجهيز</span>
                                 @endif
                             </div>
 
+                            {{-- Auto-generated badge --}}
                             @if ($selectedBroker->contractSent())
+                                <div class="flex items-center gap-1.5 mb-3 p-2 bg-gray-50 rounded-lg">
+                                    <i class="fas fa-magic text-indigo-400 text-xs"></i>
+                                    <span class="text-[10px] text-gray-500 font-bold">مولَّد تلقائياً من القالب الثابت</span>
+                                </div>
                                 <div class="flex flex-wrap gap-2 mb-3">
                                     <a href="{{ route('manager.broker-contract.show', ['broker' => $selectedBroker->id, 'type' => 'contract']) }}" target="_blank"
                                        class="inline-flex items-center gap-2 px-3 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-100 text-gray-700 text-[11px] font-bold rounded-lg transition-all">
-                                        <i class="fas fa-file-pdf text-red-400"></i> العقد المُرسل ({{ $selectedBroker->contract_sent_at?->format('Y-m-d') }})
+                                        <i class="fas fa-file-pdf text-red-400"></i> عقد الوسيط ({{ $selectedBroker->contract_sent_at?->format('Y-m-d') }})
                                     </a>
                                     @if ($selectedBroker->contractSigned())
                                         <a href="{{ route('manager.broker-contract.show', ['broker' => $selectedBroker->id, 'type' => 'signed']) }}" target="_blank"
@@ -207,22 +218,28 @@
                                         </a>
                                     @endif
                                 </div>
+                            @else
+                                <div class="flex items-center gap-2 p-3 bg-blue-50 border border-blue-100 rounded-xl mb-3">
+                                    <i class="fas fa-info-circle text-blue-400 text-sm"></i>
+                                    <p class="text-[11px] text-blue-700">سيُولَّد العقد تلقائياً لدى الاعتماد من القالب الثابت وتُرسل للوسيط مباشرةً.</p>
+                                </div>
                             @endif
 
+                            {{-- Regenerate / resend action --}}
                             @if (! $selectedBroker->contractSigned())
-                                <div class="space-y-2">
-                                    <input type="file" wire:model="contractFile" accept=".pdf" class="w-full text-xs">
-                                    <div wire:loading wire:target="contractFile" class="text-xs text-gray-500">جاري الرفع...</div>
-                                    @error('contractFile') <p class="text-xs text-red-600 font-bold">{{ $message }}</p> @enderror
-                                    <button wire:click="sendContract({{ $selectedBroker->id }})" wire:loading.attr="disabled"
-                                            class="w-full py-2.5 bg-gray-900 hover:bg-gray-800 disabled:opacity-50 text-white text-xs font-black rounded-xl transition-all">
-                                        <span wire:loading.remove wire:target="sendContract"><i class="fas fa-paper-plane ml-1"></i> {{ $selectedBroker->contractSent() ? 'إعادة إرسال عقد جديد' : 'إرسال العقد للوسيط' }}</span>
-                                        <span wire:loading wire:target="sendContract">جاري الإرسال...</span>
-                                    </button>
-                                    @if ($selectedBroker->contractSent())
-                                        <p class="text-[10px] text-gray-400">إعادة إرسال عقد جديد تُلغي أي توقيع سابق وتتطلب توقيع الوسيط من جديد.</p>
-                                    @endif
-                                </div>
+                                <button wire:click="regenerateContract({{ $selectedBroker->id }})"
+                                        wire:confirm="هل أنت متأكد؟ سيُلغى أي توقيع سابق ويُرسل عقد جديد للوسيط."
+                                        wire:loading.attr="disabled"
+                                        class="w-full py-2.5 bg-gray-900 hover:bg-gray-800 disabled:opacity-50 text-white text-xs font-black rounded-xl transition-all">
+                                    <span wire:loading.remove wire:target="regenerateContract">
+                                        <i class="fas fa-sync-alt ml-1"></i>
+                                        {{ $selectedBroker->contractSent() ? 'إعادة توليد وإرسال عقد جديد' : 'توليد وإرسال العقد الآن' }}
+                                    </span>
+                                    <span wire:loading wire:target="regenerateContract">جاري التوليد...</span>
+                                </button>
+                                @if ($selectedBroker->contractSent())
+                                    <p class="text-[10px] text-gray-400 mt-1.5">إعادة التوليد تُلغي أي توقيع سابق وتتطلب توقيع الوسيط من جديد.</p>
+                                @endif
                             @endif
                         </div>
                     @endif

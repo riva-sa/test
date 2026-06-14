@@ -6,8 +6,7 @@
     <title>تسجيل دخول الوسطاء - {{ config('app.name', 'ريفا') }}</title>
     <link rel="shortcut icon" href="{{ asset('frontend/img/logoyy.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style> body { font-family: 'IBM Plex Sans Arabic', sans-serif; } </style>
+    @vite(['resources/css/broker.css'])
 </head>
 <body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-md">

@@ -146,6 +146,7 @@ Route::prefix('broker')->name('broker.')->group(function () {
 // Broker applications management (CRM, admins only)
 Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/crm/broker-applications', \App\Livewire\Mannager\BrokerApplications::class)->name('manager.broker-applications');
+    Route::get('/crm/broker-contract-template', \App\Livewire\Mannager\BrokerContractTemplateSettings::class)->name('manager.broker-contract-template');
     Route::get('/crm/broker-documents/{document}', [\App\Http\Controllers\Manager\BrokerDocumentController::class, 'show'])->name('manager.broker-documents.show');
     Route::get('/crm/brokers/{broker}/contract/{type}', [\App\Http\Controllers\Manager\BrokerDocumentController::class, 'contract'])->name('manager.broker-contract.show');
 

@@ -7,32 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            50: '#f8f8f8',
-                            100: '#f1f1f1',
-                            200: '#e1e1e1',
-                            300: '#d1d1d1',
-                            400: '#a1a1a1',
-                            500: '#717171',
-                            600: '#525252',
-                            700: '#3f3f3f',
-                            800: '#27272a',
-                            900: '#18181b'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['IBM Plex Sans Arabic', 'sans-serif']
-                    }
-                }
-            }
-        }
-    </script>
+    @vite(['resources/css/app.css'])
     <style>
         body { font-family: 'IBM Plex Sans Arabic', sans-serif; }
         .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }

@@ -15,6 +15,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "barryvdh/laravel-dompdf": "^3.1",
         "bezhansalleh/filament-language-switch": "^3.1",
         "bezhansalleh/filament-shield": "^3.3",
         "dotswan/filament-map-picker": "^1.7",
@@ -30,6 +31,7 @@
         "league/flysystem-aws-s3-v3": "^3.0",
         "livewire/livewire": "^3.5",
         "maatwebsite/excel": "^3.1",
+        "mpdf/mpdf": "^8.3",
         "timokoerber/laravel-one-time-operations": "^1.4",
         "tomatophp/filament-icons": "^1.1",
         "tomatophp/filament-settings-hub": "^2.0"

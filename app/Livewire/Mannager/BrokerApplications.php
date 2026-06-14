@@ -6,19 +6,17 @@ use App\Mail\BrokerApplicationStatusMail;
 use App\Mail\BrokerContractMail;
 use App\Models\Broker;
 use App\Models\BrokerActivityLog;
+use App\Services\BrokerContractService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
-use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 
 class BrokerApplications extends Component
 {
-    use WithFileUploads, WithPagination;
-
-    public $contractFile;
+    use WithPagination;
 
     public $search = '';
 
@@ -69,17 +67,32 @@ class BrokerApplications extends Component
         $broker = Broker::findOrFail($brokerId);
 
         $broker->update([
-            'status' => Broker::STATUS_APPROVED,
+            'status'           => Broker::STATUS_APPROVED,
             'rejection_reason' => null,
-            'approved_at' => now(),
-            'approved_by' => Auth::id(),
+            'approved_at'      => now(),
+            'approved_by'      => Auth::id(),
         ]);
 
         BrokerActivityLog::record('approved', $broker->id, "اعتماد حساب الوسيط ({$broker->reference_number})", Auth::id());
 
+        // Auto-generate personalised contract PDF from the fixed template
+        try {
+            app(BrokerContractService::class)->generate($broker);
+            BrokerActivityLog::record('contract_sent', $broker->id, "توليد عقد الوساطة تلقائياً بعد الاعتماد ({$broker->reference_number})", Auth::id());
+        } catch (\Throwable $e) {
+            Log::error('Failed to auto-generate broker contract: ' . $e->getMessage(), ['broker_id' => $broker->id]);
+        }
+
         $this->sendStatusMail($broker);
 
-        session()->flash('message', "تم اعتماد الوسيط {$broker->name} بنجاح وإرسال إشعار له.");
+        // Notify the broker that their contract is ready to sign
+        try {
+            Mail::to($broker->email)->send(new BrokerContractMail($broker));
+        } catch (\Throwable $e) {
+            Log::error('Failed to send broker contract email: ' . $e->getMessage(), ['broker_id' => $broker->id]);
+        }
+
+        session()->flash('message', "تم اعتماد الوسيط {$broker->name} بنجاح وتوليد العقد وإرساله له.");
         $this->closeDetails();
     }
 
@@ -114,49 +127,40 @@ class BrokerApplications extends Component
     }
 
     /**
-     * بعد الاعتماد: رفع عقد PDF وإرساله للوسيط ليوافق عليه ويرفع النسخة الموقعة.
+     * Re-generate the contract PDF from the fixed template and resend it to
+     * the broker (e.g. after a template update or if the broker lost access).
+     * This resets any previous signature.
      */
-    public function sendContract($brokerId)
+    public function regenerateContract($brokerId)
     {
         Gate::authorize('manage-brokers');
 
         $broker = Broker::findOrFail($brokerId);
 
         if (! $broker->isApproved()) {
-            session()->flash('error', 'يجب اعتماد الوسيط أولاً قبل إرسال العقد.');
+            session()->flash('error', 'يجب اعتماد الوسيط أولاً قبل إعادة توليد العقد.');
 
             return;
         }
 
-        $this->validate([
-            'contractFile' => 'required|file|mimes:pdf|max:10240',
-        ], [
-            'contractFile.required' => 'يرجى اختيار ملف العقد',
-            'contractFile.mimes' => 'العقد يجب أن يكون بصيغة PDF',
-            'contractFile.max' => 'حجم الملف يجب ألا يتجاوز 10 ميجا',
-        ]);
+        try {
+            app(BrokerContractService::class)->generate($broker);
+        } catch (\Throwable $e) {
+            Log::error('Failed to regenerate broker contract: ' . $e->getMessage(), ['broker_id' => $broker->id]);
+            session()->flash('error', 'حدث خطأ أثناء توليد العقد. يرجى المحاولة مرة أخرى.');
 
-        $path = $this->contractFile->store("broker-documents/{$broker->id}/contract", 'local');
+            return;
+        }
 
-        $broker->update([
-            'contract_path' => $path,
-            'contract_sent_at' => now(),
-            // إعادة إرسال عقد جديد تُلغي أي توقيع سابق
-            'contract_signed_path' => null,
-            'contract_signed_at' => null,
-        ]);
-
-        BrokerActivityLog::record('contract_sent', $broker->id, "إرسال عقد الوساطة للوسيط ({$broker->reference_number})", Auth::id());
+        BrokerActivityLog::record('contract_sent', $broker->id, "إعادة توليد عقد الوساطة ({$broker->reference_number})", Auth::id());
 
         try {
             Mail::to($broker->email)->send(new BrokerContractMail($broker));
         } catch (\Throwable $e) {
-            Log::error('Failed to send broker contract email: '.$e->getMessage(), ['broker_id' => $broker->id]);
+            Log::error('Failed to send broker contract email: ' . $e->getMessage(), ['broker_id' => $broker->id]);
         }
 
-        $this->contractFile = null;
-
-        session()->flash('message', "تم إرسال العقد إلى الوسيط {$broker->name} بنجاح.");
+        session()->flash('message', "تم إعادة توليد العقد وإرساله إلى الوسيط {$broker->name} بنجاح.");
         $this->closeDetails();
     }
 
