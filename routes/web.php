@@ -9,6 +9,8 @@ use App\Livewire\Developer\DeveloperDashboard;
 use App\Livewire\Frontend\About;
 use App\Livewire\Frontend\Blog;
 use App\Livewire\Frontend\BlogSingle;
+use App\Livewire\Frontend\Careers;
+use App\Livewire\Frontend\CareerSingle;
 use App\Livewire\Frontend\ContactUs;
 use App\Livewire\Frontend\HomePage;
 use App\Livewire\Frontend\Privacy;
@@ -47,6 +49,8 @@ $registerPublicRoutes = function () {
     Route::get('/blog/{slug}', BlogSingle::class)->name('frontend.blog.single');
     Route::get('/services', Services::class)->name('frontend.services');
     Route::get('/contact-us', ContactUs::class)->name('frontend.contactus');
+    Route::get('/careers', Careers::class)->name('frontend.careers');
+    Route::get('/careers/{slug}', CareerSingle::class)->name('frontend.careers.single');
 };
 
 // Unprefixed routes — registered first so they win inbound matching for /projects, /about, etc.
@@ -111,6 +115,42 @@ Route::middleware(['auth', 'role:sales_manager,sales,Admin,developer,follow_up,p
 
 Route::middleware(['auth', 'role:developer'])->prefix('developer')->group(function () {
     Route::get('/', DeveloperDashboard::class)->name('developer.dashboard');
+});
+
+// ===== Broker Portal =====
+Route::prefix('broker')->name('broker.')->group(function () {
+    // Auth & registration (guests)
+    Route::get('/register', \App\Livewire\Broker\Register::class)->name('register');
+    Route::get('/login', [\App\Http\Controllers\Broker\BrokerAuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [\App\Http\Controllers\Broker\BrokerAuthController::class, 'login'])->name('login.submit');
+    Route::post('/logout', [\App\Http\Controllers\Broker\BrokerAuthController::class, 'logout'])->name('logout');
+
+    // Approved brokers only (contract signature is enforced inside broker.approved)
+    Route::middleware(['auth:broker', 'broker.approved'])->group(function () {
+        Route::get('/contract', \App\Livewire\Broker\Contract::class)->name('contract');
+        // Inline previews — named broker.contract.* so the unsigned-contract redirect skips them
+        Route::get('/contract/view', [\App\Http\Controllers\Broker\BrokerFileController::class, 'contract'])->name('contract.view');
+        Route::get('/contract/signed/view', fn () => app(\App\Http\Controllers\Broker\BrokerFileController::class)->contract('signed'))->name('contract.signed-view');
+
+        Route::get('/', \App\Livewire\Broker\Dashboard::class)->name('dashboard');
+        Route::get('/profile', \App\Livewire\Broker\Profile::class)->name('profile');
+        Route::get('/documents/{document}', [\App\Http\Controllers\Broker\BrokerFileController::class, 'document'])->name('documents.show');
+        Route::get('/projects', \App\Livewire\Broker\Projects::class)->name('projects');
+        Route::get('/projects/{id}', \App\Livewire\Broker\ProjectDetails::class)->name('projects.show');
+        Route::get('/leads', \App\Livewire\Broker\MyLeads::class)->name('leads');
+        Route::get('/leads/create', \App\Livewire\Broker\SubmitLead::class)->name('leads.create');
+        Route::get('/leads/{id}', \App\Livewire\Broker\LeadDetails::class)->name('leads.show');
+    });
+});
+
+// Broker applications management (CRM, admins only)
+Route::middleware(['auth', 'role:Admin'])->group(function () {
+    Route::get('/crm/broker-applications', \App\Livewire\Mannager\BrokerApplications::class)->name('manager.broker-applications');
+    Route::get('/crm/broker-documents/{document}', [\App\Http\Controllers\Manager\BrokerDocumentController::class, 'show'])->name('manager.broker-documents.show');
+    Route::get('/crm/brokers/{broker}/contract/{type}', [\App\Http\Controllers\Manager\BrokerDocumentController::class, 'contract'])->name('manager.broker-contract.show');
+
+    // Careers: job application attachments (CV, cover letter, portfolio)
+    Route::get('/crm/job-applications/{application}/files/{type}', [\App\Http\Controllers\Manager\JobApplicationFileController::class, 'show'])->name('manager.job-application-files.show');
 });
 
 // Route::middleware(['auth', 'permission:view_dashboard'])->group(function () {

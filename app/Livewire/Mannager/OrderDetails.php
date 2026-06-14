@@ -264,7 +264,7 @@ class OrderDetails extends Component
     public function loadOrder()
     {
         $this->order = $this->getAccessibleOrdersQuery()
-            ->with(['notes.user.roles', 'unit', 'project.salesManager', 'assignedSalesUser', 'permissions.user', 'permissions.grantedBy', 'lastActionByUser'])
+            ->with(['notes.user.roles', 'unit', 'project.salesManager', 'assignedSalesUser', 'permissions.user', 'permissions.grantedBy', 'lastActionByUser', 'broker'])
             ->findOrFail($this->orderId);
     }
 
@@ -314,7 +314,7 @@ class OrderDetails extends Component
 
     public function render()
     {
-        $this->order->load(['notes.user.roles', 'unit', 'project.salesManager', 'assignedSalesUser', 'permissions.user', 'permissions.grantedBy', 'lastActionByUser']);
+        $this->order->load(['notes.user.roles', 'unit', 'project.salesManager', 'assignedSalesUser', 'permissions.user', 'permissions.grantedBy', 'lastActionByUser', 'broker']);
 
         $accessibleOrdersQuery = $this->getAccessibleOrdersQuery();
         $previousOrder = (clone $accessibleOrdersQuery)->where('id', '<', $this->order->id)->orderBy('id', 'desc')->first();

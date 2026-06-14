@@ -71,6 +71,7 @@ class UnitOrder extends Model
         'user_id',
         'project_id',
         'support_type',
+        'broker_id',
         'last_action_by_user_id',
         'is_waiting_list',
         'waiting_list_unit_type',
@@ -139,6 +140,18 @@ class UnitOrder extends Model
 
     public const ORDER_SOURCE_SOCIAL_MEDIA = 'social_media';
 
+    public const ORDER_SOURCE_BROKER = 'broker';
+
+    /**
+     * Scope orders submitted by a specific broker (broker portal only sees its own leads).
+     */
+    public function scopeForBroker($query, $broker)
+    {
+        $brokerId = is_object($broker) ? $broker->id : $broker;
+
+        return $query->where('broker_id', $brokerId);
+    }
+
     public function unit()
     {
         return $this->belongsTo(Unit::class);
@@ -173,6 +186,11 @@ class UnitOrder extends Model
     public function assignedSalesUser()
     {
         return $this->belongsTo(User::class, 'assigned_sales_user_id');
+    }
+
+    public function broker()
+    {
+        return $this->belongsTo(Broker::class);
     }
 
     public function forwardEvents()
@@ -305,6 +323,8 @@ class UnitOrder extends Model
             self::ORDER_SOURCE_FRONTEND_UNIT => 'صفحة الوحدة',
             self::ORDER_SOURCE_MANAGER => 'إضافة يدوية',
             self::ORDER_SOURCE_BULK_IMPORT => 'رفع ملف',
+            self::ORDER_SOURCE_SOCIAL_MEDIA => 'سوشيال ميديا',
+            self::ORDER_SOURCE_BROKER => 'وسيط عقاري',
         ];
 
         return $sources[$this->order_source] ?? $this->order_source ?? 'غير معروف';
@@ -318,6 +338,10 @@ class UnitOrder extends Model
         $marketingSource = array_key_exists('marketing_source', $this->getAttributes()) ? $this->getAttribute('marketing_source') : null;
         $source = $marketingSource ?: ($this->order_source == self::ORDER_SOURCE_MANAGER ? 'إضافة يدوية' : 'مباشر');
 
+        if ($this->order_source == self::ORDER_SOURCE_BROKER) {
+            $source = 'وسيط عقاري';
+        }
+
         $icons = [
             'Facebook' => 'fab fa-facebook text-blue-600',
             'Instagram' => 'fab fa-instagram text-pink-600',
@@ -329,6 +353,7 @@ class UnitOrder extends Model
             'WhatsApp' => 'fab fa-whatsapp text-green-500',
             'إضافة يدوية' => 'fas fa-user-edit text-gray-600',
             'مباشر' => 'fas fa-link text-gray-500',
+            'وسيط عقاري' => 'fas fa-handshake text-purple-600',
         ];
 
         $icon = $icons[$source] ?? 'fas fa-globe text-gray-400';

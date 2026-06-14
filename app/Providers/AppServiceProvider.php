@@ -114,5 +114,19 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('emails', function (object $job) {
             return Limit::perMinute(5); // Adjust based on Hostinger limits (usually 200/hr)
         });
+
+        // Broker portal gates
+        \Illuminate\Support\Facades\Gate::define('manage-brokers', function ($user) {
+            return $user instanceof \App\Models\User && $user->hasRole('Admin');
+        });
+
+        \Illuminate\Support\Facades\Gate::define('broker-view-order', function ($broker, UnitOrder $order) {
+            return $broker instanceof \App\Models\Broker && $order->broker_id === $broker->id;
+        });
+
+        // Careers: job application attachments are admin-only
+        \Illuminate\Support\Facades\Gate::define('manage-careers', function ($user) {
+            return $user instanceof \App\Models\User && $user->hasRole('Admin');
+        });
     }
 }

@@ -45,6 +45,8 @@
                                 <li><a class="dropdown-item mb-2" href="{{ route('frontend.projects') }}">@lang('public.nav.projects')</a></li>
                                 <li><a class="dropdown-item mb-2" href="{{ route('frontend.contactus') }}">@lang('public.nav.contact')</a></li>
                                 <li><a class="dropdown-item mb-2" href="{{ route('frontend.blog') }}">@lang('public.nav.events')</a></li>
+                                <li><a class="dropdown-item mb-2" href="{{ route('frontend.careers') }}">@lang('public.nav.careers')</a></li>
+                                <li><a class="dropdown-item mb-2" href="{{ route('broker.login') }}">@lang('public.nav.broker')</a></li>
                             </ul>
 
                             @php
@@ -135,6 +137,30 @@
                                                         <div>
                                                             <h4 class="mb-1">@lang('public.nav.events')</h4>
                                                             <p class="mb-0">@lang('public.nav.events_description')</p>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                                <!--/column -->
+                                                <div class="col-md-6 col-lg-4">
+                                                    <a href="{{ route('frontend.careers') }}" class="d-flex flex-row">
+                                                        <div>
+                                                            <img src="{{ asset('frontend/img/icons/Button3.png') }}" class="icon-svg icon-svg-sm text-yellow ms-4" alt="Riva - ريفا">
+                                                        </div>
+                                                        <div>
+                                                            <h4 class="mb-1">@lang('public.nav.careers')</h4>
+                                                            <p class="mb-0">@lang('public.nav.careers_description')</p>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                                <!--/column -->
+                                                <div class="col-md-6 col-lg-4">
+                                                    <a href="{{ route('broker.login') }}" class="d-flex flex-row">
+                                                        <div>
+                                                            <img src="{{ asset('frontend/img/icons/Button2.png') }}" class="icon-svg icon-svg-sm text-purple ms-4" alt="Riva - ريفا">
+                                                        </div>
+                                                        <div>
+                                                            <h4 class="mb-1">@lang('public.nav.broker')</h4>
+                                                            <p class="mb-0">@lang('public.nav.broker_description')</p>
                                                         </div>
                                                     </a>
                                                 </div>
