@@ -32,6 +32,11 @@ class UnitRelationManager extends RelationManager
                                 $set('slug', Str::slug($state));
                             }),
 
+                        Forms\Components\TextInput::make('title_en')
+                            ->label('العنوان (English)')
+                            ->maxLength(255)
+                            ->columnSpan(1),
+
                         Forms\Components\TextInput::make('slug')
                             ->required()
                             ->maxLength(255)
@@ -40,6 +45,10 @@ class UnitRelationManager extends RelationManager
 
                         Forms\Components\TextInput::make('unit_type')
                             ->required()
+                            ->maxLength(255)
+                            ->columnSpan(1),
+                        Forms\Components\TextInput::make('unit_type_en')
+                            ->label('نوع الوحدة (English)')
                             ->maxLength(255)
                             ->columnSpan(1),
                         Forms\Components\TextInput::make('building_number')
@@ -63,6 +72,10 @@ class UnitRelationManager extends RelationManager
                             ->numeric()
                             ->columnSpan(1),
                         Forms\Components\RichEditor::make('description')
+                            ->nullable()
+                            ->columnSpanFull(),
+                        Forms\Components\RichEditor::make('description_en')
+                            ->label('الوصف (English)')
                             ->nullable()
                             ->columnSpanFull(),
                     ])

@@ -93,6 +93,42 @@ class ContentBlockSeeder extends Seeder
                 'description' => 'Services title',
                 'content' => 'خدماتنا',
             ],
+            // ── About page "Our Services" cards (keys used in about.blade.php) ──
+            [
+                'key' => 'services_subtitle',
+                'description' => 'Services subtitle',
+                'content' => 'نقدم حلولاً عقارية متكاملة بمعايير عالمية',
+            ],
+            [
+                'key' => 'service_1_title',
+                'description' => 'Service 1 title',
+                'content' => 'إدارة المشاريع العقارية',
+            ],
+            [
+                'key' => 'service_1_content',
+                'description' => 'Service 1 content',
+                'content' => 'نقدم خدمات متكاملة لإدارة المشاريع العقارية بكفاءة عالية وخبرة متميزة',
+            ],
+            [
+                'key' => 'service_2_title',
+                'description' => 'Service 2 title',
+                'content' => 'التسويق العقاري',
+            ],
+            [
+                'key' => 'service_2_content',
+                'description' => 'Service 2 content',
+                'content' => 'استراتيجيات تسويقية مبتكرة لتحقيق أعلى عائد استثماري لعملائنا',
+            ],
+            [
+                'key' => 'service_3_title',
+                'description' => 'Service 3 title',
+                'content' => 'الاستشارات العقارية',
+            ],
+            [
+                'key' => 'service_3_content',
+                'description' => 'Service 3 content',
+                'content' => 'خبراء متخصصون لتقديم الاستشارات العقارية المناسبة لاحتياجاتك',
+            ],
             [
                 'key' => 'services_content',
                 'description' => 'Services content',
@@ -194,7 +230,10 @@ class ContentBlockSeeder extends Seeder
         }
 
         foreach ($contentBlocks as $block) {
-            ContentBlock::updateOrCreate(
+            // firstOrCreate (not updateOrCreate) so re-running the seeder never
+            // clobbers Arabic content or English translations edited via the
+            // admin — it only fills in blocks that don't exist yet.
+            ContentBlock::firstOrCreate(
                 ['key' => $block['key']],
                 $block
             );
