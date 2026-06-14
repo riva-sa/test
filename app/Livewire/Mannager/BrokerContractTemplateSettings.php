@@ -41,7 +41,7 @@ class BrokerContractTemplateSettings extends Component
         if ($this->savedTemplate) {
             $this->fieldsConfig = $this->savedTemplate->fields_config ?? [];
             $this->tempPdfPath  = $this->savedTemplate->pdf_path;
-            $this->tempPdfUrl   = '/storage/' . $this->savedTemplate->pdf_path;
+            $this->tempPdfUrl   = $this->templateFileUrl($this->savedTemplate->pdf_path);
             $this->pageImages   = $this->loadPageImages($this->savedTemplate->pdf_path);
 
             // Older templates were saved while Ghostscript wasn't detected, so no
@@ -63,7 +63,7 @@ class BrokerContractTemplateSettings extends Component
         ]);
 
         $this->tempPdfPath = $this->pdfFile->store('contract-templates/temp', 'public');
-        $this->tempPdfUrl  = '/storage/' . $this->tempPdfPath;
+        $this->tempPdfUrl  = $this->templateFileUrl($this->tempPdfPath);
         $this->pageImages  = $this->renderPdfToImages($this->tempPdfPath);
         $this->fieldsConfig = [];
     }
@@ -138,6 +138,15 @@ class BrokerContractTemplateSettings extends Component
     }
 
     // ─── private helpers ──────────────────────────────────────────────────────
+
+    /**
+     * Build a URL that streams a template PDF through the app rather than the
+     * `/storage` symlink, which isn't reliably served on Laravel Cloud.
+     */
+    private function templateFileUrl(string $path): string
+    {
+        return route('manager.broker-contract-template.file', ['path' => $path]);
+    }
 
     /** Convert every page of a PDF to a PNG using Ghostscript. Returns image URLs. */
     private function renderPdfToImages(string $pdfPath): array
