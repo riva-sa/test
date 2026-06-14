@@ -39,41 +39,7 @@
                                 {{-- ريـــــفــــــا --}}
                             </a>
                         </li>
-                        <div class="d-lg-none text-end">
-                            <ul class="list-unstyled pe-0">
-                                <li><a class="dropdown-item mb-2" href="{{ route('frontend.about') }}">@lang('public.nav.about')</a></li>
-                                <li><a class="dropdown-item mb-2" href="{{ route('frontend.projects') }}">@lang('public.nav.projects')</a></li>
-                                <li><a class="dropdown-item mb-2" href="{{ route('frontend.contactus') }}">@lang('public.nav.contact')</a></li>
-                                <li><a class="dropdown-item mb-2" href="{{ route('frontend.blog') }}">@lang('public.nav.events')</a></li>
-                                <li><a class="dropdown-item mb-2" href="{{ route('frontend.careers') }}">@lang('public.nav.careers')</a></li>
-                                <li><a class="dropdown-item mb-2" href="{{ route('broker.login') }}">@lang('public.nav.broker')</a></li>
-                            </ul>
-
-                            @php
-                                $mRouteParams = request()->route()?->parameters() ?? [];
-                                $mCurrentRoute = Route::currentRouteName();
-                                $mCurrentLocale = app()->getLocale();
-                                $mLanguages = [
-                                    'ar' => ['native' => 'العربية', 'abbr' => 'ع'],
-                                    'en' => ['native' => 'English', 'abbr' => 'EN'],
-                                ];
-                            @endphp
-                            <div class="lang-switcher-mobile">
-                                @foreach($mLanguages as $mCode => $mLang)
-                                    <a
-                                        href="{{ $mCurrentRoute ? route($mCurrentRoute, array_merge($mRouteParams, ['locale' => $mCode])) : url('/' . $mCode) }}"
-                                        hreflang="{{ $mCode }}"
-                                        class="lang-switcher-mobile__option @if($mCurrentLocale === $mCode) is-active @endif"
-                                    >
-                                        <!-- <span class="lang-switcher__flag">{{ $mLang['abbr'] }}</span> -->
-                                        <span>{{ $mLang['native'] }}</span>
-                                        @if($mCurrentLocale === $mCode)
-                                            <i class="uil uil-check ms-auto"></i>
-                                        @endif
-                                    </a>
-                                @endforeach
-                            </div>
-                        </div>
+                        
                         <li class="nav-item dropdown dropdown-mega d-md-block d-none"><a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">@lang('public.nav.discover_more')</a>
                             <ul class="dropdown-menu mega-menu" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
                                 <li class="mega-menu-content">
@@ -184,6 +150,41 @@
                                 @lang('public.nav.browse_projects')
                             </a>
                         </li>
+                        <div class="d-lg-none ">
+                            <ul class="list-unstyled pe-0">
+                                <li><a class="dropdown-item mb-2" href="{{ route('frontend.about') }}">@lang('public.nav.about')</a></li>
+                                <li><a class="dropdown-item mb-2" href="{{ route('frontend.projects') }}">@lang('public.nav.projects')</a></li>
+                                <li><a class="dropdown-item mb-2" href="{{ route('frontend.contactus') }}">@lang('public.nav.contact')</a></li>
+                                <li><a class="dropdown-item mb-2" href="{{ route('frontend.blog') }}">@lang('public.nav.events')</a></li>
+                                <li><a class="dropdown-item mb-2" href="{{ route('frontend.careers') }}">@lang('public.nav.careers')</a></li>
+                                <li><a class="dropdown-item mb-2" href="{{ route('broker.login') }}">@lang('public.nav.broker')</a></li>
+                            </ul>
+
+                            @php
+                                $mRouteParams = request()->route()?->parameters() ?? [];
+                                $mCurrentRoute = Route::currentRouteName();
+                                $mCurrentLocale = app()->getLocale();
+                                $mLanguages = [
+                                    'ar' => ['native' => 'العربية', 'abbr' => 'ع'],
+                                    'en' => ['native' => 'English', 'abbr' => 'EN'],
+                                ];
+                            @endphp
+                            <div class="lang-switcher-mobile">
+                                @foreach($mLanguages as $mCode => $mLang)
+                                    <a
+                                        href="{{ $mCurrentRoute ? route($mCurrentRoute, array_merge($mRouteParams, ['locale' => $mCode])) : url('/' . $mCode) }}"
+                                        hreflang="{{ $mCode }}"
+                                        class="lang-switcher-mobile__option @if($mCurrentLocale === $mCode) is-active @endif"
+                                    >
+                                        <!-- <span class="lang-switcher__flag">{{ $mLang['abbr'] }}</span> -->
+                                        <span>{{ $mLang['native'] }}</span>
+                                        @if($mCurrentLocale === $mCode)
+                                            <i class="uil uil-check ms-auto"></i>
+                                        @endif
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
                     </ul>
                     <!-- /.navbar-nav -->
                     <div class="d-lg-none mt-auto pt-6 pb-6 order-4">

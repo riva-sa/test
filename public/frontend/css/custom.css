@@ -1378,14 +1378,7 @@ body {
     color: #122818;
 }
 
-/* Mobile (offcanvas) language switcher */
-.lang-switcher-mobile {
-    display: flex;
-    gap: 10px;
-    margin-top: 14px;
-    padding-top: 14px;
-    border-top: 1px solid #eef0ee;
-}
+
 
 .lang-switcher-mobile__option {
     display: inline-flex;
