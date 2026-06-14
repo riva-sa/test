@@ -103,7 +103,8 @@ class JobApplicationResource extends Resource
                         Grid::make(3)
                             ->schema([
                                 TextEntry::make('jobPosting.title')
-                                    ->label('الوظيفة')
+                                    ->label('الوظيفة / التخصص')
+                                    ->formatStateUsing(fn (string|null $state, JobApplication $record): string => $state ?? ('تقديم عام — '.$record->department))
                                     ->url(fn (JobApplication $record): ?string => $record->jobPosting
                                         ? JobPostingResource::getUrl('edit', ['record' => $record->jobPosting])
                                         : null),
@@ -173,7 +174,8 @@ class JobApplicationResource extends Resource
                     ->label('رقم الجوال')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('jobPosting.title')
-                    ->label('الوظيفة')
+                    ->label('الوظيفة / التخصص')
+                    ->formatStateUsing(fn (string|null $state, JobApplication $record): string => $state ?? ('تقديم عام — '.$record->department))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('تاريخ التقديم')

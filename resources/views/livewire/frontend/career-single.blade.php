@@ -24,9 +24,11 @@
                                 <span class="badge bg-pale-primary text-primary rounded-pill fs-15"><i class="uil uil-chart-line"></i> {{ $job->experience_level_label }}</span>
                             @endif
                         </div>
+                        @if ($job->isOpenForApplications())
                         <div class="mt-5">
                             <a href="#apply" class="btn btn-primary rounded-pill">@lang('public.careers.apply_now')</a>
                         </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -106,6 +108,11 @@
                         <div class="alert alert-success text-center mb-6" role="alert">
                             <i class="uil uil-check-circle fs-22"></i>
                             @lang('public.careers.application_success')
+                        </div>
+                    @elseif (! $job->isOpenForApplications())
+                        <div class="alert alert-warning text-center mb-6" role="alert">
+                            <i class="uil uil-calendar-slash fs-22"></i>
+                            @lang('public.careers.applications_closed')
                         </div>
                     @else
                         <form wire:submit.prevent="submit">

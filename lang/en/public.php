@@ -369,6 +369,7 @@ return [
         'apply_title' => 'Apply for this Position',
         'apply_subtitle' => 'Fill in the form below and our recruitment team will contact you if your profile is a match',
         'application_success' => 'Thank you for applying! Your application has been received successfully and we will contact you soon.',
+        'applications_closed' => 'Applications for this position are no longer being accepted.',
         'employment_types' => [
             'full_time' => 'Full Time',
             'part_time' => 'Part Time',
@@ -414,6 +415,13 @@ return [
             'cv_required' => 'CV is required',
             'cv_pdf' => 'CV must be a PDF file',
             'cv_max' => 'CV must not exceed 5 MB',
+            'department_required' => 'Please select a specialization',
+        ],
+        'open_app' => [
+            'title' => "Didn't find the right position?",
+            'subtitle' => 'Submit your CV in your specialization and we will contact you when a suitable opportunity arises',
+            'form_title' => 'Apply in specialization: ',
+            'department' => 'Specialization',
         ],
     ],
 ];

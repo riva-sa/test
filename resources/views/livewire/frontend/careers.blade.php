@@ -119,4 +119,138 @@
             </div>
         </div>
     </section>
+
+    {{-- Open application section --}}
+    <section class="wrapper bg-soft-primary" id="open-application">
+        <div class="container py-10 py-md-12">
+            <div class="row text-center mb-8">
+                <div class="col-lg-8 mx-auto">
+                    <h2 class="display-4 mb-3">@lang('public.careers.open_app.title')</h2>
+                    <p class="lead mb-0">@lang('public.careers.open_app.subtitle')</p>
+                </div>
+            </div>
+
+            {{-- Specialization buttons --}}
+            <div class="d-flex flex-wrap justify-content-center gap-3 mb-8">
+                @foreach ($openDepartments as $dept)
+                    <button
+                        type="button"
+                        wire:click="openApplicationForm('{{ $dept }}')"
+                        class="btn rounded-pill px-5 py-3 fw-semibold {{ $openDept === $dept && $showOpenForm ? 'btn-primary' : 'btn-soft-primary' }}"
+                    >
+                        {{ $dept }}
+                    </button>
+                @endforeach
+            </div>
+
+            {{-- Inline form --}}
+            @if ($showOpenForm)
+                <div id="open-form-area" class="row justify-content-center"
+                     x-data x-init="$el.scrollIntoView({behavior:'smooth', block:'start'})">
+                    <div class="col-lg-9 col-xl-8">
+                        <div class="card shadow-lg border-0">
+                            <div class="card-body p-6 p-md-8">
+                                <div class="d-flex align-items-center justify-content-between mb-6">
+                                    <h3 class="h4 mb-0">
+                                        @lang('public.careers.open_app.form_title')
+                                        <span class="text-primary">{{ $openDept }}</span>
+                                    </h3>
+                                    <button type="button" class="btn-close" wire:click="closeOpenForm" aria-label="Close"></button>
+                                </div>
+
+                                @if ($openSuccess)
+                                    <div class="alert alert-success text-center" role="alert">
+                                        <i class="uil uil-check-circle fs-22"></i>
+                                        @lang('public.careers.application_success')
+                                    </div>
+                                @else
+                                    <form wire:submit.prevent="submitOpenApplication">
+                                        <div class="row gx-4">
+                                            {{-- Department selector (editable) --}}
+                                            <div class="col-12 mb-4">
+                                                <div class="form-floating">
+                                                    <select id="open_dept" wire:model="openDept" class="form-select">
+                                                        @foreach ($openDepartments as $d)
+                                                            <option value="{{ $d }}">{{ $d }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    <label for="open_dept">@lang('public.careers.open_app.department') *</label>
+                                                </div>
+                                                @error('openDept') <div class="text-danger mt-1">{{ $message }}</div> @enderror
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <div class="form-floating mb-4">
+                                                    <input id="open_name" type="text" wire:model="openName" class="form-control" placeholder="">
+                                                    <label for="open_name">@lang('public.careers.form.full_name') *</label>
+                                                    @error('openName') <div class="text-danger mt-1">{{ $message }}</div> @enderror
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-floating mb-4">
+                                                    <input id="open_email" type="email" wire:model="openEmail" class="form-control" placeholder="">
+                                                    <label for="open_email">@lang('public.careers.form.email') *</label>
+                                                    @error('openEmail') <div class="text-danger mt-1">{{ $message }}</div> @enderror
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-floating mb-4">
+                                                    <input id="open_phone" type="tel" wire:model="openPhone" class="form-control" placeholder="">
+                                                    <label for="open_phone">@lang('public.careers.form.phone') *</label>
+                                                    @error('openPhone') <div class="text-danger mt-1">{{ $message }}</div> @enderror
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-floating mb-4">
+                                                    <input id="open_city" type="text" wire:model="openCity" class="form-control" placeholder="">
+                                                    <label for="open_city">@lang('public.careers.form.city') *</label>
+                                                    @error('openCity') <div class="text-danger mt-1">{{ $message }}</div> @enderror
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-floating mb-4">
+                                                    <input id="open_nationality" type="text" wire:model="openNationality" class="form-control" placeholder="">
+                                                    <label for="open_nationality">@lang('public.careers.form.nationality') *</label>
+                                                    @error('openNationality') <div class="text-danger mt-1">{{ $message }}</div> @enderror
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-floating mb-4">
+                                                    <input id="open_education" type="text" wire:model="openEducation" class="form-control" placeholder="">
+                                                    <label for="open_education">@lang('public.careers.form.education') *</label>
+                                                    @error('openEducation') <div class="text-danger mt-1">{{ $message }}</div> @enderror
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-floating mb-4">
+                                                    <input id="open_experience" type="number" min="0" wire:model="openYearsOfExperience" class="form-control" placeholder="">
+                                                    <label for="open_experience">@lang('public.careers.form.years_of_experience') *</label>
+                                                    @error('openYearsOfExperience') <div class="text-danger mt-1">{{ $message }}</div> @enderror
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-4">
+                                                    <label for="open_cv" class="form-label">@lang('public.careers.form.cv') * <span class="text-muted">(PDF)</span></label>
+                                                    <input id="open_cv" type="file" wire:model="openCv" class="form-control" accept=".pdf">
+                                                    <div wire:loading wire:target="openCv" class="text-muted mt-1">@lang('public.careers.form.uploading')</div>
+                                                    @error('openCv') <div class="text-danger mt-1">{{ $message }}</div> @enderror
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12 text-center mt-2">
+                                                <button type="submit" class="btn btn-primary rounded-pill px-8" wire:loading.attr="disabled">
+                                                    <span wire:loading.remove wire:target="submitOpenApplication">@lang('public.careers.form.submit')</span>
+                                                    <span wire:loading wire:target="submitOpenApplication">@lang('public.careers.form.submitting')</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </div>
+    </section>
 </div>
