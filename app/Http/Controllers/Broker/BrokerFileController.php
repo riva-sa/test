@@ -22,9 +22,11 @@ class BrokerFileController extends Controller
             default => null,
         };
 
-        abort_unless($path && Storage::disk('local')->exists($path), 404);
+        // Contract files live on the 'public' disk (persistent S3 bucket on
+        // Laravel Cloud); the 'local' disk is ephemeral there.
+        abort_unless($path && Storage::disk('public')->exists($path), 404);
 
-        return Storage::disk('local')->response($path, "contract-{$broker->reference_number}.pdf", [
+        return Storage::disk('public')->response($path, "contract-{$broker->reference_number}.pdf", [
             'Content-Disposition' => 'inline',
             'X-Frame-Options'     => 'SAMEORIGIN',
             'Content-Security-Policy' => "frame-ancestors 'self'",
@@ -39,9 +41,9 @@ class BrokerFileController extends Controller
         $broker = Auth::guard('broker')->user();
 
         abort_unless($document->broker_id === $broker->id, 403);
-        abort_unless(Storage::disk('local')->exists($document->path), 404);
+        abort_unless(Storage::disk('public')->exists($document->path), 404);
 
-        return Storage::disk('local')->response($document->path, $document->original_name, [
+        return Storage::disk('public')->response($document->path, $document->original_name, [
             'Content-Disposition' => 'inline',
         ]);
     }

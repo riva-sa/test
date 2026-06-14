@@ -50,13 +50,13 @@ class Contract extends Component
     {
         $broker = Auth::guard('broker')->user();
 
-        if (! $broker->contractSent() || ! Storage::disk('local')->exists($broker->contract_path)) {
+        if (! $broker->contractSent() || ! Storage::disk('public')->exists($broker->contract_path)) {
             session()->flash('error', 'العقد غير متوفر حالياً.');
 
             return null;
         }
 
-        return Storage::disk('local')->download(
+        return Storage::disk('public')->download(
             $broker->contract_path,
             'broker-contract-' . $broker->reference_number . '.pdf'
         );
@@ -146,7 +146,7 @@ class Contract extends Component
         try {
             // Store the uploaded file into local disk at the signed contract path
             $fileContent = file_get_contents($this->signedPdfFile->getRealPath());
-            Storage::disk('local')->put($path, $fileContent);
+            Storage::disk('public')->put($path, $fileContent);
         } catch (\Throwable $e) {
             session()->flash('error', 'حدث خطأ أثناء رفع الملف. يرجى المحاولة مرة أخرى.');
 

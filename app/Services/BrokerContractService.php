@@ -11,6 +11,14 @@ use Illuminate\Support\Facades\Log;
 class BrokerContractService
 {
     /**
+     * Disk holding all broker contract files. We use 'public' because on
+     * Laravel Cloud it maps to the persistent S3 bucket, whereas the 'local'
+     * disk is ephemeral (files vanish between requests/deploys). In local dev
+     * it resolves to storage/app/public — consistent in both environments.
+     */
+    private const DISK = 'public';
+
+    /**
      * Generate a personalised PDF contract for the given broker.
      * Uses the admin-uploaded template PDF with coordinate overlays, or falls
      * back to the fixed Blade template if no visual template is set.
@@ -22,18 +30,16 @@ class BrokerContractService
         $template = BrokerContractTemplate::getActiveTemplate();
 
         // Fallback to old DOMPDF view-based generation if no template is configured
-        if (!$template) {
-            return $this->generateFallback($broker);
-        }
-
-        $templatePath = Storage::disk('public')->path($template->pdf_path);
-        if (!file_exists($templatePath)) {
-            Log::warning('Active contract template PDF not found on disk, using fallback.', [
-                'template_id' => $template->id,
-                'path' => $templatePath
+        if (!$template || !Storage::disk(self::DISK)->exists($template->pdf_path)) {
+            Log::warning('Active contract template PDF not available, using fallback.', [
+                'template_id' => $template?->id,
             ]);
             return $this->generateFallback($broker);
         }
+
+        // mPDF/FPDI needs a real local file path, so pull the template (which may
+        // live on S3) down to a temp file.
+        $templatePath = $this->localTemplateCopy($template->pdf_path);
 
         $mpdf = new \Mpdf\Mpdf([
             'mode' => 'utf-8',
@@ -88,7 +94,8 @@ class BrokerContractService
         $filename  = 'contract.pdf';
         $path      = "{$directory}/{$filename}";
 
-        Storage::disk('local')->put($path, $mpdf->Output('', 'S'));
+        Storage::disk(self::DISK)->put($path, $mpdf->Output('', 'S'));
+        @unlink($templatePath);
 
         // Update broker record
         $broker->update([
@@ -113,14 +120,12 @@ class BrokerContractService
         $template = BrokerContractTemplate::getActiveTemplate();
 
         // Fallback to old DOMPDF view-based signature if no template is configured
-        if (!$template) {
+        if (!$template || !Storage::disk(self::DISK)->exists($template->pdf_path)) {
             return $this->signFallback($broker, $signatureDataUrl);
         }
 
-        $templatePath = Storage::disk('public')->path($template->pdf_path);
-        if (!file_exists($templatePath)) {
-            return $this->signFallback($broker, $signatureDataUrl);
-        }
+        // mPDF/FPDI needs a real local file path (template may live on S3).
+        $templatePath = $this->localTemplateCopy($template->pdf_path);
 
         $mpdf = new \Mpdf\Mpdf([
             'mode' => 'utf-8',
@@ -184,7 +189,8 @@ class BrokerContractService
         $directory = "broker-documents/{$broker->id}/contract";
         $path      = "{$directory}/contract-signed.pdf";
 
-        Storage::disk('local')->put($path, $mpdf->Output('', 'S'));
+        Storage::disk(self::DISK)->put($path, $mpdf->Output('', 'S'));
+        @unlink($templatePath);
 
         $broker->update([
             'contract_signed_path' => $path,
@@ -214,7 +220,7 @@ class BrokerContractService
         $filename  = 'contract.pdf';
         $path      = "{$directory}/{$filename}";
 
-        Storage::disk('local')->put($path, $pdf->output());
+        Storage::disk(self::DISK)->put($path, $pdf->output());
 
         $broker->update([
             'contract_path'    => $path,
@@ -250,7 +256,7 @@ class BrokerContractService
         $directory = "broker-documents/{$broker->id}/contract";
         $path      = "{$directory}/contract-signed.pdf";
 
-        Storage::disk('local')->put($path, $pdf->output());
+        Storage::disk(self::DISK)->put($path, $pdf->output());
 
         $broker->update([
             'contract_signed_path' => $path,
@@ -258,6 +264,20 @@ class BrokerContractService
         ]);
 
         return $path;
+    }
+
+    /**
+     * Copy a template PDF from the (possibly remote/S3) contracts disk to a
+     * local temp file, because mPDF/FPDI's setSourceFile() requires a real path.
+     *
+     * @return string  Absolute path to the temp file (caller unlinks it).
+     */
+    private function localTemplateCopy(string $diskPath): string
+    {
+        $tmp = tempnam(sys_get_temp_dir(), 'broker_tpl_') . '.pdf';
+        file_put_contents($tmp, Storage::disk(self::DISK)->get($diskPath));
+
+        return $tmp;
     }
 
     /**

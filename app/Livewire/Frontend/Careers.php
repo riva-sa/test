@@ -129,7 +129,7 @@ class Careers extends Component
     {
         $this->validate($this->openFormRules(), $this->openFormMessages());
 
-        $cvPath = $this->openCv->store('general-applications', 'local');
+        $cvPath = $this->openCv->store('general-applications', 'public');
 
         $application = JobApplication::create([
             'job_posting_id'      => null,

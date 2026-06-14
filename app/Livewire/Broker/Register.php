@@ -160,7 +160,7 @@ class Register extends Component
                     continue;
                 }
 
-                $path = $file->store("broker-documents/{$broker->id}", 'local');
+                $path = $file->store("broker-documents/{$broker->id}", 'public');
 
                 BrokerDocument::create([
                     'broker_id' => $broker->id,

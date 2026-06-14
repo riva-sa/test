@@ -23,11 +23,13 @@ class JobApplicationFileController extends Controller
             default => null,
         };
 
-        abort_unless($path && Storage::disk('local')->exists($path), 404);
+        // Files live on the 'public' disk (persistent S3 bucket on Laravel
+        // Cloud); the 'local' disk is ephemeral there.
+        abort_unless($path && Storage::disk('public')->exists($path), 404);
 
         $extension = pathinfo($path, PATHINFO_EXTENSION);
         $name = str_replace(' ', '-', $application->name);
 
-        return Storage::disk('local')->response($path, "application-{$application->id}-{$name}-{$type}.{$extension}");
+        return Storage::disk('public')->response($path, "application-{$application->id}-{$name}-{$type}.{$extension}");
     }
 }

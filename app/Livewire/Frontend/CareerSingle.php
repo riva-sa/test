@@ -96,11 +96,12 @@ class CareerSingle extends Component
 
         $this->validate($this->rules(), $this->getMessages());
 
-        // Files are stored on the private local disk and served only to admins
+        // Stored on the 'public' disk (persistent S3 bucket on Laravel Cloud;
+        // the 'local' disk is ephemeral there). Served to admins via controller.
         $directory = "job-applications/{$this->job->id}";
-        $cvPath = $this->cv->store($directory, 'local');
-        $coverLetterPath = $this->cover_letter_file?->store($directory, 'local');
-        $portfolioPath = $this->portfolio_file?->store($directory, 'local');
+        $cvPath = $this->cv->store($directory, 'public');
+        $coverLetterPath = $this->cover_letter_file?->store($directory, 'public');
+        $portfolioPath = $this->portfolio_file?->store($directory, 'public');
 
         $application = JobApplication::create([
             'job_posting_id' => $this->job->id,
