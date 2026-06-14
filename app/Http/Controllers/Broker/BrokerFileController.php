@@ -26,6 +26,8 @@ class BrokerFileController extends Controller
 
         return Storage::disk('local')->response($path, "contract-{$broker->reference_number}.pdf", [
             'Content-Disposition' => 'inline',
+            'X-Frame-Options'     => 'SAMEORIGIN',
+            'Content-Security-Policy' => "frame-ancestors 'self'",
         ]);
     }
 
