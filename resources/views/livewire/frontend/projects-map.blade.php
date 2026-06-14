@@ -21,7 +21,7 @@
         transition: right 0.3s ease;
         z-index: 1000;
         overflow-y: auto;
-        direction: rtl;
+        direction: {{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }};
         top: 13.15px !important;
         border-radius: 20px;
     }
@@ -105,7 +105,7 @@
         box-shadow: 0 10px 40px rgba(18, 40, 24, 0.15);
         backdrop-filter: blur(12px);
         overflow: visible;
-        direction: rtl;
+        direction: {{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }};
         position: relative;
     }
 
@@ -174,7 +174,7 @@
         max-height: 350px;
         overflow-y: auto;
         box-shadow: 0 20px 50px rgba(18, 40, 24, 0.2);
-        direction: rtl;
+        direction: {{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }};
         z-index: 1070;
     }
 
@@ -571,10 +571,17 @@
     const projects = @json($projects);
     const map = L.map('map').setView([24.7136, 46.6753], 6);
 
+@if(app()->getLocale() === 'en')
+    L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, HERE, Garmin, USGS, Intermap, EPA, NPS',
+        maxZoom: 19
+    }).addTo(map);
+    @else
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors',
         maxZoom: 19
     }).addTo(map);
+    @endif
 
     const markersCluster = L.markerClusterGroup();
     const bounds = L.latLngBounds();
