@@ -37,8 +37,9 @@ class EnsureBrokerApproved
             );
         }
 
-        // Approved brokers must approve the contract and upload the signed copy before using the portal
-        if ($broker->needsContractSignature() && ! $request->routeIs('broker.contract', 'broker.contract.*', 'broker.logout')) {
+        // Approved brokers must sign the contract, then wait for the admin's final
+        // review/approval of the signed copy, before the portal is unlocked.
+        if (! $broker->isActive() && ! $request->routeIs('broker.contract', 'broker.contract.*', 'broker.logout')) {
             return redirect()->route('broker.contract');
         }
 

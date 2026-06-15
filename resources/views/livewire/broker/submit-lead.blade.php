@@ -29,42 +29,20 @@
                         <input type="text"
                                wire:model.live.debounce.600ms="phone"
                                dir="ltr"
-                               class="flex-1 px-4 py-3 rounded-xl border {{ $existingClientFound ? 'border-amber-400 bg-amber-50' : 'border-gray-200' }} focus:border-gray-900 focus:ring-0 text-sm text-left"
+                               data-latin-digits
+                               inputmode="numeric"
+                               class="flex-1 px-4 py-3 rounded-xl border {{ $existingClientFound ? 'border-red-400 bg-red-50' : 'border-gray-200' }} focus:border-gray-900 focus:ring-0 text-sm text-left"
                                placeholder="5xxxxxxxx">
                     </div>
                     @error('phone') <p class="text-xs text-red-600 font-bold mt-1.5">{{ $message }}</p> @enderror
 
-                    {{-- Existing client warning --}}
+                    {{-- Existing client warning — only that the client already exists, no other detail --}}
                     @if ($existingClientWarning)
-                        <div class="mt-2 p-3 bg-amber-50 border border-amber-300 rounded-xl">
-                            <p class="text-xs font-bold text-amber-700 flex items-center gap-1.5">
-                                <i class="fas fa-exclamation-triangle"></i>
+                        <div class="mt-2 p-3 bg-red-50 border border-red-300 rounded-xl">
+                            <p class="text-xs font-bold text-red-700 flex items-center gap-1.5">
+                                <i class="fas fa-ban"></i>
                                 {{ $existingClientWarning }}
                             </p>
-                            @if (!empty($clientSearchResults))
-                                <div class="mt-2 space-y-1.5">
-                                    @foreach ($clientSearchResults as $result)
-                                        <div class="flex items-center justify-between bg-white rounded-lg px-3 py-2 border border-amber-200 text-xs">
-                                            <div>
-                                                <span class="font-bold text-gray-800">{{ $result['name'] }}</span>
-                                                <span class="text-gray-400 mx-1">·</span>
-                                                <span class="text-gray-500 font-mono" dir="ltr">{{ $result['phone'] }}</span>
-                                                <span class="text-gray-400 mx-1">·</span>
-                                                <span class="text-gray-500">{{ $result['status'] }}</span>
-                                                <span class="text-gray-400 mx-1">·</span>
-                                                <span class="text-gray-400">{{ $result['created_at'] }}</span>
-                                            </div>
-                                            @if (empty($name) || $name !== $result['name'])
-                                                <button type="button"
-                                                        wire:click="fillFromExisting('{{ addslashes($result['name']) }}')"
-                                                        class="text-amber-700 font-bold hover:underline text-[11px] shrink-0 mr-2">
-                                                    استخدام الاسم
-                                                </button>
-                                            @endif
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @endif
                         </div>
                     @endif
                 </div>
@@ -177,15 +155,15 @@
 
         {{-- Existing client notice on submit --}}
         @if ($existingClientFound)
-            <div class="flex items-start gap-3 p-4 bg-amber-50 border border-amber-300 rounded-2xl">
-                <i class="fas fa-info-circle text-amber-500 mt-0.5 shrink-0"></i>
-                <p class="text-sm text-amber-700 font-bold">
-                    هذا العميل موجود مسبقاً في قاعدة البيانات. عند الإرسال سيتم إنشاء طلب جديد <strong>وإشعار الإدارة</strong> تلقائياً.
+            <div class="flex items-start gap-3 p-4 bg-red-50 border border-red-300 rounded-2xl">
+                <i class="fas fa-ban text-red-500 mt-0.5 shrink-0"></i>
+                <p class="text-sm text-red-700 font-bold">
+                    هذا العميل مسجّل بالفعل لدى ريفا، ولا يمكن إرسال الطلب.
                 </p>
             </div>
         @endif
 
-        <button type="submit" wire:loading.attr="disabled"
+        <button type="submit" wire:loading.attr="disabled" @if ($existingClientFound) disabled @endif
                 class="w-full py-4 bg-gray-900 hover:bg-gray-800 disabled:opacity-50 text-white text-sm font-black rounded-2xl transition-all">
             <span wire:loading.remove wire:target="submit"><i class="fas fa-paper-plane ml-2"></i> إرسال العميل</span>
             <span wire:loading wire:target="submit">جاري الإرسال...</span>

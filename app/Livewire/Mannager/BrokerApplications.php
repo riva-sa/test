@@ -28,6 +28,27 @@ class BrokerApplications extends Component
 
     public $rejectionReason = '';
 
+    // Inline edit form for broker data + commission
+    public bool $editing = false;
+
+    public $editName = '';
+
+    public $editEmail = '';
+
+    public $editNationalId = '';
+
+    public $editWhatsapp = '';
+
+    public $editCity = '';
+
+    public $editIban = '';
+
+    public $editEmploymentStatus = '';
+
+    public $editCommissionType = Broker::COMMISSION_PERCENTAGE;
+
+    public $editCommissionValue = 0;
+
     protected $queryString = [
         'search' => ['except' => ''],
         'statusFilter' => ['except' => ''],
@@ -58,6 +79,114 @@ class BrokerApplications extends Component
         $this->selectedBrokerId = null;
         $this->showRejectModal = false;
         $this->rejectionReason = '';
+        $this->editing = false;
+    }
+
+    /**
+     * Switch the details panel into edit mode, pre-filling the form with the
+     * broker's current data and commission settings.
+     */
+    public function startEditing()
+    {
+        Gate::authorize('manage-brokers');
+
+        $broker = Broker::findOrFail($this->selectedBrokerId);
+
+        $this->editName = $broker->name;
+        $this->editEmail = $broker->email;
+        $this->editNationalId = $broker->national_id;
+        $this->editWhatsapp = $broker->whatsapp;
+        $this->editCity = $broker->city;
+        $this->editIban = $broker->iban;
+        $this->editEmploymentStatus = $broker->employment_status;
+        $this->editCommissionType = $broker->commission_type ?: Broker::COMMISSION_PERCENTAGE;
+        $this->editCommissionValue = (float) $broker->commission_value;
+
+        $this->resetErrorBag();
+        $this->editing = true;
+    }
+
+    public function cancelEditing()
+    {
+        $this->editing = false;
+        $this->resetErrorBag();
+    }
+
+    /**
+     * Persist edits to the broker's data and commission settings.
+     */
+    public function saveBroker()
+    {
+        Gate::authorize('manage-brokers');
+
+        $broker = Broker::findOrFail($this->selectedBrokerId);
+
+        // Force Latin digits on numeric fields.
+        $this->editNationalId = $this->toLatinDigits($this->editNationalId);
+        $this->editWhatsapp = $this->toLatinDigits($this->editWhatsapp);
+        $this->editIban = strtoupper($this->toLatinDigits($this->editIban));
+        $this->editCommissionValue = $this->toLatinDigits((string) $this->editCommissionValue);
+
+        $validated = $this->validate([
+            'editName' => 'required|string|min:3|max:255',
+            'editEmail' => 'required|email|max:255|unique:brokers,email,'.$broker->id,
+            'editNationalId' => 'nullable|string|max:20',
+            'editWhatsapp' => 'nullable|string|max:15',
+            'editCity' => 'nullable|string|max:255',
+            'editIban' => ['nullable', 'string', 'regex:/^SA\d{22}$/'],
+            'editEmploymentStatus' => 'nullable|string|in:'.implode(',', array_keys(Broker::EMPLOYMENT_STATUSES)),
+            'editCommissionType' => 'required|in:'.implode(',', array_keys(Broker::COMMISSION_TYPES)),
+            'editCommissionValue' => 'required|numeric|min:0',
+        ], [
+            'editName.required' => 'الاسم مطلوب',
+            'editEmail.required' => 'البريد الإلكتروني مطلوب',
+            'editEmail.unique' => 'هذا البريد مستخدم لوسيط آخر',
+            'editIban.regex' => 'الآيبان يجب أن يبدأ بـ SA يليها 22 رقماً',
+            'editCommissionValue.numeric' => 'قيمة العمولة يجب أن تكون رقماً',
+            'editCommissionValue.min' => 'قيمة العمولة لا يمكن أن تكون سالبة',
+        ]);
+
+        if ($this->editCommissionType === Broker::COMMISSION_PERCENTAGE && (float) $this->editCommissionValue > 100) {
+            $this->addError('editCommissionValue', 'النسبة المئوية لا يمكن أن تتجاوز 100%');
+
+            return;
+        }
+
+        $broker->update([
+            'name' => $validated['editName'],
+            'email' => $validated['editEmail'],
+            'national_id' => $validated['editNationalId'] ?: null,
+            'whatsapp' => $validated['editWhatsapp'] ?: null,
+            'city' => $validated['editCity'] ?: null,
+            'iban' => $validated['editIban'] ?: null,
+            'employment_status' => $validated['editEmploymentStatus'] ?: null,
+            'commission_type' => $validated['editCommissionType'],
+            'commission_value' => $validated['editCommissionValue'],
+        ]);
+
+        BrokerActivityLog::record('updated', $broker->id, "تعديل بيانات الوسيط وعمولته ({$broker->reference_number})", Auth::id());
+
+        session()->flash('message', "تم تحديث بيانات الوسيط {$broker->name} بنجاح.");
+        $this->editing = false;
+    }
+
+    /**
+     * Force a value to use Latin (English) digits.
+     */
+    private function toLatinDigits(?string $value): string
+    {
+        if ($value === null || $value === '') {
+            return (string) $value;
+        }
+
+        $map = [
+            '٠' => '0', '١' => '1', '٢' => '2', '٣' => '3', '٤' => '4',
+            '٥' => '5', '٦' => '6', '٧' => '7', '٨' => '8', '٩' => '9',
+            '۰' => '0', '۱' => '1', '۲' => '2', '۳' => '3', '۴' => '4',
+            '۵' => '5', '۶' => '6', '۷' => '7', '۸' => '8', '۹' => '9',
+        ];
+
+        return strtr($value, $map);
     }
 
     public function approve($brokerId)
@@ -93,6 +222,48 @@ class BrokerApplications extends Component
         }
 
         session()->flash('message', "تم اعتماد الوسيط {$broker->name} بنجاح وتوليد العقد وإرساله له.");
+        $this->closeDetails();
+    }
+
+    /**
+     * Final activation step: the admin has reviewed the signed contract and
+     * approves it, which unlocks the broker portal for the broker.
+     */
+    public function approveContract($brokerId)
+    {
+        Gate::authorize('manage-brokers');
+
+        $broker = Broker::findOrFail($brokerId);
+
+        if (! $broker->contractSigned()) {
+            session()->flash('error', 'لا يمكن اعتماد العقد قبل أن يوقّعه الوسيط.');
+
+            return;
+        }
+
+        if ($broker->contractApproved()) {
+            session()->flash('error', 'تم اعتماد عقد هذا الوسيط مسبقاً.');
+
+            return;
+        }
+
+        $broker->update([
+            'contract_approved_at' => now(),
+            'contract_approved_by' => Auth::id(),
+        ]);
+
+        BrokerActivityLog::record('contract_approved', $broker->id, "اعتماد العقد النهائي وتفعيل حساب الوسيط ({$broker->reference_number})", Auth::id());
+
+        try {
+            $broker->notify(new \App\Notifications\CRMAlertNotification(
+                'تم تفعيل حسابك في بوابة الوسطاء',
+                'تمت مراجعة عقدك الموقّع واعتماده. حسابك الآن مُفعّل ويمكنك استخدام البوابة.'
+            ));
+        } catch (\Throwable $e) {
+            Log::error('Failed to notify broker about contract approval: ' . $e->getMessage(), ['broker_id' => $broker->id]);
+        }
+
+        session()->flash('message', "تم اعتماد عقد الوسيط {$broker->name} وتفعيل حسابه بنجاح.");
         $this->closeDetails();
     }
 
@@ -175,7 +346,7 @@ class BrokerApplications extends Component
 
     public function render()
     {
-        $brokers = Broker::with(['documents', 'approvedBy'])
+        $brokers = Broker::with(['documents', 'approvedBy', 'contractApprovedBy'])
             ->withCount('orders')
             ->when($this->search, function ($q) {
                 $q->where(function ($sub) {
@@ -190,13 +361,15 @@ class BrokerApplications extends Component
             ->paginate(15);
 
         $selectedBroker = $this->selectedBrokerId
-            ? Broker::with(['documents', 'approvedBy'])->find($this->selectedBrokerId)
+            ? Broker::with(['documents', 'approvedBy', 'contractApprovedBy'])->find($this->selectedBrokerId)
             : null;
 
         return view('livewire.mannager.broker-applications', [
             'brokers' => $brokers,
             'selectedBroker' => $selectedBroker,
             'pendingCount' => Broker::where('status', Broker::STATUS_PENDING)->count(),
+            'employmentStatuses' => Broker::EMPLOYMENT_STATUSES,
+            'commissionTypes' => Broker::COMMISSION_TYPES,
         ])->layout('layouts.custom');
     }
 }

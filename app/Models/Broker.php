@@ -32,6 +32,15 @@ class Broker extends Authenticatable
 
     public const TYPE_COMPANY = 'company';
 
+    public const COMMISSION_PERCENTAGE = 'percentage';
+
+    public const COMMISSION_FIXED = 'fixed';
+
+    public const COMMISSION_TYPES = [
+        self::COMMISSION_PERCENTAGE => 'نسبة مئوية',
+        self::COMMISSION_FIXED => 'مبلغ ثابت',
+    ];
+
     public const EMPLOYMENT_STATUSES = [
         'employee' => 'موظف',
         'freelancer' => 'عمل حر',
@@ -56,6 +65,8 @@ class Broker extends Authenticatable
         'whatsapp',
         'city',
         'iban',
+        'commission_type',
+        'commission_value',
         'employment_status',
         'heard_about_us',
         'reference_number',
@@ -67,6 +78,8 @@ class Broker extends Authenticatable
         'contract_sent_at',
         'contract_signed_path',
         'contract_signed_at',
+        'contract_approved_at',
+        'contract_approved_by',
     ];
 
     protected $hidden = [
@@ -81,6 +94,8 @@ class Broker extends Authenticatable
             'approved_at' => 'datetime',
             'contract_sent_at' => 'datetime',
             'contract_signed_at' => 'datetime',
+            'contract_approved_at' => 'datetime',
+            'commission_value' => 'decimal:2',
         ];
     }
 
@@ -101,11 +116,36 @@ class Broker extends Authenticatable
     }
 
     /**
+     * Admin reviewed the final signed contract and approved (activated) the account.
+     */
+    public function contractApproved(): bool
+    {
+        return ! is_null($this->contract_approved_at);
+    }
+
+    /**
      * Approved brokers cannot use the portal before signing the contract.
      */
     public function needsContractSignature(): bool
     {
         return $this->isApproved() && ! $this->contractSigned();
+    }
+
+    /**
+     * Broker has signed but is still waiting for the admin's final review/approval
+     * of the signed contract before the portal is unlocked.
+     */
+    public function awaitingContractApproval(): bool
+    {
+        return $this->isApproved() && $this->contractSigned() && ! $this->contractApproved();
+    }
+
+    /**
+     * Fully active: approved, signed, and the signed contract approved by an admin.
+     */
+    public function isActive(): bool
+    {
+        return $this->isApproved() && $this->contractSigned() && $this->contractApproved();
     }
 
     /**
@@ -141,6 +181,11 @@ class Broker extends Authenticatable
     public function approvedBy()
     {
         return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function contractApprovedBy()
+    {
+        return $this->belongsTo(User::class, 'contract_approved_by');
     }
 
     public function isPending(): bool
@@ -181,5 +226,47 @@ class Broker extends Authenticatable
     public function heardAboutUsLabel(): string
     {
         return self::HEARD_ABOUT_US_OPTIONS[$this->heard_about_us] ?? ($this->heard_about_us ?? '—');
+    }
+
+    public function isFixedCommission(): bool
+    {
+        return $this->commission_type === self::COMMISSION_FIXED;
+    }
+
+    /**
+     * The commission this broker earns for a single sold unit at the given price.
+     * Fixed commission ignores the price; percentage is a share of it.
+     */
+    public function commissionForPrice($unitPrice): float
+    {
+        $value = (float) $this->commission_value;
+
+        if ($this->isFixedCommission()) {
+            return round($value, 2);
+        }
+
+        return round(((float) $unitPrice) * $value / 100, 2);
+    }
+
+    /**
+     * Human-readable description of the commission rate, e.g.
+     * "2.5% من قيمة كل وحدة مباعة" or "5,000 ريال لكل وحدة مباعة".
+     */
+    public function commissionLabel(): string
+    {
+        $value = (float) $this->commission_value;
+
+        if ($value <= 0) {
+            return 'لم تُحدَّد بعد';
+        }
+
+        if ($this->isFixedCommission()) {
+            return number_format($value, 2).' ريال لكل وحدة مباعة';
+        }
+
+        // Trim trailing zeros for percentages (2.50 → 2.5, 3.00 → 3)
+        $formatted = rtrim(rtrim(number_format($value, 2, '.', ''), '0'), '.');
+
+        return $formatted.'% من قيمة كل وحدة مباعة';
     }
 }

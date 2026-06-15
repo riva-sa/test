@@ -14,5 +14,6 @@
 <body class="bg-gray-50 min-h-screen">
     {{ $slot }}
     @livewireScripts
+    @include('partials.latin-digits-script')
 </body>
 </html>

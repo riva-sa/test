@@ -40,8 +40,8 @@ class Contract extends Component
     {
         $broker = Auth::guard('broker')->user();
 
-        // Already signed → no need to be here
-        if ($broker->contractSigned()) {
+        // Account fully active (signed + admin-approved) → no need to be here
+        if ($broker->isActive()) {
             redirect()->route('broker.dashboard');
         }
     }
@@ -116,9 +116,9 @@ class Contract extends Component
             "وقّع الوسيط على العقد إلكترونياً ({$broker->reference_number})"
         );
 
-        session()->flash('message', 'تم اعتماد العقد وتوقيعه بنجاح. أهلاً بك في بوابة الوسطاء!');
+        session()->flash('message', 'تم توقيع العقد بنجاح. عقدك الآن قيد المراجعة النهائية من الإدارة، وسيتم تفعيل حسابك بعد اعتماده.');
 
-        return redirect()->route('broker.dashboard');
+        return redirect()->route('broker.contract');
     }
 
     /**
@@ -164,9 +164,9 @@ class Contract extends Component
             "رفع الوسيط نسخة العقد الموقّعة يدوياً ({$broker->reference_number})"
         );
 
-        session()->flash('message', 'تم استلام العقد الموقّع بنجاح. أهلاً بك في بوابة الوسطاء!');
+        session()->flash('message', 'تم استلام العقد الموقّع بنجاح. عقدك الآن قيد المراجعة النهائية من الإدارة، وسيتم تفعيل حسابك بعد اعتماده.');
 
-        return redirect()->route('broker.dashboard');
+        return redirect()->route('broker.contract');
     }
 
     public function render(): mixed

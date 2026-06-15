@@ -35,7 +35,8 @@ class Register extends Component
 
     public $city = '';
 
-    public $iban = '';
+    /** The 22 digits that follow the fixed "SA" country prefix of the IBAN. */
+    public $iban_number = '';
 
     public $employment_status = '';
 
@@ -72,7 +73,8 @@ class Register extends Component
                 'national_id' => 'required|string|min:10|max:20',
                 'whatsapp' => 'required|string|min:9|max:15',
                 'city' => 'required|string|max:255',
-                'iban' => 'required|string|min:15|max:34',
+                // IBAN is a fixed "SA" prefix followed by exactly 22 digits (Saudi IBAN).
+                'iban_number' => ['required', 'string', 'regex:/^\d{22}$/'],
                 'employment_status' => 'required|string|in:'.implode(',', array_keys(Broker::EMPLOYMENT_STATUSES)),
                 'heard_about_us' => 'required|string|in:'.implode(',', array_keys(Broker::HEARD_ABOUT_US_OPTIONS)),
             ],
@@ -97,8 +99,8 @@ class Register extends Component
         'national_id.min' => 'رقم الهوية يجب أن يكون 10 أرقام على الأقل',
         'whatsapp.required' => 'رقم الواتساب مطلوب',
         'city.required' => 'المدينة مطلوبة',
-        'iban.required' => 'رقم الآيبان مطلوب',
-        'iban.min' => 'رقم الآيبان غير صحيح',
+        'iban_number.required' => 'رقم الآيبان مطلوب',
+        'iban_number.regex' => 'يجب إدخال 22 رقماً بعد SA بالأرقام الإنجليزية',
         'employment_status.required' => 'الحالة الوظيفية مطلوبة',
         'heard_about_us.required' => 'يرجى اختيار كيف سمعت عنا',
         'national_id_file.required' => 'ملف الهوية الوطنية / الإقامة مطلوب',
@@ -113,11 +115,40 @@ class Register extends Component
 
     public function nextStep()
     {
+        $this->normalizeNumericInputs();
+
         $this->validate($this->stepRules($this->step));
 
         if ($this->step < 3) {
             $this->step++;
         }
+    }
+
+    /**
+     * Force all numeric fields to use Latin (English) digits, converting any
+     * Arabic-Indic / Persian digits the broker may have typed.
+     */
+    private function normalizeNumericInputs(): void
+    {
+        $this->national_id = $this->toLatinDigits($this->national_id);
+        $this->whatsapp = $this->toLatinDigits($this->whatsapp);
+        $this->iban_number = $this->toLatinDigits($this->iban_number);
+    }
+
+    private function toLatinDigits(?string $value): string
+    {
+        if ($value === null || $value === '') {
+            return (string) $value;
+        }
+
+        $map = [
+            '٠' => '0', '١' => '1', '٢' => '2', '٣' => '3', '٤' => '4',
+            '٥' => '5', '٦' => '6', '٧' => '7', '٨' => '8', '٩' => '9',
+            '۰' => '0', '۱' => '1', '۲' => '2', '۳' => '3', '۴' => '4',
+            '۵' => '5', '۶' => '6', '۷' => '7', '۸' => '8', '۹' => '9',
+        ];
+
+        return strtr($value, $map);
     }
 
     public function previousStep()
@@ -129,10 +160,15 @@ class Register extends Component
 
     public function submit()
     {
+        $this->normalizeNumericInputs();
+
         // Re-validate everything in case data changed between steps
         $this->validate(array_merge($this->stepRules(1), $this->stepRules(2), $this->stepRules(3)));
 
-        $broker = DB::transaction(function () {
+        // Assemble the full IBAN: fixed "SA" prefix + the 22 entered digits.
+        $iban = 'SA'.$this->iban_number;
+
+        $broker = DB::transaction(function () use ($iban) {
             $broker = Broker::create([
                 'broker_type' => $this->broker_type,
                 'email' => $this->email,
@@ -141,7 +177,7 @@ class Register extends Component
                 'national_id' => $this->national_id,
                 'whatsapp' => $this->whatsapp,
                 'city' => $this->city,
-                'iban' => $this->iban,
+                'iban' => $iban,
                 'employment_status' => $this->employment_status,
                 'heard_about_us' => $this->heard_about_us,
                 'status' => Broker::STATUS_PENDING,

@@ -117,6 +117,15 @@
                     <button wire:click="closeDetails" class="p-2 text-gray-400 hover:text-gray-900"><i class="fas fa-times"></i></button>
                 </div>
                 <div class="p-6 space-y-6">
+                    @if (! $editing)
+                    {{-- ─────────── Read-only view ─────────── --}}
+                    <div class="flex items-center justify-between">
+                        <div class="text-[11px] font-black text-gray-500 uppercase">بيانات المسوّق</div>
+                        <button wire:click="startEditing"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-all">
+                            <i class="fas fa-pen"></i> تعديل البيانات والعمولة
+                        </button>
+                    </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <div class="text-[10px] font-bold text-gray-400 uppercase mb-1">البريد الإلكتروني</div>
@@ -151,6 +160,104 @@
                             <div class="text-sm font-bold text-gray-900">{{ $selectedBroker->created_at->format('Y-m-d H:i') }}</div>
                         </div>
                     </div>
+
+                    {{-- Commission summary --}}
+                    <div class="flex items-center justify-between p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-hand-holding-dollar text-emerald-500"></i>
+                            <span class="text-[11px] font-bold text-emerald-700 uppercase">عمولة المبيعات</span>
+                        </div>
+                        <span class="text-sm font-black text-emerald-800">{{ $selectedBroker->commissionLabel() }}</span>
+                    </div>
+
+                    @else
+                    {{-- ─────────── Edit form ─────────── --}}
+                    <form wire:submit="saveBroker" class="space-y-4">
+                        <div class="text-[11px] font-black text-gray-500 uppercase">تعديل بيانات المسوّق</div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-[11px] font-bold text-gray-500 mb-1">الاسم</label>
+                                <input type="text" wire:model="editName" class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-gray-900 focus:ring-0 text-sm">
+                                @error('editName') <p class="text-[11px] text-red-600 font-bold mt-1">{{ $message }}</p> @enderror
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-gray-500 mb-1">البريد الإلكتروني</label>
+                                <input type="email" wire:model="editEmail" dir="ltr" class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-gray-900 focus:ring-0 text-sm text-left">
+                                @error('editEmail') <p class="text-[11px] text-red-600 font-bold mt-1">{{ $message }}</p> @enderror
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-gray-500 mb-1">رقم الهوية / الإقامة</label>
+                                <input type="text" wire:model="editNationalId" dir="ltr" inputmode="numeric" data-latin-digits class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-gray-900 focus:ring-0 text-sm text-right">
+                                @error('editNationalId') <p class="text-[11px] text-red-600 font-bold mt-1">{{ $message }}</p> @enderror
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-gray-500 mb-1">رقم الواتساب</label>
+                                <input type="text" wire:model="editWhatsapp" dir="ltr" inputmode="numeric" data-latin-digits class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-gray-900 focus:ring-0 text-sm text-right">
+                                @error('editWhatsapp') <p class="text-[11px] text-red-600 font-bold mt-1">{{ $message }}</p> @enderror
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-gray-500 mb-1">المدينة</label>
+                                <input type="text" wire:model="editCity" class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-gray-900 focus:ring-0 text-sm">
+                                @error('editCity') <p class="text-[11px] text-red-600 font-bold mt-1">{{ $message }}</p> @enderror
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-gray-500 mb-1">الحالة الوظيفية</label>
+                                <select wire:model="editEmploymentStatus" class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-gray-900 focus:ring-0 text-sm bg-white">
+                                    <option value="">— غير محدد —</option>
+                                    @foreach ($employmentStatuses as $key => $label)
+                                        <option value="{{ $key }}">{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label class="block text-[11px] font-bold text-gray-500 mb-1">الآيبان</label>
+                                <input type="text" wire:model="editIban" dir="ltr" data-latin-digits placeholder="SA..." class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-gray-900 focus:ring-0 text-sm text-left">
+                                @error('editIban') <p class="text-[11px] text-red-600 font-bold mt-1">{{ $message }}</p> @enderror
+                            </div>
+                        </div>
+
+                        {{-- Commission settings --}}
+                        <div class="p-4 bg-emerald-50 border border-emerald-100 rounded-xl space-y-3">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-hand-holding-dollar text-emerald-500"></i>
+                                <span class="text-[11px] font-black text-emerald-700 uppercase">عمولة المبيعات (لكل وحدة مباعة)</span>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-[11px] font-bold text-gray-500 mb-1">نوع العمولة</label>
+                                    <select wire:model.live="editCommissionType" class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-gray-900 focus:ring-0 text-sm bg-white">
+                                        @foreach ($commissionTypes as $key => $label)
+                                            <option value="{{ $key }}">{{ $label }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-gray-500 mb-1">
+                                        {{ $editCommissionType === 'fixed' ? 'المبلغ بالريال' : 'النسبة المئوية %' }}
+                                    </label>
+                                    <input type="text" wire:model="editCommissionValue" dir="ltr" inputmode="decimal" data-latin-digits
+                                           class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-gray-900 focus:ring-0 text-sm text-left">
+                                    @error('editCommissionValue') <p class="text-[11px] text-red-600 font-bold mt-1">{{ $message }}</p> @enderror
+                                </div>
+                            </div>
+                            <p class="text-[10px] text-emerald-600 font-bold">
+                                {{ $editCommissionType === 'fixed' ? 'مبلغ ثابت يُمنح للمسوّق عن كل وحدة مباعة.' : 'نسبة من قيمة كل وحدة مباعة تُحتسب كعمولة للمسوّق.' }}
+                            </p>
+                        </div>
+
+                        <div class="flex gap-3 pt-1">
+                            <button type="submit" wire:loading.attr="disabled"
+                                    class="flex-1 py-2.5 bg-gray-900 hover:bg-gray-800 disabled:opacity-50 text-white text-sm font-black rounded-xl transition-all">
+                                <span wire:loading.remove wire:target="saveBroker"><i class="fas fa-save ml-1"></i> حفظ التعديلات</span>
+                                <span wire:loading wire:target="saveBroker">جاري الحفظ...</span>
+                            </button>
+                            <button type="button" wire:click="cancelEditing"
+                                    class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-sm font-black rounded-xl transition-all">
+                                إلغاء
+                            </button>
+                        </div>
+                    </form>
+                    @endif
 
                     {{-- Documents --}}
                     <div>
@@ -191,8 +298,10 @@
                         <div class="p-4 border border-gray-100 rounded-xl">
                             <div class="flex items-center justify-between mb-3">
                                 <div class="text-[10px] font-bold text-gray-400 uppercase">عقد الوساطة</div>
-                                @if ($selectedBroker->contractSigned())
-                                    <span class="px-2.5 py-1 bg-green-500 text-white text-[10px] font-black rounded-full">موقّع ✓</span>
+                                @if ($selectedBroker->contractApproved())
+                                    <span class="px-2.5 py-1 bg-green-600 text-white text-[10px] font-black rounded-full">مُعتمد ومفعّل ✓</span>
+                                @elseif ($selectedBroker->contractSigned())
+                                    <span class="px-2.5 py-1 bg-amber-500 text-white text-[10px] font-black rounded-full">موقّع — بانتظار الاعتماد النهائي</span>
                                 @elseif ($selectedBroker->contractSent())
                                     <span class="px-2.5 py-1 bg-yellow-500 text-white text-[10px] font-black rounded-full">بانتظار توقيع الوسيط</span>
                                 @else
@@ -240,6 +349,32 @@
                                 @if ($selectedBroker->contractSent())
                                     <p class="text-[10px] text-gray-400 mt-1.5">إعادة التوليد تُلغي أي توقيع سابق وتتطلب توقيع الوسيط من جديد.</p>
                                 @endif
+                            @endif
+
+                            {{-- Final review & activation: only after the broker has signed --}}
+                            @if ($selectedBroker->contractSigned() && ! $selectedBroker->contractApproved())
+                                <div class="flex items-start gap-2 p-3 bg-amber-50 border border-amber-100 rounded-xl mb-3 mt-3">
+                                    <i class="fas fa-exclamation-circle text-amber-400 text-sm mt-0.5"></i>
+                                    <p class="text-[11px] text-amber-700">راجع النسخة الموقّعة أعلاه. لن يتم تفعيل حساب الوسيط إلا بعد اطّلاعك على العقد النهائي واعتماده.</p>
+                                </div>
+                                <button wire:click="approveContract({{ $selectedBroker->id }})"
+                                        wire:confirm="هل اطّلعت على العقد النهائي الموقّع وتؤكد اعتماده وتفعيل الحساب؟"
+                                        wire:loading.attr="disabled"
+                                        class="w-full py-2.5 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white text-xs font-black rounded-xl transition-all">
+                                    <span wire:loading.remove wire:target="approveContract">
+                                        <i class="fas fa-check-double ml-1"></i> اعتماد العقد وتفعيل الحساب
+                                    </span>
+                                    <span wire:loading wire:target="approveContract">جاري الاعتماد...</span>
+                                </button>
+                            @elseif ($selectedBroker->contractApproved())
+                                <div class="flex items-center gap-2 p-3 bg-green-50 border border-green-100 rounded-xl mt-3">
+                                    <i class="fas fa-check-circle text-green-500 text-sm"></i>
+                                    <p class="text-[11px] text-green-700 font-bold">
+                                        تم اعتماد العقد وتفعيل الحساب
+                                        {{ $selectedBroker->contract_approved_at?->format('Y-m-d H:i') }}
+                                        @if ($selectedBroker->contractApprovedBy) بواسطة {{ $selectedBroker->contractApprovedBy->name }} @endif
+                                    </p>
+                                </div>
                             @endif
                         </div>
                     @endif

@@ -36,6 +36,9 @@ beforeEach(function () {
         'project_id' => $this->project->id,
         'unit_type' => 'شقة',
         'unit_price' => 500000,
+        'building_number' => '1',
+        'unit_number' => '101',
+        'floor' => '1',
         'case' => '0', // available
     ]);
 
@@ -48,7 +51,7 @@ beforeEach(function () {
     ]);
 });
 
-it('creates new lead and sends notifications when submitting a duplicate lead', function () {
+it('rejects a duplicate lead without creating an order and alerts the team', function () {
     Notification::fake();
 
     // Create an admin to be notified
@@ -67,7 +70,7 @@ it('creates new lead and sends notifications when submitting a duplicate lead', 
     $salesAgent = User::factory()->create(['is_active' => true]);
 
     // Create existing order for the client phone number
-    $existingOrder = UnitOrder::create([
+    UnitOrder::create([
         'name' => 'Old Client Name',
         'phone' => '+966555555555',
         'status' => 1,
@@ -90,39 +93,52 @@ it('creates new lead and sends notifications when submitting a duplicate lead', 
         ->set('PurchasePurpose', 'personal')
         ->set('support_type', 'مدعوم')
         ->call('submit')
-        ->assertRedirect(route('broker.leads'));
+        ->assertNoRedirect()
+        ->assertSet('existingClientFound', true);
 
-    // 1. Verify lead was created
-    $newOrder = UnitOrder::where('phone', '+966555555555')
-        ->where('broker_id', $this->broker->id)
-        ->first();
-    expect($newOrder)->not->toBeNull();
+    // 1. No new lead was created for the submitting broker
+    expect(UnitOrder::where('broker_id', $this->broker->id)->exists())->toBeFalse();
 
-    // 2. Verify notifications were sent to Admin
+    // 2. Admins are alerted about the rejected attempt
     Notification::assertSentTo(
         $admin,
         CRMAlertNotification::class,
-        fn ($notification) => str_contains($notification->toArray($admin)['message'], 'عميلاً موجوداً مسبقاً')
+        fn ($notification) => str_contains($notification->toArray($admin)['message'], 'مسجّل بالفعل لدى ريفا')
     );
 
-    // 3. Verify notification was sent to original broker
+    // 3. The original broker is alerted
     Notification::assertSentTo(
         $originalBroker,
         CRMAlertNotification::class,
-        fn ($notification) => str_contains($notification->toArray($originalBroker)['message'], 'تم تقديم طلب جديد لعميلك')
+        fn ($notification) => str_contains($notification->toArray($originalBroker)['message'], 'عميلك المسجّل مسبقاً')
     );
 
-    // 4. Verify notification was sent to assigned sales agent
+    // 4. The assigned sales agent is alerted
     Notification::assertSentTo(
         $salesAgent,
         CRMAlertNotification::class,
-        fn ($notification) => str_contains($notification->toArray($salesAgent)['message'], 'تم رفع طلب جديد له بواسطة الوسيط')
+        fn ($notification) => str_contains($notification->toArray($salesAgent)['message'], 'تم رفض الطلب')
     );
 
-    // 5. Verify notification was sent to current broker
-    Notification::assertSentTo(
-        $this->broker,
-        CRMAlertNotification::class,
-        fn ($notification) => str_contains($notification->toArray($this->broker)['message'], 'طلب عميل مكرر')
-    );
+    // 5. The submitting broker is NOT notified (they see the inline rejection message instead)
+    Notification::assertNotSentTo($this->broker, CRMAlertNotification::class);
+});
+
+it('creates the lead normally when the client is not already in the CRM', function () {
+    $this->actingAs($this->broker, 'broker');
+
+    Livewire::test(SubmitLead::class)
+        ->set('name', 'Fresh Client')
+        ->set('phone', '500000000')
+        ->set('countryCode', '+966')
+        ->set('selectedProjects', [$this->project->id])
+        ->set('selectedUnits', [$this->unit->id])
+        ->set('property_type', 'شقة')
+        ->set('PurchaseType', 'cash')
+        ->set('PurchasePurpose', 'personal')
+        ->set('support_type', 'مدعوم')
+        ->call('submit')
+        ->assertRedirect(route('broker.leads'));
+
+    expect(UnitOrder::where('phone', '+966500000000')->where('broker_id', $this->broker->id)->exists())->toBeTrue();
 });

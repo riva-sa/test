@@ -30,7 +30,6 @@
                         'المدينة' => $broker->city,
                         'رقم الآيبان' => $broker->iban,
                         'الحالة الوظيفية' => $broker->employmentStatusLabel(),
-                        'كيف سمعت عنا' => $broker->heardAboutUsLabel(),
                         'تاريخ التسجيل' => $broker->created_at->format('Y-m-d'),
                         'تاريخ الاعتماد' => $broker->approved_at?->format('Y-m-d') ?? '—',
                     ] as $label => $value)
@@ -63,10 +62,70 @@
                     @endforelse
                 </div>
             </div>
+
+            {{-- عمولتي --}}
+            <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-6 text-white">
+                <div class="flex items-center gap-2 mb-3">
+                    <i class="fas fa-hand-holding-dollar"></i>
+                    <h2 class="text-sm font-black">عمولتي على المبيعات</h2>
+                </div>
+                <div class="text-lg font-black leading-tight mb-1">{{ $broker->commissionLabel() }}</div>
+                <p class="text-[11px] text-emerald-50/80 font-bold">تُحتسب عن كل وحدة مباعة من خلالك. للاستفسار حول العمولة تواصل مع الإدارة.</p>
+            </div>
         </div>
 
-        {{-- العقد --}}
-        <div class="lg:col-span-2">
+        {{-- العمولات والعقد --}}
+        <div class="lg:col-span-2 space-y-6">
+
+            {{-- ملخص العمولات والوحدات المباعة --}}
+            <div class="bg-white rounded-2xl border border-gray-100 p-6 hidden">
+                <h2 class="text-sm font-black text-gray-900 mb-4">عمولاتي والوحدات المباعة</h2>
+
+                <div class="grid grid-cols-2 gap-4 mb-5">
+                    <div class="p-4 rounded-xl bg-gray-50 border border-gray-100">
+                        <div class="text-2xl font-black text-gray-900">{{ $soldUnitsCount }}</div>
+                        <div class="text-[11px] font-bold text-gray-400 mt-1">عدد الوحدات المباعة</div>
+                    </div>
+                    <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-100">
+                        <div class="text-2xl font-black text-emerald-700">{{ number_format($totalCommission, 2) }} <span class="text-sm">ريال</span></div>
+                        <div class="text-[11px] font-bold text-emerald-500 mt-1">إجمالي العمولات المستحقة</div>
+                    </div>
+                </div>
+
+                @if ($sales->isNotEmpty())
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-right">
+                            <thead>
+                                <tr class="text-[10px] font-bold text-gray-400 uppercase border-b border-gray-100">
+                                    <th class="py-2 pl-3">الوحدة</th>
+                                    <th class="py-2 px-3">المشروع</th>
+                                    <th class="py-2 px-3">قيمة الوحدة</th>
+                                    <th class="py-2 px-3">العمولة</th>
+                                    <th class="py-2 pr-3">التاريخ</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-50">
+                                @foreach ($sales as $sale)
+                                    <tr class="text-[12px]">
+                                        <td class="py-3 pl-3 font-bold text-gray-900">{{ $sale['unit'] }}</td>
+                                        <td class="py-3 px-3 text-gray-500">{{ $sale['project'] }}</td>
+                                        <td class="py-3 px-3 text-gray-500" dir="ltr">{{ number_format($sale['price'], 2) }}</td>
+                                        <td class="py-3 px-3 font-black text-emerald-700" dir="ltr">{{ number_format($sale['commission'], 2) }}</td>
+                                        <td class="py-3 pr-3 text-gray-400">{{ $sale['date']?->format('Y-m-d') ?? '—' }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <div class="p-8 text-center bg-gray-50 rounded-xl">
+                        <i class="fas fa-chart-line text-2xl text-gray-300 mb-2"></i>
+                        <p class="text-sm text-gray-400 font-bold">لا توجد وحدات مباعة بعد. ستظهر عمولاتك هنا فور إتمام أول عملية بيع.</p>
+                    </div>
+                @endif
+            </div>
+
+            {{-- العقد --}}
             <div class="bg-white rounded-2xl border border-gray-100 p-6" x-data="{ tab: 'contract' }">
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-5">
                     <div>

@@ -81,12 +81,12 @@
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">رقم الهوية / الإقامة <span class="text-red-500">*</span></label>
-                        <input type="text" wire:model="national_id" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-gray-900 focus:ring-0 text-sm">
+                        <input type="text" wire:model="national_id" dir="ltr" inputmode="numeric" data-latin-digits class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-gray-900 focus:ring-0 text-sm text-right">
                         @error('national_id') <p class="text-xs text-red-600 font-bold mt-1.5">{{ $message }}</p> @enderror
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">رقم الواتساب <span class="text-red-500">*</span></label>
-                        <input type="text" wire:model="whatsapp" dir="ltr" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-gray-900 focus:ring-0 text-sm text-right" placeholder="05xxxxxxxx">
+                        <input type="text" wire:model="whatsapp" dir="ltr" inputmode="numeric" data-latin-digits class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-gray-900 focus:ring-0 text-sm text-right" placeholder="05xxxxxxxx">
                         @error('whatsapp') <p class="text-xs text-red-600 font-bold mt-1.5">{{ $message }}</p> @enderror
                     </div>
                     <div>
@@ -101,8 +101,15 @@
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">رقم الآيبان <span class="text-red-500">*</span></label>
-                        <input type="text" wire:model="iban" dir="ltr" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-gray-900 focus:ring-0 text-sm text-right" placeholder="SA...">
-                        @error('iban') <p class="text-xs text-red-600 font-bold mt-1.5">{{ $message }}</p> @enderror
+                        <div class="flex items-stretch" dir="ltr">
+                            <span class="shrink-0 inline-flex items-center px-4 rounded-r-none rounded-l-xl border border-l-0 border-gray-200 bg-gray-100 text-sm font-black text-gray-600">SA</span>
+                            <input type="text" wire:model="iban_number" dir="ltr" inputmode="numeric" maxlength="22"
+                                   data-latin-digits
+                                   class="w-full px-4 py-3 rounded-l-none rounded-r-xl border border-gray-200 focus:border-gray-900 focus:ring-0 text-sm text-left tracking-wide"
+                                   placeholder="22 رقماً">
+                        </div>
+                        <p class="text-[11px] text-gray-400 mt-1.5">أدخل 22 رقماً بعد SA بالأرقام الإنجليزية فقط</p>
+                        @error('iban_number') <p class="text-xs text-red-600 font-bold mt-1.5">{{ $message }}</p> @enderror
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">الحالة الوظيفية <span class="text-red-500">*</span></label>

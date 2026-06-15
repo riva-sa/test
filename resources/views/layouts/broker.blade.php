@@ -123,5 +123,6 @@
     </div>
 
     @livewireScripts
+    @include('partials.latin-digits-script')
 </body>
 </html>

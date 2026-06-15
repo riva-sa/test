@@ -297,13 +297,23 @@ class BrokerContractService
 
         $font  = $isLtr ? 'dejavusans' : 'lateef';
         $dir   = $isLtr ? 'ltr' : 'rtl';
-        $align = $isLtr ? 'left' : 'right';
-        $boxW  = in_array($fieldName, ['name', 'email', 'iban'], true) ? 80.0 : 55.0;
+        // Always anchor to the right edge so writing begins at the click point and
+        // flows leftward (the natural start of a field in an RTL form). LTR values
+        // (numbers/Latin) keep their ltr character order but sit flush to that edge.
+        $align = 'right';
+        $boxW  = in_array($fieldName, ['name', 'email', 'iban'], true) ? 90.0 : 60.0;
         $boxH  = 8.0;
 
-        // Center the box horizontally and vertically around the click point
-        $boxLeft = $x_mm - ($boxW / 2.0);
+        // The click point marks the RIGHT edge (start of writing); the box extends
+        // leftward from it, and the text is centered vertically on the point.
+        $boxLeft = $x_mm - $boxW;
         $boxTop  = $y_mm - ($boxH / 2.0);
+
+        // Keep the box on the page without moving its right edge off the anchor.
+        if ($boxLeft < 0) {
+            $boxW   += $boxLeft;
+            $boxLeft = 0;
+        }
 
         $html = '<p style="font-family:' . $font . ';font-size:11pt;direction:' . $dir . ';text-align:' . $align . ';color:#111827;font-weight:bold;margin:0;padding:0;">'
               . htmlspecialchars($value, ENT_QUOTES, 'UTF-8')

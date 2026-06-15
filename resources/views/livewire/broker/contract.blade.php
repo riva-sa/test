@@ -30,6 +30,20 @@
                     </p>
                 </div>
 
+            {{-- ══════════ Signed — awaiting final admin review/approval ══════════ --}}
+            @elseif ($broker->contractSigned())
+                <div class="p-10 text-center">
+                    <div class="h-20 w-20 mx-auto rounded-full bg-amber-50 border border-amber-100 flex items-center justify-center mb-6">
+                        <i class="fas fa-hourglass-half text-3xl text-amber-400"></i>
+                    </div>
+                    <h2 class="text-lg font-black text-gray-900 mb-3">تم استلام عقدك الموقّع ✍️</h2>
+                    <p class="text-sm text-gray-500 leading-relaxed max-w-sm mx-auto">
+                        شكراً لك. عقدك الموقّع قيد المراجعة النهائية من قِبَل الإدارة.<br>
+                        لن يتم تفعيل حسابك إلا بعد الاطّلاع على العقد النهائي واعتماده.
+                        ستتلقى إشعاراً عبر البريد الإلكتروني فور تفعيل حسابك.
+                    </p>
+                </div>
+
             {{-- ══════════ Contract ready ══════════ --}}
             @else
 

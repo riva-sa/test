@@ -47,8 +47,8 @@ class SubmitLead extends Component
 
     public $availableUnits = [];
 
-    // Client lookup
-    public $clientSearchResults = [];
+    // Client lookup — only whether the client already exists is exposed to the broker,
+    // never any of the client's own data (privacy requirement).
     public $existingClientWarning = null;
     public $existingClientFound = false;
 
@@ -172,7 +172,27 @@ class SubmitLead extends Component
      */
     public function updatedPhone()
     {
+        $this->phone = $this->toLatinDigits($this->phone);
         $this->checkExistingClient();
+    }
+
+    /**
+     * Force a value to use Latin (English) digits, converting Arabic-Indic / Persian digits.
+     */
+    private function toLatinDigits(?string $value): string
+    {
+        if ($value === null || $value === '') {
+            return (string) $value;
+        }
+
+        $map = [
+            '٠' => '0', '١' => '1', '٢' => '2', '٣' => '3', '٤' => '4',
+            '٥' => '5', '٦' => '6', '٧' => '7', '٨' => '8', '٩' => '9',
+            '۰' => '0', '۱' => '1', '۲' => '2', '۳' => '3', '۴' => '4',
+            '۵' => '5', '۶' => '6', '۷' => '7', '۸' => '8', '۹' => '9',
+        ];
+
+        return strtr($value, $map);
     }
 
     /**
@@ -184,58 +204,40 @@ class SubmitLead extends Component
     }
 
     /**
-     * Search for existing clients by phone number.
+     * Check whether this phone number already exists in our CRM.
+     *
+     * For privacy, we only ever expose the fact that the client is already
+     * registered with Riva — never the client's name, status, history or any
+     * other detail, and we never auto-fill anything from existing records.
      */
     public function checkExistingClient()
     {
         $this->existingClientWarning = null;
         $this->existingClientFound = false;
-        $this->clientSearchResults = [];
 
-        $rawPhone = trim($this->phone);
-        if (strlen($rawPhone) < 7) {
-            return;
-        }
-
-        $fullPhone = $this->countryCode . $rawPhone;
-
-        // Search by exact full phone or raw phone
-        $existing = UnitOrder::where(function ($q) use ($rawPhone, $fullPhone) {
-            $q->where('phone', $rawPhone)
-              ->orWhere('phone', $fullPhone)
-              ->orWhere('phone', 'like', '%' . $rawPhone);
-        })
-        ->select('id', 'name', 'phone', 'status', 'created_at')
-        ->orderByDesc('created_at')
-        ->limit(3)
-        ->get();
-
-        if ($existing->isNotEmpty()) {
+        if ($this->clientExistsInCrm()) {
             $this->existingClientFound = true;
-
-            // Auto-fill name from the latest record
-            if (empty($this->name)) {
-                $this->name = $existing->first()->name;
-            }
-
-            $this->clientSearchResults = $existing->map(fn($o) => [
-                'id'         => $o->id,
-                'name'       => $o->name,
-                'phone'      => $o->phone,
-                'status'     => UnitOrder::STATUS_LABELS[$o->status] ?? '—',
-                'created_at' => $o->created_at->format('Y-m-d'),
-            ])->toArray();
-
-            $this->existingClientWarning = 'تنبيه: هذا العميل موجود مسبقاً في قاعدة البيانات (' . $existing->count() . ' طلب سابق). سيتم إشعار الإدارة عند الإرسال.';
+            $this->existingClientWarning = 'هذا العميل مسجّل بالفعل لدى ريفا، ولا يمكن إرساله.';
         }
     }
 
     /**
-     * Fill name from a selected existing client record.
+     * Does the entered phone number already belong to a client in our CRM?
      */
-    public function fillFromExisting(string $name)
+    private function clientExistsInCrm(): bool
     {
-        $this->name = $name;
+        $rawPhone = trim($this->toLatinDigits($this->phone));
+        if (strlen($rawPhone) < 7) {
+            return false;
+        }
+
+        $fullPhone = $this->buildFullPhone();
+
+        return UnitOrder::where(function ($q) use ($rawPhone, $fullPhone) {
+            $q->where('phone', $rawPhone)
+              ->orWhere('phone', $fullPhone)
+              ->orWhere('phone', 'like', '%' . $rawPhone);
+        })->exists();
     }
 
     private function loadUnits()
@@ -255,7 +257,7 @@ class SubmitLead extends Component
      */
     private function buildFullPhone(): string
     {
-        $raw = trim($this->phone);
+        $raw = trim($this->toLatinDigits($this->phone));
 
         // If phone already starts with +, don't prepend code
         if (str_starts_with($raw, '+')) {
@@ -273,11 +275,23 @@ class SubmitLead extends Component
 
         $fullPhone = $this->buildFullPhone();
 
-        // Recheck database for existing client to ensure fresh status
-        $this->checkExistingClient();
-
         if (BlockedNumber::where('phone', $fullPhone)->orWhere('phone', $this->phone)->exists()) {
             session()->flash('error', 'عذراً، هذا الرقم محظور من تقديم طلبات.');
+
+            return;
+        }
+
+        // Reject the lead entirely if the client is already registered in our CRM.
+        // The broker is told only that the client already exists with Riva — no other detail.
+        if ($this->clientExistsInCrm()) {
+            $this->existingClientFound = true;
+            $this->existingClientWarning = 'هذا العميل مسجّل بالفعل لدى ريفا، ولا يمكن إرساله.';
+
+            $this->notifyExistingClientAttempt($broker, $fullPhone);
+
+            BrokerActivityLog::record('lead_rejected_existing', $broker->id, "محاولة إرسال عميل مسجّل مسبقاً ({$fullPhone}) — تم الرفض");
+
+            session()->flash('error', 'هذا العميل مسجّل بالفعل لدى ريفا، ولا يمكن إرسال الطلب.');
 
             return;
         }
@@ -295,8 +309,6 @@ class SubmitLead extends Component
         ])->filter()->implode(' | ');
 
         $orderMessage = trim(($this->message ? $this->message."\n" : '')."[بيانات الوسيط] ".$details);
-
-        $isExistingClient = $this->existingClientFound;
 
         $createdCount = DB::transaction(function () use ($broker, $units, $orderMessage, $fullPhone) {
             $count = 0;
@@ -338,73 +350,68 @@ class SubmitLead extends Component
             return $count;
         });
 
-        // إشعار الجهات المعنية إذا كان العميل موجوداً مسبقاً
-        if ($isExistingClient) {
-            try {
-                $rawPhone = trim($this->phone);
-                // البحث عن الطلبات السابقة لهذا العميل للحصول على الوسيط السابق أو موظف المبيعات المعين
-                $existingOrders = UnitOrder::where(function ($q) use ($fullPhone, $rawPhone) {
-                    $q->where('phone', $fullPhone)
-                      ->orWhere('phone', $this->phone)
-                      ->orWhere('phone', 'like', '%' . $rawPhone);
-                })->get();
+        BrokerActivityLog::record('lead_submitted', $broker->id, "إرسال عميل ({$this->name} - {$fullPhone}) — عدد الطلبات: {$createdCount}");
 
-                // 1. إشعار المشرفين والمسؤولين (الأدمن)
-                $admins = User::whereHas('roles', fn($q) => $q->whereIn('name', ['Admin', 'sales_manager']))->where('is_active', true)->get();
-                $alertTitle = 'عميل موجود مسبقاً — طلب وسيط';
-                $alertMessage = "الوسيط {$broker->name} أرسل عميلاً موجوداً مسبقاً في قاعدة البيانات: {$this->name} ({$fullPhone}). عدد الطلبات المنشأة: {$createdCount}.";
-                foreach ($admins as $admin) {
-                    $admin->notify(new CRMAlertNotification($alertTitle, $alertMessage));
-                }
-
-                // 2. إشعار الوسيط الأصلي (إن وجد وكان مختلفاً عن الوسيط الحالي)
-                $notifiedBrokers = [];
-                foreach ($existingOrders as $oldOrder) {
-                    if ($oldOrder->broker_id && $oldOrder->broker_id != $broker->id && !in_array($oldOrder->broker_id, $notifiedBrokers)) {
-                        $oldBroker = \App\Models\Broker::find($oldOrder->broker_id);
-                        if ($oldBroker) {
-                            $brokerTitle = 'تنبيه: محاولة تسجيل عميل خاص بك';
-                            $brokerMessage = "تم تقديم طلب جديد لعميلك المسجل مسبقاً: {$this->name} ({$fullPhone}) بواسطة وسيط آخر.";
-                            $oldBroker->notify(new CRMAlertNotification($brokerTitle, $brokerMessage));
-                            $notifiedBrokers[] = $oldOrder->broker_id;
-                        }
-                    }
-                }
-
-                // 3. إشعار موظف المبيعات المعين على الطلب السابق (إن وجد)
-                $notifiedSales = [];
-                foreach ($existingOrders as $oldOrder) {
-                    if ($oldOrder->assigned_sales_user_id && !in_array($oldOrder->assigned_sales_user_id, $notifiedSales)) {
-                        $salesUser = User::find($oldOrder->assigned_sales_user_id);
-                        if ($salesUser && $salesUser->is_active) {
-                            $salesTitle = 'تحديث: طلب جديد لعميل معين لك';
-                            $salesMessage = "العميل المعين لك {$this->name} ({$fullPhone}) تم رفع طلب جديد له بواسطة الوسيط {$broker->name}.";
-                            $salesUser->notify(new CRMAlertNotification($salesTitle, $salesMessage));
-                            $notifiedSales[] = $oldOrder->assigned_sales_user_id;
-                        }
-                    }
-                }
-
-                // 4. إشعار الوسيط الحالي مقدم الطلب
-                $brokerTitle = 'طلب عميل مكرر';
-                $brokerMessage = "تم استلام طلبك للعميل {$this->name} ({$fullPhone}). يرجى العلم بأن العميل مسجل مسبقاً في النظام وسيتم مراجعة الطلب.";
-                $broker->notify(new CRMAlertNotification($brokerTitle, $brokerMessage));
-
-            } catch (\Exception $e) {
-                Log::error('Failed to notify admin and concerned parties about existing client: ' . $e->getMessage());
-            }
-        }
-
-        BrokerActivityLog::record('lead_submitted', $broker->id, "إرسال عميل ({$this->name} - {$fullPhone}) — عدد الطلبات: {$createdCount}" . ($isExistingClient ? ' [عميل موجود مسبقاً]' : ''));
-
-        $successMsg = "تم إرسال العميل بنجاح وإنشاء {$createdCount} طلب. يمكنك متابعة الحالة من صفحة طلباتي.";
-        if ($isExistingClient) {
-            $successMsg .= ' (تم إشعار الإدارة بأن هذا العميل موجود مسبقاً)';
-        }
-
-        session()->flash('message', $successMsg);
+        session()->flash('message', "تم إرسال العميل بنجاح وإنشاء {$createdCount} طلب. يمكنك متابعة الحالة من صفحة طلباتي.");
 
         return redirect()->route('broker.leads');
+    }
+
+    /**
+     * Notify the internal team (and the original broker / assigned salesperson)
+     * that a broker attempted to submit a client that is already in our CRM.
+     * The lead itself is rejected; this is purely an internal alert.
+     */
+    private function notifyExistingClientAttempt($broker, string $fullPhone): void
+    {
+        try {
+            $rawPhone = trim($this->phone);
+
+            $existingOrders = UnitOrder::where(function ($q) use ($fullPhone, $rawPhone) {
+                $q->where('phone', $fullPhone)
+                  ->orWhere('phone', $this->phone)
+                  ->orWhere('phone', 'like', '%' . $rawPhone);
+            })->get();
+
+            // 1. Admins / sales managers
+            $admins = User::whereHas('roles', fn($q) => $q->whereIn('name', ['Admin', 'sales_manager']))->where('is_active', true)->get();
+            $alertTitle = 'محاولة إرسال عميل مسجّل مسبقاً — وسيط';
+            $alertMessage = "حاول الوسيط {$broker->name} إرسال عميل مسجّل بالفعل لدى ريفا ({$fullPhone}). تم رفض الطلب تلقائياً.";
+            foreach ($admins as $admin) {
+                $admin->notify(new CRMAlertNotification($alertTitle, $alertMessage));
+            }
+
+            // 2. The original broker who owns this client (if different)
+            $notifiedBrokers = [];
+            foreach ($existingOrders as $oldOrder) {
+                if ($oldOrder->broker_id && $oldOrder->broker_id != $broker->id && !in_array($oldOrder->broker_id, $notifiedBrokers)) {
+                    if ($oldBroker = \App\Models\Broker::find($oldOrder->broker_id)) {
+                        $oldBroker->notify(new CRMAlertNotification(
+                            'تنبيه: محاولة تسجيل عميل خاص بك',
+                            "حاول وسيط آخر إرسال عميلك المسجّل مسبقاً ({$fullPhone}). تم رفض الطلب."
+                        ));
+                        $notifiedBrokers[] = $oldOrder->broker_id;
+                    }
+                }
+            }
+
+            // 3. The salesperson assigned to the existing client (if any)
+            $notifiedSales = [];
+            foreach ($existingOrders as $oldOrder) {
+                if ($oldOrder->assigned_sales_user_id && !in_array($oldOrder->assigned_sales_user_id, $notifiedSales)) {
+                    $salesUser = User::find($oldOrder->assigned_sales_user_id);
+                    if ($salesUser && $salesUser->is_active) {
+                        $salesUser->notify(new CRMAlertNotification(
+                            'محاولة إرسال عميل معيّن لك',
+                            "حاول الوسيط {$broker->name} إرسال العميل المعيّن لك ({$fullPhone}). تم رفض الطلب."
+                        ));
+                        $notifiedSales[] = $oldOrder->assigned_sales_user_id;
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error('Failed to notify about existing-client lead attempt: ' . $e->getMessage());
+        }
     }
 
     public function render()
