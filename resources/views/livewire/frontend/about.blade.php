@@ -24,7 +24,7 @@
                     {!! \App\Helpers\ContentHelper::get('services_title', 'خدماتنا') !!}
                 </h2>
                 <p class="lead text-muted">
-                    {{ \App\Helpers\ContentHelper::get('services_subtitle', 'نقدم حلولاً عقارية متكاملة بمعايير عالمية') }}
+                    {!! \App\Helpers\ContentHelper::get('services_subtitle', 'نقدم حلولاً عقارية متكاملة بمعايير عالمية') !!}
                 </p>
             </div>
 
