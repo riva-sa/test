@@ -35,8 +35,8 @@
                             <div class="icon-box icon-box-lg bg-primary rounded-circle mb-4 mx-auto">
                                 <i class="fas fa-building text-white"></i>
                             </div>
-                            <h4 class="mb-3">{{ \App\Helpers\ContentHelper::get('service_1_title', 'إدارة المشاريع العقارية') }}</h4>
-                            <p class="mb-0">{{ \App\Helpers\ContentHelper::get('service_1_content', 'نقدم خدمات متكاملة لإدارة المشاريع العقارية بكفاءة عالية وخبرة متميزة') }}</p>
+                            <h4 class="mb-3">{!! \App\Helpers\ContentHelper::get('service_1_title', 'إدارة المشاريع العقارية') !!}</h4>
+                            <p class="mb-0">{!! \App\Helpers\ContentHelper::get('service_1_content', 'نقدم خدمات متكاملة لإدارة المشاريع العقارية بكفاءة عالية وخبرة متميزة') !!}</p>
                         </div>
                     </div>
                 </div>
@@ -46,8 +46,8 @@
                             <div class="icon-box icon-box-lg bg-primary rounded-circle mb-4 mx-auto">
                                 <i class="fas fa-chart-line text-white"></i>
                             </div>
-                            <h4 class="mb-3">{{ \App\Helpers\ContentHelper::get('service_2_title', 'التسويق العقاري') }}</h4>
-                            <p class="mb-0">{{ \App\Helpers\ContentHelper::get('service_2_content', 'استراتيجيات تسويقية مبتكرة لتحقيق أعلى عائد استثماري لعملائنا') }}</p>
+                            <h4 class="mb-3">{!! \App\Helpers\ContentHelper::get('service_2_title', 'التسويق العقاري') !!}</h4>
+                            <p class="mb-0">{!! \App\Helpers\ContentHelper::get('service_2_content', 'استراتيجيات تسويقية مبتكرة لتحقيق أعلى عائد استثماري لعملائنا') !!}</p>
                         </div>
                     </div>
                 </div>
@@ -57,8 +57,8 @@
                             <div class="icon-box icon-box-lg bg-primary rounded-circle mb-4 mx-auto">
                                 <i class="fas fa-handshake text-white"></i>
                             </div>
-                            <h4 class="mb-3">{{ \App\Helpers\ContentHelper::get('service_3_title', 'الاستشارات العقارية') }}</h4>
-                            <p class="mb-0">{{ \App\Helpers\ContentHelper::get('service_3_content', 'خبراء متخصصون لتقديم الاستشارات العقارية المناسبة لاحتياجاتك') }}</p>
+                            <h4 class="mb-3">{!! \App\Helpers\ContentHelper::get('service_3_title', 'الاستشارات العقارية') !!}</h4>
+                            <p class="mb-0">{!! \App\Helpers\ContentHelper::get('service_3_content', 'خبراء متخصصون لتقديم الاستشارات العقارية المناسبة لاحتياجاتك') !!}</p>
                         </div>
                     </div>
                 </div>
