@@ -3,6 +3,7 @@
 namespace App\Livewire\Broker;
 
 use App\Models\Project;
+use App\Services\ProjectPriceListService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -27,6 +28,19 @@ class ProjectDetails extends Component
     public function updating($name)
     {
         $this->resetPage();
+    }
+
+    /**
+     * Stream a freshly generated price-list PDF of the project's available units.
+     */
+    public function downloadPriceList(ProjectPriceListService $service)
+    {
+        $pdf = $service->generate($this->project);
+        $fileName = $service->fileName($this->project);
+
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf;
+        }, $fileName, ['Content-Type' => 'application/pdf']);
     }
 
     public function render()

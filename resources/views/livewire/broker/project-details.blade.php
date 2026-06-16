@@ -32,10 +32,18 @@
                         @endif
                     </div>
                 </div>
-                <a href="{{ route('broker.leads.create', ['project' => $project->id]) }}"
-                   class="px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white text-sm font-black rounded-xl transition-all whitespace-nowrap">
-                    <i class="fas fa-user-plus ml-2"></i> إرسال عميل لهذا المشروع
-                </a>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <button type="button" wire:click="downloadPriceList" wire:loading.attr="disabled" wire:target="downloadPriceList"
+                       class="px-5 py-3 bg-white border border-gray-200 hover:border-gray-900 text-gray-700 hover:text-gray-900 text-sm font-black rounded-xl transition-all whitespace-nowrap disabled:opacity-50">
+                        <i class="fas fa-file-pdf text-red-400 ml-2" wire:loading.remove wire:target="downloadPriceList"></i>
+                        <i class="fas fa-spinner fa-spin ml-2" wire:loading wire:target="downloadPriceList"></i>
+                        تحميل قائمة الأسعار
+                    </button>
+                    <a href="{{ route('broker.leads.create', ['project' => $project->id]) }}"
+                       class="px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white text-sm font-black rounded-xl transition-all whitespace-nowrap">
+                        <i class="fas fa-user-plus ml-2"></i> إرسال عميل لهذا المشروع
+                    </a>
+                </div>
             </div>
 
             {{-- Broker commission set by the admin --}}
