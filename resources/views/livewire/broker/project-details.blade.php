@@ -38,6 +38,19 @@
                 </a>
             </div>
 
+            {{-- Broker commission set by the admin --}}
+            @if ($broker)
+                <div class="flex items-center gap-3 mt-4 px-4 py-3 bg-primary-50 border border-primary-100 rounded-xl">
+                    <div class="flex items-center justify-center w-9 h-9 rounded-lg bg-primary-100 text-primary-600 shrink-0">
+                        <i class="fas fa-percent"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="text-[10px] font-black text-primary-500 uppercase tracking-wide">عمولتك على هذا المشروع</div>
+                        <div class="text-[13px] font-black text-gray-900">{{ $broker->commissionLabel() }}</div>
+                    </div>
+                </div>
+            @endif
+
             @if ($project->description)
                 <p class="text-sm text-gray-600 leading-relaxed mt-4">{!! nl2br(e(strip_tags($project->description))) !!}</p>
             @endif
@@ -92,10 +105,29 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             @forelse ($units as $unit)
-                <div class="border border-gray-100 rounded-2xl overflow-hidden hover:border-gray-200 transition-all">
+                @php
+                    $gallery = collect();
+                    if ($unit->image) {
+                        $gallery->push(['url' => \App\Helpers\MediaHelper::getUrl($unit->image), 'is_plan' => false]);
+                    }
+                    foreach ((array) $unit->images as $img) {
+                        if (! empty($img)) {
+                            $gallery->push(['url' => \App\Helpers\MediaHelper::getUrl($img), 'is_plan' => false]);
+                        }
+                    }
+                    if ($unit->floor_plan) {
+                        $gallery->push(['url' => \App\Helpers\MediaHelper::getUrl($unit->floor_plan), 'is_plan' => true]);
+                    }
+                    $gallery = $gallery->values();
+                @endphp
+                <div class="border border-gray-100 rounded-2xl overflow-hidden hover:border-gray-200 transition-all"
+                     x-data="{ active: 0, images: {{ \Illuminate\Support\Js::from($gallery) }} }">
                     <div class="h-32 bg-gray-100 relative">
-                        @if ($unit->image)
-                            <img src="{{ \App\Helpers\MediaHelper::getUrl($unit->image) }}" class="w-full h-full object-cover" alt="{{ $unit->title }}">
+                        @if ($gallery->isNotEmpty())
+                            <img src="{{ $gallery->first()['url'] }}" :src="images[active].url" class="w-full h-full object-cover" alt="{{ $unit->title }}">
+                            <span x-show="images[active].is_plan" x-cloak class="absolute top-2 left-2 px-2.5 py-1 text-[10px] font-black rounded-full bg-blue-500 text-white">
+                                <i class="fas fa-ruler-combined ml-1"></i>مخطط
+                            </span>
                         @else
                             <div class="w-full h-full flex items-center justify-center text-gray-300"><i class="fas fa-house text-2xl"></i></div>
                         @endif
@@ -104,6 +136,20 @@
                             {{ $unit->case == 0 ? 'متاحة' : ($unit->case == 1 ? 'محجوزة' : 'مباعة') }}
                         </span>
                     </div>
+                    @if ($gallery->count() > 1)
+                        <div class="flex gap-1.5 p-2 overflow-x-auto bg-gray-50/50">
+                            @foreach ($gallery as $i => $g)
+                                <button type="button" @click="active = {{ $i }}"
+                                    class="relative shrink-0 w-12 h-12 rounded-lg overflow-hidden border-2 transition-all"
+                                    :class="active === {{ $i }} ? 'border-gray-900' : 'border-transparent opacity-60 hover:opacity-100'">
+                                    <img src="{{ $g['url'] }}" class="w-full h-full object-cover" alt="">
+                                    @if ($g['is_plan'])
+                                        <span class="absolute inset-x-0 bottom-0 bg-blue-500 text-white text-[7px] font-black text-center leading-tight py-px">مخطط</span>
+                                    @endif
+                                </button>
+                            @endforeach
+                        </div>
+                    @endif
                     <div class="p-4">
                         <div class="flex items-center justify-between mb-2">
                             <h3 class="text-[13px] font-black text-gray-900">{{ $unit->title }}</h3>
@@ -116,11 +162,18 @@
                             @if ($unit->floor) <span><i class="fas fa-stairs ml-1"></i>دور {{ $unit->floor }}</span> @endif
                         </div>
                         <div class="flex items-center justify-between pt-3 border-t border-gray-50">
-                            @if ($unit->show_price && $unit->unit_price)
-                                <span class="text-[14px] font-black text-gray-900">{{ number_format((float) $unit->unit_price) }} ر.س</span>
-                            @else
-                                <span class="text-[11px] font-bold text-gray-400">السعر عند الطلب</span>
-                            @endif
+                            <div>
+                                @if ($unit->show_price && $unit->unit_price)
+                                    <span class="text-[14px] font-black text-gray-900">{{ number_format((float) $unit->unit_price) }} ر.س</span>
+                                @else
+                                    <span class="text-[11px] font-bold text-gray-400">السعر عند الطلب</span>
+                                @endif
+                                @if ($broker && (float) $broker->commission_value > 0 && ($broker->isFixedCommission() || ($unit->show_price && $unit->unit_price)))
+                                    <div class="text-[10px] font-bold text-primary-600 mt-0.5">
+                                        <i class="fas fa-percent ml-1"></i>عمولتك: {{ number_format($broker->commissionForPrice($unit->unit_price)) }} ر.س
+                                    </div>
+                                @endif
+                            </div>
                             @if ($unit->case == 0)
                                 <a href="{{ route('broker.leads.create', ['project' => $project->id, 'unit' => $unit->id]) }}"
                                    class="px-3 py-1.5 bg-gray-900 hover:bg-gray-800 text-white text-[10px] font-black rounded-lg transition-all">

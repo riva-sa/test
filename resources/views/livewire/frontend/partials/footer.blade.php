@@ -155,9 +155,9 @@
 
     /* Links and Hover micro-animations */
     .custom-footer .footer-links a {
-        color: #94a3b8;
+        color: #a9b7caff;
         text-decoration: none;
-        font-size: 0.95rem;
+        font-size: 0.65rem;
         transition: all 0.25s ease;
         display: inline-block;
     }

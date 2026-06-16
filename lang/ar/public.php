@@ -107,7 +107,7 @@ return [
         'contact_us' => 'تواصل معنا',
         'area_suffix' => ' م²',
         'custom_filter' => 'فلتر مُخصص',
-        'reset_filter' => 'اعداة تعيين',
+        'reset_filter' => 'إعادة تعيين',
         'project_cases' => 'حالات المشاريع',
         'show_available' => 'عرض المتاح فقط',
         'available' => 'متاح',

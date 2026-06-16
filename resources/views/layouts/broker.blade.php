@@ -14,6 +14,8 @@
 
     @vite(['resources/css/broker.css'])
 
+    <style>[x-cloak]{display:none!important}</style>
+
     @livewireStyles
 </head>
 <body class="antialiased text-gray-900">

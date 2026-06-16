@@ -6,6 +6,7 @@ use App\Models\City;
 use App\Models\Developer;
 use App\Models\Project;
 use App\Models\Unit;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -72,6 +73,7 @@ class Projects extends Component
             'cities' => City::orderBy('name')->get(),
             'developers' => Developer::orderBy('name')->get(),
             'unitTypes' => Unit::where('case', '0')->whereNotNull('unit_type')->distinct()->pluck('unit_type'),
+            'broker' => Auth::guard('broker')->user(),
         ])->layout('layouts.broker');
     }
 }

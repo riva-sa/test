@@ -70,6 +70,11 @@
                         <span><i class="fas fa-location-dot ml-1"></i>{{ $project->city->name ?? '—' }}</span>
                         <span><i class="fas fa-helmet-safety ml-1"></i>{{ $project->developer->name ?? '—' }}</span>
                     </div>
+                    @if ($broker && (float) $broker->commission_value > 0)
+                        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 mb-3 bg-primary-50 border border-primary-100 text-primary-600 text-[10px] font-black rounded-full">
+                            <i class="fas fa-percent"></i> عمولتك: {{ $broker->commissionLabel() }}
+                        </div>
+                    @endif
                     <div class="flex items-center justify-between pt-3 border-t border-gray-50">
                         <span class="text-[11px] font-bold text-gray-500">
                             {{ $project->available_units_count }} وحدة متاحة من {{ $project->units_count }}

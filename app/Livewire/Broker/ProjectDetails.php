@@ -3,6 +3,7 @@
 namespace App\Livewire\Broker;
 
 use App\Models\Project;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -40,6 +41,7 @@ class ProjectDetails extends Component
         return view('livewire.broker.project-details', [
             'units' => $units,
             'unitTypes' => $this->project->units()->where('case', '0')->whereNotNull('unit_type')->distinct()->pluck('unit_type'),
+            'broker' => Auth::guard('broker')->user(),
         ])->layout('layouts.broker');
     }
 }
