@@ -1,7 +1,7 @@
 <div class="hidden md:flex md:flex-shrink-0 h-full" wire:poll.30s="autoRefreshNotifications">
     @php
         $leadsActive = request()->routeIs(['manager.customerlist', 'manager.orders', 'manager.create-order', 'manager.order-details']);
-        $managementActive = request()->routeIs(['manager.sales-managers', 'manager.reports.auto-assignment', 'manager.analytics', 'manager.analytics.campaigns', 'manager.bulk-lead-import', 'manager.blocked-numbers', 'manager.activities', 'manager.broker-applications']);
+        $managementActive = request()->routeIs(['manager.sales-managers', 'manager.reports.auto-assignment', 'manager.analytics', 'manager.analytics.campaigns', 'manager.bulk-lead-import', 'manager.blocked-numbers', 'manager.activities', 'manager.broker-applications', 'manager.broker-contract-template', 'manager.project-commissions']);
         $toolsActive = request()->routeIs(['manager.announcements', 'manager.notifications', 'manager.targets', 'manager.leaderboard']);
     @endphp
     <div class="flex flex-col w-64 h-full bg-white transition-all duration-300 relative z-20 ">
@@ -190,6 +190,10 @@
                         <a href="{{ route('manager.broker-contract-template') }}" class="relative block px-3 py-2 text-[13px] font-medium rounded-lg transition-all {{ request()->routeIs('manager.settings.broker-contract-template') ? 'text-gray-900 bg-gray-50 font-bold' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50/50' }}">
                             @if(request()->routeIs('manager.broker-contract-template')) <span class="absolute -right-[17px] top-1/2 -translate-y-1/2 w-1 h-6 bg-primary-600 rounded-l-full"></span> @endif
                             نسخة العقد
+                        </a>
+                        <a href="{{ route('manager.project-commissions') }}" class="relative block px-3 py-2 text-[13px] font-medium rounded-lg transition-all {{ request()->routeIs('manager.project-commissions') ? 'text-gray-900 bg-gray-50 font-bold' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50/50' }}">
+                            @if(request()->routeIs('manager.project-commissions')) <span class="absolute -right-[17px] top-1/2 -translate-y-1/2 w-1 h-6 bg-primary-600 rounded-l-full"></span> @endif
+                            عمولات المشاريع
                         </a>
                     @endif
                     @if(auth()->user()->hasRole(['Admin', 'sales_manager']))
