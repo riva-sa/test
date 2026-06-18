@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Broker;
 
 use App\Http\Controllers\Controller;
 use App\Models\BrokerDocument;
+use App\Models\Unit;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class BrokerFileController extends Controller
 {
@@ -46,5 +48,21 @@ class BrokerFileController extends Controller
         return Storage::disk('public')->response($document->path, $document->original_name, [
             'Content-Disposition' => 'inline',
         ]);
+    }
+
+    /**
+     * Download a unit's floor-plan image. Streamed through the app so the
+     * attachment disposition is honoured on any disk (local or S3).
+     */
+    public function unitFloorPlan(Unit $unit)
+    {
+        abort_unless($unit->floor_plan && Storage::disk('public')->exists($unit->floor_plan), 404);
+        // Brokers may only reach floor plans of units in active projects.
+        abort_unless($unit->project && $unit->project->status, 404);
+
+        $ext  = pathinfo($unit->floor_plan, PATHINFO_EXTENSION) ?: 'jpg';
+        $name = 'floor-plan-'.(Str::slug($unit->title) ?: $unit->id).'.'.$ext;
+
+        return Storage::disk('public')->download($unit->floor_plan, $name);
     }
 }

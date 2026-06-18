@@ -53,6 +53,7 @@
                         <th class="px-5 py-3">تاريخ التسجيل</th>
                         <th class="px-5 py-3">العملاء</th>
                         <th class="px-5 py-3">الحالة</th>
+                        <th class="px-5 py-3">العقد</th>
                         <th class="px-5 py-3">إجراءات</th>
                     </tr>
                 </thead>
@@ -74,6 +75,27 @@
                                 </span>
                             </td>
                             <td class="px-5 py-4">
+                                @if ($broker->contractApproved())
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-green-100 text-green-700 text-[10px] font-black rounded-full">
+                                        <i class="fas fa-check-double"></i> مُعتمد
+                                    </span>
+                                @elseif ($broker->contractSigned())
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-100 text-amber-700 text-[10px] font-black rounded-full">
+                                        <i class="fas fa-file-signature"></i> موقّع — بانتظار الاعتماد
+                                    </span>
+                                @elseif ($broker->contractSent())
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-yellow-50 text-yellow-700 border border-yellow-200 text-[10px] font-black rounded-full">
+                                        <i class="fas fa-hourglass-half"></i> بانتظار توقيع الوسيط
+                                    </span>
+                                @elseif ($broker->isApproved())
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-100 text-gray-500 text-[10px] font-black rounded-full">
+                                        جاري التجهيز
+                                    </span>
+                                @else
+                                    <span class="text-[11px] text-gray-300">—</span>
+                                @endif
+                            </td>
+                            <td class="px-5 py-4">
                                 <div class="flex items-center gap-1.5">
                                     <button wire:click="viewBroker({{ $broker->id }})" class="px-3 py-1.5 text-[11px] font-bold text-gray-600 bg-gray-50 hover:bg-gray-100 rounded-lg transition-all">
                                         التفاصيل
@@ -93,7 +115,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="px-5 py-12 text-center text-sm text-gray-400">لا توجد طلبات تسجيل</td>
+                            <td colspan="9" class="px-5 py-12 text-center text-sm text-gray-400">لا توجد طلبات تسجيل</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -123,7 +145,7 @@
                         <div class="text-[11px] font-black text-gray-500 uppercase">بيانات المسوّق</div>
                         <button wire:click="startEditing"
                                 class="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-all">
-                            <i class="fas fa-pen"></i> تعديل البيانات والعمولة
+                            <i class="fas fa-pen"></i> تعديل البيانات
                         </button>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
@@ -161,13 +183,10 @@
                         </div>
                     </div>
 
-                    {{-- Commission summary --}}
-                    <div class="flex items-center justify-between p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
-                        <div class="flex items-center gap-2">
-                            <i class="fas fa-hand-holding-dollar text-emerald-500"></i>
-                            <span class="text-[11px] font-bold text-emerald-700 uppercase">عمولة المبيعات</span>
-                        </div>
-                        <span class="text-sm font-black text-emerald-800">{{ $selectedBroker->commissionLabel() }}</span>
+                    {{-- Commission note: rates are defined per project, not per broker --}}
+                    <div class="flex items-center gap-2 p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
+                        <i class="fas fa-hand-holding-dollar text-emerald-500"></i>
+                        <span class="text-[11px] font-bold text-emerald-700">تُحدَّد عمولة الوسيط لكل مشروع على حدة من شاشة المشاريع.</span>
                     </div>
 
                     @else
@@ -214,35 +233,6 @@
                                 <input type="text" wire:model="editIban" dir="ltr" data-latin-digits placeholder="SA..." class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-gray-900 focus:ring-0 text-sm text-left">
                                 @error('editIban') <p class="text-[11px] text-red-600 font-bold mt-1">{{ $message }}</p> @enderror
                             </div>
-                        </div>
-
-                        {{-- Commission settings --}}
-                        <div class="p-4 bg-emerald-50 border border-emerald-100 rounded-xl space-y-3">
-                            <div class="flex items-center gap-2">
-                                <i class="fas fa-hand-holding-dollar text-emerald-500"></i>
-                                <span class="text-[11px] font-black text-emerald-700 uppercase">عمولة المبيعات (لكل وحدة مباعة)</span>
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-[11px] font-bold text-gray-500 mb-1">نوع العمولة</label>
-                                    <select wire:model.live="editCommissionType" class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-gray-900 focus:ring-0 text-sm bg-white">
-                                        @foreach ($commissionTypes as $key => $label)
-                                            <option value="{{ $key }}">{{ $label }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-[11px] font-bold text-gray-500 mb-1">
-                                        {{ $editCommissionType === 'fixed' ? 'المبلغ بالريال' : 'النسبة المئوية %' }}
-                                    </label>
-                                    <input type="text" wire:model="editCommissionValue" dir="ltr" inputmode="decimal" data-latin-digits
-                                           class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-gray-900 focus:ring-0 text-sm text-left">
-                                    @error('editCommissionValue') <p class="text-[11px] text-red-600 font-bold mt-1">{{ $message }}</p> @enderror
-                                </div>
-                            </div>
-                            <p class="text-[10px] text-emerald-600 font-bold">
-                                {{ $editCommissionType === 'fixed' ? 'مبلغ ثابت يُمنح للمسوّق عن كل وحدة مباعة.' : 'نسبة من قيمة كل وحدة مباعة تُحتسب كعمولة للمسوّق.' }}
-                            </p>
                         </div>
 
                         <div class="flex gap-3 pt-1">
@@ -355,14 +345,37 @@
                             @if ($selectedBroker->contractSigned() && ! $selectedBroker->contractApproved())
                                 <div class="flex items-start gap-2 p-3 bg-amber-50 border border-amber-100 rounded-xl mb-3 mt-3">
                                     <i class="fas fa-exclamation-circle text-amber-400 text-sm mt-0.5"></i>
-                                    <p class="text-[11px] text-amber-700">راجع النسخة الموقّعة أعلاه. لن يتم تفعيل حساب الوسيط إلا بعد اطّلاعك على العقد النهائي واعتماده.</p>
+                                    <p class="text-[11px] text-amber-700">راجع النسخة الموقّعة أعلاه، ثم ارسم توقيعك بالأسفل لختمه على العقد واعتماده. لن يتم تفعيل حساب الوسيط إلا بعد توقيعك.</p>
                                 </div>
+
+                                {{-- Manager signature pad --}}
+                                <div class="mb-3">
+                                    <label class="block text-[11px] font-black text-gray-700 mb-1.5">توقيع المدير <span class="text-red-500">*</span></label>
+                                    <div x-data="managerSignaturePad()"
+                                         wire:ignore
+                                         class="relative border-2 border-dashed border-gray-200 rounded-xl overflow-hidden bg-gray-50 hover:border-gray-400 transition-colors"
+                                         style="height: 150px;">
+                                        <canvas x-ref="canvas"
+                                                class="absolute inset-0 w-full h-full touch-none cursor-crosshair"
+                                                style="touch-action: none;"></canvas>
+                                        <div x-show="empty"
+                                             class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none select-none">
+                                            <i class="fas fa-pen-nib text-2xl text-gray-200 mb-1.5"></i>
+                                            <span class="text-[11px] text-gray-300 font-bold">ارسم توقيعك هنا</span>
+                                        </div>
+                                        <button type="button" x-show="!empty" @click="clearPad()"
+                                                class="absolute top-2 left-2 z-10 text-[11px] text-gray-400 hover:text-red-500 font-bold transition-colors flex items-center gap-1 bg-white/80 px-2 py-1 rounded-lg">
+                                            <i class="fas fa-eraser"></i> مسح
+                                        </button>
+                                    </div>
+                                    @error('managerSignatureData') <p class="text-[11px] text-red-600 font-bold mt-1">{{ $message }}</p> @enderror
+                                </div>
+
                                 <button wire:click="approveContract({{ $selectedBroker->id }})"
-                                        wire:confirm="هل اطّلعت على العقد النهائي الموقّع وتؤكد اعتماده وتفعيل الحساب؟"
                                         wire:loading.attr="disabled"
                                         class="w-full py-2.5 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white text-xs font-black rounded-xl transition-all">
                                     <span wire:loading.remove wire:target="approveContract">
-                                        <i class="fas fa-check-double ml-1"></i> اعتماد العقد وتفعيل الحساب
+                                        <i class="fas fa-check-double ml-1"></i> التوقيع واعتماد العقد وتفعيل الحساب
                                     </span>
                                     <span wire:loading wire:target="approveContract">جاري الاعتماد...</span>
                                 </button>
@@ -427,3 +440,59 @@
         </div>
     @endif
 </div>
+
+{{-- Signature Pad library, loaded once (survives Livewire morphs & wire:navigate). --}}
+@assets
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.2.0/dist/signature_pad.umd.min.js"></script>
+@endassets
+
+{{-- Manager signature pad: registered once; re-initialises when the approval modal opens. --}}
+@script
+<script>
+    Alpine.data('managerSignaturePad', () => ({
+        pad: null,
+        empty: true,
+
+        init() {
+            const canvas = this.$refs.canvas;
+            if (!canvas || typeof SignaturePad === 'undefined') return;
+
+            this.pad = new SignaturePad(canvas, {
+                backgroundColor: 'rgba(0,0,0,0)',
+                penColor: '#111827',
+                minWidth: 1.2,
+                maxWidth: 3.0,
+            });
+
+            const resize = () => {
+                const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                const data  = this.pad.toData();
+                canvas.width  = canvas.offsetWidth  * ratio;
+                canvas.height = canvas.offsetHeight * ratio;
+                canvas.getContext('2d').scale(ratio, ratio);
+                this.pad.clear();
+                if (data.length) this.pad.fromData(data);
+            };
+            this.$nextTick(resize);
+            this._resize = resize;
+            window.addEventListener('resize', resize);
+
+            this.pad.addEventListener('beginStroke', () => { this.empty = false; });
+            this.pad.addEventListener('endStroke', () => {
+                this.empty = this.pad.isEmpty();
+                this.$wire.set('managerSignatureData', this.pad.isEmpty() ? '' : this.pad.toDataURL('image/png'), false);
+            });
+        },
+
+        clearPad() {
+            if (this.pad) this.pad.clear();
+            this.empty = true;
+            this.$wire.set('managerSignatureData', '', false);
+        },
+
+        destroy() {
+            if (this._resize) window.removeEventListener('resize', this._resize);
+        },
+    }));
+</script>
+@endscript

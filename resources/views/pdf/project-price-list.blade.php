@@ -29,6 +29,10 @@
         table.units tbody tr.alt td { background: #f9fafb; }
         .price { font-weight: bold; color: #047857; white-space: nowrap; }
         .on-request { color: #9ca3af; font-size: 9px; }
+        .status { font-weight: bold; font-size: 9px; white-space: nowrap; }
+        .status-available { color: #047857; }
+        .status-reserved { color: #b45309; }
+        .status-sold { color: #b91c1c; }
 
         .empty { text-align: center; padding: 30px; color: #9ca3af; }
 
@@ -50,7 +54,7 @@
                 @endif
             </td>
             <td width="44%" class="title">
-                <h1>قائمة أسعار الوحدات المتاحة</h1>
+                <h1>قائمة أسعار الوحدات</h1>
                 <div class="sub">{{ $project->name }}</div>
             </td>
             <td width="28%" style="text-align: left;">
@@ -72,7 +76,8 @@
         </tr>
         <tr>
             <td>
-                <span class="label">عدد الوحدات المتاحة:</span> {{ $units->count() }}
+                <span class="label">إجمالي الوحدات:</span> {{ $units->count() }}
+                <span class="label" style="margin-right: 6px;">المتاحة:</span> {{ $units->where('case', 0)->count() }}
             </td>
             <td style="text-align: left;">
                 <span class="label">تاريخ الاستخراج:</span> {{ $generatedAt->format('Y-m-d') }} — {{ $generatedAt->format('H:i') }}
@@ -81,18 +86,19 @@
     </table>
 
     @if ($units->isEmpty())
-        <div class="empty">لا توجد وحدات متاحة حالياً في هذا المشروع.</div>
+        <div class="empty">لا توجد وحدات في هذا المشروع.</div>
     @else
         <table class="units">
             <thead>
                 <tr>
-                    <th width="6%">#</th>
-                    <th width="28%">الوحدة</th>
-                    <th width="16%">النوع</th>
-                    <th width="12%">المساحة</th>
-                    <th width="10%">الدور</th>
-                    <th width="10%">الغرف</th>
-                    <th width="18%">السعر</th>
+                    <th width="5%">#</th>
+                    <th width="24%">الوحدة</th>
+                    <th width="14%">النوع</th>
+                    <th width="11%">المساحة</th>
+                    <th width="8%">الدور</th>
+                    <th width="8%">الغرف</th>
+                    <th width="13%">الحالة</th>
+                    <th width="17%">السعر</th>
                 </tr>
             </thead>
             <tbody>
@@ -104,6 +110,17 @@
                         <td>{{ $unit->unit_area ? $unit->unit_area . ' م²' : '—' }}</td>
                         <td>{{ $unit->floor !== null && $unit->floor !== '' ? $unit->floor : '—' }}</td>
                         <td>{{ $unit->beadrooms ?: '—' }}</td>
+                        <td>
+                            @if ($unit->case == 0)
+                                <span class="status status-available">متاحة</span>
+                            @elseif ($unit->case == 1)
+                                <span class="status status-reserved">محجوزة</span>
+                            @elseif ($unit->case == 3)
+                                <span class="status status-reserved">تحت الإنشاء</span>
+                            @else
+                                <span class="status status-sold">مباعة</span>
+                            @endif
+                        </td>
                         <td>
                             @if ($unit->show_price && $unit->unit_price)
                                 <span class="price">{{ number_format((float) $unit->unit_price) }} ر.س</span>
@@ -118,7 +135,7 @@
     @endif
 
     <div class="notice">
-        الأسعار والوحدات المتاحة المعروضة في هذا المستند صحيحة بتاريخ الاستخراج فقط، وقابلة للتغيير في أي وقت دون إشعار مسبق.
+        الأسعار وحالة الوحدات المعروضة في هذا المستند صحيحة بتاريخ الاستخراج فقط، وقابلة للتغيير في أي وقت دون إشعار مسبق.
     </div>
 
     <div class="footer">

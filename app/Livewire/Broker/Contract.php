@@ -2,9 +2,13 @@
 
 namespace App\Livewire\Broker;
 
+use App\Models\Broker;
 use App\Models\BrokerActivityLog;
+use App\Models\User;
 use App\Services\BrokerContractService;
+use App\Services\CrmNotificationService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -116,6 +120,8 @@ class Contract extends Component
             "وقّع الوسيط على العقد إلكترونياً ({$broker->reference_number})"
         );
 
+        $this->notifyManagersOfSignature($broker);
+
         session()->flash('message', 'تم توقيع العقد بنجاح. عقدك الآن قيد المراجعة النهائية من الإدارة، وسيتم تفعيل حسابك بعد اعتماده.');
 
         return redirect()->route('broker.contract');
@@ -164,9 +170,40 @@ class Contract extends Component
             "رفع الوسيط نسخة العقد الموقّعة يدوياً ({$broker->reference_number})"
         );
 
+        $this->notifyManagersOfSignature($broker);
+
         session()->flash('message', 'تم استلام العقد الموقّع بنجاح. عقدك الآن قيد المراجعة النهائية من الإدارة، وسيتم تفعيل حسابك بعد اعتماده.');
 
         return redirect()->route('broker.contract');
+    }
+
+    /**
+     * Alert the CRM managers (via the in-app notification bell) that a broker has
+     * signed their contract and it is awaiting final approval.
+     */
+    private function notifyManagersOfSignature(Broker $broker): void
+    {
+        try {
+            // The notification needs a User as sender; prefer the admin who
+            // approved this broker, otherwise fall back to any admin.
+            $sender = $broker->approvedBy ?: User::role('Admin')->first();
+
+            $recipientIds = User::role('Admin')->where('is_active', true)->pluck('id')->toArray();
+
+            if (! $sender || empty($recipientIds)) {
+                return;
+            }
+
+            app(CrmNotificationService::class)->send(
+                'broker_contract_signed',
+                $sender,
+                'توقيع عقد وسيط',
+                "قام الوسيط {$broker->name} ({$broker->reference_number}) بتوقيع عقد الوساطة، وهو الآن بانتظار الاعتماد النهائي.",
+                $recipientIds
+            );
+        } catch (\Throwable $e) {
+            Log::error('Failed to notify managers of broker signature: '.$e->getMessage(), ['broker_id' => $broker->id]);
+        }
     }
 
     public function render(): mixed

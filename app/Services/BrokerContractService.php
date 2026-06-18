@@ -71,7 +71,9 @@ class BrokerContractService
             $mpdf->useTemplate($tplId, 0, 0, $size['width'], $size['height']);
 
             foreach ($fieldsConfig as $fieldName => $coords) {
-                if (!isset($coords['page']) || intval($coords['page']) !== $i || $fieldName === 'signature') {
+                // The broker signature and the manager signature are applied later
+                // (on signing / on admin approval), never at generation time.
+                if (!isset($coords['page']) || intval($coords['page']) !== $i || in_array($fieldName, ['signature', 'manager_signature'], true)) {
                     continue;
                 }
 
@@ -157,7 +159,9 @@ class BrokerContractService
             $mpdf->useTemplate($tplId, 0, 0, $size['width'], $size['height']);
 
             foreach ($fieldsConfig as $fieldName => $coords) {
-                if (!isset($coords['page']) || (int) $coords['page'] !== $i) {
+                // The manager signature is applied separately, only after the admin
+                // reviews and approves the broker-signed contract.
+                if (!isset($coords['page']) || (int) $coords['page'] !== $i || $fieldName === 'manager_signature') {
                     continue;
                 }
 
@@ -198,6 +202,74 @@ class BrokerContractService
         ]);
 
         return $path;
+    }
+
+    /**
+     * Overlay the manager's signature onto the broker's already-signed contract.
+     *
+     * This runs when the admin reviews and approves the signed contract: the
+     * source is the broker-signed PDF (not the blank template), so the broker's
+     * signature and field values are preserved, and only the manager signature is
+     * stamped at the `manager_signature` coordinate. Works for both the online and
+     * the offline-uploaded signed copies. Overwrites the signed PDF in place.
+     *
+     * @param  string  $signatureDataUrl  The base64 data-URL from the canvas (image/png).
+     * @return string  The storage path of the counter-signed PDF.
+     */
+    public function applyManagerSignature(Broker $broker, string $signatureDataUrl): string
+    {
+        if (! $broker->contract_signed_path || ! Storage::disk(self::DISK)->exists($broker->contract_signed_path)) {
+            throw new \RuntimeException('Signed contract not found for broker '.$broker->id);
+        }
+
+        $template = BrokerContractTemplate::getActiveTemplate();
+        $coords   = $template?->fields_config['manager_signature'] ?? null;
+
+        // Pull the signed PDF (may live on S3) down to a temp file for FPDI.
+        $sourcePath = $this->localTemplateCopy($broker->contract_signed_path);
+
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'default_font_size' => 11,
+            'default_font' => 'dejavusans',
+            'margin_left' => 0,
+            'margin_right' => 0,
+            'margin_top' => 0,
+            'margin_bottom' => 0,
+        ]);
+
+        $mpdf->SetDirectionality('rtl');
+
+        $pageCount = $mpdf->setSourceFile($sourcePath);
+
+        // Where the manager signature lands: the configured page/x/y, otherwise a
+        // sensible default near the bottom-left of the last page.
+        $targetPage = $coords ? max(1, min((int) $coords['page'], $pageCount)) : $pageCount;
+        $xPct = $coords ? (float) $coords['x'] : 25.0;
+        $yPct = $coords ? (float) $coords['y'] : 90.0;
+
+        for ($i = 1; $i <= $pageCount; $i++) {
+            $tplId = $mpdf->importPage($i);
+            $size  = $mpdf->getTemplateSize($tplId);
+            $mpdf->AddPageByArray([
+                'orientation' => $size['width'] > $size['height'] ? 'L' : 'P',
+                'newformat'   => [$size['width'], $size['height']],
+            ]);
+            $mpdf->useTemplate($tplId, 0, 0, $size['width'], $size['height']);
+
+            if ($i === $targetPage) {
+                $x_mm = ($xPct / 100.0) * $size['width'];
+                $y_mm = ($yPct / 100.0) * $size['height'];
+                $sigHtml = '<img src="' . $signatureDataUrl . '" style="max-width:50mm;max-height:25mm;" />';
+                $mpdf->WriteFixedPosHTML($sigHtml, $x_mm - 25, $y_mm - 12.5, 50, 25);
+            }
+        }
+
+        Storage::disk(self::DISK)->put($broker->contract_signed_path, $mpdf->Output('', 'S'));
+        @unlink($sourcePath);
+
+        return $broker->contract_signed_path;
     }
 
     /**

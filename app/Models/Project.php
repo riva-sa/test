@@ -13,6 +13,15 @@ class Project extends Model
 {
     use HasFactory, HasTranslations, Trackable;
 
+    public const COMMISSION_PERCENTAGE = 'percentage';
+
+    public const COMMISSION_FIXED = 'fixed';
+
+    public const COMMISSION_TYPES = [
+        self::COMMISSION_PERCENTAGE => 'نسبة مئوية',
+        self::COMMISSION_FIXED => 'مبلغ ثابت',
+    ];
+
     /**
      * Visitor-facing columns with English (`*_en`) translations.
      *
@@ -38,6 +47,8 @@ class Project extends Model
         'status',
         'show_price',
         'price',
+        'commission_type',
+        'commission_value',
         'bulding_style',
         'bulding_style_en',
         'is_featured',
@@ -60,6 +71,7 @@ class Project extends Model
         [
             'status' => 'boolean',
             'show_price' => 'boolean',
+            'commission_value' => 'decimal:2',
             'location' => 'array',
             'last_visited_at' => 'datetime',
             'last_viewed_at' => 'datetime',
@@ -194,6 +206,48 @@ class Project extends Model
     public function salesManager()
     {
         return $this->belongsTo(User::class, 'sales_manager_id');
+    }
+
+    public function isFixedCommission(): bool
+    {
+        return $this->commission_type === self::COMMISSION_FIXED;
+    }
+
+    /**
+     * The commission a broker earns for a single sold unit of this project at the
+     * given price. Fixed commission ignores the price; percentage is a share of it.
+     */
+    public function commissionForPrice($unitPrice): float
+    {
+        $value = (float) $this->commission_value;
+
+        if ($this->isFixedCommission()) {
+            return round($value, 2);
+        }
+
+        return round(((float) $unitPrice) * $value / 100, 2);
+    }
+
+    /**
+     * Human-readable description of this project's commission rate, e.g.
+     * "2.5% من قيمة كل وحدة مباعة" or "5,000 ريال لكل وحدة مباعة".
+     */
+    public function commissionLabel(): string
+    {
+        $value = (float) $this->commission_value;
+
+        if ($value <= 0) {
+            return 'لم تُحدَّد بعد';
+        }
+
+        if ($this->isFixedCommission()) {
+            return number_format($value, 2).' ريال لكل وحدة مباعة';
+        }
+
+        // Trim trailing zeros for percentages (2.50 → 2.5, 3.00 → 3)
+        $formatted = rtrim(rtrim(number_format($value, 2, '.', ''), '0'), '.');
+
+        return $formatted.'% من قيمة كل وحدة مباعة';
     }
     // public function getDynamicProjectStatusAttribute()
     // {

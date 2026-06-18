@@ -181,6 +181,28 @@ class ProjectResource extends Resource
                                                 ->label('نمط البناء (English)')
                                                 ->maxLength(255)
                                                 ->columnSpan(1),
+
+                                            // Per-project broker commission. Each project sets its own
+                                            // rate; a broker's commission on a sale is derived from the
+                                            // sold unit's project.
+                                            Select::make('commission_type')
+                                                ->label('نوع العمولة')
+                                                ->options(Project::COMMISSION_TYPES)
+                                                ->default(Project::COMMISSION_PERCENTAGE)
+                                                ->required()
+                                                ->live()
+                                                ->native(false)
+                                                ->columnSpan(1),
+                                            TextInput::make('commission_value')
+                                                ->label(fn (Forms\Get $get) => $get('commission_type') === Project::COMMISSION_FIXED ? 'قيمة العمولة (ريال لكل وحدة)' : 'قيمة العمولة (% من سعر الوحدة)')
+                                                ->numeric()
+                                                ->default(0)
+                                                ->required()
+                                                ->minValue(0)
+                                                ->maxValue(fn (Forms\Get $get) => $get('commission_type') === Project::COMMISSION_FIXED ? null : 100)
+                                                ->suffix(fn (Forms\Get $get) => $get('commission_type') === Project::COMMISSION_FIXED ? 'ريال' : '%')
+                                                ->helperText('عمولة الوسيط عن كل وحدة مباعة من هذا المشروع.')
+                                                ->columnSpan(1),
                                         ]),
                                     Select::make('features')
                                         ->multiple()

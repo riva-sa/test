@@ -46,35 +46,21 @@
                 </div>
             </div>
 
-            {{-- Broker commission set by the admin --}}
-            @if ($broker)
+            {{-- Per-project broker commission set by the admin --}}
+            @if ($broker && (float) $project->commission_value > 0)
                 <div class="flex items-center gap-3 mt-4 px-4 py-3 bg-primary-50 border border-primary-100 rounded-xl">
                     <div class="flex items-center justify-center w-9 h-9 rounded-lg bg-primary-100 text-primary-600 shrink-0">
                         <i class="fas fa-percent"></i>
                     </div>
                     <div class="min-w-0">
                         <div class="text-[10px] font-black text-primary-500 uppercase tracking-wide">عمولتك على هذا المشروع</div>
-                        <div class="text-[13px] font-black text-gray-900">{{ $broker->commissionLabel() }}</div>
+                        <div class="text-[13px] font-black text-gray-900">{{ $project->commissionLabel() }}</div>
                     </div>
                 </div>
             @endif
 
             @if ($project->description)
                 <p class="text-sm text-gray-600 leading-relaxed mt-4">{!! nl2br(e(strip_tags($project->description))) !!}</p>
-            @endif
-
-            {{-- Features & Guarantees --}}
-            @if ($project->features->isNotEmpty() || $project->guarantees->isNotEmpty())
-                <div class="flex flex-wrap gap-2 mt-5">
-                    @foreach ($project->features as $feature)
-                        <span class="px-3 py-1.5 bg-gray-50 border border-gray-100 text-gray-600 text-[11px] font-bold rounded-full">{{ $feature->name }}</span>
-                    @endforeach
-                    @foreach ($project->guarantees as $guarantee)
-                        <span class="px-3 py-1.5 bg-green-50 border border-green-100 text-green-700 text-[11px] font-bold rounded-full">
-                            <i class="fas fa-shield-halved ml-1"></i>{{ $guarantee->name }}
-                        </span>
-                    @endforeach
-                </div>
             @endif
 
             {{-- Attachments --}}
@@ -96,6 +82,98 @@
             @endif
         </div>
     </div>
+
+    {{-- Features · Guarantees · Landmarks (compact, side-by-side) --}}
+    @if ($project->features->isNotEmpty() || $project->guarantees->isNotEmpty() || $project->landmarks->isNotEmpty())
+        <div class="bg-white rounded-2xl border border-gray-100 p-4 mb-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-6 gap-y-4 divide-y lg:divide-y-0 lg:divide-x lg:divide-x-reverse divide-gray-100">
+
+                {{-- Features --}}
+                @if ($project->features->isNotEmpty())
+                    <div class="pt-4 lg:pt-0 lg:px-4 first:pt-0">
+                        <div class="flex items-center gap-1.5 mb-2.5">
+                            <i class="fas fa-star text-primary-500 text-xs"></i>
+                            <h2 class="text-[13px] font-black text-gray-900">مميزات المشروع</h2>
+                        </div>
+                        <div class="space-y-1.5">
+                            @foreach ($project->features as $feature)
+                                <div class="flex items-center gap-2">
+                                    <span class="flex items-center justify-center w-6 h-6 rounded-md bg-primary-50 text-primary-600 shrink-0 overflow-hidden">
+                                        @if ($feature->icon)
+                                            <img src="{{ \App\Helpers\MediaHelper::getUrl($feature->icon) }}" class="w-4 h-4 object-contain" alt="{{ $feature->name }}">
+                                        @else
+                                            <i class="fas fa-check text-[9px]"></i>
+                                        @endif
+                                    </span>
+                                    <div class="min-w-0">
+                                        <span class="text-[12px] font-bold text-gray-800">{{ $feature->name }}</span>
+                                        @if ($feature->description)
+                                            <span class="text-[10px] text-gray-400"> — {{ strip_tags($feature->description) }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
+                {{-- Guarantees --}}
+                @if ($project->guarantees->isNotEmpty())
+                    <div class="pt-4 lg:pt-0 lg:px-4 first:pt-0">
+                        <div class="flex items-center gap-1.5 mb-2.5">
+                            <i class="fas fa-shield-halved text-green-500 text-xs"></i>
+                            <h2 class="text-[13px] font-black text-gray-900">ضمانات المشروع</h2>
+                        </div>
+                        <div class="space-y-1.5">
+                            @foreach ($project->guarantees as $guarantee)
+                                <div class="flex items-center gap-2">
+                                    <span class="flex items-center justify-center w-6 h-6 rounded-md bg-green-50 text-green-600 shrink-0 overflow-hidden">
+                                        @if ($guarantee->icon)
+                                            <img src="{{ \App\Helpers\MediaHelper::getUrl($guarantee->icon) }}" class="w-4 h-4 object-contain" alt="{{ $guarantee->name }}">
+                                        @else
+                                            <i class="fas fa-shield-halved text-[9px]"></i>
+                                        @endif
+                                    </span>
+                                    <div class="min-w-0">
+                                        <span class="text-[12px] font-bold text-gray-800">{{ $guarantee->name }}</span>
+                                        @if ($guarantee->description)
+                                            <span class="text-[10px] text-gray-400"> — {{ strip_tags($guarantee->description) }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
+                {{-- Nearby landmarks --}}
+                @if ($project->landmarks->isNotEmpty())
+                    <div class="pt-4 lg:pt-0 lg:px-4 first:pt-0">
+                        <div class="flex items-center gap-1.5 mb-2.5">
+                            <i class="fas fa-location-dot text-amber-500 text-xs"></i>
+                            <h2 class="text-[13px] font-black text-gray-900">المعالم القريبة</h2>
+                        </div>
+                        <div class="space-y-1.5">
+                            @foreach ($project->landmarks as $landmark)
+                                <div class="flex items-center gap-2">
+                                    <span class="flex items-center justify-center w-6 h-6 rounded-md bg-amber-50 text-amber-600 shrink-0">
+                                        <i class="fas fa-map-pin text-[9px]"></i>
+                                    </span>
+                                    <div class="min-w-0 flex items-center gap-1.5">
+                                        <span class="text-[12px] font-bold text-gray-800">{{ $landmark->name }}</span>
+                                        @if ($landmark->pivot->distance ?? $landmark->distance)
+                                            <span class="px-1.5 py-px bg-amber-100 text-amber-700 text-[9px] font-black rounded-full whitespace-nowrap">{{ $landmark->pivot->distance ?? $landmark->distance }} كم</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
+            </div>
+        </div>
+    @endif
 
     {{-- Units --}}
     <div class="bg-white rounded-2xl border border-gray-100 p-5">
@@ -143,6 +221,12 @@
                             {{ $unit->case == 0 ? 'bg-green-500' : ($unit->case == 1 ? 'bg-yellow-500' : 'bg-red-500') }}">
                             {{ $unit->case == 0 ? 'متاحة' : ($unit->case == 1 ? 'محجوزة' : 'مباعة') }}
                         </span>
+                        @if ($unit->floor_plan)
+                            <a href="{{ route('broker.units.floor-plan', $unit->id) }}"
+                               class="absolute bottom-2 left-2 z-10 inline-flex items-center gap-1 px-2.5 py-1 bg-white/90 hover:bg-white text-gray-700 text-[10px] font-black rounded-lg shadow-sm transition-all">
+                                <i class="fas fa-download text-blue-500"></i> تحميل المخطط
+                            </a>
+                        @endif
                     </div>
                     @if ($gallery->count() > 1)
                         <div class="flex gap-1.5 p-2 overflow-x-auto bg-gray-50/50">
@@ -176,9 +260,9 @@
                                 @else
                                     <span class="text-[11px] font-bold text-gray-400">السعر عند الطلب</span>
                                 @endif
-                                @if ($broker && (float) $broker->commission_value > 0 && ($broker->isFixedCommission() || ($unit->show_price && $unit->unit_price)))
+                                @if ($broker && (float) $project->commission_value > 0 && ($project->isFixedCommission() || ($unit->show_price && $unit->unit_price)))
                                     <div class="text-[10px] font-bold text-primary-600 mt-0.5">
-                                        <i class="fas fa-percent ml-1"></i>عمولتك: {{ number_format($broker->commissionForPrice($unit->unit_price)) }} ر.س
+                                        <i class="fas fa-percent ml-1"></i>عمولتك: {{ number_format($project->commissionForPrice($unit->unit_price)) }} ر.س
                                     </div>
                                 @endif
                             </div>
@@ -187,6 +271,11 @@
                                    class="px-3 py-1.5 bg-gray-900 hover:bg-gray-800 text-white text-[10px] font-black rounded-lg transition-all">
                                     إرسال عميل
                                 </a>
+                            @else
+                                <span class="px-3 py-1.5 text-[10px] font-black rounded-lg
+                                    {{ $unit->case == 1 ? 'bg-yellow-50 text-yellow-600' : 'bg-red-50 text-red-500' }}">
+                                    {{ $unit->case == 1 ? 'محجوزة' : 'غير متاحة' }}
+                                </span>
                             @endif
                         </div>
                     </div>

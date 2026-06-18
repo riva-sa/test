@@ -8,17 +8,17 @@ use Illuminate\Support\Facades\Storage;
 class ProjectPriceListService
 {
     /**
-     * Build a price-list PDF for the given project. The document lists only the
-     * currently available units (case = '0') with their prices, the Riva and
-     * developer logos, and the extraction timestamp — because availability and
-     * prices can change at any time.
+     * Build a price-list PDF for the given project. The document lists all units
+     * (available, reserved, sold — available first) with their status and prices,
+     * the Riva and developer logos, and the extraction timestamp — because
+     * availability and prices can change at any time.
      *
      * @return string Raw PDF bytes.
      */
     public function generate(Project $project): string
     {
         $units = $project->units()
-            ->where('case', '0')
+            ->orderByRaw('FIELD(`case`, 0, 1, 3, 2)')
             ->orderBy('unit_price')
             ->get();
 

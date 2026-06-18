@@ -137,6 +137,7 @@ Route::prefix('broker')->name('broker.')->group(function () {
         Route::get('/documents/{document}', [\App\Http\Controllers\Broker\BrokerFileController::class, 'document'])->name('documents.show');
         Route::get('/projects', \App\Livewire\Broker\Projects::class)->name('projects');
         Route::get('/projects/{id}', \App\Livewire\Broker\ProjectDetails::class)->name('projects.show');
+        Route::get('/units/{unit}/floor-plan', [\App\Http\Controllers\Broker\BrokerFileController::class, 'unitFloorPlan'])->name('units.floor-plan');
         Route::get('/leads', \App\Livewire\Broker\MyLeads::class)->name('leads');
         Route::get('/leads/create', \App\Livewire\Broker\SubmitLead::class)->name('leads.create');
         Route::get('/leads/{id}', \App\Livewire\Broker\LeadDetails::class)->name('leads.show');

@@ -31,6 +31,7 @@ class BrokerContractTemplateSettings extends Component
         'iban'             => 'رقم الآيبان (IBAN)',
         'date'             => 'تاريخ الاعتماد',
         'signature'        => 'توقيع الوسيط',
+        'manager_signature' => 'توقيع المدير',
     ];
 
     public function mount(): void

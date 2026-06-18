@@ -28,6 +28,9 @@ class BrokerApplications extends Component
 
     public $rejectionReason = '';
 
+    /** Base64 PNG data-URL of the manager's signature drawn at final approval. */
+    public string $managerSignatureData = '';
+
     // Inline edit form for broker data + commission
     public bool $editing = false;
 
@@ -44,10 +47,6 @@ class BrokerApplications extends Component
     public $editIban = '';
 
     public $editEmploymentStatus = '';
-
-    public $editCommissionType = Broker::COMMISSION_PERCENTAGE;
-
-    public $editCommissionValue = 0;
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -80,6 +79,7 @@ class BrokerApplications extends Component
         $this->showRejectModal = false;
         $this->rejectionReason = '';
         $this->editing = false;
+        $this->managerSignatureData = '';
     }
 
     /**
@@ -99,8 +99,6 @@ class BrokerApplications extends Component
         $this->editCity = $broker->city;
         $this->editIban = $broker->iban;
         $this->editEmploymentStatus = $broker->employment_status;
-        $this->editCommissionType = $broker->commission_type ?: Broker::COMMISSION_PERCENTAGE;
-        $this->editCommissionValue = (float) $broker->commission_value;
 
         $this->resetErrorBag();
         $this->editing = true;
@@ -125,7 +123,6 @@ class BrokerApplications extends Component
         $this->editNationalId = $this->toLatinDigits($this->editNationalId);
         $this->editWhatsapp = $this->toLatinDigits($this->editWhatsapp);
         $this->editIban = strtoupper($this->toLatinDigits($this->editIban));
-        $this->editCommissionValue = $this->toLatinDigits((string) $this->editCommissionValue);
 
         $validated = $this->validate([
             'editName' => 'required|string|min:3|max:255',
@@ -135,22 +132,12 @@ class BrokerApplications extends Component
             'editCity' => 'nullable|string|max:255',
             'editIban' => ['nullable', 'string', 'regex:/^SA\d{22}$/'],
             'editEmploymentStatus' => 'nullable|string|in:'.implode(',', array_keys(Broker::EMPLOYMENT_STATUSES)),
-            'editCommissionType' => 'required|in:'.implode(',', array_keys(Broker::COMMISSION_TYPES)),
-            'editCommissionValue' => 'required|numeric|min:0',
         ], [
             'editName.required' => 'الاسم مطلوب',
             'editEmail.required' => 'البريد الإلكتروني مطلوب',
             'editEmail.unique' => 'هذا البريد مستخدم لوسيط آخر',
             'editIban.regex' => 'الآيبان يجب أن يبدأ بـ SA يليها 22 رقماً',
-            'editCommissionValue.numeric' => 'قيمة العمولة يجب أن تكون رقماً',
-            'editCommissionValue.min' => 'قيمة العمولة لا يمكن أن تكون سالبة',
         ]);
-
-        if ($this->editCommissionType === Broker::COMMISSION_PERCENTAGE && (float) $this->editCommissionValue > 100) {
-            $this->addError('editCommissionValue', 'النسبة المئوية لا يمكن أن تتجاوز 100%');
-
-            return;
-        }
 
         $broker->update([
             'name' => $validated['editName'],
@@ -160,11 +147,9 @@ class BrokerApplications extends Component
             'city' => $validated['editCity'] ?: null,
             'iban' => $validated['editIban'] ?: null,
             'employment_status' => $validated['editEmploymentStatus'] ?: null,
-            'commission_type' => $validated['editCommissionType'],
-            'commission_value' => $validated['editCommissionValue'],
         ]);
 
-        BrokerActivityLog::record('updated', $broker->id, "تعديل بيانات الوسيط وعمولته ({$broker->reference_number})", Auth::id());
+        BrokerActivityLog::record('updated', $broker->id, "تعديل بيانات الوسيط ({$broker->reference_number})", Auth::id());
 
         session()->flash('message', "تم تحديث بيانات الوسيط {$broker->name} بنجاح.");
         $this->editing = false;
@@ -226,8 +211,9 @@ class BrokerApplications extends Component
     }
 
     /**
-     * Final activation step: the admin has reviewed the signed contract and
-     * approves it, which unlocks the broker portal for the broker.
+     * Final activation step: after the broker has signed, the admin draws their
+     * own signature, which is stamped onto the signed contract; this counter-signs
+     * the contract and unlocks the broker portal.
      */
     public function approveContract($brokerId)
     {
@@ -247,12 +233,31 @@ class BrokerApplications extends Component
             return;
         }
 
+        // The admin must draw their signature to counter-sign the contract.
+        if (empty(trim($this->managerSignatureData)) || strlen($this->managerSignatureData) < 100) {
+            $this->addError('managerSignatureData', 'يرجى رسم توقيع المدير أولاً قبل اعتماد العقد.');
+
+            return;
+        }
+
+        // Stamp the manager signature onto the broker-signed PDF before activating.
+        try {
+            app(BrokerContractService::class)->applyManagerSignature($broker, $this->managerSignatureData);
+        } catch (\Throwable $e) {
+            Log::error('Failed to apply manager signature to contract: '.$e->getMessage(), ['broker_id' => $broker->id]);
+            session()->flash('error', 'حدث خطأ أثناء ختم توقيع المدير على العقد. يرجى المحاولة مرة أخرى.');
+
+            return;
+        }
+
         $broker->update([
             'contract_approved_at' => now(),
             'contract_approved_by' => Auth::id(),
         ]);
 
-        BrokerActivityLog::record('contract_approved', $broker->id, "اعتماد العقد النهائي وتفعيل حساب الوسيط ({$broker->reference_number})", Auth::id());
+        $this->managerSignatureData = '';
+
+        BrokerActivityLog::record('contract_approved', $broker->id, "توقيع المدير واعتماد العقد النهائي وتفعيل حساب الوسيط ({$broker->reference_number})", Auth::id());
 
         try {
             $broker->notify(new \App\Notifications\CRMAlertNotification(
@@ -369,7 +374,6 @@ class BrokerApplications extends Component
             'selectedBroker' => $selectedBroker,
             'pendingCount' => Broker::where('status', Broker::STATUS_PENDING)->count(),
             'employmentStatuses' => Broker::EMPLOYMENT_STATUSES,
-            'commissionTypes' => Broker::COMMISSION_TYPES,
         ])->layout('layouts.custom');
     }
 }

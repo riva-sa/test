@@ -32,15 +32,6 @@ class Broker extends Authenticatable
 
     public const TYPE_COMPANY = 'company';
 
-    public const COMMISSION_PERCENTAGE = 'percentage';
-
-    public const COMMISSION_FIXED = 'fixed';
-
-    public const COMMISSION_TYPES = [
-        self::COMMISSION_PERCENTAGE => 'نسبة مئوية',
-        self::COMMISSION_FIXED => 'مبلغ ثابت',
-    ];
-
     public const EMPLOYMENT_STATUSES = [
         'employee' => 'موظف',
         'freelancer' => 'عمل حر',
@@ -65,8 +56,6 @@ class Broker extends Authenticatable
         'whatsapp',
         'city',
         'iban',
-        'commission_type',
-        'commission_value',
         'employment_status',
         'heard_about_us',
         'reference_number',
@@ -95,7 +84,6 @@ class Broker extends Authenticatable
             'contract_sent_at' => 'datetime',
             'contract_signed_at' => 'datetime',
             'contract_approved_at' => 'datetime',
-            'commission_value' => 'decimal:2',
         ];
     }
 
@@ -226,47 +214,5 @@ class Broker extends Authenticatable
     public function heardAboutUsLabel(): string
     {
         return self::HEARD_ABOUT_US_OPTIONS[$this->heard_about_us] ?? ($this->heard_about_us ?? '—');
-    }
-
-    public function isFixedCommission(): bool
-    {
-        return $this->commission_type === self::COMMISSION_FIXED;
-    }
-
-    /**
-     * The commission this broker earns for a single sold unit at the given price.
-     * Fixed commission ignores the price; percentage is a share of it.
-     */
-    public function commissionForPrice($unitPrice): float
-    {
-        $value = (float) $this->commission_value;
-
-        if ($this->isFixedCommission()) {
-            return round($value, 2);
-        }
-
-        return round(((float) $unitPrice) * $value / 100, 2);
-    }
-
-    /**
-     * Human-readable description of the commission rate, e.g.
-     * "2.5% من قيمة كل وحدة مباعة" or "5,000 ريال لكل وحدة مباعة".
-     */
-    public function commissionLabel(): string
-    {
-        $value = (float) $this->commission_value;
-
-        if ($value <= 0) {
-            return 'لم تُحدَّد بعد';
-        }
-
-        if ($this->isFixedCommission()) {
-            return number_format($value, 2).' ريال لكل وحدة مباعة';
-        }
-
-        // Trim trailing zeros for percentages (2.50 → 2.5, 3.00 → 3)
-        $formatted = rtrim(rtrim(number_format($value, 2, '.', ''), '0'), '.');
-
-        return $formatted.'% من قيمة كل وحدة مباعة';
     }
 }

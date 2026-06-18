@@ -69,8 +69,8 @@
                     <i class="fas fa-hand-holding-dollar"></i>
                     <h2 class="text-sm font-black">عمولتي على المبيعات</h2>
                 </div>
-                <div class="text-lg font-black leading-tight mb-1">{{ $broker->commissionLabel() }}</div>
-                <p class="text-[11px] text-emerald-50/80 font-bold">تُحتسب عن كل وحدة مباعة من خلالك. للاستفسار حول العمولة تواصل مع الإدارة.</p>
+                <div class="text-lg font-black leading-tight mb-1">{{ number_format($totalCommission) }} ر.س</div>
+                <p class="text-[11px] text-emerald-50/80 font-bold">إجمالي عمولاتك عن {{ $soldUnitsCount }} وحدة مباعة. تختلف نسبة العمولة من مشروع لآخر، وتظهر على صفحة كل مشروع.</p>
             </div>
         </div>
 
