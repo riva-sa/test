@@ -129,6 +129,14 @@
                                 تسجيل الدخول
                         </button>
                     </div>
+
+                    @if (Route::has('password.request'))
+                        <div class="mt-4 text-center">
+                            <a href="{{ route('password.request') }}" class="text-sm font-medium text-[#122818] hover:underline">
+                                نسيت كلمة المرور؟
+                            </a>
+                        </div>
+                    @endif
                 </form>
 
             </div>

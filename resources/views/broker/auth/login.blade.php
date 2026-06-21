@@ -58,10 +58,16 @@
                     @enderror
                 </div>
 
-                <label class="flex items-center gap-2 text-sm text-gray-600">
-                    <input type="checkbox" name="remember" class="rounded border-gray-300">
-                    تذكرني
-                </label>
+                <div class="flex items-center justify-between">
+                    <label class="flex items-center gap-2 text-sm text-gray-600">
+                        <input type="checkbox" name="remember" class="rounded border-gray-300">
+                        تذكرني
+                    </label>
+
+                    <a href="{{ route('broker.password.request') }}" class="text-sm font-bold text-gray-500 hover:text-gray-900 transition-colors">
+                        نسيت كلمة المرور؟
+                    </a>
+                </div>
 
                 <button type="submit" class="w-full py-3.5 bg-gray-900 hover:bg-gray-800 text-white text-sm font-black rounded-xl transition-all">
                     تسجيل الدخول

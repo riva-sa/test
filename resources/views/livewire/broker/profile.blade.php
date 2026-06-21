@@ -126,7 +126,7 @@
             </div>
 
             {{-- العقد --}}
-            <div class="bg-white rounded-2xl border border-gray-100 p-6" x-data="{ tab: 'contract' }">
+            <div class="bg-white rounded-2xl border border-gray-100 p-6">
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-5">
                     <div>
                         <h2 class="text-sm font-black text-gray-900">عقد الوساطة</h2>
@@ -140,34 +140,24 @@
                         @endif
                     </div>
 
-                    @if ($broker->contractSent())
-                        <div class="flex items-center gap-2">
-                            <div class="flex bg-gray-50 rounded-xl p-1">
-                                <button @click="tab = 'contract'" :class="tab === 'contract' ? 'bg-gray-900 text-white' : 'text-gray-500 hover:text-gray-900'"
-                                        class="px-3 py-1.5 text-[11px] font-black rounded-lg transition-all">العقد الأصلي</button>
-                                @if ($broker->contractSigned())
-                                    <button @click="tab = 'signed'" :class="tab === 'signed' ? 'bg-gray-900 text-white' : 'text-gray-500 hover:text-gray-900'"
-                                            class="px-3 py-1.5 text-[11px] font-black rounded-lg transition-all">نسختي الموقعة</button>
-                                @endif
-                            </div>
-                            <a href="{{ route('broker.contract.view') }}" download
-                               class="px-3 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-100 text-gray-600 text-[11px] font-black rounded-xl transition-all">
-                                <i class="fas fa-download"></i>
-                            </a>
-                        </div>
+                    @if ($broker->contractSigned())
+                        <a href="{{ route('broker.contract.signed-view') }}" download
+                           class="px-3 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-100 text-gray-600 text-[11px] font-black rounded-xl transition-all">
+                            <i class="fas fa-download"></i>
+                        </a>
                     @endif
                 </div>
 
-                @if ($broker->contractSent())
-                    {{-- معاينة العقد داخل الصفحة --}}
-                    <div x-show="tab === 'contract'" class="rounded-xl overflow-hidden border border-gray-100 bg-gray-50">
-                        <iframe src="{{ route('broker.contract.view') }}#toolbar=0" class="w-full h-[70vh]" title="عقد الوساطة"></iframe>
+                @if ($broker->contractSigned())
+                    {{-- معاينة النسخة الموقعة داخل الصفحة --}}
+                    <div class="rounded-xl overflow-hidden border border-gray-100 bg-gray-50">
+                        <iframe src="{{ route('broker.contract.signed-view') }}#toolbar=0" class="w-full h-[70vh]" title="النسخة الموقعة"></iframe>
                     </div>
-                    @if ($broker->contractSigned())
-                        <div x-show="tab === 'signed'" x-cloak class="rounded-xl overflow-hidden border border-gray-100 bg-gray-50">
-                            <iframe src="{{ route('broker.contract.signed-view') }}#toolbar=0" class="w-full h-[70vh]" title="النسخة الموقعة"></iframe>
-                        </div>
-                    @endif
+                @elseif ($broker->contractSent())
+                    <div class="p-10 text-center bg-gray-50 rounded-xl">
+                        <i class="fas fa-file-contract text-3xl text-gray-300 mb-3"></i>
+                        <p class="text-sm text-gray-400 font-bold">بانتظار توقيعك للعقد</p>
+                    </div>
                 @else
                     <div class="p-10 text-center bg-gray-50 rounded-xl">
                         <i class="fas fa-file-contract text-3xl text-gray-300 mb-3"></i>

@@ -61,6 +61,16 @@ class AppServiceProvider extends ServiceProvider
         $this->configureModels();
         $this->translatableComponents();
 
+        // Brokers authenticate on a separate guard, so their password-reset email
+        // must link to the broker reset page instead of the CRM one.
+        \Illuminate\Auth\Notifications\ResetPassword::createUrlUsing(function ($notifiable, string $token) {
+            $params = ['token' => $token, 'email' => $notifiable->getEmailForPasswordReset()];
+
+            return $notifiable instanceof \App\Models\Broker
+                ? route('broker.password.reset', $params)
+                : route('password.reset', $params);
+        });
+
         // Re-run SetLocale on Livewire update requests (/livewire/update), which
         // bypass the public route groups. Without this, URL::defaults(['locale'])
         // is unset during component re-renders and route('frontend.projects.single', $slug)

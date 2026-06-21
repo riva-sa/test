@@ -125,6 +125,48 @@ Route::prefix('broker')->name('broker.')->group(function () {
     Route::post('/login', [\App\Http\Controllers\Broker\BrokerAuthController::class, 'login'])->name('login.submit');
     Route::post('/logout', [\App\Http\Controllers\Broker\BrokerAuthController::class, 'logout'])->name('logout');
 
+    // Password reset (brokers guard) — request a link, then set a new password
+    Route::get('/forgot-password', fn () => view('broker.auth.forgot-password'))->name('password.request');
+
+    Route::post('/forgot-password', function (\Illuminate\Http\Request $request) {
+        $request->validate(['email' => 'required|email'], [], ['email' => 'البريد الإلكتروني']);
+
+        $status = \Illuminate\Support\Facades\Password::broker('brokers')->sendResetLink(
+            $request->only('email')
+        );
+
+        return $status === \Illuminate\Support\Facades\Password::RESET_LINK_SENT
+            ? back()->with('status', __($status))
+            : back()->withErrors(['email' => __($status)]);
+    })->name('password.email');
+
+    Route::get('/reset-password/{token}', fn (string $token) => view('broker.auth.reset-password', [
+        'token' => $token,
+        'email' => request('email'),
+    ]))->name('password.reset');
+
+    Route::post('/reset-password', function (\Illuminate\Http\Request $request) {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|min:8|confirmed',
+        ], [], [
+            'email' => 'البريد الإلكتروني',
+            'password' => 'كلمة المرور',
+        ]);
+
+        $status = \Illuminate\Support\Facades\Password::broker('brokers')->reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($broker, $password) {
+                $broker->forceFill(['password' => bcrypt($password)])->save();
+            }
+        );
+
+        return $status === \Illuminate\Support\Facades\Password::PASSWORD_RESET
+            ? redirect()->route('broker.login')->with('status', 'تم تغيير كلمة المرور بنجاح. يمكنك تسجيل الدخول الآن.')
+            : back()->withErrors(['email' => __($status)]);
+    })->name('password.update');
+
     // Approved brokers only (contract signature is enforced inside broker.approved)
     Route::middleware(['auth:broker', 'broker.approved'])->group(function () {
         Route::get('/contract', \App\Livewire\Broker\Contract::class)->name('contract');
@@ -165,6 +207,25 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
 Route::get('crm/login', [ManagerAuthController::class, 'showLoginForm'])->name('login');
 Route::post('crm/login', [ManagerAuthController::class, 'login']);
 Route::post('/logout', [ManagerAuthController::class, 'logout'])->name('logout');
+
+// CRM Forgot Password — request a reset link by email
+Route::get('crm/forgot-password', function () {
+    return view('auth.crm-forgot-password');
+})->name('password.request');
+
+Route::post('crm/forgot-password', function (\Illuminate\Http\Request $request) {
+    $request->validate(['email' => 'required|email'], [], [
+        'email' => 'البريد الإلكتروني',
+    ]);
+
+    $status = \Illuminate\Support\Facades\Password::sendResetLink(
+        $request->only('email')
+    );
+
+    return $status === \Illuminate\Support\Facades\Password::RESET_LINK_SENT
+        ? back()->with('status', __($status))
+        : back()->withErrors(['email' => __($status)]);
+})->name('password.email');
 
 // CRM Password Reset
 Route::get('crm/reset-password/{token}', function (string $token) {

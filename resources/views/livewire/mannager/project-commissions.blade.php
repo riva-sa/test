@@ -36,7 +36,6 @@
                             <th class="px-4 py-3 font-semibold">المشروع</th>
                             <th class="px-4 py-3 font-semibold">نوع العمولة</th>
                             <th class="px-4 py-3 font-semibold">قيمة العمولة</th>
-                            <th class="px-4 py-3 font-semibold"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -65,16 +64,10 @@
                                         <span class="text-red-500 text-xs">{{ $message }}</span>
                                     @enderror
                                 </td>
-                                <td class="px-4 py-3">
-                                    <button wire:click="save({{ $project->id }})" wire:loading.attr="disabled"
-                                        class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors font-medium text-xs">
-                                        حفظ
-                                    </button>
-                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="px-4 py-8 text-center text-gray-400">لا توجد مشاريع.</td>
+                                <td colspan="3" class="px-4 py-8 text-center text-gray-400">لا توجد مشاريع.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -82,8 +75,15 @@
             </div>
         </div>
 
-        <div class="mt-4">
-            {{ $projects->links() }}
+        <div class="mt-4 flex items-center justify-between gap-4">
+            <div>
+                {{ $projects->links() }}
+            </div>
+            <button wire:click="saveAll" wire:loading.attr="disabled"
+                class="bg-primary-600 text-white px-6 py-2.5 rounded-lg hover:bg-primary-700 transition-colors font-medium text-sm disabled:opacity-50">
+                <span wire:loading.remove wire:target="saveAll">حفظ الكل</span>
+                <span wire:loading wire:target="saveAll">جارٍ الحفظ...</span>
+            </button>
         </div>
     </div>
 </div>
