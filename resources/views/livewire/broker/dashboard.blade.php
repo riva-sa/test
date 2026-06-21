@@ -38,6 +38,26 @@
         </div>
     </div>
 
+    {{-- Earnings (only admin-approved commissions are shown as money) --}}
+    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8">
+        <div class="p-5 rounded-2xl bg-emerald-50 border border-emerald-100">
+            <div class="text-2xl font-black text-emerald-700">{{ number_format($stats['earned'], 2) }} <span class="text-sm">ريال</span></div>
+            <div class="text-[11px] font-bold text-emerald-500 mt-1">عمولاتك المعتمدة</div>
+        </div>
+        <div class="p-5 rounded-2xl bg-green-50 border border-green-100">
+            <div class="text-2xl font-black text-green-700">{{ number_format($stats['paid'], 2) }} <span class="text-sm">ريال</span></div>
+            <div class="text-[11px] font-bold text-green-500 mt-1">المدفوع لك</div>
+        </div>
+        <div class="p-5 rounded-2xl bg-amber-50 border border-amber-100">
+            <div class="text-2xl font-black text-amber-700">{{ number_format($stats['outstanding'], 2) }} <span class="text-sm">ريال</span></div>
+            <div class="text-[11px] font-bold text-amber-500 mt-1">قيد الصرف</div>
+        </div>
+        <div class="p-5 rounded-2xl bg-gray-50 border border-gray-100">
+            <div class="text-2xl font-black text-gray-700">{{ $stats['under_review'] }}</div>
+            <div class="text-[11px] font-bold text-gray-400 mt-1">صفقات قيد المراجعة</div>
+        </div>
+    </div>
+
     {{-- Quick actions --}}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <a href="{{ route('broker.leads.create') }}" class="flex items-center justify-between p-6 bg-gray-900 text-white rounded-2xl hover:bg-gray-800 transition-all group">

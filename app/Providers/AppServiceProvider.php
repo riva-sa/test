@@ -134,6 +134,17 @@ class AppServiceProvider extends ServiceProvider
             return $broker instanceof \App\Models\Broker && $order->broker_id === $broker->id;
         });
 
+        // Settling a broker commission is a sensitive financial action — kept as a
+        // dedicated ability so it can be narrowed independently of broker admin.
+        \Illuminate\Support\Facades\Gate::define('pay-broker-commissions', function ($user) {
+            return $user instanceof \App\Models\User && $user->hasRole('Admin');
+        });
+
+        // Reversing a recorded payment is the most sensitive action — Admin only.
+        \Illuminate\Support\Facades\Gate::define('reverse-broker-commissions', function ($user) {
+            return $user instanceof \App\Models\User && $user->hasRole('Admin');
+        });
+
         // Careers: job application attachments are admin-only
         \Illuminate\Support\Facades\Gate::define('manage-careers', function ($user) {
             return $user instanceof \App\Models\User && $user->hasRole('Admin');

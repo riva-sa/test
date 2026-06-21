@@ -208,6 +208,11 @@ class Project extends Model
         return $this->belongsTo(User::class, 'sales_manager_id');
     }
 
+    public function commissions()
+    {
+        return $this->hasMany(BrokerCommission::class);
+    }
+
     public function isFixedCommission(): bool
     {
         return $this->commission_type === self::COMMISSION_FIXED;

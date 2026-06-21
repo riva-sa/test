@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Broker;
 
+use App\Models\BrokerCommission;
 use App\Models\Project;
 use App\Models\Unit;
 use App\Models\UnitOrder;
@@ -25,6 +26,12 @@ class Dashboard extends Component
                 ->whereHas('units', fn ($q) => $q->where('case', '0'))
                 ->count(),
             'units' => Unit::where('case', '0')->count(),
+            // Brokers only see money the admin has approved (approved + paid).
+            'earned' => (float) $broker->commissions()->whereIn('status', [BrokerCommission::STATUS_APPROVED, BrokerCommission::STATUS_PAID])->sum('commission_amount'),
+            'paid' => (float) $broker->commissions()->where('status', BrokerCommission::STATUS_PAID)->sum('commission_amount'),
+            'outstanding' => (float) $broker->commissions()->where('status', BrokerCommission::STATUS_APPROVED)->sum('commission_amount'),
+            // Deals still awaiting admin approval — shown as a count only, no amount.
+            'under_review' => $broker->commissions()->where('status', BrokerCommission::STATUS_PENDING)->count(),
         ];
 
         $latestLeads = (clone $base)

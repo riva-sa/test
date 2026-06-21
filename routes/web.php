@@ -189,6 +189,11 @@ Route::prefix('broker')->name('broker.')->group(function () {
 // Broker applications management (CRM, admins only)
 Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/crm/project-commissions', \App\Livewire\Mannager\ProjectCommissions::class)->name('manager.project-commissions');
+    Route::get('/crm/brokers', \App\Livewire\Mannager\Brokers::class)->name('manager.brokers');
+    Route::get('/crm/brokers/{broker}/statement', \App\Livewire\Mannager\BrokerStatement::class)->name('manager.broker-statement');
+    Route::get('/crm/broker-commissions', \App\Livewire\Mannager\BrokerCommissions::class)->name('manager.broker-commissions');
+    Route::get('/crm/commission-payments', \App\Livewire\Mannager\CommissionPayments::class)->name('manager.commission-payments');
+    Route::get('/crm/commission-receipts/{payment}', [\App\Http\Controllers\Manager\CommissionReceiptController::class, 'show'])->name('manager.commission-receipt.show');
     Route::get('/crm/broker-applications', \App\Livewire\Mannager\BrokerApplications::class)->name('manager.broker-applications');
     Route::get('/crm/broker-contract-template', \App\Livewire\Mannager\BrokerContractTemplateSettings::class)->name('manager.broker-contract-template');
     Route::get('/crm/broker-contract-template/file', [\App\Http\Controllers\Manager\ContractTemplateController::class, 'file'])->name('manager.broker-contract-template.file');

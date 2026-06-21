@@ -70,7 +70,7 @@
                     <h2 class="text-sm font-black">عمولتي على المبيعات</h2>
                 </div>
                 <div class="text-lg font-black leading-tight mb-1">{{ number_format($totalCommission) }} ر.س</div>
-                <p class="text-[11px] text-emerald-50/80 font-bold">إجمالي عمولاتك عن {{ $soldUnitsCount }} وحدة مباعة. تختلف نسبة العمولة من مشروع لآخر، وتظهر على صفحة كل مشروع.</p>
+                <p class="text-[11px] text-emerald-50/80 font-bold">إجمالي عمولاتك <span class="underline">المعتمدة</span> عن {{ $soldUnitsCount }} وحدة مباعة. لا يُحتسب المبلغ إلا بعد اعتماد الإدارة للعمولة. تختلف النسبة من مشروع لآخر.</p>
             </div>
         </div>
 
@@ -81,14 +81,22 @@
             <div class="bg-white rounded-2xl border border-gray-100 p-6 hidden">
                 <h2 class="text-sm font-black text-gray-900 mb-4">عمولاتي والوحدات المباعة</h2>
 
-                <div class="grid grid-cols-2 gap-4 mb-5">
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
                     <div class="p-4 rounded-xl bg-gray-50 border border-gray-100">
                         <div class="text-2xl font-black text-gray-900">{{ $soldUnitsCount }}</div>
                         <div class="text-[11px] font-bold text-gray-400 mt-1">عدد الوحدات المباعة</div>
                     </div>
                     <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-100">
                         <div class="text-2xl font-black text-emerald-700">{{ number_format($totalCommission, 2) }} <span class="text-sm">ريال</span></div>
-                        <div class="text-[11px] font-bold text-emerald-500 mt-1">إجمالي العمولات المستحقة</div>
+                        <div class="text-[11px] font-bold text-emerald-500 mt-1">إجمالي العمولات المعتمدة</div>
+                    </div>
+                    <div class="p-4 rounded-xl bg-green-50 border border-green-100">
+                        <div class="text-2xl font-black text-green-700">{{ number_format($paidCommission, 2) }} <span class="text-sm">ريال</span></div>
+                        <div class="text-[11px] font-bold text-green-500 mt-1">المدفوع لك</div>
+                    </div>
+                    <div class="p-4 rounded-xl bg-amber-50 border border-amber-100">
+                        <div class="text-2xl font-black text-amber-700">{{ number_format($outstandingCommission, 2) }} <span class="text-sm">ريال</span></div>
+                        <div class="text-[11px] font-bold text-amber-500 mt-1">قيد الصرف</div>
                     </div>
                 </div>
 
@@ -101,6 +109,7 @@
                                     <th class="py-2 px-3">المشروع</th>
                                     <th class="py-2 px-3">قيمة الوحدة</th>
                                     <th class="py-2 px-3">العمولة</th>
+                                    <th class="py-2 px-3">الحالة</th>
                                     <th class="py-2 pr-3">التاريخ</th>
                                 </tr>
                             </thead>
@@ -110,7 +119,14 @@
                                         <td class="py-3 pl-3 font-bold text-gray-900">{{ $sale['unit'] }}</td>
                                         <td class="py-3 px-3 text-gray-500">{{ $sale['project'] }}</td>
                                         <td class="py-3 px-3 text-gray-500" dir="ltr">{{ number_format($sale['price'], 2) }}</td>
-                                        <td class="py-3 px-3 font-black text-emerald-700" dir="ltr">{{ number_format($sale['commission'], 2) }}</td>
+                                        <td class="py-3 px-3 font-black {{ $sale['confirmed'] ? 'text-emerald-700' : 'text-gray-400' }}" dir="ltr">
+                                            {{ $sale['confirmed'] ? number_format($sale['commission'], 2) : '—' }}
+                                        </td>
+                                        <td class="py-3 px-3">
+                                            <span class="text-[11px] font-bold px-2 py-0.5 rounded-full {{ $sale['confirmed'] ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600' }}">
+                                                {{ $sale['status'] }}
+                                            </span>
+                                        </td>
                                         <td class="py-3 pr-3 text-gray-400">{{ $sale['date']?->format('Y-m-d') ?? '—' }}</td>
                                     </tr>
                                 @endforeach

@@ -6,6 +6,7 @@ use App\Models\OrderNote;
 use App\Models\Project;
 use App\Models\Unit;
 use App\Models\UnitOrder;
+use App\Services\BrokerCommissionService;
 use App\Services\NotificationService;
 use App\Traits\DelayedOrderLogic;
 use Illuminate\Database\Eloquent\Builder;
@@ -301,6 +302,11 @@ class OrderDetails extends Component
             ->notifyStatusUpdate($this->order, $oldStatus, $this->order->status, Auth::id());
 
         $this->updateOrderWithDelayControl($this->order, ['status' => $status]);
+
+        // Freeze (or void) the broker commission whenever the deal completes or
+        // is moved back out of "completed".
+        app(BrokerCommissionService::class)->syncForOrder($this->order->fresh(), Auth::id());
+
         $this->loadOrder();
 
         return response()->json([

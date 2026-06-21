@@ -161,6 +161,11 @@ class Broker extends Authenticatable
         return $this->hasMany(UnitOrder::class);
     }
 
+    public function commissions()
+    {
+        return $this->hasMany(BrokerCommission::class);
+    }
+
     public function activityLogs()
     {
         return $this->hasMany(BrokerActivityLog::class);

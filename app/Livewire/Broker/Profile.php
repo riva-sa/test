@@ -2,45 +2,49 @@
 
 namespace App\Livewire\Broker;
 
-use App\Models\UnitOrder;
+use App\Models\BrokerCommission;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class Profile extends Component
 {
-    /** Order status that represents a completed (sold) deal. */
-    private const STATUS_COMPLETED = 4;
-
     public function render()
     {
         $broker = Auth::guard('broker')->user()->load('documents');
 
-        // Sold units = completed orders attached to a unit. Each earns commission
-        // based on the rate defined for that unit's project.
-        $soldOrders = UnitOrder::where('broker_id', $broker->id)
-            ->where('status', self::STATUS_COMPLETED)
-            ->whereNotNull('unit_id')
-            ->with(['unit:id,title,unit_price,project_id', 'unit.project:id,name,commission_type,commission_value'])
+        // Frozen commission ledger — each record was snapshotted when the deal
+        // completed, so the figures stay stable even if a project's rate changes.
+        $commissions = $broker->commissions()
+            ->whereNot('status', BrokerCommission::STATUS_VOID)
+            ->with(['unit:id,title', 'project:id,name'])
             ->latest()
             ->get();
 
-        $sales = $soldOrders->map(function (UnitOrder $order) {
-            $price = (float) ($order->unit->unit_price ?? 0);
-            $project = $order->unit?->project;
+        // The broker may only SEE money once an admin has approved the commission.
+        // Pending commissions are shown as deals "under review" with no amount.
+        $confirmedStatuses = [BrokerCommission::STATUS_APPROVED, BrokerCommission::STATUS_PAID];
+
+        $sales = $commissions->map(function (BrokerCommission $c) use ($confirmedStatuses) {
+            $confirmed = in_array($c->status, $confirmedStatuses, true);
 
             return [
-                'unit'       => $order->unit?->title ?? '—',
-                'project'    => $project?->name ?? '—',
-                'price'      => $price,
-                'commission' => $project ? $project->commissionForPrice($price) : 0,
-                'date'       => $order->updated_at,
+                'unit'       => $c->unit?->title ?? '—',
+                'project'    => $c->project?->name ?? '—',
+                'price'      => (float) $c->unit_price,
+                'confirmed'  => $confirmed,
+                'commission' => $confirmed ? (float) $c->commission_amount : null,
+                'status'     => $confirmed ? $c->statusLabel() : 'قيد المراجعة',
+                'date'       => $c->created_at,
             ];
         });
 
         return view('livewire.broker.profile', [
             'broker' => $broker,
             'sales' => $sales,
-            'totalCommission' => $sales->sum('commission'),
+            // Money figures count ONLY admin-approved (approved + paid) commissions.
+            'totalCommission' => (float) $commissions->whereIn('status', $confirmedStatuses)->sum('commission_amount'),
+            'paidCommission' => (float) $commissions->where('status', BrokerCommission::STATUS_PAID)->sum('commission_amount'),
+            'outstandingCommission' => (float) $commissions->where('status', BrokerCommission::STATUS_APPROVED)->sum('commission_amount'),
             'soldUnitsCount' => $sales->count(),
         ])->layout('layouts.broker');
     }

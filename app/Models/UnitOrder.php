@@ -193,6 +193,11 @@ class UnitOrder extends Model
         return $this->belongsTo(Broker::class);
     }
 
+    public function commission()
+    {
+        return $this->hasOne(BrokerCommission::class);
+    }
+
     public function forwardEvents()
     {
         return $this->hasMany(OrderForwardEvent::class);

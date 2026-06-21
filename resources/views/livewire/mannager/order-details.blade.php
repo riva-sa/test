@@ -813,9 +813,29 @@
                         @endif
 
                         <div class="space-y-4">
-                            <div>
+                            <div x-data="{
+                                    confirmComplete: false,
+                                    currentStatus: '{{ $order->status }}',
+                                    onChange(e) {
+                                        // Completing a deal mints a broker commission — guard it
+                                        // behind an explicit confirmation so it is never set by mistake.
+                                        if (e.target.value === '4' && this.currentStatus !== '4') {
+                                            this.confirmComplete = true;
+                                            e.target.value = this.currentStatus; // revert until confirmed
+                                            return;
+                                        }
+                                        this.currentStatus = e.target.value;
+                                        $wire.updateStatus(e.target.value);
+                                    },
+                                    confirm() {
+                                        this.confirmComplete = false;
+                                        this.currentStatus = '4';
+                                        $refs.statusSelect.value = '4';
+                                        $wire.updateStatus('4');
+                                    }
+                                }">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">الحالة الحالية</label>
-                                <select wire:change="updateStatus($event.target.value)"
+                                <select x-ref="statusSelect" @change="onChange($event)"
                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
                                     @foreach ($statusLabels as $key => $label)
                                         <option value="{{ $key }}" {{ $order->status == $key ? 'selected' : '' }}>
@@ -823,6 +843,39 @@
                                         </option>
                                     @endforeach
                                 </select>
+
+                                <!-- Completion confirmation popup -->
+                                <template x-teleport="body">
+                                    <div x-show="confirmComplete" x-cloak class="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4" style="display:none;">
+                                        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6" @click.outside="confirmComplete = false">
+                                            <div class="flex items-start gap-4">
+                                                <div class="flex-shrink-0 h-12 w-12 rounded-full bg-amber-100 flex items-center justify-center">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                                    </svg>
+                                                </div>
+                                                <div class="flex-1">
+                                                    <h3 class="text-lg font-bold text-gray-900">تأكيد إغلاق الصفقة</h3>
+
+                                                    <p class="text-sm text-gray-600 mt-2 leading-relaxed">
+                                                        سيؤدي تحديد هذا الطلب كـ <span class="font-bold text-gray-900">"مكتمل"</span>
+                                                        إلى اعتماد الصفقة بشكل نهائي، واحتساب
+                                                        <span class="font-bold text-amber-700">عمولة الوسيط المستحقة تلقائياً</span>
+                                                        بناءً على قيمة الوحدة ونسبة العمولة المعتمدة للمشروع.
+                                                    </p>
+
+                                                    <p class="text-sm text-gray-500 mt-2">
+                                                        لا تقم بهذه الخطوة إلا بعد التأكد من إتمام البيع وإغلاق الصفقة بشكل رسمي.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="flex justify-end gap-2 mt-6">
+                                                <button type="button" @click="confirmComplete = false" class="px-5 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg">تراجع</button>
+                                                <button type="button" @click="confirm()" class="px-5 py-2.5 text-sm font-bold text-white bg-green-600 hover:bg-green-700 rounded-lg">نعم، إتمام الطلب وتسجيل العمولة</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
                             </div>
 
                             @if ($this->isDelayed())
