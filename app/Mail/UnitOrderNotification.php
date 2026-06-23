@@ -20,6 +20,14 @@ class UnitOrderNotification extends Mailable
         return [new \Illuminate\Queue\Middleware\RateLimited('emails')];
     }
 
+    /**
+     * Determine the time at which the job should timeout.
+     */
+    public function retryUntil(): \DateTime
+    {
+        return now()->addHours(24);
+    }
+
     public $emailData;
 
     public $recipientType;

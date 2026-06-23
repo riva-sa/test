@@ -20,6 +20,14 @@ class CRMAlertNotification extends Notification implements ShouldQueue
     }
 
     /**
+     * Determine the time at which the job should timeout.
+     */
+    public function retryUntil(): \DateTime
+    {
+        return now()->addHours(24);
+    }
+
+    /**
      * Create a new notification instance.
      */
     public function __construct(

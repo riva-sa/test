@@ -243,6 +243,9 @@ class ProjectsPage extends Component
 
     public function render()
     {
+        $driver = Unit::query()->getConnection()->getDriverName();
+        $caseField = $driver === 'mysql' ? '`case`' : '"case"';
+
         $query = null;
 
         if ($this->view_type === 'projects') {
@@ -270,9 +273,9 @@ class ProjectsPage extends Component
             // Prepare subquery for unit counts
             $unitCounts = Unit::toBase()
                 ->select('project_id')
-                ->selectRaw('count(case when "case" = 0 then 1 end) as available_units_count')
-                ->selectRaw('count(case when "case" = 1 then 1 end) as reserved_units_count')
-                ->selectRaw('count(case when "case" = 2 then 1 end) as sold_units_count')
+                ->selectRaw("count(case when {$caseField} = 0 then 1 end) as available_units_count")
+                ->selectRaw("count(case when {$caseField} = 1 then 1 end) as reserved_units_count")
+                ->selectRaw("count(case when {$caseField} = 2 then 1 end) as sold_units_count")
                 ->groupBy('project_id');
 
             $query = Project::with([
@@ -418,8 +421,8 @@ class ProjectsPage extends Component
                 ])
                 ->orderByRaw("
                     CASE
-                        WHEN (select count(*) from units u where u.project_id = units.project_id and u.case = '0') > 0 THEN 1
-                        WHEN (select count(*) from units u where u.project_id = units.project_id and u.case = '1') > 0 THEN 2
+                        WHEN (select count(*) from units u where u.project_id = units.project_id and u.{$caseField} = '0') > 0 THEN 1
+                        WHEN (select count(*) from units u where u.project_id = units.project_id and u.{$caseField} = '1') > 0 THEN 2
                         ELSE 3
                     END
                 ");

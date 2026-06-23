@@ -45,10 +45,21 @@ class ProjectDetails extends Component
 
     public function render()
     {
+        $driver = $this->project->units()->getConnection()->getDriverName();
+        $caseField = $driver === 'mysql' ? '`case`' : '"case"';
+
         $units = $this->project->units()
             // Show all units (available, reserved, sold) — available first.
             ->when($this->unitTypeFilter, fn ($q) => $q->where('unit_type', $this->unitTypeFilter))
-            ->orderByRaw('FIELD(`case`, 0, 1, 3, 2)')
+            ->orderByRaw("
+                CASE {$caseField}
+                    WHEN 0 THEN 1
+                    WHEN 1 THEN 2
+                    WHEN 3 THEN 3
+                    WHEN 2 THEN 4
+                    ELSE 5
+                END
+            ")
             ->orderBy('unit_price')
             ->paginate(12);
 
