@@ -1,16 +1,6 @@
 @push('styles')
 
 <style>
-    .pagination .page-item.active .page-link {
-        background-color: #122818;
-        color: #FFF;
-        border-color: #122818;
-    }
-
-    .pagination .page-item.active:hover .page-link {
-        background-color: #122818;
-        color: #FFF;
-    }
     /* Filter Sidebar Specific Styles */
     .filter-sidebar__toggle-btn {
         position: fixed;
@@ -116,8 +106,13 @@
 </style>
 @endpush
 <section class="section-frame mx-xxl-5 position-relative projectspage" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}"
-    x-data="{ showSidebar: $wire.entangle('showSidebar') }"
-    x-init="$watch('showSidebar', value => document.body.classList.toggle('filter-sidebar--open', value))">
+    x-data="{ showSidebar: $wire.entangle('showSidebar'), showFilterBtn: true, lastScroll: 0 }"
+    x-init="$watch('showSidebar', value => document.body.classList.toggle('filter-sidebar--open', value))"
+    @scroll.window="
+        let current = window.pageYOffset || document.documentElement.scrollTop;
+        showFilterBtn = current <= lastScroll || current < 100;
+        lastScroll = current;
+    ">
     
     <!-- Overlay for mobile -->
     <div class="filter-sidebar__overlay" 
@@ -164,7 +159,8 @@
                     <div class="col-md-5 col-xl-2 me-md-auto text-md-end mt-5 mt-md-0">
                         <!-- Mobile Filter Button -->
                         <button class="btn btn-primary rounded-pill d-lg-none position-fixed bottom-0 start-50 translate-middle-x mb-4 px-4"
-                                style="z-index: 1040;"
+                                style="z-index: 1040; transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;"
+                                :style="!showFilterBtn && 'transform: translate(-50%, 150%); opacity: 0; pointer-events: none;'"
                                 @click="showSidebar = true">
                             <i class="uil uil-filter me-1"></i> @lang('public.projects.filter')
                         </button>
@@ -362,8 +358,8 @@
                 @endif
 
                 <!-- Pagination -->
-                <div class="mt-5" dir="ltr">
-                    {{ $items->links() }}
+                <div class="mt-5">
+                    {{ $items->links('vendor.pagination.shadcn') }}
                 </div>
             </div>
         </div>

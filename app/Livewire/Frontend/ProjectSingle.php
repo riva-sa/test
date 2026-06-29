@@ -51,7 +51,7 @@ class ProjectSingle extends Component
 
     public function getUnits()
     {
-        $query = Unit::query()->toBase()
+        $query = Unit::query()
             ->where('project_id', $this->project->id)
             ->where('status', 1)
             ->select(['id', 'title','image', 'unit_type', 'unit_price', 'unit_area', 'beadrooms', 'bathrooms', 'floor_plan', 'case', 'show_price']);
