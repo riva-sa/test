@@ -278,7 +278,7 @@
                                         <i class="uil uil-whatsapp"></i> @lang('public.project.whatsapp')
                                 </a>
                                 <a href="tel:{{ $contactPhone }}"
-                                    class="btn btn-outline-light btn-sm rounded flex-1 d-flex align-items-center justify-content-center gap-1 w-50 fs-14">
+                                    class="btn btn-soft-ash btn-sm btn-icon-end rounded w-50">
                                         <i class="uil uil-phone"></i> @lang('public.project.call')
                                     </a>
                                 </div>

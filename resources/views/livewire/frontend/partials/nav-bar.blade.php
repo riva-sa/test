@@ -19,7 +19,7 @@
                 <div class="offcanvas-header d-lg-none">
                     <a href="{{ route('frontend.home') }}">
                         @if (\App\Helpers\LocalizationHelper::getDirection() === 'ltr')
-                            <img src="{{asset('frontend/img/svg/riva-logo-ltr.svg')}}"  width="111px" srcset="{{asset('frontend/img/svg/riva-logo-ltr.svg')}} 2x" alt="Riva" />
+                            <img src="{{asset('frontend/img/svg/Artboard 19.svg')}}"  width="111px" srcset="{{asset('frontend/img/svg/Artboard 19.svg')}} 2x" alt="Riva" />
                         @else 
                             <img src="{{asset('frontend/img/svg/Artboard 19.svg')}}"  width="111px" srcset="{{asset('frontend/img/svg/Artboard 19.svg')}} 2x" alt="ريفا" />
                         @endif
