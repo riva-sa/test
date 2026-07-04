@@ -53,24 +53,30 @@
         <div class="bg-white rounded-2xl border border-gray-100 p-6">
             <h2 class="text-sm font-black text-gray-900 mb-5"><span class="text-gray-300 ml-2">02</span> المشاريع والوحدات محل الاهتمام</h2>
 
-            <label class="block text-sm font-bold text-gray-700 mb-2">المشاريع <span class="text-red-500">*</span> <span class="text-gray-400 text-xs font-medium">(يمكن اختيار أكثر من مشروع)</span></label>
+            <label class="block text-sm font-bold text-gray-700 mb-2">المشروع <span class="text-red-500">*</span></label>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-52 overflow-y-auto p-1 mb-2">
                 @foreach ($projects as $project)
-                    <label class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all {{ in_array((string) $project->id, array_map('strval', $selectedProjects)) ? 'border-gray-900 bg-gray-50' : 'border-gray-100 hover:border-gray-200' }}">
-                        <input type="checkbox" wire:model.live="selectedProjects" value="{{ $project->id }}" class="rounded border-gray-300 text-gray-900 focus:ring-gray-900">
+                    <label class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all {{ (string) $project->id === (string) $selectedProject ? 'border-gray-900 bg-gray-50' : 'border-gray-100 hover:border-gray-200' }}">
+                        <input type="radio" wire:model.live="selectedProject" value="{{ $project->id }}" class="border-gray-300 text-gray-900 focus:ring-gray-900">
                         <span class="text-[13px] font-bold text-gray-800">{{ $project->name }}</span>
                     </label>
                 @endforeach
             </div>
-            @error('selectedProjects') <p class="text-xs text-red-600 font-bold mb-3">{{ $message }}</p> @enderror
+            @error('selectedProject') <p class="text-xs text-red-600 font-bold mb-3">{{ $message }}</p> @enderror
 
             @if (! empty($availableUnits))
-                <label class="block text-sm font-bold text-gray-700 mb-2 mt-4">الوحدات <span class="text-gray-400 text-xs font-medium">(اختياري — يمكن اختيار أكثر من وحدة)</span></label>
+                <label class="block text-sm font-bold text-gray-700 mb-2 mt-4">الوحدة <span class="text-gray-400 text-xs font-medium">(اختياري)</span></label>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-52 overflow-y-auto p-1">
+                    {{-- خيار عدم تحديد وحدة --}}
+                    <label class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all {{ !$selectedUnit ? 'border-gray-900 bg-gray-50' : 'border-gray-100 hover:border-gray-200' }}">
+                        <input type="radio" wire:model.live="selectedUnit" value="" class="border-gray-300 text-gray-900 focus:ring-gray-900">
+                        <span class="text-[13px] font-bold text-gray-800">بدون وحدة محددة (الاهتمام بالمشروع ككل)</span>
+                    </label>
+
                     @foreach ($availableUnits as $unit)
-                        <label class="flex items-center justify-between gap-3 p-3 rounded-xl border cursor-pointer transition-all {{ in_array((string) $unit['id'], array_map('strval', $selectedUnits)) ? 'border-gray-900 bg-gray-50' : 'border-gray-100 hover:border-gray-200' }}">
+                        <label class="flex items-center justify-between gap-3 p-3 rounded-xl border cursor-pointer transition-all {{ (string) $unit['id'] === (string) $selectedUnit ? 'border-gray-900 bg-gray-50' : 'border-gray-100 hover:border-gray-200' }}">
                             <div class="flex items-center gap-3">
-                                <input type="checkbox" wire:model.live="selectedUnits" value="{{ $unit['id'] }}" class="rounded border-gray-300 text-gray-900 focus:ring-gray-900">
+                                <input type="radio" wire:model.live="selectedUnit" value="{{ $unit['id'] }}" class="border-gray-300 text-gray-900 focus:ring-gray-900">
                                 <div>
                                     <div class="text-[13px] font-bold text-gray-800">{{ $unit['title'] }}</div>
                                     <div class="text-[10px] text-gray-400">{{ $unit['project']['name'] ?? '' }} · {{ $unit['unit_type'] }}</div>
@@ -82,8 +88,8 @@
                         </label>
                     @endforeach
                 </div>
-            @elseif (! empty($selectedProjects))
-                <p class="text-xs text-gray-400 mt-2">لا توجد وحدات متاحة في المشاريع المختارة — سيتم تسجيل الاهتمام على مستوى المشروع.</p>
+            @elseif ($selectedProject)
+                <p class="text-xs text-gray-400 mt-2">لا توجد وحدات متاحة في المشروع المختار — سيتم تسجيل الاهتمام على مستوى المشروع.</p>
             @endif
         </div>
 

@@ -23,10 +23,10 @@ class SubmitLead extends Component
 
     public $countryCode = '+966'; // Default Saudi Arabia
 
-    // بيانات الاهتمام (مشروع/مشاريع + وحدة/وحدات)
-    public $selectedProjects = [];
+    // بيانات الاهتمام (مشروع واحد + وحدة واحدة)
+    public $selectedProject = null;
 
-    public $selectedUnits = [];
+    public $selectedUnit = null;
 
     // بيانات الطلب (نفس حقول نموذج الطلب الحالي في CRM)
     public $property_type = '';
@@ -114,10 +114,8 @@ class SubmitLead extends Component
             'name' => 'required|string|min:3|max:255',
             'phone' => 'required|string|min:7|max:15',
             'countryCode' => 'required|string',
-            'selectedProjects' => 'required|array|min:1',
-            'selectedProjects.*' => 'exists:projects,id',
-            'selectedUnits' => 'nullable|array',
-            'selectedUnits.*' => 'exists:units,id',
+            'selectedProject' => 'required|exists:projects,id',
+            'selectedUnit' => 'nullable|exists:units,id',
             'property_type' => 'required|string|max:50',
             'PurchaseType' => 'required|string|in:cash,bank',
             'PurchasePurpose' => 'required|string|in:personal,investment',
@@ -132,8 +130,9 @@ class SubmitLead extends Component
     protected $messages = [
         'name.required' => 'اسم العميل مطلوب',
         'phone.required' => 'رقم الهاتف مطلوب',
-        'selectedProjects.required' => 'يرجى اختيار مشروع واحد على الأقل',
-        'selectedProjects.min' => 'يرجى اختيار مشروع واحد على الأقل',
+        'selectedProject.required' => 'يرجى اختيار المشروع',
+        'selectedProject.exists' => 'المشروع المختار غير صالح',
+        'selectedUnit.exists' => 'الوحدة المختارة غير صالحة',
         'property_type.required' => 'نوع العقار مطلوب',
         'PurchaseType.required' => 'طريقة الشراء مطلوبة',
         'PurchasePurpose.required' => 'الغرض من الشراء مطلوب',
@@ -145,7 +144,7 @@ class SubmitLead extends Component
         // دعم التحديد المسبق من صفحة المشروع / الوحدة
         if ($projectId = request()->query('project')) {
             if (Project::where('status', true)->whereKey($projectId)->exists()) {
-                $this->selectedProjects = [(string) $projectId];
+                $this->selectedProject = (string) $projectId;
             }
         }
 
@@ -153,18 +152,22 @@ class SubmitLead extends Component
 
         if ($unitId = request()->query('unit')) {
             if (collect($this->availableUnits)->pluck('id')->contains((int) $unitId)) {
-                $this->selectedUnits = [(string) $unitId];
+                $this->selectedUnit = (string) $unitId;
             }
         }
     }
 
-    public function updatedSelectedProjects()
+    public function updatedSelectedProject()
     {
         $this->loadUnits();
 
-        // إزالة الوحدات التي لم تعد ضمن المشاريع المختارة
-        $validIds = collect($this->availableUnits)->pluck('id')->map(fn ($id) => (string) $id);
-        $this->selectedUnits = array_values(array_filter($this->selectedUnits, fn ($id) => $validIds->contains((string) $id)));
+        // إزالة الوحدة المختارة إذا لم تعد تابعة للمشروع المختار
+        if ($this->selectedUnit) {
+            $unit = Unit::find($this->selectedUnit);
+            if (!$unit || (string) $unit->project_id !== (string) $this->selectedProject) {
+                $this->selectedUnit = null;
+            }
+        }
     }
 
     /**
@@ -242,9 +245,9 @@ class SubmitLead extends Component
 
     private function loadUnits()
     {
-        $this->availableUnits = empty($this->selectedProjects)
+        $this->availableUnits = !$this->selectedProject
             ? []
-            : Unit::whereIn('project_id', $this->selectedProjects)
+            : Unit::where('project_id', $this->selectedProject)
                 ->where('case', '0')
                 ->select('id', 'title', 'unit_type', 'unit_price', 'project_id')
                 ->with('project:id,name')
@@ -296,11 +299,14 @@ class SubmitLead extends Component
             return;
         }
 
-        // الوحدات المختارة (متاحة فقط ومن ضمن المشاريع المختارة)
-        $units = Unit::whereIn('id', $this->selectedUnits ?: [])
-            ->whereIn('project_id', $this->selectedProjects)
-            ->where('case', '0')
-            ->get();
+        // الوحدة المختارة (متاحة فقط ومن ضمن المشروع المختار)
+        $unit = null;
+        if ($this->selectedUnit) {
+            $unit = Unit::where('id', $this->selectedUnit)
+                ->where('project_id', $this->selectedProject)
+                ->where('case', '0')
+                ->first();
+        }
 
         $details = collect([
             'نوع العقار: '.$this->property_type,
@@ -310,9 +316,7 @@ class SubmitLead extends Component
 
         $orderMessage = trim(($this->message ? $this->message."\n" : '')."[بيانات الوسيط] ".$details);
 
-        $createdCount = DB::transaction(function () use ($broker, $units, $orderMessage, $fullPhone) {
-            $count = 0;
-
+        $createdCount = DB::transaction(function () use ($broker, $unit, $orderMessage, $fullPhone) {
             $baseData = [
                 'name' => $this->name,
                 'phone' => $fullPhone,
@@ -326,33 +330,24 @@ class SubmitLead extends Component
                 'broker_id' => $broker->id,
             ];
 
-            // طلب لكل وحدة مختارة
-            foreach ($units as $unit) {
+            if ($unit) {
                 UnitOrder::create($baseData + [
                     'project_id' => $unit->project_id,
                     'unit_id' => $unit->id,
                 ]);
-                $count++;
+            } else {
+                UnitOrder::create($baseData + [
+                    'project_id' => $this->selectedProject,
+                    'unit_id' => null,
+                ]);
             }
 
-            // طلب لكل مشروع مختار ليس له وحدات مختارة
-            $projectsWithUnits = $units->pluck('project_id')->unique();
-            foreach ($this->selectedProjects as $projectId) {
-                if (! $projectsWithUnits->contains((int) $projectId)) {
-                    UnitOrder::create($baseData + [
-                        'project_id' => $projectId,
-                        'unit_id' => null,
-                    ]);
-                    $count++;
-                }
-            }
-
-            return $count;
+            return 1;
         });
 
         BrokerActivityLog::record('lead_submitted', $broker->id, "إرسال عميل ({$this->name} - {$fullPhone}) — عدد الطلبات: {$createdCount}");
 
-        session()->flash('message', "تم إرسال العميل بنجاح وإنشاء {$createdCount} طلب. يمكنك متابعة الحالة من صفحة طلباتي.");
+        session()->flash('message', "تم إرسال العميل بنجاح وإنشاء طلب. يمكنك متابعة الحالة من صفحة طلباتي.");
 
         return redirect()->route('broker.leads');
     }

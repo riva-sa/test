@@ -86,8 +86,8 @@ it('rejects a duplicate lead without creating an order and alerts the team', fun
         ->set('name', 'New Client Name')
         ->set('phone', '555555555')
         ->set('countryCode', '+966')
-        ->set('selectedProjects', [$this->project->id])
-        ->set('selectedUnits', [$this->unit->id])
+        ->set('selectedProject', $this->project->id)
+        ->set('selectedUnit', $this->unit->id)
         ->set('property_type', 'شقة')
         ->set('PurchaseType', 'cash')
         ->set('PurchasePurpose', 'personal')
@@ -131,8 +131,8 @@ it('creates the lead normally when the client is not already in the CRM', functi
         ->set('name', 'Fresh Client')
         ->set('phone', '500000000')
         ->set('countryCode', '+966')
-        ->set('selectedProjects', [$this->project->id])
-        ->set('selectedUnits', [$this->unit->id])
+        ->set('selectedProject', $this->project->id)
+        ->set('selectedUnit', $this->unit->id)
         ->set('property_type', 'شقة')
         ->set('PurchaseType', 'cash')
         ->set('PurchasePurpose', 'personal')
@@ -141,4 +141,26 @@ it('creates the lead normally when the client is not already in the CRM', functi
         ->assertRedirect(route('broker.leads'));
 
     expect(UnitOrder::where('phone', '+966500000000')->where('broker_id', $this->broker->id)->exists())->toBeTrue();
+});
+
+it('creates the lead normally when only project is selected and no unit', function () {
+    $this->actingAs($this->broker, 'broker');
+
+    Livewire::test(SubmitLead::class)
+        ->set('name', 'Fresh Client 2')
+        ->set('phone', '500000001')
+        ->set('countryCode', '+966')
+        ->set('selectedProject', $this->project->id)
+        ->set('selectedUnit', null)
+        ->set('property_type', 'شقة')
+        ->set('PurchaseType', 'cash')
+        ->set('PurchasePurpose', 'personal')
+        ->set('support_type', 'مدعوم')
+        ->call('submit')
+        ->assertRedirect(route('broker.leads'));
+
+    $order = UnitOrder::where('phone', '+966500000001')->where('broker_id', $this->broker->id)->first();
+    expect($order)->not->toBeNull();
+    expect($order->project_id)->toBe($this->project->id);
+    expect($order->unit_id)->toBeNull();
 });
