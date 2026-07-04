@@ -11,8 +11,41 @@ use Illuminate\Support\Facades\DB;
 
 class UnitOrderObserver
 {
+    public function creating(UnitOrder $order): void
+    {
+        if (auth()->check()) {
+            $user = auth()->user();
+            if ($user->hasRole(config('lead_import.sales_role', 'sales'))) {
+                // Assign to the creator sales rep
+                $order->assigned_sales_user_id = $user->id;
+
+                // If order_source is not set, default to manager (manual add)
+                if (!$order->order_source) {
+                    $order->order_source = UnitOrder::ORDER_SOURCE_MANAGER;
+                }
+
+                // Ensure user_id is set to creator if not set
+                if (!$order->user_id) {
+                    $order->user_id = $user->id;
+                }
+            }
+        }
+    }
+
     public function created(UnitOrder $order): void
     {
+        // If the order already has an assigned sales representative (e.g., set to creator during manual creation),
+        // ensure they have management permission on the order.
+        if ($order->assigned_sales_user_id) {
+            \App\Models\OrderPermission::firstOrCreate([
+                'user_id' => $order->assigned_sales_user_id,
+                'unit_order_id' => $order->id,
+                'permission_type' => 'manage',
+            ], [
+                'granted_by' => auth()->id() ?? $order->user_id,
+            ]);
+        }
+
         // 1. Auto-assign the order to an available sales representative
         app(\App\Services\AutoAssignmentService::class)->assign($order);
 
