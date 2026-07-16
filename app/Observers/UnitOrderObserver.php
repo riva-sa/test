@@ -74,13 +74,13 @@ class UnitOrderObserver
                 'to_status' => $order->status,
             ]);
 
-            Log::info('order_status_transition', [
-                'event' => 'order_status_transition',
-                'order_id' => $order->id,
-                'from_status' => $order->getOriginal('status'),
-                'to_status' => $order->status,
-                'user_id' => $userId,
-            ]);
+            // Log::info('order_status_transition', [
+            //     'event' => 'order_status_transition',
+            //     'order_id' => $order->id,
+            //     'from_status' => $order->getOriginal('status'),
+            //     'to_status' => $order->status,
+            //     'user_id' => $userId,
+            // ]);
         }
 
         // 2. Handle Data Changes

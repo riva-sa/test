@@ -16,15 +16,15 @@ class IngestSocialMediaLead
      */
     public function execute(array $data): UnitOrder
     {
-        Log::debug('Incoming Zapier Lead Data:', $data);
+        // Log::debug('Incoming Zapier Lead Data:', $data);
 
         // Check for blocked numbers
         $isBlocked = BlockedNumber::where('phone', $data['phone'])->exists();
         if ($isBlocked) {
-            Log::warning('Blocked number attempted to submit social media lead', [
-                'phone' => $data['phone'],
-                'name' => $data['name'] ?? 'Unknown',
-            ]);
+            // Log::warning('Blocked number attempted to submit social media lead', [
+            //     'phone' => $data['phone'],
+            //     'name' => $data['name'] ?? 'Unknown',
+            // ]);
 
             // Return a dummy order or handle specifically.
             // For now, let's throw an exception to be caught by the controller.
@@ -60,12 +60,12 @@ class IngestSocialMediaLead
             $order = UnitOrder::create($attributes);
         }
 
-        Log::info('Social media lead ingested', [
-            'order_id' => $order->id,
-            'email' => $order->email,
-            'marketing_source' => $order->marketing_source,
-            'campaign' => $order->campaign_name,
-        ]);
+        // Log::info('Social media lead ingested', [
+        //     'order_id' => $order->id,
+        //     'email' => $order->email,
+        //     'marketing_source' => $order->marketing_source,
+        //     'campaign' => $order->campaign_name,
+        // ]);
 
         // Notify admins and sales managers
         $notifiableUsers = User::whereHas('roles', function ($query) {

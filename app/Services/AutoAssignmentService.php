@@ -46,7 +46,7 @@ class AutoAssignmentService
                     ->get();
 
                 if ($salesUsers->isEmpty()) {
-                    Log::warning("AutoAssignmentService: No active sales representatives available for Order ID: {$order->id}");
+                    // Log::warning("AutoAssignmentService: No active sales representatives available for Order ID: {$order->id}");
 
                     return;
                 }
@@ -97,8 +97,7 @@ class AutoAssignmentService
                         // after the observer refreshes the model — clearing cache here
                         // would race with that send, so we leave it to notifyNewOrder.
 
-
-                        Log::info("AutoAssignmentService: Order ID: {$order->id} automatically assigned to Sales User: {$bestUser->id}");
+                        // Log::info("AutoAssignmentService: Order ID: {$order->id} automatically assigned to Sales User: {$bestUser->id}");
                     }
                 }
             });

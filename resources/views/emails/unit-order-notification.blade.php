@@ -159,7 +159,7 @@
                 <h3>🏢 تفاصيل المشروع والوحدة</h3>
                 <div class="info-row">
                     <span class="info-label">اسم المشروع:</span>
-                    <span class="info-value">{{ $emailData['project']->name }}</span>
+                    <span class="info-value">{{ $emailData['project']->name ?? 'غير محدد' }}</span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">رقم الوحدة:</span>
