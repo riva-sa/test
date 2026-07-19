@@ -259,7 +259,10 @@ class UnitOrderResource extends Resource
                     ->label('تصدير المحدد إلى Excel')
                     ->icon('heroicon-o-document')
                     ->action(function (Collection $records) {
-                        return Excel::download(new UnitOrdersExport($records), 'selected-unit-orders.xlsx');
+                        $query = \App\Models\UnitOrder::with([
+                            'user', 'unit', 'project', 'assignedSalesUser', 'lastActionByUser', 'notes.user',
+                        ])->whereIn('id', $records->pluck('id'));
+                        return Excel::download(new UnitOrdersExport($query), 'selected-unit-orders.xlsx');
                     }),
                 Tables\Actions\DeleteBulkAction::make()->label('حذف'),
             ]);

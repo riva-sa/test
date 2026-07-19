@@ -213,9 +213,9 @@ class ManageOrders extends Component
                 $query->whereDate('created_at', '<=', $this->toDate);
             });
 
-        $records = $query->orderBy($this->sortField, $this->sortDirection)->get();
+        $query->orderBy($this->sortField, $this->sortDirection);
 
-        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\UnitOrdersExport($records), 'orders_export_'.now()->format('Y-m-d').'.xlsx');
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\UnitOrdersExport($query), 'orders_export_'.now()->format('Y-m-d').'.xlsx');
     }
 
     public function render()

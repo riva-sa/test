@@ -3,8 +3,8 @@
 namespace App\Exports;
 
 use App\Models\UnitOrder;
-use Illuminate\Support\Collection;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Illuminate\Database\Eloquent\Builder;
+use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -15,9 +15,9 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class UnitOrdersExport implements FromCollection, WithHeadings, WithMapping, WithStyles, ShouldAutoSize, WithTitle
+class UnitOrdersExport implements FromQuery, WithHeadings, WithMapping, WithStyles, ShouldAutoSize, WithTitle
 {
-    private Collection $records;
+    private Builder $query;
 
     // Column letter => section background color (hex without #)
     private const SECTION_COLORS = [
@@ -41,11 +41,11 @@ class UnitOrdersExport implements FromCollection, WithHeadings, WithMapping, Wit
         'AF' => 'EFEBE9', 'AG' => 'EFEBE9',
     ];
 
-    public function __construct(?Collection $records = null)
+    public function __construct(?Builder $query = null)
     {
-        $this->records = $records ?? UnitOrder::with([
+        $this->query = $query ?? UnitOrder::with([
             'user', 'unit', 'project', 'assignedSalesUser', 'lastActionByUser', 'notes.user',
-        ])->get();
+        ]);
     }
 
     public function title(): string
@@ -53,9 +53,9 @@ class UnitOrdersExport implements FromCollection, WithHeadings, WithMapping, Wit
         return 'Orders';
     }
 
-    public function collection(): Collection
+    public function query()
     {
-        return $this->records;
+        return $this->query;
     }
 
     public function headings(): array
@@ -163,7 +163,7 @@ class UnitOrdersExport implements FromCollection, WithHeadings, WithMapping, Wit
 
     public function styles(Worksheet $sheet): array
     {
-        $lastRow = $this->records->count() + 1;
+        $lastRow = $sheet->getHighestRow();
 
         // Header row: bold white text on dark blue
         $sheet->getStyle('A1:AG1')->applyFromArray([
