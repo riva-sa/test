@@ -16,3 +16,5 @@ Route::prefix('ai')
     });
 
 Route::post('zapier/social-media-lead', [App\Http\Controllers\Api\ZapierLeadController::class, 'store']);
+Route::get('customers/export', [\App\Http\Controllers\Api\CustomerExportController::class, 'index'])
+    ->middleware(['throttle:60,1', 'agent.api.key']);

@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\CheckUserRole::class,
             'permission' => \App\Http\Middleware\CheckPermission::class,
             'api.ai.key' => \App\Http\Middleware\AiApiKeyAuth::class,
+            'agent.api.key' => \App\Http\Middleware\AgentApiKeyAuth::class,
             'set.locale' => \App\Http\Middleware\SetLocale::class,
             'broker.approved' => \App\Http\Middleware\EnsureBrokerApproved::class,
         ]);

@@ -14,6 +14,7 @@ return [
     |
     */
     'ai_api_key' => env('AI_API_KEY'),
+    'agent_api_key' => 'agt_9X8bU2mP7kL4vF1qR5zW3yN6cA0dE',
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),
     ],
