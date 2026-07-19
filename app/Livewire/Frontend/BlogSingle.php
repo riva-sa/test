@@ -13,7 +13,7 @@ class BlogSingle extends Component
 
     public function mount($slug)
     {
-        $this->post = Post::where('slug', $slug)->first();
+        $this->post = Post::where('slug', $slug)->published()->firstOrFail();
     }
 
     public function render()

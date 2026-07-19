@@ -58,7 +58,7 @@ class Blog extends Component
     public function render()
     {
         // Base query for posts
-        $query = Post::query()->with(['tags', 'comments']);
+        $query = Post::query()->published()->with(['tags', 'comments']);
         // Filter by category if selected
         if ($this->selectedCategory) {
             $query->where('category_id', $this->selectedCategory);
