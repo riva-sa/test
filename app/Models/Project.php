@@ -123,7 +123,12 @@ class Project extends Model
 
     public function landmarks()
     {
-        return $this->belongsToMany(Landmark::class)->withPivot('distance')->withTimestamps();
+        return $this->belongsToMany(Landmark::class)->using(LandmarkProject::class)->withPivot('distance')->withTimestamps();
+    }
+
+    public function projectLandmarks()
+    {
+        return $this->hasMany(LandmarkProject::class);
     }
 
     public function getMediaImages()

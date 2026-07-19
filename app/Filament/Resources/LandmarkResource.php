@@ -51,7 +51,7 @@ class LandmarkResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')->label('الاسم'),
                 Tables\Columns\TextColumn::make('description')->label('الوصف'),
-                Tables\Columns\TextColumn::make('distance')->label('المسافة'),
+                // Tables\Columns\TextColumn::make('distance')->label('المسافة'),
             ])
             ->filters([
                 //

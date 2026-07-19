@@ -207,6 +207,30 @@ class ProjectResource extends Resource
                                     Select::make('features')
                                         ->multiple()
                                         ->relationship('features', 'name')
+                                        ->getOptionLabelFromRecordUsing(function ($record) {
+                                            $iconUrl = $record->icon ? \App\Helpers\MediaHelper::getUrl($record->icon) : null;
+                                            
+                                            if ($iconUrl) {
+                                                $iconHtml = "<img src='{$iconUrl}' class='w-5 h-5 object-contain rounded-md' alt=''>";
+                                            } else {
+                                                $iconHtml = "<div class='flex items-center justify-center w-5 h-5 rounded-md bg-primary-50 text-primary-600'><i class='fas fa-star text-[10px]'></i></div>";
+                                            }
+                                            
+                                            $descHtml = '';
+                                            if ($record->description) {
+                                                $desc = strip_tags($record->description);
+                                                $descHtml = "<span class='text-xs text-gray-500 block truncate mt-0.5'>{$desc}</span>";
+                                            }
+                                            
+                                            return "<div class='flex items-center gap-2 py-1'>
+                                                        <div class='shrink-0'>{$iconHtml}</div>
+                                                        <div class='flex flex-col min-w-0'>
+                                                            <span class='font-bold text-sm text-gray-900 dark:text-white truncate'>{$record->name}</span>
+                                                            {$descHtml}
+                                                        </div>
+                                                    </div>";
+                                        })
+                                        ->allowHtml()
                                         ->preload()
                                         ->searchable()
                                         ->columnSpanFull()
@@ -221,6 +245,30 @@ class ProjectResource extends Resource
                                     Select::make('guarantees')
                                         ->multiple()
                                         ->relationship('guarantees', 'name')
+                                        ->getOptionLabelFromRecordUsing(function ($record) {
+                                            $iconUrl = $record->icon ? \App\Helpers\MediaHelper::getUrl($record->icon) : null;
+                                            
+                                            if ($iconUrl) {
+                                                $iconHtml = "<img src='{$iconUrl}' class='w-5 h-5 object-contain rounded-md' alt=''>";
+                                            } else {
+                                                $iconHtml = "<div class='flex items-center justify-center w-5 h-5 rounded-md bg-green-50 text-green-600'><i class='fas fa-shield-halved text-[10px]'></i></div>";
+                                            }
+                                            
+                                            $descHtml = '';
+                                            if ($record->description) {
+                                                $desc = strip_tags($record->description);
+                                                $descHtml = "<span class='text-xs text-gray-500 block truncate mt-0.5'>{$desc}</span>";
+                                            }
+                                            
+                                            return "<div class='flex items-center gap-2 py-1'>
+                                                        <div class='shrink-0'>{$iconHtml}</div>
+                                                        <div class='flex flex-col min-w-0'>
+                                                            <span class='font-bold text-sm text-gray-900 dark:text-white truncate'>{$record->name}</span>
+                                                            {$descHtml}
+                                                        </div>
+                                                    </div>";
+                                        })
+                                        ->allowHtml()
                                         ->preload()
                                         ->searchable()
                                         ->columnSpanFull()
@@ -249,41 +297,34 @@ class ProjectResource extends Resource
                                     //             ->suffix('كم'),
                                     //     ]),
 
-                                    Select::make('landmarks')
-                                        ->multiple()
-                                        ->relationship('landmarks', 'name')
-                                        ->preload()
-                                        ->searchable()
-                                        ->columnSpanFull()
+                                    Repeater::make('projectLandmarks')
+                                        ->relationship('projectLandmarks')
                                         ->label('المعالم القريبة')
-                                        ->helperText('اختر المعالم القريبة ومسافاتها')
-                                        ->createOptionForm([
-                                            TextInput::make('name')->label('الاسم')->required(),
-                                            TextInput::make('description')->label('الوصف')->required(),
+                                        ->helperText('اختر المعالم القريبة وحدد المسافة الخاصة بكل معلم عن هذا المشروع تحديداً.')
+                                        ->schema([
+                                            Select::make('landmark_id')
+                                                ->label('المعلم')
+                                                ->relationship('landmark', 'name')
+                                                ->required()
+                                                ->searchable()
+                                                ->preload()
+                                                ->distinct()
+                                                ->createOptionForm([
+                                                    TextInput::make('name')->label('الاسم')->required(),
+                                                    TextInput::make('description')->label('الوصف')->required(),
+                                                ])
+                                                ->columnSpan(2),
                                             TextInput::make('distance')
-                                                ->label('المسافة من المشروع')
+                                                ->label('المسافة (كم)')
                                                 ->numeric()
-                                                ->suffix('كم'),
+                                                ->required()
+                                                ->suffix('كم')
+                                                ->columnSpan(1),
                                         ])
-                                        ->createOptionUsing(function (array $data, $livewire) {
-                                            // إنشاء معلم جديد
-                                            $landmark = Landmark::create([
-                                                'name' => $data['name'],
-                                                'description' => $data['description'],
-                                            ]);
-
-                                            // حفظ المعلومات في الجدول الوسيط يدوياً
-                                            if (isset($data['distance']) && method_exists($livewire, 'getRecord')) {
-                                                $project = $livewire->getRecord();
-
-                                                // Add the relationship with pivot data
-                                                $project->landmarks()->attach($landmark->id, [
-                                                    'distance' => $data['distance'],
-                                                ]);
-                                            }
-
-                                            return $landmark->id;
-                                        }),
+                                        ->columns(3)
+                                        ->columnSpanFull()
+                                        ->defaultItems(0)
+                                        ->addActionLabel('إضافة معلم'),
                                     // File Upload for images with repeater to upload multiple images
                                     Repeater::make('projectMedia')
                                         ->relationship('projectMedia') // Relationship defined in Project model
