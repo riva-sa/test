@@ -20,14 +20,18 @@
             {{-- ══════════ Contract not ready yet ══════════ --}}
             @if (! $broker->contractSent())
                 <div class="p-10 text-center">
-                    <div class="h-20 w-20 mx-auto rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center mb-6">
-                        <i class="fas fa-file-contract text-3xl text-blue-400"></i>
+                    <div class="h-20 w-20 mx-auto rounded-full bg-red-50 border border-red-100 flex items-center justify-center mb-6">
+                        <i class="fas fa-exclamation-triangle text-3xl text-red-400"></i>
                     </div>
-                    <h2 class="text-lg font-black text-gray-900 mb-3">تم اعتماد حسابك 🎉</h2>
-                    <p class="text-sm text-gray-500 leading-relaxed max-w-sm mx-auto">
-                        جاري إعداد عقد الوساطة الخاص بك.<br>
-                        ستتلقى إشعاراً عبر البريد الإلكتروني فور اكتمال العقد.
+                    <h2 class="text-lg font-black text-gray-900 mb-3">تم اعتماد حسابك 🎉 ولكن..</h2>
+                    <p class="text-sm text-gray-500 leading-relaxed max-w-sm mx-auto mb-6">
+                        حدث خطأ أثناء إعداد عقد الوساطة الخاص بك.
+                        يرجى المحاولة مرة أخرى أو التواصل مع الدعم الفني.
                     </p>
+                    <button type="button" wire:click="retryContractGeneration" wire:loading.attr="disabled" class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-900 hover:bg-gray-800 disabled:opacity-50 text-white text-sm font-black rounded-xl transition-all">
+                        <span wire:loading.remove wire:target="retryContractGeneration"><i class="fas fa-sync-alt"></i> إعادة محاولة إعداد العقد</span>
+                        <span wire:loading wire:target="retryContractGeneration"><i class="fas fa-circle-notch fa-spin"></i> جاري الإعداد...</span>
+                    </button>
                 </div>
 
             {{-- ══════════ Signed — awaiting final admin review/approval ══════════ --}}

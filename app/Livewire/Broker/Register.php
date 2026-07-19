@@ -162,10 +162,26 @@ class Register extends Component
     {
         $this->normalizeNumericInputs();
 
-        // Re-validate everything in case data changed between steps
-        $this->validate(array_merge($this->stepRules(1), $this->stepRules(2), $this->stepRules(3)));
+        try {
+            // Re-validate everything in case data changed between steps
+            $this->validate(array_merge($this->stepRules(1), $this->stepRules(2), $this->stepRules(3)));
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $errors = $e->validator->errors()->keys();
+            
+            $step1Keys = array_keys($this->stepRules(1));
+            $step2Keys = array_keys($this->stepRules(2));
+            
+            if (count(array_intersect($errors, $step1Keys)) > 0) {
+                $this->step = 1;
+            } elseif (count(array_intersect($errors, $step2Keys)) > 0) {
+                $this->step = 2;
+            }
+            
+            throw $e;
+        }
 
-        // Assemble the full IBAN: fixed "SA" prefix + the 22 entered digits.
+        try {
+            // Assemble the full IBAN: fixed "SA" prefix + the 22 entered digits.
         $iban = 'SA'.$this->iban_number;
 
         $broker = DB::transaction(function () use ($iban) {
@@ -212,6 +228,13 @@ class Register extends Component
         BrokerActivityLog::record('registered', $broker->id, "تسجيل وسيط جديد ({$broker->reference_number})");
 
         $this->step = 4;
+        } catch (\Throwable $e) {
+            if ($e instanceof \Illuminate\Validation\ValidationException) {
+                throw $e;
+            }
+            \Illuminate\Support\Facades\Log::error('Broker registration failed: ' . $e->getMessage());
+            session()->flash('error', 'حدث خطأ غير متوقع أثناء إرسال الطلب. يرجى المحاولة مرة أخرى أو التواصل مع الدعم.');
+        }
     }
 
     public function render()

@@ -190,23 +190,29 @@ class BrokerApplications extends Component
         BrokerActivityLog::record('approved', $broker->id, "اعتماد حساب الوسيط ({$broker->reference_number})", Auth::id());
 
         // Auto-generate personalised contract PDF from the fixed template
+        $contractGenerated = true;
         try {
             app(BrokerContractService::class)->generate($broker);
             BrokerActivityLog::record('contract_sent', $broker->id, "توليد عقد الوساطة تلقائياً بعد الاعتماد ({$broker->reference_number})", Auth::id());
         } catch (\Throwable $e) {
+            $contractGenerated = false;
             Log::error('Failed to auto-generate broker contract: ' . $e->getMessage(), ['broker_id' => $broker->id]);
         }
 
         $this->sendStatusMail($broker);
 
         // Notify the broker that their contract is ready to sign
-        try {
-            Mail::to($broker->email)->send(new BrokerContractMail($broker));
-        } catch (\Throwable $e) {
-            Log::error('Failed to send broker contract email: ' . $e->getMessage(), ['broker_id' => $broker->id]);
+        if ($contractGenerated) {
+            try {
+                Mail::to($broker->email)->send(new BrokerContractMail($broker));
+            } catch (\Throwable $e) {
+                Log::error('Failed to send broker contract email: ' . $e->getMessage(), ['broker_id' => $broker->id]);
+            }
+            session()->flash('message', "تم اعتماد الوسيط {$broker->name} بنجاح وتوليد العقد وإرساله له.");
+        } else {
+            session()->flash('error', "تم اعتماد الوسيط {$broker->name}، لكن فشل توليد العقد. يمكن للوسيط إعادة المحاولة من حسابه.");
         }
-
-        session()->flash('message', "تم اعتماد الوسيط {$broker->name} بنجاح وتوليد العقد وإرساله له.");
+        
         $this->closeDetails();
     }
 
@@ -284,8 +290,8 @@ class BrokerApplications extends Component
         Gate::authorize('manage-brokers');
 
         $this->validate([
-            'rejectionReason' => 'nullable|string|max:1000',
-        ]);
+            'rejectionReason' => 'required|string|min:5|max:1000',
+        ], [], ['rejectionReason' => 'سبب الرفض']);
 
         $broker = Broker::findOrFail($this->selectedBrokerId);
 

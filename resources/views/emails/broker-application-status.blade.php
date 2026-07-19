@@ -35,13 +35,18 @@
                 @if ($broker->rejection_reason)
                     <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:12px; padding:16px; margin:16px 0;">
                         <p style="font-size:13px; color:#991b1b; margin:0;">
-                            <strong>سبب الرفض:</strong> {{ $broker->rejection_reason }}
+                            <strong>ملاحظات الإدارة:</strong> {{ $broker->rejection_reason }}
                         </p>
                     </div>
                 @endif
                 <p style="font-size:14px; color:#3f3f46; line-height:1.8;">
-                    يمكنك التواصل معنا في حال وجود أي استفسار.
+                    يمكنك التواصل معنا لتوضيح النواقص أو تصحيح البيانات، وسنقوم بمراجعة طلبك مرة أخرى.
                 </p>
+                <div style="text-align:center; margin:24px 0;">
+                    <a href="mailto:{{ config('mail.from.address') }}" style="display:inline-block; background:#dc2626; color:#ffffff; padding:12px 32px; border-radius:12px; text-decoration:none; font-size:14px; font-weight:bold;">
+                        تواصل معنا عبر البريد
+                    </a>
+                </div>
             @endif
         </div>
         <p style="text-align:center; font-size:11px; color:#a1a1aa; margin-top:16px;">

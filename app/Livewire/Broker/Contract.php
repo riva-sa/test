@@ -48,6 +48,34 @@ class Contract extends Component
         if ($broker->isActive()) {
             redirect()->route('broker.dashboard');
         }
+
+        // Auto-retry generation once if it's missing but approved
+        if ($broker->isApproved() && !$broker->contractSent()) {
+            try {
+                app(\App\Services\BrokerContractService::class)->generate($broker);
+                $broker->refresh();
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Auto-retry contract generation failed in mount: ' . $e->getMessage());
+            }
+        }
+    }
+
+    public function retryContractGeneration(): void
+    {
+        $broker = Auth::guard('broker')->user();
+
+        if ($broker->contractSent()) {
+            return;
+        }
+
+        try {
+            app(\App\Services\BrokerContractService::class)->generate($broker);
+            $broker->refresh();
+            session()->flash('message', 'تم إعداد العقد بنجاح.');
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Failed to manually retry contract generation: ' . $e->getMessage());
+            session()->flash('error', 'تعذر إعداد العقد. يرجى المحاولة مرة أخرى أو التواصل مع الدعم الفني.');
+        }
     }
 
     public function downloadContract(): mixed

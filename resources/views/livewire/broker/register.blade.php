@@ -10,13 +10,21 @@
         @if ($step < 4)
             <div class="flex items-center justify-center gap-2 mb-8">
                 @foreach ([1 => 'الحساب', 2 => 'البيانات', 3 => 'الوثائق'] as $s => $label)
+                    @php
+                        $hasError = false;
+                        if ($errors->any()) {
+                            if ($s == 1 && $errors->hasAny(['broker_type', 'email', 'password'])) $hasError = true;
+                            if ($s == 2 && $errors->hasAny(['name', 'national_id', 'whatsapp', 'city', 'iban_number', 'employment_status', 'heard_about_us'])) $hasError = true;
+                            if ($s == 3 && $errors->hasAny(['national_id_file', 'fal_license_file', 'iban_file'])) $hasError = true;
+                        }
+                    @endphp
                     <div class="flex items-center gap-2">
                         <div class="flex items-center gap-2">
                             <span class="h-8 w-8 rounded-full flex items-center justify-center text-xs font-black
-                                {{ $step > $s ? 'bg-green-500 text-white' : ($step == $s ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-500') }}">
-                                @if($step > $s) <i class="fas fa-check"></i> @else {{ $s }} @endif
+                                {{ $hasError ? 'bg-red-500 text-white' : ($step > $s ? 'bg-green-500 text-white' : ($step == $s ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-500')) }}">
+                                @if($hasError) <i class="fas fa-exclamation"></i> @elseif($step > $s) <i class="fas fa-check"></i> @else {{ $s }} @endif
                             </span>
-                            <span class="text-xs font-bold {{ $step >= $s ? 'text-gray-900' : 'text-gray-400' }}">{{ $label }}</span>
+                            <span class="text-xs font-bold {{ $hasError ? 'text-red-600' : ($step >= $s ? 'text-gray-900' : 'text-gray-400') }}">{{ $label }}</span>
                         </div>
                         @if ($s < 3)
                             <span class="w-8 h-0.5 {{ $step > $s ? 'bg-green-500' : 'bg-gray-200' }}"></span>
@@ -27,6 +35,22 @@
         @endif
 
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+
+            {{-- Cross-step validation summary --}}
+            @if ($errors->any())
+                <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="fas fa-exclamation-circle text-red-500"></i>
+                        <span class="text-sm font-black text-red-800">يرجى تصحيح الأخطاء التالية:</span>
+                    </div>
+                    <ul class="list-disc list-inside text-xs text-red-600 font-bold space-y-1">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
 
             {{-- Step 1: Account type & credentials --}}
             @if ($step === 1)

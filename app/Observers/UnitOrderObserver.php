@@ -15,7 +15,7 @@ class UnitOrderObserver
     {
         if (auth()->check()) {
             $user = auth()->user();
-            if ($user->hasRole(config('lead_import.sales_role', 'sales'))) {
+            if ($user instanceof \App\Models\User && $user->hasRole(config('lead_import.sales_role', 'sales'))) {
                 // Assign to the creator sales rep
                 $order->assigned_sales_user_id = $user->id;
 

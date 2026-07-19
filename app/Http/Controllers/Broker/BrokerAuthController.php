@@ -46,6 +46,9 @@ class BrokerAuthController extends Controller
             return back()->with('broker_rejected', $broker->rejection_reason ?: 'نأسف، تم رفض طلب التسجيل الخاص بك.')->onlyInput('email');
         }
 
+        // Clear stale session flashes if status changed
+        $request->session()->forget(['broker_pending', 'broker_rejected']);
+
         Auth::guard('broker')->login($broker, $request->boolean('remember'));
         $request->session()->regenerate();
 
