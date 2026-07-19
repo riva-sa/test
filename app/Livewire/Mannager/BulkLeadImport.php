@@ -37,6 +37,8 @@ class BulkLeadImport extends Component
         if ($parsed['valid'] === [] && $parsed['errors'] === []) {
             $this->lastResult = [
                 'imported' => 0,
+                'updated' => 0,
+                'updated_details' => [],
                 'skipped' => [],
                 'failed' => [['row' => 0, 'reason' => 'لا توجد بيانات في الملف']],
                 'parse_only' => true,
@@ -49,6 +51,8 @@ class BulkLeadImport extends Component
         if ($parsed['valid'] === [] && $parsed['errors'] !== []) {
             $this->lastResult = [
                 'imported' => 0,
+                'updated' => 0,
+                'updated_details' => [],
                 'skipped' => [],
                 'failed' => $parsed['errors'],
                 'parse_only' => true,
@@ -63,6 +67,8 @@ class BulkLeadImport extends Component
 
         $this->lastResult = [
             'imported' => $outcome['imported'],
+            'updated' => $outcome['updated'],
+            'updated_details' => $outcome['updated_details'] ?? [],
             'skipped' => array_merge($parsed['errors'] ?? [], $outcome['skipped']),
             'failed' => $outcome['failed'],
             'batch_id' => $batchId,

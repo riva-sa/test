@@ -13,7 +13,7 @@
             </button>
         </div>
 
-        <div class="mb-6 bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+        <div class="mb-6 bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg hidden">
             <div class="flex">
                 <div class="flex-shrink-0">
                     <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
@@ -61,10 +61,14 @@
         @if($lastResult)
             <div class="mt-8 bg-white rounded-xl border border-gray-200 shadow-sm p-6">
                 <h2 class="text-lg font-semibold text-gray-800 mb-4">النتيجة</h2>
-                <dl class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                <dl class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                     <div class="bg-gray-50 rounded-lg p-4">
                         <dt class="text-xs text-gray-500">تم الإنشاء</dt>
                         <dd class="text-2xl font-bold text-gray-900">{{ $lastResult['imported'] ?? 0 }}</dd>
+                    </div>
+                    <div class="bg-blue-50 rounded-lg p-4">
+                        <dt class="text-xs text-blue-800">تم التحديث</dt>
+                        <dd class="text-2xl font-bold text-blue-900">{{ $lastResult['updated'] ?? 0 }}</dd>
                     </div>
                     <div class="bg-amber-50 rounded-lg p-4">
                         <dt class="text-xs text-amber-800">تم التخطي</dt>
@@ -78,6 +82,36 @@
 
                 @if(!empty($lastResult['batch_id']))
                     <p class="text-xs text-gray-500 mb-4">معرف الدفعة: <code dir="ltr">{{ $lastResult['batch_id'] }}</code></p>
+                @endif
+
+                @if(!empty($lastResult['updated_details']))
+                    <h3 class="text-sm font-medium text-blue-800 mb-3 mt-6">الطلبات المحدثة وتفاصيل التعديل</h3>
+                    <div class="overflow-x-auto mb-6 rounded-lg border border-gray-200">
+                        <table class="min-w-full divide-y divide-gray-200 text-sm text-right">
+                            <thead class="bg-blue-50">
+                                <tr>
+                                    <th scope="col" class="px-4 py-3 font-semibold text-blue-900">الصف</th>
+                                    <th scope="col" class="px-4 py-3 font-semibold text-blue-900">العميل</th>
+                                    <th scope="col" class="px-4 py-3 font-semibold text-blue-900">التعديلات التي تمت</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 bg-white">
+                                @foreach($lastResult['updated_details'] as $item)
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 text-gray-500 whitespace-nowrap align-top">{{ $item['row'] ?? '—' }}</td>
+                                        <td class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap align-top">{{ $item['name'] ?? '' }}</td>
+                                        <td class="px-4 py-3 text-gray-600">
+                                            <ul class="list-disc list-inside space-y-1">
+                                                @foreach(($item['changes'] ?? []) as $key => $val)
+                                                    <li><span class="text-gray-500">{{ $key }}:</span> <span class="font-medium text-gray-800">{{ $val }}</span></li>
+                                                @endforeach
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 @endif
 
                 @if(!empty($lastResult['skipped']))

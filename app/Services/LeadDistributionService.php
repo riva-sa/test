@@ -27,25 +27,39 @@ class LeadDistributionService
         if ($salesUsers->isEmpty()) {
             return [
                 'imported' => 0,
+                'updated' => 0,
                 'skipped' => [],
                 'failed' => [['row' => 0, 'reason' => 'لا يوجد مندوبي مبيعات (دور sales)']],
             ];
         }
 
+        // Pre-fetch blocked numbers for O(1) lookup instead of per-row DB query
+        $blockedPhones = BlockedNumber::pluck('phone')->flip()->all();
+
         $pool = $salesUsers->shuffle()->values();
         $poolSize = $pool->count();
         $imported = 0;
+        $updated = 0;
+        $updatedDetails = [];
         $skipped = [];
         $failed = [];
         $seenKeys = [];
+        $projectCache = [];
         $rr = 0;
 
         foreach ($validRows as $index => $row) {
             $rowNum = $index + 2;
             try {
+                // Resolve project with in-memory cache to avoid repeated queries
                 $project = null;
                 if (! empty($row['project_name'])) {
-                    $project = $this->resolveProject($row['project_name']);
+                    $projectKey = mb_strtolower(trim($row['project_name']));
+                    if (array_key_exists($projectKey, $projectCache)) {
+                        $project = $projectCache[$projectKey];
+                    } else {
+                        $project = $this->resolveProject($row['project_name']);
+                        $projectCache[$projectKey] = $project;
+                    }
                     if (! $project) {
                         $failed[] = ['row' => $rowNum, 'reason' => 'المشروع غير موجود: '.$row['project_name']];
 
@@ -60,8 +74,8 @@ class LeadDistributionService
                     continue;
                 }
 
-                // Check for blocked numbers
-                if (BlockedNumber::where('phone', $phone)->exists()) {
+                // Check blocked numbers using pre-fetched set (O(1) vs DB query)
+                if (isset($blockedPhones[$phone])) {
                     $failed[] = ['row' => $rowNum, 'reason' => 'هذا الرقم محظور من النظام'];
 
                     continue;
@@ -76,24 +90,7 @@ class LeadDistributionService
                 }
                 $seenKeys[$key] = true;
 
-                if (UnitOrder::where('project_id', $project_id)->where('phone', $phone)->exists()) {
-                    $skipped[] = ['row' => $rowNum, 'reason' => 'يوجد طلب بنفس الهاتف لهذا المشروع'];
-
-                    continue;
-                }
-
-                $assignee = null;
-                if (! empty($row['assigned_employee'])) {
-                    $assignee = User::role(config('lead_import.sales_role', 'sales'))
-                        ->where('name', 'like', '%'.trim($row['assigned_employee']).'%')
-                        ->first();
-                }
-
-                if (! $assignee) {
-                    $assignee = $pool[$rr % $poolSize];
-                    $rr++;
-                }
-
+                // Normalize purchase type & purpose early (needed for both update and create paths)
                 $purchaseType = $row['purchase_type'] ?? null;
                 if ($purchaseType === 'كاش') {
                     $purchaseType = 'cash';
@@ -106,6 +103,72 @@ class LeadDistributionService
                     $purchasePurpose = 'investment';
                 } elseif ($purchasePurpose === 'سكنى' || $purchasePurpose === 'سكني') {
                     $purchasePurpose = 'personal';
+                }
+
+                // Check for existing order — merge/update instead of skipping
+                $existingOrder = UnitOrder::where('project_id', $project_id)
+                    ->where('phone', $phone)
+                    ->first();
+
+                if ($existingOrder) {
+                    $updateData = [];
+                    $changes = [];
+
+                    // Only update status if it's not already 0 (New)
+                    if ((int) $existingOrder->status !== 0) {
+                        $updateData['status'] = 0;
+                        $changes['حالة الطلب'] = 'تم التعيين كـ "جديد"';
+                    }
+
+                    if ($purchaseType && $existingOrder->PurchaseType !== $purchaseType) {
+                        $updateData['PurchaseType'] = $purchaseType;
+                        $changes['نوع الشراء'] = $purchaseType;
+                    }
+                    if ($purchasePurpose && $existingOrder->PurchasePurpose !== $purchasePurpose) {
+                        $updateData['PurchasePurpose'] = $purchasePurpose;
+                        $changes['الغرض من الشراء'] = $purchasePurpose;
+                    }
+                    if (! empty($row['channel']) && $existingOrder->marketing_source !== $row['channel']) {
+                        $updateData['marketing_source'] = $row['channel'];
+                        $changes['المصدر'] = $row['channel'];
+                    }
+                    if (! empty($row['unit_type']) && $existingOrder->waiting_list_unit_type !== $row['unit_type']) {
+                        $updateData['waiting_list_unit_type'] = $row['unit_type'];
+                        $changes['نوع الوحدة'] = $row['unit_type'];
+                    }
+
+                    // Append re-import note to the message field
+                    $now = now()->format('Y-m-d H:i');
+                    $note = "[إعادة استيراد بتاريخ {$now}]";
+                    $existingMessage = trim((string) $existingOrder->message);
+                    $updateData['message'] = $existingMessage !== ''
+                        ? $existingMessage."\n".$note
+                        : $note;
+                    $changes['الملاحظات'] = 'تم إضافة ملاحظة بإعادة الاستيراد';
+
+                    $existingOrder->update($updateData);
+                    $updated++;
+                    
+                    $updatedDetails[] = [
+                        'row' => $rowNum,
+                        'name' => $row['client_name'] ?: $phone,
+                        'changes' => $changes,
+                    ];
+
+                    continue;
+                }
+
+                // --- New order creation path ---
+                $assignee = null;
+                if (! empty($row['assigned_employee'])) {
+                    $assignee = User::role(config('lead_import.sales_role', 'sales'))
+                        ->where('name', 'like', '%'.trim($row['assigned_employee']).'%')
+                        ->first();
+                }
+
+                if (! $assignee) {
+                    $assignee = $pool[$rr % $poolSize];
+                    $rr++;
                 }
 
                 $email = 'import.'.Str::lower(Str::limit($batchId, 36, '')).'.'.$rowNum.'.'.Str::random(6).'@invalid.local';
@@ -149,6 +212,8 @@ class LeadDistributionService
 
         return [
             'imported' => $imported,
+            'updated' => $updated,
+            'updated_details' => $updatedDetails,
             'skipped' => $skipped,
             'failed' => $failed,
         ];
