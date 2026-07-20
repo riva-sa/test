@@ -6,6 +6,7 @@ use App\Models\OrderStatusTransition;
 use App\Models\UnitOrder;
 use App\Services\ApplicationForwardingService;
 use App\Services\NotificationService;
+use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
@@ -63,6 +64,9 @@ class UnitOrderObserver
     public function updating(UnitOrder $order): void
     {
         $userId = auth()->id() ?? $order->last_action_by_user_id;
+        if ($userId && !User::where('id', $userId)->exists()) {
+            $userId = null;
+        }
 
         // 1. Handle Status Transitions
         if ($order->isDirty('status')) {
