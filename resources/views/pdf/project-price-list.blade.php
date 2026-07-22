@@ -122,7 +122,9 @@
                             @endif
                         </td>
                         <td>
-                            @if ($unit->show_price && $unit->unit_price)
+                            @if (in_array($unit->case, [1, 2]))
+                                <span class="on-request">—</span>
+                            @elseif ($unit->show_price && $unit->unit_price)
                                 <span class="price">{{ number_format((float) $unit->unit_price) }} ر.س</span>
                             @else
                                 <span class="on-request">السعر عند الطلب</span>
