@@ -122,6 +122,10 @@
                     </div>
                 </div>
                 <div class="mr-5 border-r border-gray-100 pr-4 space-y-1 py-1">
+                    <a href="{{ route('manager.projects') }}" class="relative block px-3 py-2 text-[13px] font-medium rounded-lg transition-all {{ request()->routeIs('manager.projects') ? 'text-gray-900 bg-gray-50 font-bold' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50/50' }}">
+                        @if(request()->routeIs('manager.projects')) <span class="absolute -right-[17px] top-1/2 -translate-y-1/2 w-1 h-6 bg-primary-600 rounded-l-full"></span> @endif
+                        المشاريع والوحدات
+                    </a>
                     <a href="{{ route('manager.customerlist') }}" class="relative block px-3 py-2 text-[13px] font-medium rounded-lg transition-all {{ request()->routeIs('manager.customerlist') ? 'text-gray-900 bg-gray-50 font-bold' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50/50' }}">
                         @if(request()->routeIs('manager.customerlist')) <span class="absolute -right-[17px] top-1/2 -translate-y-1/2 w-1 h-6 bg-primary-600 rounded-l-full"></span> @endif
                         العملاء

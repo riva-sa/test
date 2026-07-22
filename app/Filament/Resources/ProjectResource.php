@@ -22,6 +22,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
+use Filament\Infolists;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -530,6 +531,65 @@ class ProjectResource extends Resource
 
     }
 
+    public static function infolist(Infolists\Infolist $infolist): Infolists\Infolist
+    {
+        return $infolist
+            ->schema([
+                Infolists\Components\Section::make('تفاصيل المشروع')
+                    ->schema([
+                        Infolists\Components\TextEntry::make('name')->label('الاسم'),
+                        Infolists\Components\TextEntry::make('name_en')->label('الاسم (English)'),
+                        Infolists\Components\TextEntry::make('developer.name')->label('المطور'),
+                        Infolists\Components\TextEntry::make('projectType.name')->label('نوع المشروع'),
+                        Infolists\Components\TextEntry::make('address')->label('العنوان'),
+                        Infolists\Components\TextEntry::make('address_en')->label('العنوان (English)'),
+                        Infolists\Components\TextEntry::make('city.name')->label('المدينة'),
+                        Infolists\Components\TextEntry::make('state.name')->label('الحي'),
+                        Infolists\Components\TextEntry::make('country')->label('الدولة'),
+                        Infolists\Components\TextEntry::make('AdLicense')->label('رخصة الإعلان'),
+                        Infolists\Components\TextEntry::make('salesManager.name')->label('مسؤل المبيعات'),
+                        Infolists\Components\TextEntry::make('contact_phone')->label('رقم هاتف التواصل'),
+                        Infolists\Components\IconEntry::make('status')->label('الحالة')->boolean(),
+                        Infolists\Components\IconEntry::make('is_featured')->label('مميز')->boolean(),
+                        Infolists\Components\TextEntry::make('bulding_style')->label('نمط البناء'),
+                        Infolists\Components\TextEntry::make('description')->label('الوصف')->html()->columnSpanFull(),
+                    ])->columns(3),
+                    
+                Infolists\Components\Section::make('مميزات وضمانات المشروع')
+                    ->schema([
+                        Infolists\Components\RepeatableEntry::make('features')->label('المميزات')
+                            ->schema([
+                                Infolists\Components\TextEntry::make('name')->label('الاسم'),
+                            ])->columns(1),
+                        Infolists\Components\RepeatableEntry::make('guarantees')->label('الضمانات')
+                            ->schema([
+                                Infolists\Components\TextEntry::make('name')->label('الاسم'),
+                            ])->columns(1),
+                    ])->columns(2),
+
+                Infolists\Components\Section::make('المعالم القريبة')
+                    ->schema([
+                        Infolists\Components\RepeatableEntry::make('projectLandmarks')->label('المعالم')
+                            ->schema([
+                                Infolists\Components\TextEntry::make('landmark.name')->label('الاسم'),
+                                Infolists\Components\TextEntry::make('distance')->label('المسافة (كم)'),
+                            ])->columns(2),
+                    ]),
+
+                Infolists\Components\Section::make('ملفات المشروع')
+                    ->schema([
+                        Infolists\Components\RepeatableEntry::make('projectMedia')->label('الملفات والوسائط')
+                            ->schema([
+                                Infolists\Components\ImageEntry::make('media_url')->label('الملف/الصورة')->size(100),
+                                Infolists\Components\TextEntry::make('media_type')->label('النوع'),
+                                Infolists\Components\TextEntry::make('youtube_url')->label('رابط يوتيوب'),
+                                Infolists\Components\IconEntry::make('main')->label('رئيسية')->boolean(),
+                                Infolists\Components\IconEntry::make('status')->label('نشط')->boolean(),
+                            ])->columns(5),
+                    ]),
+            ]);
+    }
+
     public static function table(Table $table): Table
     {
         return $table
@@ -561,6 +621,7 @@ class ProjectResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make()->label('عرض'),
                 Tables\Actions\EditAction::make()->label('تعديل'),
             ])
             ->bulkActions([
@@ -583,6 +644,7 @@ class ProjectResource extends Resource
         return [
             'index' => Pages\ListProjects::route('/'),
             'create' => Pages\CreateProject::route('/create'),
+            'view' => Pages\ViewProject::route('/{record}'),
             'edit' => Pages\EditProject::route('/{record}/edit'),
         ];
     }

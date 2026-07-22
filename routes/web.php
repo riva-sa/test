@@ -65,6 +65,8 @@ Route::get('/media/{path}', [ImageController::class, 'show'])->where('path', '.*
 // Manager routes protected by the 'manager' role
 Route::middleware(['auth', 'role:sales_manager,sales,Admin,developer,follow_up,project_manager'])->group(function () {
     Route::get('/crm', ManagerDashboard::class)->name('manager.dashboard');
+    Route::get('/crm/projects', \App\Livewire\Mannager\ProjectsList::class)->name('manager.projects');
+    Route::get('/crm/projects/{project}/pdf', [\App\Http\Controllers\Manager\ProjectPdfController::class, 'download'])->name('manager.projects.pdf');
     Route::get('/crm/orders', ManageOrders::class)->name('manager.orders');
     Route::get('/crm/orders/{id}', OrderDetails::class)->name('manager.order-details');
     // customerlist
