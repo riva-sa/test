@@ -2,16 +2,17 @@
     <div class="max-w-7xl mx-auto space-y-4">
         
         <!-- Header, Search, & Filters -->
-        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 space-y-4">
-            <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 space-y-3">
+            <!-- Top row: Title + Search -->
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
                 <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                     </svg>
                     المشاريع
                 </h2>
-                <div class="relative w-full sm:w-72">
-                    <input type="text" wire:model.live="search" placeholder="ابحث عن مدينة، حي أو اسم مشروع..." class="w-full pl-10 pr-4 py-2 bg-gray-50 border-none rounded-xl focus:ring-1 focus:ring-gray-300 text-sm font-medium">
+                <div class="relative w-full sm:w-80">
+                    <input type="text" wire:model.live.debounce.300ms="search" placeholder="ابحث بالاسم، العنوان، أو رقم الوحدة..." class="w-full pl-10 pr-4 py-2 bg-gray-50 border-none rounded-xl focus:ring-1 focus:ring-gray-300 text-sm font-medium">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -20,7 +21,7 @@
                 </div>
             </div>
 
-            <!-- Filters -->
+            <!-- Primary Filters Row -->
             <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-gray-50">
                 <select wire:model.live="city_id" class="bg-white border border-gray-200 text-gray-600 rounded-lg text-xs font-bold focus:ring-0 focus:border-gray-300 py-1.5 px-3">
                     <option value="">كل المدن</option>
@@ -28,6 +29,15 @@
                         <option value="{{ $city->id }}">{{ $city->name }}</option>
                     @endforeach
                 </select>
+
+                @if($states->count() > 0)
+                <select wire:model.live="state_id" class="bg-white border border-gray-200 text-gray-600 rounded-lg text-xs font-bold focus:ring-0 focus:border-gray-300 py-1.5 px-3">
+                    <option value="">كل الأحياء</option>
+                    @foreach($states as $state)
+                        <option value="{{ $state->id }}">{{ $state->name }}</option>
+                    @endforeach
+                </select>
+                @endif
                 
                 <select wire:model.live="project_type_id" class="bg-white border border-gray-200 text-gray-600 rounded-lg text-xs font-bold focus:ring-0 focus:border-gray-300 py-1.5 px-3">
                     <option value="">نوع المشروع</option>
@@ -35,7 +45,134 @@
                         <option value="{{ $type->id }}">{{ $type->name }}</option>
                     @endforeach
                 </select>
+                
+                <select wire:model.live="developer_id" class="bg-white border border-gray-200 text-gray-600 rounded-lg text-xs font-bold focus:ring-0 focus:border-gray-300 py-1.5 px-3">
+                    <option value="">كل المطورين</option>
+                    @foreach($developers as $developer)
+                        <option value="{{ $developer->id }}">{{ $developer->name }}</option>
+                    @endforeach
+                </select>
+
+                <select wire:model.live="sort_by" class="bg-white border border-gray-200 text-gray-600 rounded-lg text-xs font-bold focus:ring-0 focus:border-gray-300 py-1.5 px-3">
+                    <option value="latest">الأحدث أولاً</option>
+                    <option value="name_asc">الاسم (أ-ي)</option>
+                    <option value="units_desc">الأكثر وحدات</option>
+                    <option value="price_asc">السعر: من الأقل</option>
+                    <option value="price_desc">السعر: من الأعلى</option>
+                </select>
+
+                <!-- Advanced Filters Toggle -->
+                <button wire:click="toggleAdvancedFilters" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-colors {{ $showAdvancedFilters ? 'bg-primary-50 border-primary-200 text-primary-700' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50' }}">
+                    <i class="fas fa-sliders-h text-[10px]"></i>
+                    فلاتر متقدمة
+                    @php
+                        $activeCount = collect([
+                            $sales_manager_id, $commission_type, $min_price, $max_price,
+                            $min_area, $max_area, $bedrooms
+                        ])->filter()->count() + ($has_available_units ? 1 : 0) + ($has_virtual_tour ? 1 : 0) + ($has_ad_license ? 1 : 0);
+                    @endphp
+                    @if($activeCount > 0)
+                        <span class="bg-primary-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px] font-black">{{ $activeCount }}</span>
+                    @endif
+                </button>
+
+                <!-- Reset Filters -->
+                @if($search || $city_id || $state_id || $developer_id || $project_type_id || $commission_type || $sales_manager_id || $min_price || $max_price || $min_area || $max_area || $bedrooms || $has_available_units || $has_virtual_tour || $has_ad_license)
+                <button wire:click="resetFilters" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-red-200 bg-red-50 text-red-600 text-xs font-bold hover:bg-red-100 transition-colors">
+                    <i class="fas fa-times text-[10px]"></i>
+                    مسح الكل
+                </button>
+                @endif
             </div>
+
+            <!-- Advanced Filters Panel (Collapsible) -->
+            @if($showAdvancedFilters)
+            <div class="pt-3 border-t border-gray-100 space-y-4">
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+                    <!-- Sales Manager -->
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-500 mb-1">مدير المبيعات</label>
+                        <select wire:model.live="sales_manager_id" class="w-full bg-white border border-gray-200 text-gray-600 rounded-lg text-xs font-bold focus:ring-0 focus:border-gray-300 py-1.5 px-2">
+                            <option value="">الكل</option>
+                            @foreach($salesManagers as $manager)
+                                <option value="{{ $manager->id }}">{{ $manager->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Min Price -->
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-500 mb-1">السعر من (ر.س)</label>
+                        <input type="number" wire:model.live.debounce.500ms="min_price" placeholder="0" class="w-full bg-white border border-gray-200 text-gray-600 rounded-lg text-xs font-bold focus:ring-0 focus:border-gray-300 py-1.5 px-2">
+                    </div>
+
+                    <!-- Max Price -->
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-500 mb-1">السعر إلى (ر.س)</label>
+                        <input type="number" wire:model.live.debounce.500ms="max_price" placeholder="∞" class="w-full bg-white border border-gray-200 text-gray-600 rounded-lg text-xs font-bold focus:ring-0 focus:border-gray-300 py-1.5 px-2">
+                    </div>
+
+                    <!-- Min Area -->
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-500 mb-1">المساحة من (م²)</label>
+                        <input type="number" wire:model.live.debounce.500ms="min_area" placeholder="0" class="w-full bg-white border border-gray-200 text-gray-600 rounded-lg text-xs font-bold focus:ring-0 focus:border-gray-300 py-1.5 px-2">
+                    </div>
+
+                    <!-- Max Area -->
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-500 mb-1">المساحة إلى (م²)</label>
+                        <input type="number" wire:model.live.debounce.500ms="max_area" placeholder="∞" class="w-full bg-white border border-gray-200 text-gray-600 rounded-lg text-xs font-bold focus:ring-0 focus:border-gray-300 py-1.5 px-2">
+                    </div>
+                </div>
+
+                <!-- Bedrooms + Toggle Switches -->
+                <div class="flex flex-wrap items-end gap-4">
+                    <!-- Bedrooms -->
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-500 mb-1.5">عدد غرف النوم</label>
+                        <div class="flex gap-1">
+                            @foreach(['', '1', '2', '3', '4', '5+'] as $val)
+                            <button wire:click="$set('bedrooms', '{{ $val }}')" class="px-2.5 py-1 rounded-lg text-xs font-bold border transition-colors {{ $bedrooms === $val ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50' }}">
+                                {{ $val === '' ? 'الكل' : $val }}
+                            </button>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <div class="h-8 w-px bg-gray-200 mx-2 hidden sm:block"></div>
+
+                    <!-- Toggle: Available Units -->
+                    <label class="flex items-center gap-2 cursor-pointer select-none">
+                        <div class="relative">
+                            <input type="checkbox" wire:model.live="has_available_units" class="sr-only peer">
+                            <div class="w-9 h-5 bg-gray-200 rounded-full peer peer-checked:bg-green-500 transition-colors"></div>
+                            <div class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-4"></div>
+                        </div>
+                        <span class="text-xs font-bold text-gray-600">وحدات متاحة فقط</span>
+                    </label>
+
+                    <!-- Toggle: Virtual Tour -->
+                    <label class="flex items-center gap-2 cursor-pointer select-none">
+                        <div class="relative">
+                            <input type="checkbox" wire:model.live="has_virtual_tour" class="sr-only peer">
+                            <div class="w-9 h-5 bg-gray-200 rounded-full peer peer-checked:bg-purple-500 transition-colors"></div>
+                            <div class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-4"></div>
+                        </div>
+                        <span class="text-xs font-bold text-gray-600">جولة افتراضية</span>
+                    </label>
+
+                    <!-- Toggle: Ad License -->
+                    <label class="flex items-center gap-2 cursor-pointer select-none">
+                        <div class="relative">
+                            <input type="checkbox" wire:model.live="has_ad_license" class="sr-only peer">
+                            <div class="w-9 h-5 bg-gray-200 rounded-full peer peer-checked:bg-blue-500 transition-colors"></div>
+                            <div class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-4"></div>
+                        </div>
+                        <span class="text-xs font-bold text-gray-600">رخصة إعلان (فال)</span>
+                    </label>
+                </div>
+            </div>
+            @endif
         </div>
 
         <!-- Projects List -->
