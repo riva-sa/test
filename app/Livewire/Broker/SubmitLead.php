@@ -412,7 +412,9 @@ class SubmitLead extends Component
     public function render()
     {
         return view('livewire.broker.submit-lead', [
-            'projects' => Project::where('status', true)->orderBy('name')->get(['id', 'name']),
+            'projects' => Project::where('status', true)->whereHas('units', function ($uq) {
+                $uq->where('case', 0);
+            })->orderBy('name')->get(['id', 'name']),
         ])->layout('layouts.broker');
     }
 }
