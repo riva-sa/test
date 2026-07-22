@@ -83,7 +83,9 @@ class ProjectsList extends Component
             'state', 
             'projectType', 
             'salesManager'
-        ]);
+        ])->where('status', 1)->whereHas('units', function ($uq) {
+            $uq->where('case', 0);
+        });
 
         // Text Search
         if (!empty($this->search)) {

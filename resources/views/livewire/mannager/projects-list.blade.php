@@ -183,8 +183,11 @@
                     <div class="p-3 cursor-pointer hover:bg-gray-50 transition-colors" @click="expanded = !expanded">
                         <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
                             <div class="flex items-center gap-3">
-                                @if($project->projectMedia->where('main', 1)->first())
-                                    <img src="{{ str_starts_with($project->projectMedia->where('main', 1)->first()->media_url, 'http') ? $project->projectMedia->where('main', 1)->first()->media_url : asset('storage/'.$project->projectMedia->where('main', 1)->first()->media_url) }}" onerror="this.src='https://placehold.co/100x100?text=No+Image'" alt="{{ $project->name }}" class="w-12 h-12 rounded-xl object-cover border border-gray-200 shadow-sm">
+                                @php
+                                    $mainImage = $project->projectMedia->where('main', 1)->first() ?? $project->projectMedia->where('media_type', 'image')->first();
+                                @endphp
+                                @if($mainImage)
+                                    <img loading="lazy" src="{{ str_starts_with($mainImage->media_url, 'http') ? $mainImage->media_url : asset('storage/'.$mainImage->media_url) }}" onerror="this.src='https://placehold.co/100x100?text=No+Image'" alt="{{ $project->name }}" class="w-12 h-12 rounded-xl object-cover border border-gray-200 shadow-sm">
                                 @else
                                     <div class="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center text-gray-400 border border-gray-200 shadow-sm">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -314,7 +317,7 @@
                                 <h4 class="text-sm font-bold text-gray-800">وحدات المشروع</h4>
                                 <a href="{{ route('manager.projects.pdf', $project->id) }}" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-xl text-xs font-bold hover:bg-gray-800 transition-colors shadow-sm">
                                     <i class="fas fa-file-pdf text-red-400"></i>
-                                    تحميل بروفايل المشروع (PDF)
+                                    تحميل ملف الاسعار (PDF)
                                 </a>
                             </div>
                             @if($project->units->count() > 0)
@@ -408,28 +411,49 @@
                             <!-- Media -->
                             @php
                                 $validMedia = $project->projectMedia->filter(fn($m) => !empty($m->media_url) || !empty($m->youtube_url));
+                                $visualMedia = $validMedia->filter(fn($m) => in_array($m->media_type, ['image', 'video']) || !empty($m->youtube_url));
+                                $fileMedia = $validMedia->filter(fn($m) => !in_array($m->media_type, ['image', 'video']) && empty($m->youtube_url));
                             @endphp
-                            @if($validMedia->count() > 0)
+                            
+                            @if($visualMedia->count() > 0)
                             <div>
-                                <h4 class="text-sm font-bold text-gray-800 mb-4">الوسائط وملفات المشروع</h4>
+                                <h4 class="text-sm font-bold text-gray-800 mb-4">صور وفيديوهات المشروع</h4>
                                 <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
-                                    @foreach($validMedia as $media)
+                                    @foreach($visualMedia as $media)
                                         <div class="relative group rounded-xl overflow-hidden border border-gray-200 bg-gray-50 aspect-square">
                                             @if($media->media_type === 'image' && !empty($media->media_url))
-                                                <img src="{{ str_starts_with($media->media_url, 'http') ? $media->media_url : Storage::disk('public')->url($media->media_url) }}" onerror="this.src='https://placehold.co/150x150?text=Error'" class="w-full h-full object-cover">
+                                                <img loading="lazy" src="{{ str_starts_with($media->media_url, 'http') ? $media->media_url : Storage::disk('public')->url($media->media_url) }}" onerror="this.src='https://placehold.co/150x150?text=Error'" class="w-full h-full object-cover">
                                             @elseif($media->media_type === 'video' || !empty($media->youtube_url))
                                                 <div class="w-full h-full flex items-center justify-center text-red-500 bg-gray-100">
                                                     <i class="fab fa-youtube text-3xl"></i>
                                                 </div>
-                                            @else
-                                                <div class="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-gray-100">
-                                                    <i class="fas fa-file-pdf text-2xl mb-2 text-red-400"></i>
-                                                    <span class="text-[10px] font-bold">ملف</span>
-                                                </div>
                                             @endif
+                                            
                                             @if(!empty($media->media_url) || !empty($media->youtube_url))
                                             <a href="{{ $media->youtube_url ?? (str_starts_with($media->media_url, 'http') ? $media->media_url : Storage::disk('public')->url($media->media_url)) }}" target="_blank" class="absolute inset-0 bg-gray-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white backdrop-blur-[2px]">
                                                 <i class="fas fa-external-link-alt text-lg"></i>
+                                            </a>
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                            @endif
+
+                            @if($fileMedia->count() > 0)
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-800 mb-4 mt-6">ملفات المشروع</h4>
+                                <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                                    @foreach($fileMedia as $media)
+                                        <div class="relative group rounded-xl overflow-hidden border border-gray-200 bg-gray-50 aspect-square">
+                                            <div class="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-gray-100">
+                                                <i class="fas fa-file-pdf text-2xl mb-2 text-red-400"></i>
+                                                <span class="text-[10px] font-bold">ملف</span>
+                                            </div>
+                                            
+                                            @if(!empty($media->media_url))
+                                            <a href="{{ str_starts_with($media->media_url, 'http') ? $media->media_url : Storage::disk('public')->url($media->media_url) }}" target="_blank" class="absolute inset-0 bg-gray-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white backdrop-blur-[2px]">
+                                                <i class="fas fa-download text-lg"></i>
                                             </a>
                                             @endif
                                         </div>
