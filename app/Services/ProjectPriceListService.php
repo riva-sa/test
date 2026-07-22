@@ -96,8 +96,13 @@ class ProjectPriceListService
             return null;
         }
 
-        $contents = Storage::disk('public')->get($logo);
         $mime = Storage::disk('public')->mimeType($logo) ?: 'image/png';
+
+        if (str_contains($mime, 'svg') || str_ends_with(strtolower($logo), '.svg')) {
+            return null;
+        }
+
+        $contents = Storage::disk('public')->get($logo);
 
         return 'data:'.$mime.';base64,'.base64_encode($contents);
     }

@@ -187,7 +187,7 @@
                                     $mainImage = $project->projectMedia->where('main', 1)->first() ?? $project->projectMedia->where('media_type', 'image')->first();
                                 @endphp
                                 @if($mainImage)
-                                    <img loading="lazy" src="{{ str_starts_with($mainImage->media_url, 'http') ? $mainImage->media_url : asset('storage/'.$mainImage->media_url) }}" onerror="this.src='https://placehold.co/100x100?text=No+Image'" alt="{{ $project->name }}" class="w-12 h-12 rounded-xl object-cover border border-gray-200 shadow-sm">
+                                    <img loading="lazy" src="{{ str_starts_with($mainImage->media_url, 'http') ? $mainImage->media_url : Storage::disk('public')->url($mainImage->media_url) }}" onerror="this.src='https://placehold.co/100x100?text=No+Image'" alt="{{ $project->name }}" class="w-12 h-12 rounded-xl object-cover border border-gray-200 shadow-sm">
                                 @else
                                     <div class="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center text-gray-400 border border-gray-200 shadow-sm">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
