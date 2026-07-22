@@ -647,6 +647,52 @@
                     </div>
                 </div>
 
+                <!-- Unit Images and Floor Plan -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 border-t border-gray-100 pt-6" x-show="selectedUnit?.image || (Array.isArray(selectedUnit?.images) && selectedUnit.images.length > 0) || selectedUnit?.floor_plan" style="display: none;">
+                    
+                    <!-- Main & Additional Images -->
+                    <div x-show="selectedUnit?.image || (Array.isArray(selectedUnit?.images) && selectedUnit.images.length > 0)">
+                        <h4 class="text-xs font-bold text-gray-800 mb-3 border-b border-gray-100 pb-2 flex items-center gap-2">
+                            <i class="fas fa-images text-gray-400"></i> صور الوحدة
+                        </h4>
+                        <div class="space-y-3">
+                            <template x-if="selectedUnit?.image">
+                                <a :href="'/storage/' + selectedUnit.image" target="_blank" class="block rounded-xl overflow-hidden border border-gray-200 shadow-sm relative group bg-gray-50">
+                                    <img :src="'/storage/' + selectedUnit.image" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500" alt="صورة الوحدة">
+                                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center">
+                                        <i class="fas fa-search-plus text-white opacity-0 group-hover:opacity-100 transform scale-75 group-hover:scale-100 transition-all duration-300 text-2xl drop-shadow-md"></i>
+                                    </div>
+                                </a>
+                            </template>
+                            
+                            <template x-if="Array.isArray(selectedUnit?.images) && selectedUnit.images.length > 0">
+                                <div class="grid grid-cols-3 gap-2">
+                                    <template x-for="img in selectedUnit.images" :key="img">
+                                        <a :href="'/storage/' + img" target="_blank" class="block rounded-lg overflow-hidden border border-gray-200 shadow-sm relative group bg-gray-50 aspect-square">
+                                            <img :src="'/storage/' + img" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="صورة إضافية">
+                                            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
+                                        </a>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Floor Plan -->
+                    <div x-show="selectedUnit?.floor_plan">
+                        <h4 class="text-xs font-bold text-gray-800 mb-3 border-b border-gray-100 pb-2 flex items-center gap-2">
+                            <i class="fas fa-vector-square text-gray-400"></i> مخطط الوحدة
+                        </h4>
+                        <a :href="'/storage/' + selectedUnit?.floor_plan" target="_blank" class="block rounded-xl overflow-hidden border border-gray-200 bg-gray-50/50 flex items-center justify-center p-4 relative group shadow-sm h-[calc(100%-2.5rem)]">
+                            <img :src="'/storage/' + selectedUnit?.floor_plan" class="max-w-full max-h-48 object-contain group-hover:scale-105 transition-transform duration-500" alt="مخطط الوحدة">
+                            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 flex items-center justify-center">
+                                <i class="fas fa-search-plus text-gray-700 opacity-0 group-hover:opacity-100 transform scale-75 group-hover:scale-100 transition-all duration-300 text-2xl drop-shadow-sm bg-white/80 p-3 rounded-full"></i>
+                            </div>
+                        </a>
+                    </div>
+
+                </div>
+
             </div>
 
             <!-- Footer -->
