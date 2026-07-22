@@ -557,7 +557,17 @@
             </div>
 
             <!-- Body -->
-            <div class="p-6 overflow-y-auto" x-data="{ formatPrice(price) { return price ? new Intl.NumberFormat('en-US').format(price) : '-' } }">
+            @php
+                $baseUrl = rtrim(Storage::disk('public')->url(''), '/');
+            @endphp
+            <div class="p-6 overflow-y-auto" x-data="{ 
+                formatPrice(price) { return price ? new Intl.NumberFormat('en-US').format(price) : '-' },
+                getMediaUrl(path) {
+                    if (!path) return '';
+                    if (String(path).startsWith('http')) return path;
+                    return '{{ $baseUrl }}/' + String(path).replace(/^\/+/, '');
+                }
+            }">
                 
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                     <!-- Status -->
@@ -657,8 +667,8 @@
                         </h4>
                         <div class="space-y-3">
                             <template x-if="selectedUnit?.image">
-                                <a :href="'/storage/' + selectedUnit.image" target="_blank" class="block rounded-xl overflow-hidden border border-gray-200 shadow-sm relative group bg-gray-50">
-                                    <img :src="'/storage/' + selectedUnit.image" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500" alt="صورة الوحدة">
+                                <a :href="getMediaUrl(selectedUnit.image)" target="_blank" class="block rounded-xl overflow-hidden border border-gray-200 shadow-sm relative group bg-gray-50">
+                                    <img :src="getMediaUrl(selectedUnit.image)" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500" alt="صورة الوحدة">
                                     <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center">
                                         <i class="fas fa-search-plus text-white opacity-0 group-hover:opacity-100 transform scale-75 group-hover:scale-100 transition-all duration-300 text-2xl drop-shadow-md"></i>
                                     </div>
@@ -668,8 +678,8 @@
                             <template x-if="Array.isArray(selectedUnit?.images) && selectedUnit.images.length > 0">
                                 <div class="grid grid-cols-3 gap-2">
                                     <template x-for="img in selectedUnit.images" :key="img">
-                                        <a :href="'/storage/' + img" target="_blank" class="block rounded-lg overflow-hidden border border-gray-200 shadow-sm relative group bg-gray-50 aspect-square">
-                                            <img :src="'/storage/' + img" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="صورة إضافية">
+                                        <a :href="getMediaUrl(img)" target="_blank" class="block rounded-lg overflow-hidden border border-gray-200 shadow-sm relative group bg-gray-50 aspect-square">
+                                            <img :src="getMediaUrl(img)" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="صورة إضافية">
                                             <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
                                         </a>
                                     </template>
@@ -683,8 +693,8 @@
                         <h4 class="text-xs font-bold text-gray-800 mb-3 border-b border-gray-100 pb-2 flex items-center gap-2">
                             <i class="fas fa-vector-square text-gray-400"></i> مخطط الوحدة
                         </h4>
-                        <a :href="'/storage/' + selectedUnit?.floor_plan" target="_blank" class="block rounded-xl overflow-hidden border border-gray-200 bg-gray-50/50 flex items-center justify-center p-4 relative group shadow-sm h-[calc(100%-2.5rem)]">
-                            <img :src="'/storage/' + selectedUnit?.floor_plan" class="max-w-full max-h-48 object-contain group-hover:scale-105 transition-transform duration-500" alt="مخطط الوحدة">
+                        <a :href="getMediaUrl(selectedUnit?.floor_plan)" target="_blank" class="block rounded-xl overflow-hidden border border-gray-200 bg-gray-50/50 flex items-center justify-center p-4 relative group shadow-sm h-[calc(100%-2.5rem)]">
+                            <img :src="getMediaUrl(selectedUnit?.floor_plan)" class="max-w-full max-h-48 object-contain group-hover:scale-105 transition-transform duration-500" alt="مخطط الوحدة">
                             <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 flex items-center justify-center">
                                 <i class="fas fa-search-plus text-gray-700 opacity-0 group-hover:opacity-100 transform scale-75 group-hover:scale-100 transition-all duration-300 text-2xl drop-shadow-sm bg-white/80 p-3 rounded-full"></i>
                             </div>
