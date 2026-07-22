@@ -387,34 +387,37 @@
                         <!-- Tab Content: Marketing & Media -->
                         <div x-show="tab === 'marketing'" class="p-4 sm:p-6 space-y-6" style="display: none;">
                             
-                            <!-- Marketing Data -->
-                            <div class="bg-gray-50 p-5 rounded-2xl border border-gray-100">
-                                <div class="flex flex-wrap gap-2 mt-4">
-                                    @if($project->latitude && $project->longitude)
-                                    <a href="https://maps.google.com/?q={{ $project->latitude }},{{ $project->longitude }}" target="_blank" class="px-4 py-2 bg-white hover:bg-gray-100 text-gray-800 rounded-xl text-xs font-bold border border-gray-200 shadow-sm flex items-center gap-2 transition-colors">
-                                        <i class="fas fa-map-marker-alt text-red-500"></i>
-                                        الموقع على الخريطة
-                                    </a>
-                                    @endif
-                                    @if($project->virtualTour)
-                                    <a href="{{ $project->virtualTour }}" target="_blank" class="px-4 py-2 bg-white hover:bg-gray-100 text-gray-800 rounded-xl text-xs font-bold border border-gray-200 shadow-sm flex items-center gap-2 transition-colors">
-                                        <i class="fas fa-vr-cardboard text-purple-500"></i>
-                                        الجولة الافتراضية 360°
-                                    </a>
-                                    @endif
-                                </div>
+                            <!-- Actions / Links -->
+                            @if($project->latitude && $project->longitude || $project->virtualTour)
+                            <div class="flex flex-wrap gap-3">
+                                @if($project->latitude && $project->longitude)
+                                <a href="https://maps.google.com/?q={{ $project->latitude }},{{ $project->longitude }}" target="_blank" class="px-5 py-2.5 bg-gray-50 hover:bg-gray-100 text-gray-800 rounded-xl text-xs font-bold border border-gray-200 shadow-sm flex items-center gap-2 transition-colors w-max">
+                                    <i class="fas fa-map-marker-alt text-red-500 text-lg"></i>
+                                    الموقع على الخريطة
+                                </a>
+                                @endif
+                                @if($project->virtualTour)
+                                <a href="{{ $project->virtualTour }}" target="_blank" class="px-5 py-2.5 bg-gray-50 hover:bg-gray-100 text-gray-800 rounded-xl text-xs font-bold border border-gray-200 shadow-sm flex items-center gap-2 transition-colors w-max">
+                                    <i class="fas fa-vr-cardboard text-purple-500 text-lg"></i>
+                                    الجولة الافتراضية 360°
+                                </a>
+                                @endif
                             </div>
+                            @endif
 
                             <!-- Media -->
-                            @if($project->projectMedia->count() > 0)
+                            @php
+                                $validMedia = $project->projectMedia->filter(fn($m) => !empty($m->media_url) || !empty($m->youtube_url));
+                            @endphp
+                            @if($validMedia->count() > 0)
                             <div>
-                                <h4 class="text-xs font-bold text-gray-800 mb-3">الوسائط وملفات المشروع</h4>
+                                <h4 class="text-sm font-bold text-gray-800 mb-4">الوسائط وملفات المشروع</h4>
                                 <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
-                                    @foreach($project->projectMedia as $media)
+                                    @foreach($validMedia as $media)
                                         <div class="relative group rounded-xl overflow-hidden border border-gray-200 bg-gray-50 aspect-square">
-                                            @if($media->media_type === 'image')
-                                                <img src="{{ str_starts_with($media->media_url, 'http') ? $media->media_url : asset('storage/'.$media->media_url) }}" onerror="this.src='https://placehold.co/150x150?text=Error'" class="w-full h-full object-cover">
-                                            @elseif($media->media_type === 'video' || $media->youtube_url)
+                                            @if($media->media_type === 'image' && !empty($media->media_url))
+                                                <img src="{{ str_starts_with($media->media_url, 'http') ? $media->media_url : Storage::disk('public')->url($media->media_url) }}" onerror="this.src='https://placehold.co/150x150?text=Error'" class="w-full h-full object-cover">
+                                            @elseif($media->media_type === 'video' || !empty($media->youtube_url))
                                                 <div class="w-full h-full flex items-center justify-center text-red-500 bg-gray-100">
                                                     <i class="fab fa-youtube text-3xl"></i>
                                                 </div>
@@ -424,8 +427,8 @@
                                                     <span class="text-[10px] font-bold">ملف</span>
                                                 </div>
                                             @endif
-                                            @if($media->media_url || $media->youtube_url)
-                                            <a href="{{ $media->youtube_url ?? (str_starts_with($media->media_url, 'http') ? $media->media_url : asset('storage/'.$media->media_url)) }}" target="_blank" class="absolute inset-0 bg-gray-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white backdrop-blur-[2px]">
+                                            @if(!empty($media->media_url) || !empty($media->youtube_url))
+                                            <a href="{{ $media->youtube_url ?? (str_starts_with($media->media_url, 'http') ? $media->media_url : Storage::disk('public')->url($media->media_url)) }}" target="_blank" class="absolute inset-0 bg-gray-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white backdrop-blur-[2px]">
                                                 <i class="fas fa-external-link-alt text-lg"></i>
                                             </a>
                                             @endif
@@ -449,9 +452,47 @@
             @endforelse
         </div>
 
-        <div class="mt-4">
-            {{ $projects->links() }}
+        @if($projects->hasPages())
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="text-xs font-bold text-gray-500">
+                عرض {{ $projects->firstItem() }} - {{ $projects->lastItem() }} من {{ $projects->total() }} مشروع
+            </div>
+            <div class="flex items-center gap-1">
+                {{-- Previous --}}
+                @if($projects->onFirstPage())
+                    <span class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-300 cursor-not-allowed">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </span>
+                @else
+                    <button wire:click="previousPage" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                @endif
+
+                {{-- Page Numbers --}}
+                @foreach($projects->getUrlRange(1, $projects->lastPage()) as $page => $url)
+                    @if($page == $projects->currentPage())
+                        <span class="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-900 text-white text-xs font-black">{{ $page }}</span>
+                    @elseif($page == 1 || $page == $projects->lastPage() || abs($page - $projects->currentPage()) <= 1)
+                        <button wire:click="gotoPage({{ $page }})" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 text-xs font-bold transition-colors">{{ $page }}</button>
+                    @elseif(abs($page - $projects->currentPage()) == 2)
+                        <span class="w-6 h-8 flex items-center justify-center text-gray-300 text-xs">…</span>
+                    @endif
+                @endforeach
+
+                {{-- Next --}}
+                @if($projects->hasMorePages())
+                    <button wire:click="nextPage" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    </button>
+                @else
+                    <span class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-300 cursor-not-allowed">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    </span>
+                @endif
+            </div>
         </div>
+        @endif
     </div>
 
     <!-- Unit Details Modal Popup -->
