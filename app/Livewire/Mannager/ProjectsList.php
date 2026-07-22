@@ -84,10 +84,6 @@ class ProjectsList extends Component
             'projectType', 
             'salesManager'
         ]);
-        
-        if (auth()->user()->hasRole('sales_manager')) {
-            $query->where('sales_manager_id', auth()->id());
-        }
 
         // Text Search
         if (!empty($this->search)) {
@@ -113,10 +109,6 @@ class ProjectsList extends Component
 
         if (!empty($this->developer_id)) {
             $query->where('developer_id', $this->developer_id);
-        }
-
-        if (!empty($this->sales_manager_id)) {
-            $query->where('sales_manager_id', $this->sales_manager_id);
         }
 
         if (!empty($this->project_type_id)) {
