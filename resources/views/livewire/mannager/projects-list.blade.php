@@ -617,7 +617,7 @@
                             </li>
                             <li class="flex flex-col gap-1 mt-4 pt-3 border-t border-gray-50">
                                 <span class="text-gray-500 text-xs font-bold">وصف الوحدة</span>
-                                <p class="text-sm font-medium text-gray-800 leading-relaxed" x-text="selectedUnit?.description || 'لا يوجد وصف مضاف.'"></p>
+                                <div class="text-sm font-medium text-gray-800 leading-relaxed" x-html="selectedUnit?.description || 'لا يوجد وصف مضاف.'"></div>
                             </li>
                         </ul>
                     </div>
