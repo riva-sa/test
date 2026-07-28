@@ -34,6 +34,8 @@ class ManageOrders extends Component
 
     public $toDate = '';
 
+    public $sourceFilter = '';
+
     // Bulk actions
     public $selectedOrders = [];
     public $bulkAssigneeId = '';
@@ -50,6 +52,7 @@ class ManageOrders extends Component
         'delayedFilter' => ['except' => ''],
         'fromDate' => ['except' => ''],
         'toDate' => ['except' => ''],
+        'sourceFilter' => ['except' => ''],
     ];
 
     public function updatingSearch()
@@ -100,6 +103,7 @@ class ManageOrders extends Component
             'delayedFilter',
             'fromDate',
             'toDate',
+            'sourceFilter',
             'perPage',
         ], true)) {
             $this->resetPage();
@@ -179,6 +183,7 @@ class ManageOrders extends Component
             'permissions.user',
             'lastActionByUser',
             'assignedSalesUser',
+            'broker',
         ])->accessibleBy(auth()->user());
 
         $query->when($this->search, function ($query) {
@@ -211,6 +216,9 @@ class ManageOrders extends Component
             })
             ->when($this->toDate, function ($query) {
                 $query->whereDate('created_at', '<=', $this->toDate);
+            })
+            ->when($this->sourceFilter !== '', function ($query) {
+                $query->where('order_source', $this->sourceFilter);
             });
 
         $query->orderBy($this->sortField, $this->sortDirection);
@@ -228,6 +236,7 @@ class ManageOrders extends Component
             'permissions.user',
             'lastActionByUser',
             'assignedSalesUser',
+            'broker',
         ])->accessibleBy(auth()->user());
 
         // الخطوة 3: تطبيق فلاتر الواجهة (البحث، الحالة، المشروع، إلخ)
@@ -261,6 +270,9 @@ class ManageOrders extends Component
             })
             ->when($this->toDate, function ($query) {
                 $query->whereDate('created_at', '<=', $this->toDate);
+            })
+            ->when($this->sourceFilter !== '', function ($query) {
+                $query->where('order_source', $this->sourceFilter);
             });
 
         if ($this->delayedFilter == '1') {
@@ -292,6 +304,15 @@ class ManageOrders extends Component
             ],
             'projects' => Project::all(),
             'salesManagers' => \App\Models\User::role('sales')->get(),
+            'orderSources' => [
+                'legacy' => 'نظام قديم',
+                'frontend_popup' => 'نافذة منبثقة',
+                'frontend_unit' => 'صفحة الوحدة',
+                'manager' => 'إضافة يدوية',
+                'bulk_import' => 'رفع ملف',
+                'social_media' => 'سوشيال ميديا',
+                'broker' => 'وسيط عقاري',
+            ],
         ])->layout('layouts.custom');
     }
 

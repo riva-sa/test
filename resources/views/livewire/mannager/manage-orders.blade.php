@@ -158,6 +158,17 @@
                         <option value="1">عرض المتأخرة فقط</option>
                     </select>
                 </div>
+
+                <!-- Order Source Filter -->
+                <div>
+                    <label for="sourceFilter" class="block text-sm font-medium text-gray-700 mb-1">مصدر الطلب</label>
+                    <select wire:model.live="sourceFilter" id="sourceFilter" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
+                        <option value="">الكل</option>
+                        @foreach($orderSources as $value => $label)
+                            <option value="{{ $value }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
                 @if (auth()->user()->hasRole('Admin'))
                 <!-- Export Button -->
                 <div class="flex items-end">
@@ -387,6 +398,11 @@
                                     <i class="{{ $sourceData['icon'] }}"></i>
                                     {{ $sourceData['label'] }}
                                 </span>
+                                @if($order->broker)
+                                    <a href="{{ route('manager.broker-details', $order->broker->id) }}" class="block text-primary-600 hover:text-primary-800 text-xs font-medium mt-1">
+                                        {{ $order->broker->name }} ({{ $order->broker->reference_number }})
+                                    </a>
+                                @endif
                                 @if($order->ad_squad)
                                     <div class="text-xs text-gray-400 mt-1 font-medium">
                                         {{ $order->ad_squad }}
