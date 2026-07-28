@@ -38,6 +38,19 @@
             <option value="approved">معتمد</option>
             <option value="rejected">مرفوض</option>
         </select>
+        <select wire:model.live="contractStatusFilter" class="px-4 py-2.5 rounded-xl border border-gray-200 focus:border-gray-900 focus:ring-0 text-sm">
+            <option value="">كل حالات العقد</option>
+            <option value="contract_approved">عقد مُعتمد</option>
+            <option value="contract_signed">موقّع — بانتظار الاعتماد</option>
+            <option value="contract_sent">بانتظار توقيع الوسيط</option>
+            <option value="no_contract">بدون عقد</option>
+        </select>
+        <select wire:model.live="cityFilter" class="px-4 py-2.5 rounded-xl border border-gray-200 focus:border-gray-900 focus:ring-0 text-sm">
+            <option value="">كل المدن</option>
+            @foreach ($cities as $city)
+                <option value="{{ $city }}">{{ $city }}</option>
+            @endforeach
+        </select>
     </div>
 
     {{-- Table --}}

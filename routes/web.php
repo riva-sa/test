@@ -192,6 +192,7 @@ Route::prefix('broker')->name('broker.')->group(function () {
 Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/crm/project-commissions', \App\Livewire\Mannager\ProjectCommissions::class)->name('manager.project-commissions');
     Route::get('/crm/brokers', \App\Livewire\Mannager\Brokers::class)->name('manager.brokers');
+    Route::get('/crm/brokers/{broker}', \App\Livewire\Mannager\BrokerDetails::class)->name('manager.broker-details');
     Route::get('/crm/brokers/{broker}/statement', \App\Livewire\Mannager\BrokerStatement::class)->name('manager.broker-statement');
     Route::get('/crm/broker-commissions', \App\Livewire\Mannager\BrokerCommissions::class)->name('manager.broker-commissions');
     Route::get('/crm/commission-payments', \App\Livewire\Mannager\CommissionPayments::class)->name('manager.commission-payments');

@@ -56,8 +56,8 @@
                                 <td class="px-4 py-3 text-green-700 whitespace-nowrap">{{ number_format((float) $broker->paid_total, 2) }}</td>
                                 <td class="px-4 py-3 font-semibold text-yellow-700 whitespace-nowrap">{{ number_format((float) $broker->outstanding_total, 2) }}</td>
                                 <td class="px-4 py-3">
-                                    <a href="{{ route('manager.broker-statement', $broker->id) }}"
-                                        class="text-primary-600 hover:text-primary-800 text-xs font-medium">كشف الحساب ←</a>
+                                    <a href="{{ route('manager.broker-details', $broker->id) }}"
+                                        class="text-primary-600 hover:text-primary-800 text-xs font-medium">التفاصيل ←</a>
                                 </td>
                             </tr>
                         @empty

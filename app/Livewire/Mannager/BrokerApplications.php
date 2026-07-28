@@ -22,6 +22,10 @@ class BrokerApplications extends Component
 
     public $statusFilter = '';
 
+    public $contractStatusFilter = '';
+
+    public $cityFilter = '';
+
     public $selectedBrokerId = null;
 
     public $showRejectModal = false;
@@ -51,6 +55,8 @@ class BrokerApplications extends Component
     protected $queryString = [
         'search' => ['except' => ''],
         'statusFilter' => ['except' => ''],
+        'contractStatusFilter' => ['except' => ''],
+        'cityFilter' => ['except' => ''],
     ];
 
     public function mount()
@@ -64,6 +70,16 @@ class BrokerApplications extends Component
     }
 
     public function updatingStatusFilter()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingContractStatusFilter()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingCityFilter()
     {
         $this->resetPage();
     }
@@ -368,6 +384,16 @@ class BrokerApplications extends Component
                 });
             })
             ->when($this->statusFilter, fn ($q) => $q->where('status', $this->statusFilter))
+            ->when($this->contractStatusFilter, function ($q) {
+                match ($this->contractStatusFilter) {
+                    'contract_approved' => $q->whereNotNull('contract_approved_at'),
+                    'contract_signed' => $q->whereNotNull('contract_signed_at')->whereNull('contract_approved_at'),
+                    'contract_sent' => $q->whereNotNull('contract_sent_at')->whereNull('contract_signed_at'),
+                    'no_contract' => $q->whereNull('contract_sent_at'),
+                    default => null,
+                };
+            })
+            ->when($this->cityFilter, fn ($q) => $q->where('city', $this->cityFilter))
             ->latest()
             ->paginate(15);
 
@@ -375,11 +401,14 @@ class BrokerApplications extends Component
             ? Broker::with(['documents', 'approvedBy', 'contractApprovedBy'])->find($this->selectedBrokerId)
             : null;
 
+        $cities = Broker::whereNotNull('city')->where('city', '!=', '')->distinct()->pluck('city')->sort()->values();
+
         return view('livewire.mannager.broker-applications', [
             'brokers' => $brokers,
             'selectedBroker' => $selectedBroker,
             'pendingCount' => Broker::where('status', Broker::STATUS_PENDING)->count(),
             'employmentStatuses' => Broker::EMPLOYMENT_STATUSES,
+            'cities' => $cities,
         ])->layout('layouts.custom');
     }
 }
