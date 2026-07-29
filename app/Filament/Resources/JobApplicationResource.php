@@ -173,6 +173,10 @@ class JobApplicationResource extends Resource
                 Tables\Columns\TextColumn::make('phone')
                     ->label('رقم الجوال')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('nationality')
+                    ->label('الجنسية')
+                    ->searchable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('jobPosting.title')
                     ->label('الوظيفة / التخصص')
                     ->formatStateUsing(fn (string|null $state, JobApplication $record): string => $state ?? ('تقديم عام — '.$record->department))
