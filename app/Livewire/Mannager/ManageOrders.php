@@ -223,7 +223,20 @@ class ManageOrders extends Component
 
         $query->orderBy($this->sortField, $this->sortDirection);
 
-        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\UnitOrdersExport($query), 'orders_export_'.now()->format('Y-m-d').'.xlsx');
+        $fileName = 'orders_export_'.now()->format('Y-m-d').'.xlsx';
+        $path = 'exports/'.$fileName;
+
+        \Illuminate\Support\Facades\Storage::disk('local')->makeDirectory('exports');
+
+        \Maatwebsite\Excel\Facades\Excel::store(
+            new \App\Exports\UnitOrdersExport($query),
+            $path,
+            'local'
+        );
+
+        return \Illuminate\Support\Facades\Storage::disk('local')->download($path, $fileName, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ]);
     }
 
     public function render()

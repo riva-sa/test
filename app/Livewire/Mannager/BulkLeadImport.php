@@ -91,25 +91,38 @@ class BulkLeadImport extends Component
             'الغرض من الشراء',
         ];
 
-        return Excel::download(new class($headings) implements \Maatwebsite\Excel\Concerns\FromCollection, \Maatwebsite\Excel\Concerns\WithHeadings
-        {
-            protected $headings;
+        $fileName = 'leads_template.xlsx';
+        $path = 'exports/'.$fileName;
 
-            public function __construct($headings)
-            {
-                $this->headings = $headings;
-            }
+        \Illuminate\Support\Facades\Storage::disk('local')->makeDirectory('exports');
 
-            public function headings(): array
+        Excel::store(
+            new class($headings) implements \Maatwebsite\Excel\Concerns\FromCollection, \Maatwebsite\Excel\Concerns\WithHeadings
             {
-                return $this->headings;
-            }
+                protected $headings;
 
-            public function collection()
-            {
-                return collect([]);
-            }
-        }, 'leads_template.xlsx');
+                public function __construct($headings)
+                {
+                    $this->headings = $headings;
+                }
+
+                public function headings(): array
+                {
+                    return $this->headings;
+                }
+
+                public function collection()
+                {
+                    return collect([]);
+                }
+            },
+            $path,
+            'local'
+        );
+
+        return \Illuminate\Support\Facades\Storage::disk('local')->download($path, $fileName, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ]);
     }
 
     public function render()
