@@ -144,15 +144,6 @@ class UnitOrderUpdated extends Notification implements ShouldQueue
      */
     protected function statusLabel()
     {
-        $labels = [
-            0 => 'جديد',
-            1 => 'طلب مفتوح',
-            2 => 'معاملات بيعية',
-            3 => 'مغلق',
-            4 => 'مكتمل',
-            5 => 'قائمة انتظار',
-        ];
-
-        return $labels[$this->order->status] ?? $this->order->status;
+        return \App\Models\UnitOrder::STATUS_LABELS[$this->order->status] ?? $this->order->status;
     }
 }

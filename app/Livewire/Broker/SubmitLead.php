@@ -236,10 +236,13 @@ class SubmitLead extends Component
 
         $fullPhone = $this->buildFullPhone();
 
-        return UnitOrder::where(function ($q) use ($rawPhone, $fullPhone) {
+        $normalized = ltrim($rawPhone, '0');
+
+        return UnitOrder::where(function ($q) use ($rawPhone, $fullPhone, $normalized) {
             $q->where('phone', $rawPhone)
               ->orWhere('phone', $fullPhone)
-              ->orWhere('phone', 'like', '%' . $rawPhone);
+              ->orWhere('phone', 'like', '%' . $rawPhone)
+              ->orWhere('phone', 'like', '%' . $normalized);
         })->exists();
     }
 
@@ -361,11 +364,13 @@ class SubmitLead extends Component
     {
         try {
             $rawPhone = trim($this->phone);
+            $normalized = ltrim($rawPhone, '0');
 
-            $existingOrders = UnitOrder::where(function ($q) use ($fullPhone, $rawPhone) {
+            $existingOrders = UnitOrder::where(function ($q) use ($fullPhone, $rawPhone, $normalized) {
                 $q->where('phone', $fullPhone)
-                  ->orWhere('phone', $this->phone)
-                  ->orWhere('phone', 'like', '%' . $rawPhone);
+                  ->orWhere('phone', $rawPhone)
+                  ->orWhere('phone', 'like', '%' . $rawPhone)
+                  ->orWhere('phone', 'like', '%' . $normalized);
             })->get();
 
             // 1. Admins / sales managers
