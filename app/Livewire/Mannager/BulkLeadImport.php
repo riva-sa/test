@@ -30,7 +30,7 @@ class BulkLeadImport extends Component
         $this->validate();
 
         $import = new BulkLeadSheetImport;
-        Excel::import($import, $this->file);
+        Excel::import($import, $this->file->getRealPath());
 
         $parsed = $distributionService->parseSheetRows($import->rows);
 
