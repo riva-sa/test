@@ -21,6 +21,9 @@
                     <option value="{{ $value }}">{{ $label }}</option>
                 @endforeach
             </select>
+            <input type="number" wire:model.live="minOrders" min="0"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full md:w-1/6 p-2.5"
+                placeholder="أقل عدد طلبات...">
         </div>
 
         <!-- Table -->
@@ -31,7 +34,17 @@
                         <tr>
                             <th class="px-4 py-3 font-semibold">الوسيط</th>
                             <th class="px-4 py-3 font-semibold">الحالة</th>
-                            <th class="px-4 py-3 font-semibold">صفقات مكتملة</th>
+                            <th class="px-4 py-3 font-semibold cursor-pointer select-none" wire:click="sortBy('orders_count')">
+                                <div class="flex items-center gap-1">
+                                    عدد الطلبات
+                                    @if($sortField === 'orders_count')
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $sortDirection === 'asc' ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7' }}"/>
+                                        </svg>
+                                    @endif
+                                </div>
+                            </th>
+                            <th class="px-4 py-3 font-semibold">مكتمل</th>
                             <th class="px-4 py-3 font-semibold">إجمالي مكتسب</th>
                             <th class="px-4 py-3 font-semibold">مدفوع</th>
                             <th class="px-4 py-3 font-semibold">مستحق</th>
@@ -51,6 +64,7 @@
                                         {{ $broker->statusLabel() }}
                                     </span>
                                 </td>
+                                <td class="px-4 py-3">{{ number_format($broker->orders_count) }}</td>
                                 <td class="px-4 py-3">{{ number_format($broker->sold_deals_count) }}</td>
                                 <td class="px-4 py-3 font-semibold text-gray-900 whitespace-nowrap">{{ number_format((float) $broker->earned_total, 2) }}</td>
                                 <td class="px-4 py-3 text-green-700 whitespace-nowrap">{{ number_format((float) $broker->paid_total, 2) }}</td>
@@ -61,7 +75,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="7" class="px-4 py-8 text-center text-gray-400">لا يوجد وسطاء.</td></tr>
+                            <tr><td colspan="8" class="px-4 py-8 text-center text-gray-400">لا يوجد وسطاء.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

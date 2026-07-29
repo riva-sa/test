@@ -16,9 +16,18 @@ class Brokers extends Component
 
     public string $statusFilter = '';
 
+    public string $sortField = 'orders_count';
+
+    public string $sortDirection = 'desc';
+
+    public string $minOrders = '';
+
     protected $queryString = [
         'search' => ['except' => ''],
         'statusFilter' => ['except' => ''],
+        'sortField' => ['except' => 'orders_count'],
+        'sortDirection' => ['except' => 'desc'],
+        'minOrders' => ['except' => ''],
     ];
 
     public function mount(): void
@@ -34,6 +43,21 @@ class Brokers extends Component
     public function updatingStatusFilter(): void
     {
         $this->resetPage();
+    }
+
+    public function updatingMinOrders(): void
+    {
+        $this->resetPage();
+    }
+
+    public function sortBy(string $field): void
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'desc';
+        }
     }
 
     public function render(): mixed
@@ -54,7 +78,8 @@ class Brokers extends Component
                 });
             })
             ->when($this->statusFilter !== '', fn ($q) => $q->where('status', $this->statusFilter))
-            ->orderByDesc('outstanding_total')
+            ->when($this->minOrders !== '', fn ($q) => $q->having('orders_count', '>=', (int) $this->minOrders))
+            ->orderBy($this->sortField, $this->sortDirection)
             ->paginate(20);
 
         return view('livewire.mannager.brokers', [

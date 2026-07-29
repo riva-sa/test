@@ -96,7 +96,7 @@
                 <p class="text-2xl font-bold text-green-800 mt-1">{{ number_format($completedOrders) }}</p>
             </div>
             <div class="bg-blue-50 border border-blue-100 rounded-xl p-4">
-                <p class="text-xs text-blue-700 font-semibold">פעיל</p>
+                <p class="text-xs text-blue-700 font-semibold">نشط</p>
                 <p class="text-2xl font-bold text-blue-800 mt-1">{{ number_format($activeOrders) }}</p>
             </div>
             <div class="bg-yellow-50 border border-yellow-100 rounded-xl p-4">
