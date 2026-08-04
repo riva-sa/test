@@ -29,7 +29,7 @@
                                         <div class="card-body">
                                             <div class="post-header">
                                                 <div class="post-category text-line">
-                                                    <a href="{{ route('frontend.blog.single', ['slug' => $post->slug]) }}" class="hover" rel="category">{{ $post->categories->first()->name }}</a>
+                                                    <a href="{{ route('frontend.blog.single', ['slug' => $post->slug]) }}" class="hover" rel="category">{{ $post->categories->first()?->name }}</a>
                                                 </div>
                                                 <!-- /.post-category -->
                                                 <h2 class="post-title h3 mt-1 mb-3"><a class="link-dark" href="{{ route('frontend.blog.single', ['slug' => $post->slug]) }}">{{ $post->title }}</a></h2>

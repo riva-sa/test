@@ -6,7 +6,7 @@
                 <div class="col-md-10 col-xl-8 mx-auto">
                     <div class="post-header">
                         <div class="post-category text-line">
-                            <a href="#" class="hover" rel="category">{{ $post->categories->first()->name }}</a>
+                            <a href="#" class="hover" rel="category">{{ $post->categories->first()?->name }}</a>
                         </div>
                         <!-- /.post-category -->
                         <h1 class="display-1 mb-4">{{ $post->title }}</h1>
