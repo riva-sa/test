@@ -61,7 +61,9 @@ class Blog extends Component
         $query = Post::query()->published()->with(['tags', 'comments']);
         // Filter by category if selected
         if ($this->selectedCategory) {
-            $query->where('category_id', $this->selectedCategory);
+            $query->whereHas('categories', function ($q) {
+                $q->whereKey($this->selectedCategory);
+            });
         }
 
         // Filter by tag if selected

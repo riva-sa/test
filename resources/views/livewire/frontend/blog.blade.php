@@ -76,7 +76,7 @@
                 <h4 class="widget-title mb-3">@lang('public.blog.categories')</h4>
                 <ul class="unordered-list bullet-primary text-reset pe-0">
                     @foreach($categories as $category)
-                        <li><a href="{{ $category->id }}">{{ $category->name }}</a></li>
+                        <li><a href="#" wire:click.prevent="filterByCategory({{ $category->id }})">{{ $category->name }}</a></li>
                     @endforeach
                 </ul>
               </div>
@@ -85,7 +85,7 @@
                 <h4 class="widget-title mb-3">@lang('public.blog.tags')</h4>
                 <ul class="list-unstyled tag-list pe-0">
                     @foreach($tags as $tag)
-                        <li><a href="#" class="btn btn-soft-ash btn-sm rounded-pill">{{ $tag->name }}</a></li>
+                        <li><a href="#" wire:click.prevent="filterByTag({{ $tag->id }})" class="btn btn-soft-ash btn-sm rounded-pill">{{ $tag->name }}</a></li>
                     @endforeach
                 </ul>
               </div>

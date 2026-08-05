@@ -218,7 +218,10 @@ class ManageOrders extends Component
                 $query->whereDate('created_at', '<=', $this->toDate);
             })
             ->when($this->sourceFilter !== '', function ($query) {
-                $query->where('order_source', $this->sourceFilter);
+                $query->where(function ($q) {
+                    $q->where('order_source', $this->sourceFilter)
+                        ->orWhere('marketing_source', $this->sourceFilter);
+                });
             });
 
         $query->orderBy($this->sortField, $this->sortDirection);
@@ -285,7 +288,10 @@ class ManageOrders extends Component
                 $query->whereDate('created_at', '<=', $this->toDate);
             })
             ->when($this->sourceFilter !== '', function ($query) {
-                $query->where('order_source', $this->sourceFilter);
+                $query->where(function ($q) {
+                    $q->where('order_source', $this->sourceFilter)
+                        ->orWhere('marketing_source', $this->sourceFilter);
+                });
             });
 
         if ($this->delayedFilter == '1') {
@@ -317,16 +323,36 @@ class ManageOrders extends Component
             ],
             'projects' => Project::all(),
             'salesManagers' => \App\Models\User::role('sales')->get(),
-            'orderSources' => [
-                'legacy' => 'نظام قديم',
-                'frontend_popup' => 'نافذة منبثقة',
-                'frontend_unit' => 'صفحة الوحدة',
-                'manager' => 'إضافة يدوية',
-                'bulk_import' => 'رفع ملف',
-                'social_media' => 'سوشيال ميديا',
-                'broker' => 'وسيط عقاري',
-            ],
+            'orderSources' => $this->getOrderSources(),
         ])->layout('layouts.custom');
+    }
+
+    private function getOrderSources(): array
+    {
+        $orderSources = [
+            'legacy' => 'نظام قديم',
+            'frontend_popup' => 'نافذة منبثقة',
+            'frontend_unit' => 'صفحة الوحدة',
+            'manager' => 'إضافة يدوية',
+            'bulk_import' => 'رفع ملف',
+            'social_media' => 'سوشيال ميديا',
+            'broker' => 'وسيط عقاري',
+        ];
+
+        // Add the actual marketing/lead sources found in the data
+        UnitOrder::query()
+            ->whereNotNull('marketing_source')
+            ->where('marketing_source', '!=', '')
+            ->distinct()
+            ->orderBy('marketing_source')
+            ->pluck('marketing_source')
+            ->each(function ($source) use (&$orderSources) {
+                if (! array_key_exists($source, $orderSources)) {
+                    $orderSources[$source] = $source;
+                }
+            });
+
+        return $orderSources;
     }
 
     private function getDelayedOrdersCount($user)
