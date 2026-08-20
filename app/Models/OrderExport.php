@@ -58,11 +58,42 @@ class OrderExport extends Model
 
     // ── Helpers ──────────────────────────────────────────────────────
 
+    public function getRealPath(): ?string
+    {
+        if (! $this->file_path) {
+            return null;
+        }
+
+        // 1. Storage local disk path
+        $localPath = Storage::disk('local')->path($this->file_path);
+        if (file_exists($localPath)) {
+            return $localPath;
+        }
+
+        // 2. Direct storage_path fallback
+        $storageAppPath = storage_path('app/' . ltrim($this->file_path, '/'));
+        if (file_exists($storageAppPath)) {
+            return $storageAppPath;
+        }
+
+        // 3. Storage public disk path
+        $publicPath = Storage::disk('public')->path($this->file_path);
+        if (file_exists($publicPath)) {
+            return $publicPath;
+        }
+
+        // 4. Absolute path
+        if (file_exists($this->file_path)) {
+            return $this->file_path;
+        }
+
+        return null;
+    }
+
     public function isDownloadable(): bool
     {
         return $this->status === 'completed'
-            && $this->file_path
-            && Storage::disk('local')->exists($this->file_path)
+            && $this->getRealPath() !== null
             && ($this->expires_at === null || $this->expires_at->isFuture());
     }
 

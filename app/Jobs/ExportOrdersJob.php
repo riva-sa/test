@@ -64,6 +64,8 @@ class ExportOrdersJob implements ShouldQueue
             $filePath = $directory . '/' . $export->file_name;
             $fullPath = Storage::disk('local')->path($filePath);
 
+            @chmod(dirname($fullPath), 0775);
+
             $file = fopen($fullPath, 'w');
 
             // UTF-8 BOM for Excel compatibility
@@ -94,6 +96,7 @@ class ExportOrdersJob implements ShouldQueue
             });
 
             fclose($file);
+            @chmod($fullPath, 0664);
 
             // Mark as completed
             $export->markAsCompleted($filePath);
