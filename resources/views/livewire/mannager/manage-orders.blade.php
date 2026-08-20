@@ -172,7 +172,7 @@
                 @if (auth()->user()->hasRole('Admin'))
                 <!-- Export Button -->
                 <div class="flex items-end">
-                    <button wire:click="export mb-10" 
+                    <button wire:click="export" 
                             wire:loading.attr="disabled"
                             wire:target="export"
                             class="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-400 disabled:cursor-wait text-white font-medium py-2.5 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
