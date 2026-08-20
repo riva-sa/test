@@ -291,8 +291,8 @@ class ManageOrders extends Component
             return;
         }
 
-        return Storage::disk('local')->download(
-            $export->file_path,
+        return response()->download(
+            Storage::disk('local')->path($export->file_path),
             $export->file_name,
             ['Content-Type' => 'text/csv; charset=UTF-8']
         );

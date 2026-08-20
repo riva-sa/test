@@ -70,11 +70,14 @@ Route::middleware(['auth', 'role:sales_manager,sales,Admin,developer,follow_up,p
     Route::get('/crm/orders', ManageOrders::class)->name('manager.orders');
     Route::get('/crm/orders/{id}', OrderDetails::class)->name('manager.order-details');
     Route::get('/crm/exports/{export}/download', function (\App\Models\OrderExport $export) {
-        if ($export->user_id !== auth()->id() || ! $export->isDownloadable()) {
-            abort(404);
+        if (! $export->isDownloadable()) {
+            abort(404, 'الملف غير موجود أو منتهي الصلاحية');
         }
-        return \Illuminate\Support\Facades\Storage::disk('local')->download(
-            $export->file_path,
+        if ($export->user_id !== auth()->id() && ! auth()->user()->hasRole('Admin')) {
+            abort(403);
+        }
+        return response()->download(
+            \Illuminate\Support\Facades\Storage::disk('local')->path($export->file_path),
             $export->file_name,
             ['Content-Type' => 'text/csv; charset=UTF-8']
         );
