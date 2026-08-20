@@ -69,6 +69,16 @@ Route::middleware(['auth', 'role:sales_manager,sales,Admin,developer,follow_up,p
     Route::get('/crm/projects/{project}/pdf', [\App\Http\Controllers\Manager\ProjectPdfController::class, 'download'])->name('manager.projects.pdf');
     Route::get('/crm/orders', ManageOrders::class)->name('manager.orders');
     Route::get('/crm/orders/{id}', OrderDetails::class)->name('manager.order-details');
+    Route::get('/crm/exports/{export}/download', function (\App\Models\OrderExport $export) {
+        if ($export->user_id !== auth()->id() || ! $export->isDownloadable()) {
+            abort(404);
+        }
+        return \Illuminate\Support\Facades\Storage::disk('local')->download(
+            $export->file_path,
+            $export->file_name,
+            ['Content-Type' => 'text/csv; charset=UTF-8']
+        );
+    })->name('manager.export.download');
     // customerlist
     Route::get('/crm/customerlist', CustomersList::class)->name('manager.customerlist');
     Route::get('/crm/customers/{phone}', CustomerProfile::class)->name('manager.customer-profile');

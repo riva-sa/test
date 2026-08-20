@@ -172,16 +172,140 @@
                 @if (auth()->user()->hasRole('Admin'))
                 <!-- Export Button -->
                 <div class="flex items-end">
-                    <button wire:click="export" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
-                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                        </svg>
-                        تصدير Excel
+                    <button wire:click="export mb-10" 
+                            wire:loading.attr="disabled"
+                            wire:target="export"
+                            class="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-400 disabled:cursor-wait text-white font-medium py-2.5 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
+                        <!-- Normal state -->
+                        <span wire:loading.remove wire:target="export" class="flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                            </svg>
+                            تصدير Excel
+                        </span>
+                        <!-- Loading state -->
+                        <span wire:loading wire:target="export" class="flex items-center gap-2">
+                            <svg class="animate-spin w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            جاري بدء التصدير...
+                        </span>
                     </button>
                 </div>
                 @endif
             </div>
         </div>
+
+        {{-- Export Status Banner --}}
+        @if($showExportStatus)
+        <div @if(in_array($exportStatus, ['pending', 'processing'])) wire:poll.3s="checkExportStatus" @endif
+             class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-5"
+             x-data="{ show: true }" 
+             x-show="show"
+             x-transition:enter="ease-out duration-300"
+             x-transition:enter-start="opacity-0 -translate-y-2"
+             x-transition:enter-end="opacity-100 translate-y-0">
+            
+            <div class="p-4">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-3">
+                        {{-- Status Icon --}}
+                        @if($exportStatus === 'completed')
+                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                        @elseif($exportStatus === 'failed')
+                            <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                                <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </div>
+                        @else
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                <svg class="animate-spin w-5 h-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </div>
+                        @endif
+
+                        <div>
+                            <h4 class="font-semibold text-gray-900">
+                                @if($exportStatus === 'pending')
+                                    جاري تجهيز التصدير...
+                                @elseif($exportStatus === 'processing')
+                                    جاري تصدير البيانات
+                                @elseif($exportStatus === 'completed')
+                                    اكتمل التصدير بنجاح ✅
+                                @elseif($exportStatus === 'failed')
+                                    فشل التصدير ❌
+                                @endif
+                            </h4>
+                            <p class="text-sm text-gray-500">
+                                @if(in_array($exportStatus, ['processing']))
+                                    {{ number_format($exportProcessedRows) }} من {{ number_format($exportTotalRows) }} سجل
+                                @elseif($exportStatus === 'completed')
+                                    تم تصدير {{ number_format($exportTotalRows) }} سجل — الملف متاح للتحميل لمدة 24 ساعة
+                                @elseif($exportStatus === 'failed')
+                                    {{ $exportErrorMessage ?? 'حدث خطأ أثناء التصدير' }}
+                                @else
+                                    يتم الآن حساب عدد السجلات...
+                                @endif
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        @if($exportStatus === 'completed')
+                            <button wire:click="downloadExport" 
+                                    class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                </svg>
+                                تحميل الملف
+                            </button>
+                        @endif
+
+                        @if($exportStatus === 'failed')
+                            <button wire:click="export" 
+                                    class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                </svg>
+                                إعادة المحاولة
+                            </button>
+                        @endif
+
+                        <button wire:click="dismissExportStatus" 
+                                class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Progress Bar --}}
+                @if(in_array($exportStatus, ['pending', 'processing']))
+                <div class="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                    <div class="h-full rounded-full transition-all duration-500 ease-out {{ $exportStatus === 'pending' ? 'bg-blue-400 animate-pulse' : 'bg-blue-600' }}"
+                         style="width: {{ $exportStatus === 'pending' ? '15' : $exportProgress }}%">
+                    </div>
+                </div>
+                <div class="flex justify-between mt-1">
+                    <span class="text-xs text-gray-500">{{ $exportProgress }}%</span>
+                    @if($exportStatus === 'processing' && $exportTotalRows > 0)
+                        <span class="text-xs text-gray-500">{{ number_format($exportProcessedRows) }} / {{ number_format($exportTotalRows) }}</span>
+                    @endif
+                </div>
+                @endif
+            </div>
+        </div>
+        @endif
+
 
         <!-- Orders Table Card -->
         <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">

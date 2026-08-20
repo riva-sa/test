@@ -5,6 +5,8 @@ namespace App\Filament\Resources;
 use App\Exports\UnitOrdersExport;
 use App\Filament\Resources\UnitOrderResource\Pages;
 use App\Filament\Resources\UnitOrderResource\Widgets\UnitOrderStats;
+use App\Jobs\ExportOrdersJob;
+use App\Models\OrderExport;
 use App\Models\Unit;
 use App\Models\UnitOrder;
 use Filament\Forms;
@@ -18,7 +20,6 @@ use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
-use Maatwebsite\Excel\Facades\Excel;
 
 class UnitOrderResource extends Resource
 {
@@ -256,13 +257,29 @@ class UnitOrderResource extends Resource
             ])
             ->bulkActions([
                 BulkAction::make('exportSelected')
-                    ->label('تصدير المحدد إلى Excel')
+                    ->label('تصدير المحدد')
                     ->icon('heroicon-o-document')
                     ->action(function (Collection $records) {
-                        $query = \App\Models\UnitOrder::with([
-                            'user', 'unit', 'project', 'assignedSalesUser', 'lastActionByUser', 'notes.user',
-                        ])->whereIn('id', $records->pluck('id'));
-                        return Excel::download(new UnitOrdersExport($query), 'selected-unit-orders.xlsx');
+                        $fileName = 'selected_orders_' . now()->format('Y-m-d_His') . '.csv';
+
+                        $export = OrderExport::create([
+                            'user_id' => auth()->id(),
+                            'file_name' => $fileName,
+                            'filters' => ['selectedIds' => $records->pluck('id')->toArray()],
+                            'status' => 'pending',
+                        ]);
+
+                        ExportOrdersJob::dispatch(
+                            $export->id,
+                            auth()->id(),
+                            ['selectedIds' => $records->pluck('id')->toArray()]
+                        );
+
+                        Notification::make()
+                            ->title('بدأ التصدير')
+                            ->body('سيتم إشعارك عند اكتمال التصدير. يمكنك متابعة العمل.')
+                            ->info()
+                            ->send();
                     }),
                 Tables\Actions\DeleteBulkAction::make()->label('حذف'),
             ]);
