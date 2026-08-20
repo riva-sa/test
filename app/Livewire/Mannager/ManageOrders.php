@@ -247,15 +247,22 @@ class ManageOrders extends Component
             'status' => 'pending',
         ]);
 
-        // Dispatch background job
-        ExportOrdersJob::dispatch($export->id, auth()->id(), $filters);
+        // Dispatch background job (or sync if queue connection is sync)
+        if (config('queue.default') === 'sync') {
+            ExportOrdersJob::dispatchSync($export->id, auth()->id(), $filters);
+            $export->refresh();
+        } else {
+            ExportOrdersJob::dispatch($export->id, auth()->id(), $filters);
+        }
 
         // Show status UI
         $this->activeExportId = $export->id;
-        $this->exportStatus = 'pending';
-        $this->exportProgress = 0;
+        $this->exportStatus = $export->status;
+        $this->exportProgress = $export->progress;
+        $this->exportTotalRows = $export->total_rows;
+        $this->exportProcessedRows = $export->processed_rows;
         $this->showExportStatus = true;
-        $this->exportErrorMessage = null;
+        $this->exportErrorMessage = $export->error_message;
     }
 
     public function checkExportStatus()

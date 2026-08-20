@@ -70,12 +70,19 @@ Route::middleware(['auth', 'role:sales_manager,sales,Admin,developer,follow_up,p
     Route::get('/crm/orders', ManageOrders::class)->name('manager.orders');
     Route::get('/crm/orders/{id}', OrderDetails::class)->name('manager.order-details');
     Route::get('/crm/exports/{export}/download', function (\App\Models\OrderExport $export) {
-        if (! $export->isDownloadable()) {
-            abort(404, 'الملف غير موجود أو منتهي الصلاحية');
+        if ($export->status !== 'completed' || ! $export->file_path || ! \Illuminate\Support\Facades\Storage::disk('local')->exists($export->file_path)) {
+            return response('<div style="font-family:system-ui,-apple-system,sans-serif;text-align:center;padding:60px 20px;direction:rtl;max-width:500px;margin:50px auto;background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
+                <div style="font-size:48px;margin-bottom:16px;">⏳</div>
+                <h2 style="color:#111827;font-size:20px;margin-bottom:8px;">الملف قيد التجهيز أو غير متاح</h2>
+                <p style="color:#6b7280;font-size:14px;line-height:1.6;margin-bottom:24px;">حالة الملف الحالية: <strong>' . $export->status . '</strong>.<br>إذا كانت العملية قيد المعالجة، يرجى الانتظار لحين الانتهاء.</p>
+                <a href="' . route('manager.orders') . '" style="display:inline-block;padding:10px 24px;background:#16a34a;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;font-size:14px;">العودة لصفحة الطلبات</a>
+            </div>', 404);
         }
+
         if ($export->user_id !== auth()->id() && ! auth()->user()->hasRole('Admin')) {
             abort(403);
         }
+
         return response()->download(
             \Illuminate\Support\Facades\Storage::disk('local')->path($export->file_path),
             $export->file_name,
