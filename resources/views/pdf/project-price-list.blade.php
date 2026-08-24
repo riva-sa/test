@@ -12,6 +12,8 @@
         .header .title { text-align: center; }
         .header .title h1 { font-size: 17px; margin: 0; color: #111827; }
         .header .title .sub { font-size: 10px; color: #6b7280; margin-top: 3px; }
+        a.unit-link { color: #0284c7; text-decoration: underline; font-weight: bold; }
+        a.project-link { color: #111827; text-decoration: none; font-weight: bold; }
 
         .meta { width: 100%; margin-bottom: 12px; font-size: 10px; color: #6b7280; }
         .meta td { padding: 2px 0; }
@@ -46,6 +48,10 @@
     </style>
 </head>
 <body>
+    @php
+        $projectFrontendUrl = route('frontend.projects.single', ['slug' => $project->slug ?: $project->id]);
+    @endphp
+
     <table class="header">
         <tr>
             <td width="28%" style="text-align: right;">
@@ -55,7 +61,7 @@
             </td>
             <td width="44%" class="title">
                 <h1>قائمة أسعار الوحدات</h1>
-                <div class="sub">{{ $project->name }}</div>
+                <div class="sub"><a href="{{ $projectFrontendUrl }}" class="project-link" target="_blank">{{ $project->name }}</a></div>
             </td>
             <td width="28%" style="text-align: left;">
                 @if ($developerLogo)
@@ -105,7 +111,11 @@
                 @foreach ($units as $i => $unit)
                     <tr class="{{ $i % 2 ? 'alt' : '' }}">
                         <td>{{ $i + 1 }}</td>
-                        <td>{{ $unit->title }}</td>
+                        <td>
+                            <a href="{{ $projectFrontendUrl }}?unit={{ $unit->id }}" class="unit-link" target="_blank">
+                                {{ $unit->title }}
+                            </a>
+                        </td>
                         <td>{{ $unit->unit_type ?: '—' }}</td>
                         <td>{{ $unit->unit_area ? $unit->unit_area . ' م²' : '—' }}</td>
                         <td>{{ $unit->floor !== null && $unit->floor !== '' ? $unit->floor : '—' }}</td>

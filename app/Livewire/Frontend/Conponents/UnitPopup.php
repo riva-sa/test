@@ -99,6 +99,16 @@ class UnitPopup extends Component
         ];
     }
 
+    public function mount()
+    {
+        if (request()->filled('unit')) {
+            $unitId = (int) request()->query('unit');
+            if ($unitId > 0 && Unit::where('id', $unitId)->exists()) {
+                $this->loadUnit($unitId);
+            }
+        }
+    }
+
     // Add this method to load images
     protected function loadUnitImages()
     {
