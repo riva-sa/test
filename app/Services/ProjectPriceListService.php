@@ -116,24 +116,35 @@ class ProjectPriceListService
      */
     private function developerLogo(Project $project): ?string
     {
-        $logo = $project->developer?->logo;
+        try {
+            $logo = $project->developer?->logo;
 
-        if (! $logo || ! Storage::disk('public')->exists($logo)) {
+            if (! $logo) {
+                return null;
+            }
+
+            // Strip leading slash or storage prefix if present
+            $logoPath = ltrim(str_replace('/storage/', '', $logo), '/');
+
+            if (! Storage::disk('public')->exists($logoPath)) {
+                return null;
+            }
+
+            if (Storage::disk('public')->size($logoPath) > 2 * 1024 * 1024) {
+                return null;
+            }
+
+            $mime = Storage::disk('public')->mimeType($logoPath) ?: 'image/png';
+
+            if (str_contains($mime, 'svg') || str_ends_with(strtolower($logoPath), '.svg')) {
+                return null;
+            }
+
+            $contents = Storage::disk('public')->get($logoPath);
+
+            return 'data:'.$mime.';base64,'.base64_encode($contents);
+        } catch (\Throwable $e) {
             return null;
         }
-
-        if (Storage::disk('public')->size($logo) > 2 * 1024 * 1024) {
-            return null;
-        }
-
-        $mime = Storage::disk('public')->mimeType($logo) ?: 'image/png';
-
-        if (str_contains($mime, 'svg') || str_ends_with(strtolower($logo), '.svg')) {
-            return null;
-        }
-
-        $contents = Storage::disk('public')->get($logo);
-
-        return 'data:'.$mime.';base64,'.base64_encode($contents);
     }
 }

@@ -315,7 +315,7 @@
                         <div x-show="tab === 'units'" class="p-4 sm:p-6" style="display: none;">
                             <div class="flex justify-between items-center mb-4">
                                 <h4 class="text-sm font-bold text-gray-800">وحدات المشروع</h4>
-                                <a href="{{ route('manager.projects.pdf', $project->id) }}" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-xl text-xs font-bold hover:bg-gray-800 transition-colors shadow-sm">
+                                <a href="{{ route('manager.projects.pdf', $project->id) }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-xl text-xs font-bold hover:bg-gray-800 transition-colors shadow-sm">
                                     <i class="fas fa-file-pdf text-red-400"></i>
                                     تحميل ملف الاسعار (PDF)
                                 </a>
