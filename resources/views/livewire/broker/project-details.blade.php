@@ -70,12 +70,11 @@
                                 تنزيل صور المشروع (ZIP)
                             </a>
                         @endif
-                        <button type="button" wire:click="downloadPriceList" wire:loading.attr="disabled" wire:target="downloadPriceList"
-                           class="px-5 py-3 bg-white border border-gray-200 hover:border-gray-900 text-gray-700 hover:text-gray-900 text-sm font-black rounded-xl transition-all whitespace-nowrap disabled:opacity-50">
-                            <i class="fas fa-file-pdf text-red-400 ml-2" wire:loading.remove wire:target="downloadPriceList"></i>
-                            <i class="fas fa-spinner fa-spin ml-2" wire:loading wire:target="downloadPriceList"></i>
-                            تحميل قائمة الأسعار
-                        </button>
+                        <a href="{{ route('broker.projects.pdf', $project->id) }}" target="_blank"
+                           class="px-5 py-3 bg-white border border-gray-200 hover:border-gray-900 text-gray-700 hover:text-gray-900 text-sm font-black rounded-xl transition-all whitespace-nowrap flex items-center justify-center gap-2">
+                            <i class="fas fa-file-pdf text-red-500"></i>
+                            تحميل قائمة الأسعار (PDF)
+                        </a>
                         <a href="{{ route('broker.leads.create', ['project' => $project->id]) }}"
                            class="px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white text-sm font-black rounded-xl transition-all whitespace-nowrap text-center">
                             <i class="fas fa-user-plus ml-2"></i> إرسال عميل لهذا المشروع

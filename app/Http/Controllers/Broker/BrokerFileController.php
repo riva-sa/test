@@ -7,6 +7,7 @@ use App\Models\BrokerDocument;
 use App\Models\Project;
 use App\Models\ProjectMedia;
 use App\Models\Unit;
+use App\Services\ProjectPriceListService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -119,5 +120,22 @@ class BrokerFileController extends Controller
         $zip->close();
 
         return response()->download($tempZipPath, $zipFileName)->deleteFileAfterSend(true);
+    }
+
+    /**
+     * Download the price list PDF for a project for approved brokers.
+     */
+    public function downloadProjectPdf(Project $project, ProjectPriceListService $service)
+    {
+        abort_unless($project->status, 404);
+
+        $pdfContent = $service->generate($project);
+        $fileName = $service->fileName($project);
+
+        return response($pdfContent, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+            'Content-Length' => (string) strlen($pdfContent),
+        ]);
     }
 }

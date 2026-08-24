@@ -205,6 +205,7 @@ Route::prefix('broker')->name('broker.')->group(function () {
         Route::get('/projects/{id}', \App\Livewire\Broker\ProjectDetails::class)->name('projects.show');
         Route::get('/projects/{project}/media/{media}/download', [\App\Http\Controllers\Broker\BrokerFileController::class, 'downloadProjectMedia'])->name('projects.media.download');
         Route::get('/projects/{project}/download-images', [\App\Http\Controllers\Broker\BrokerFileController::class, 'downloadProjectImagesZip'])->name('projects.download-images');
+        Route::get('/projects/{project}/pdf', [\App\Http\Controllers\Broker\BrokerFileController::class, 'downloadProjectPdf'])->name('projects.pdf');
         Route::get('/units/{unit}/floor-plan', [\App\Http\Controllers\Broker\BrokerFileController::class, 'unitFloorPlan'])->name('units.floor-plan');
         Route::get('/leads', \App\Livewire\Broker\MyLeads::class)->name('leads');
         Route::get('/leads/create', \App\Livewire\Broker\SubmitLead::class)->name('leads.create');

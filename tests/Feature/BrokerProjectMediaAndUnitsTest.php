@@ -126,3 +126,10 @@ it('filters units by status and search query in ProjectDetails', function () {
         ->assertSee('Penthouse 101')
         ->assertDontSee('Apartment 202');
 });
+
+it('downloads project price list pdf for broker', function () {
+    $response = $this->get(route('broker.projects.pdf', $this->project->id));
+
+    $response->assertOk();
+    $response->assertHeader('content-type', 'application/pdf');
+});

@@ -23,7 +23,10 @@ class ProjectPriceListService
 
         $project->loadMissing(['developer', 'city']);
 
-        $query = $project->units();
+        $query = $project->units()->select([
+            'id', 'project_id', 'title', 'unit_type', 'unit_area',
+            'floor', 'beadrooms', 'case', 'unit_price', 'show_price'
+        ]);
         $driver = $query->getConnection()->getDriverName();
         $caseField = $driver === 'mysql' ? '`case`' : '"case"';
 
@@ -66,10 +69,15 @@ class ProjectPriceListService
             'margin_top' => 14,
             'margin_bottom' => 14,
             'tempDir' => $tempDir,
+            'useSubsets' => true,
         ]);
 
         $mpdf->SetDirectionality('rtl');
         $mpdf->WriteHTML($html);
+
+        if (ob_get_length()) {
+            @ob_end_clean();
+        }
 
         return $mpdf->Output('', \Mpdf\Output\Destination::STRING_RETURN);
     }
