@@ -18,6 +18,9 @@ class ProjectPriceListService
      */
     public function generate(Project $project): string
     {
+        @ini_set('memory_limit', '512M');
+        @set_time_limit(120);
+
         $project->loadMissing(['developer', 'city']);
 
         $query = $project->units();
@@ -46,7 +49,11 @@ class ProjectPriceListService
 
         $tempDir = storage_path('app/mpdf');
         if (! is_dir($tempDir)) {
-            File::makeDirectory($tempDir, 0755, true, true);
+            @File::makeDirectory($tempDir, 0755, true, true);
+        }
+
+        if (! is_writable($tempDir)) {
+            $tempDir = sys_get_temp_dir();
         }
 
         $mpdf = new \Mpdf\Mpdf([
@@ -62,8 +69,6 @@ class ProjectPriceListService
         ]);
 
         $mpdf->SetDirectionality('rtl');
-        $mpdf->autoScriptToLang = true;
-        $mpdf->autoLangToFont = true;
         $mpdf->WriteHTML($html);
 
         return $mpdf->Output('', \Mpdf\Output\Destination::STRING_RETURN);
@@ -91,6 +96,10 @@ class ProjectPriceListService
             return null;
         }
 
+        if (filesize($path) > 2 * 1024 * 1024) {
+            return null;
+        }
+
         return 'data:image/png;base64,'.base64_encode((string) file_get_contents($path));
     }
 
@@ -102,6 +111,10 @@ class ProjectPriceListService
         $logo = $project->developer?->logo;
 
         if (! $logo || ! Storage::disk('public')->exists($logo)) {
+            return null;
+        }
+
+        if (Storage::disk('public')->size($logo) > 2 * 1024 * 1024) {
             return null;
         }
 
