@@ -18,8 +18,8 @@ class ProjectPriceListService
      */
     public function generate(Project $project): string
     {
-        @ini_set('memory_limit', '512M');
-        @set_time_limit(120);
+        @ini_set('memory_limit', '1024M');
+        @set_time_limit(300);
 
         $project->loadMissing(['developer', 'city']);
 
@@ -69,7 +69,8 @@ class ProjectPriceListService
             'margin_top' => 14,
             'margin_bottom' => 14,
             'tempDir' => $tempDir,
-            'useSubsets' => true,
+            'simpleTables' => true,
+            'packTableData' => true,
         ]);
 
         $mpdf->SetDirectionality('rtl');

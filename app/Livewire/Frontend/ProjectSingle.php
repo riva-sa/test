@@ -87,7 +87,9 @@ class ProjectSingle extends Component
                 'landmarks:id,name',
                 'projectType:id,name,slug',
                 'salesManager:id,name,phone',
-            ])->where('slug', $slug)->firstOrFail();
+            ])->where(function ($q) use ($slug) {
+                $q->where('slug', $slug)->orWhere('id', $slug);
+            })->firstOrFail();
         });
         $this->case = request()->query('case', 'all');
         app(TrackingService::class)->trackProjectVisit($this->project);

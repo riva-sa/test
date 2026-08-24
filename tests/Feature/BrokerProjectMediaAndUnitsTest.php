@@ -133,3 +133,33 @@ it('downloads project price list pdf for broker', function () {
     $response->assertOk();
     $response->assertHeader('content-type', 'application/pdf');
 });
+
+it('handles large project with 300 units quickly', function () {
+    $unitsData = [];
+    for ($i = 1; $i <= 300; $i++) {
+        $unitsData[] = [
+            'project_id' => $this->project->id,
+            'title' => 'Unit #' . $i,
+            'slug' => 'unit-' . $i . '-' . uniqid(),
+            'building_number' => '1',
+            'unit_number' => (string) $i,
+            'unit_type' => 'شقة',
+            'unit_price' => 500000 + ($i * 1000),
+            'unit_area' => 120 + ($i % 50),
+            'floor' => (string) ($i % 10),
+            'beadrooms' => (string) (($i % 4) + 1),
+            'case' => (string) ($i % 3),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+    }
+    Unit::insert($unitsData);
+
+    $start = microtime(true);
+    $response = $this->get(route('broker.projects.pdf', $this->project->id));
+    $duration = microtime(true) - $start;
+
+    $response->assertOk();
+    $response->assertHeader('content-type', 'application/pdf');
+    expect($duration)->toBeLessThan(10.0);
+});
