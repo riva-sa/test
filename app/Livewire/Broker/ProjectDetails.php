@@ -16,6 +16,10 @@ class ProjectDetails extends Component
 
     public $unitTypeFilter = '';
 
+    public $unitStatusFilter = '';
+
+    public $searchUnit = '';
+
     public function mount($id)
     {
         $this->project = Project::with(['city', 'state', 'developer', 'projectType', 'projectMedia', 'features', 'guarantees', 'landmarks'])
@@ -49,8 +53,18 @@ class ProjectDetails extends Component
         $caseField = $driver === 'mysql' ? '`case`' : '"case"';
 
         $units = $this->project->units()
+            ->with('features')
             // Show all units (available, reserved, sold) — available first.
             ->when($this->unitTypeFilter, fn ($q) => $q->where('unit_type', $this->unitTypeFilter))
+            ->when($this->unitStatusFilter !== '', fn ($q) => $q->where('case', $this->unitStatusFilter))
+            ->when($this->searchUnit !== '', function ($q) {
+                $search = '%' . trim($this->searchUnit) . '%';
+                $q->where(function ($sub) use ($search) {
+                    $sub->where('title', 'like', $search)
+                        ->orWhere('unit_number', 'like', $search)
+                        ->orWhere('floor', 'like', $search);
+                });
+            })
             ->orderByRaw("
                 CASE {$caseField}
                     WHEN 0 THEN 1

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Broker;
 
 use App\Http\Controllers\Controller;
 use App\Models\BrokerDocument;
+use App\Models\Project;
+use App\Models\ProjectMedia;
 use App\Models\Unit;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -64,5 +66,58 @@ class BrokerFileController extends Controller
         $name = 'floor-plan-'.(Str::slug($unit->title) ?: $unit->id).'.'.$ext;
 
         return Storage::disk('public')->download($unit->floor_plan, $name);
+    }
+
+    /**
+     * Download a single project media file (image or video).
+     */
+    public function downloadProjectMedia(Project $project, ProjectMedia $media)
+    {
+        abort_unless($media->project_id === $project->id, 404);
+        abort_unless($media->media_url && Storage::disk('public')->exists($media->media_url), 404);
+        abort_unless($project->status, 404);
+
+        $ext = pathinfo($media->media_url, PATHINFO_EXTENSION) ?: ($media->media_type === 'video' ? 'mp4' : 'jpg');
+        $title = $media->media_title ?: (Str::slug($project->name) . '-' . $media->id);
+        $name = Str::slug($title) . '.' . $ext;
+
+        return Storage::disk('public')->download($media->media_url, $name);
+    }
+
+    /**
+     * Download all images of a project packaged into a ZIP archive.
+     */
+    public function downloadProjectImagesZip(Project $project)
+    {
+        abort_unless($project->status, 404);
+
+        $images = $project->projectMedia()->where('media_type', 'image')->get();
+        abort_if($images->isEmpty(), 404, 'No images available for this project');
+
+        $zipFileName = 'project-' . (Str::slug($project->name) ?: $project->id) . '-images.zip';
+        $tempZipPath = storage_path('app/temp/' . Str::uuid() . '.zip');
+
+        if (! file_exists(dirname($tempZipPath))) {
+            mkdir(dirname($tempZipPath), 0755, true);
+        }
+
+        $zip = new \ZipArchive();
+        if ($zip->open($tempZipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
+            abort(500, 'Could not create ZIP archive');
+        }
+
+        $count = 1;
+        foreach ($images as $img) {
+            if ($img->media_url && Storage::disk('public')->exists($img->media_url)) {
+                $fileContents = Storage::disk('public')->get($img->media_url);
+                $ext = pathinfo($img->media_url, PATHINFO_EXTENSION) ?: 'jpg';
+                $entryName = sprintf('image-%02d.%s', $count++, $ext);
+                $zip->addFromString($entryName, $fileContents);
+            }
+        }
+
+        $zip->close();
+
+        return response()->download($tempZipPath, $zipFileName)->deleteFileAfterSend(true);
     }
 }
