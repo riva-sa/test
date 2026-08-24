@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Project;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class ProjectPriceListService
@@ -18,8 +19,8 @@ class ProjectPriceListService
      */
     public function generate(Project $project): string
     {
-        @ini_set('memory_limit', '1024M');
-        @set_time_limit(300);
+        @ini_set('memory_limit', '512M');
+        @set_time_limit(180);
 
         $project->loadMissing(['developer', 'city']);
 
@@ -42,23 +43,45 @@ class ProjectPriceListService
         ->orderBy('unit_price')
         ->get();
 
+        $rivaLogo = $this->rivaLogo();
+        $developerLogo = $this->developerLogo($project);
+
         $html = view('pdf.project-price-list', [
             'project' => $project,
             'units' => $units,
-            'rivaLogo' => $this->rivaLogo(),
-            'developerLogo' => $this->developerLogo($project),
+            'rivaLogo' => $rivaLogo,
+            'developerLogo' => $developerLogo,
             'generatedAt' => now(),
         ])->render();
 
-        $tempDir = storage_path('app/mpdf');
-        if (! is_dir($tempDir)) {
-            @File::makeDirectory($tempDir, 0755, true, true);
-        }
+        $tempDir = $this->resolveTempDir();
 
-        if (! is_writable($tempDir)) {
-            $tempDir = sys_get_temp_dir();
-        }
+        try {
+            return $this->renderMpdf($html, $tempDir);
+        } catch (\Throwable $e) {
+            Log::warning('mPDF Price list generation failed on primary pass, retrying safely without images', [
+                'project_id' => $project->id,
+                'error' => $e->getMessage(),
+            ]);
 
+            // Fallback retry: render without any logos in case image parsing caused the failure
+            $safeHtml = view('pdf.project-price-list', [
+                'project' => $project,
+                'units' => $units,
+                'rivaLogo' => null,
+                'developerLogo' => null,
+                'generatedAt' => now(),
+            ])->render();
+
+            return $this->renderMpdf($safeHtml, sys_get_temp_dir());
+        }
+    }
+
+    /**
+     * Render the given HTML into a PDF string using mPDF.
+     */
+    private function renderMpdf(string $html, string $tempDir): string
+    {
         $mpdf = new \Mpdf\Mpdf([
             'mode' => 'utf-8',
             'format' => 'A4',
@@ -84,6 +107,29 @@ class ProjectPriceListService
     }
 
     /**
+     * Resolve a safe and writable temporary directory for mPDF.
+     */
+    private function resolveTempDir(): string
+    {
+        $tempDir = storage_path('app/mpdf');
+        if (! is_dir($tempDir) || ! is_writable($tempDir)) {
+            @File::makeDirectory($tempDir, 0775, true, true);
+        }
+
+        if (! is_dir($tempDir) || ! is_writable($tempDir)) {
+            $tempDir = sys_get_temp_dir() . '/mpdf';
+            if (! is_dir($tempDir)) {
+                @mkdir($tempDir, 0775, true);
+            }
+            if (! is_writable($tempDir)) {
+                $tempDir = sys_get_temp_dir();
+            }
+        }
+
+        return $tempDir;
+    }
+
+    /**
      * A safe, downloadable file name for the project's price list.
      */
     public function fileName(Project $project): string
@@ -99,17 +145,22 @@ class ProjectPriceListService
      */
     private function rivaLogo(): ?string
     {
-        $path = public_path('frontend/img/logoyy.png');
+        try {
+            $path = public_path('frontend/img/logoyy.png');
 
-        if (! is_file($path)) {
+            if (! is_file($path) || filesize($path) > 2 * 1024 * 1024) {
+                return null;
+            }
+
+            $contents = file_get_contents($path);
+            if (! $contents) {
+                return null;
+            }
+
+            return $this->sanitizeImageForPdf($contents);
+        } catch (\Throwable $e) {
             return null;
         }
-
-        if (filesize($path) > 2 * 1024 * 1024) {
-            return null;
-        }
-
-        return 'data:image/png;base64,'.base64_encode((string) file_get_contents($path));
     }
 
     /**
@@ -120,32 +171,111 @@ class ProjectPriceListService
         try {
             $logo = $project->developer?->logo;
 
-            if (! $logo) {
+            if (! $logo || ! is_string($logo)) {
                 return null;
             }
 
-            // Strip leading slash or storage prefix if present
-            $logoPath = ltrim(str_replace('/storage/', '', $logo), '/');
+            $contents = null;
 
-            if (! Storage::disk('public')->exists($logoPath)) {
+            // Handle full URL vs relative storage path
+            if (str_starts_with($logo, 'http://') || str_starts_with($logo, 'https://')) {
+                $parsed = parse_url($logo, PHP_URL_PATH);
+                if ($parsed && str_contains($parsed, '/storage/')) {
+                    $logoPath = ltrim(explode('/storage/', $parsed)[1] ?? '', '/');
+                    if ($logoPath && Storage::disk('public')->exists($logoPath)) {
+                        $contents = Storage::disk('public')->get($logoPath);
+                    }
+                }
+            } else {
+                $logoPath = ltrim(str_replace('/storage/', '', $logo), '/');
+                if (Storage::disk('public')->exists($logoPath)) {
+                    $contents = Storage::disk('public')->get($logoPath);
+                }
+            }
+
+            if (! $contents || strlen($contents) > 2 * 1024 * 1024) {
                 return null;
             }
 
-            if (Storage::disk('public')->size($logoPath) > 2 * 1024 * 1024) {
-                return null;
-            }
-
-            $mime = Storage::disk('public')->mimeType($logoPath) ?: 'image/png';
-
-            if (str_contains($mime, 'svg') || str_ends_with(strtolower($logoPath), '.svg')) {
-                return null;
-            }
-
-            $contents = Storage::disk('public')->get($logoPath);
-
-            return 'data:'.$mime.';base64,'.base64_encode($contents);
+            return $this->sanitizeImageForPdf($contents);
         } catch (\Throwable $e) {
+            Log::warning('Failed to load developer logo for project price list', [
+                'project_id' => $project->id,
+                'error' => $e->getMessage(),
+            ]);
             return null;
         }
+    }
+
+    /**
+     * Validate, downscale, and convert an image to a safe PNG data-URI so mPDF
+     * will never segfault or run out of memory parsing unsupported or oversized formats.
+     */
+    private function sanitizeImageForPdf(string $rawContents): ?string
+    {
+        if (! function_exists('getimagesizefromstring')) {
+            return null;
+        }
+
+        $imageInfo = @getimagesizefromstring($rawContents);
+        if (! $imageInfo || empty($imageInfo['mime'])) {
+            return null;
+        }
+
+        $mime = strtolower($imageInfo['mime']);
+        $allowedMimes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+        if (! in_array($mime, $allowedMimes, true)) {
+            return null;
+        }
+
+        if (! function_exists('imagecreatefromstring')) {
+            if ($mime === 'image/webp') {
+                return null; // mPDF cannot render raw WebP without conversion
+            }
+            return 'data:' . $mime . ';base64,' . base64_encode($rawContents);
+        }
+
+        $gdImg = @imagecreatefromstring($rawContents);
+        if (! $gdImg) {
+            return null;
+        }
+
+        $width = imagesx($gdImg);
+        $height = imagesy($gdImg);
+
+        if ($width <= 0 || $height <= 0) {
+            imagedestroy($gdImg);
+            return null;
+        }
+
+        // Cap dimensions at 360x180 max to keep PDF memory usage and file size minimal
+        $maxWidth = 360;
+        $maxHeight = 180;
+
+        if ($width > $maxWidth || $height > $maxHeight) {
+            $ratio = min($maxWidth / $width, $maxHeight / $height);
+            $newWidth = max(1, (int) round($width * $ratio));
+            $newHeight = max(1, (int) round($height * $ratio));
+
+            $resized = imagecreatetruecolor($newWidth, $newHeight);
+            imagealphablending($resized, false);
+            imagesavealpha($resized, true);
+            $transparent = imagecolorallocatealpha($resized, 255, 255, 255, 127);
+            imagefilledrectangle($resized, 0, 0, $newWidth, $newHeight, $transparent);
+            imagecopyresampled($resized, $gdImg, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+            imagedestroy($gdImg);
+            $gdImg = $resized;
+        }
+
+        ob_start();
+        imagepng($gdImg, null, 6);
+        $cleanPng = ob_get_clean();
+        imagedestroy($gdImg);
+
+        if (! $cleanPng || strlen($cleanPng) === 0) {
+            return null;
+        }
+
+        return 'data:image/png;base64,' . base64_encode($cleanPng);
     }
 }

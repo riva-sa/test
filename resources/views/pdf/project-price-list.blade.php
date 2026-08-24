@@ -49,7 +49,8 @@
 </head>
 <body>
     @php
-        $projectFrontendUrl = route('frontend.projects.single', ['slug' => $project->slug ?: $project->id]);
+        $projectSlug = $project->slug ?: (string) $project->id;
+        $projectFrontendUrl = url('/project/' . rawurlencode($projectSlug));
     @endphp
 
     <table class="header">

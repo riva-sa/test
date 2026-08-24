@@ -127,11 +127,26 @@ it('filters units by status and search query in ProjectDetails', function () {
         ->assertDontSee('Apartment 202');
 });
 
-it('downloads project price list pdf for broker', function () {
-    $response = $this->get(route('broker.projects.pdf', $this->project->id));
+it('downloads project price list with developer logo and for manager route', function () {
+    // Create a real image for the developer
+    $imageFile = UploadedFile::fake()->image('dev_logo.png', 800, 600);
+    $logoPath = $imageFile->store('developers/logos', 'public');
 
-    $response->assertOk();
-    $response->assertHeader('content-type', 'application/pdf');
+    $this->project->developer->update(['logo' => $logoPath]);
+
+    // Test broker route
+    $brokerResponse = $this->get(route('broker.projects.pdf', $this->project->id));
+    $brokerResponse->assertOk();
+    $brokerResponse->assertHeader('content-type', 'application/pdf');
+
+    // Test manager route
+    \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'Admin', 'guard_name' => 'web']);
+    $admin = \App\Models\User::factory()->create();
+    $admin->assignRole('Admin');
+
+    $managerResponse = $this->actingAs($admin, 'web')->get(route('manager.projects.pdf', $this->project->id));
+    $managerResponse->assertOk();
+    $managerResponse->assertHeader('content-type', 'application/pdf');
 });
 
 it('handles large project with 300 units quickly', function () {

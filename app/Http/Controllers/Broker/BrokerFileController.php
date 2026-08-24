@@ -129,13 +129,25 @@ class BrokerFileController extends Controller
     {
         abort_unless($project->status, 404);
 
-        $pdfContent = $service->generate($project);
-        $fileName = $service->fileName($project);
+        try {
+            $pdfContent = $service->generate($project);
+            $fileName = $service->fileName($project);
 
-        return response($pdfContent, 200, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
-            'Content-Length' => (string) strlen($pdfContent),
-        ]);
+            return response($pdfContent, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+                'Content-Length' => (string) strlen($pdfContent),
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Broker Project PDF generation failed', [
+                'project_id' => $project->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'error' => 'Failed to generate PDF document: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 }
