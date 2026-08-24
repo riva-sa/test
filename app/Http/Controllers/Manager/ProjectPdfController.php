@@ -14,8 +14,10 @@ class ProjectPdfController extends Controller
         $pdfContent = $service->generate($project);
         $fileName = $service->fileName($project);
 
-        return response($pdfContent)
-            ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
+        return response()->streamDownload(
+            fn () => print($pdfContent),
+            $fileName,
+            ['Content-Type' => 'application/pdf']
+        );
     }
 }

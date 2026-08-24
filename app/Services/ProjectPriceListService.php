@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Project;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 class ProjectPriceListService
@@ -17,6 +18,8 @@ class ProjectPriceListService
      */
     public function generate(Project $project): string
     {
+        $project->loadMissing(['developer', 'city']);
+
         $query = $project->units();
         $driver = $query->getConnection()->getDriverName();
         $caseField = $driver === 'mysql' ? '`case`' : '"case"';
@@ -41,6 +44,11 @@ class ProjectPriceListService
             'generatedAt' => now(),
         ])->render();
 
+        $tempDir = storage_path('app/mpdf');
+        if (! is_dir($tempDir)) {
+            File::makeDirectory($tempDir, 0755, true, true);
+        }
+
         $mpdf = new \Mpdf\Mpdf([
             'mode' => 'utf-8',
             'format' => 'A4',
@@ -50,6 +58,7 @@ class ProjectPriceListService
             'margin_right' => 12,
             'margin_top' => 14,
             'margin_bottom' => 14,
+            'tempDir' => $tempDir,
         ]);
 
         $mpdf->SetDirectionality('rtl');
