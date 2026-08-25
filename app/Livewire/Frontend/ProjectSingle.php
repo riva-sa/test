@@ -88,7 +88,10 @@ class ProjectSingle extends Component
                 'projectType:id,name,slug',
                 'salesManager:id,name,phone',
             ])->where(function ($q) use ($slug) {
-                $q->where('slug', $slug)->orWhere('id', $slug);
+                $q->where('slug', $slug);
+                if (is_numeric($slug)) {
+                    $q->orWhere('id', (int) $slug);
+                }
             })->firstOrFail();
         });
         $this->case = request()->query('case', 'all');
