@@ -112,6 +112,14 @@
 
                                 </div>
                                 <hr style="margin: 10px;">
+                                @php
+                                    // Same mechanism as the project page: the project's own contact
+                                    // number, then its sales manager, then the site-wide number.
+                                    $unitProject = $selectedUnit->project;
+                                    $contactPhone = optional($unitProject)->contact_phone
+                                        ?? optional(optional($unitProject)->salesManager)->phone
+                                        ?? setting('site_phone');
+                                @endphp
                                 @if ($selectedUnit->show_price && $selectedUnit->case == 0)
                                     <h3 class="h3 mb-3 text-success px-2">
                                         <span class="text-muted small fs-15">@lang('public.unit.price')</span>
@@ -124,17 +132,13 @@
                                         <div class=" d-flex gap-2">
                                             <a target="_blanck" 
                                             wire:click="trackWhatsappClick({{ $selectedUnit->id }})"
-                                            href="https://wa.me/{{ isset($selectedUnit->project) && $selectedUnit->project->sales_manager_id ?
-                                                App\Models\User::where('id',$selectedUnit->project->sales_manager_id)->first()->phone ?? setting('site_phone') :
-                                            setting('site_phone')
-                                            }}?text=انا مهتم بهذا المشروع {{ isset($selectedUnit->project) ? $selectedUnit->project->name : '' }} {{ isset($selectedUnit->project) ? route('frontend.projects.single', ['slug' => $selectedUnit->project->slug]) : '' }}"
+                                            href="https://wa.me/{{ $contactPhone }}?text=انا مهتم بهذا المشروع {{ $unitProject->name ?? '' }} {{ $unitProject ? route('frontend.projects.single', ['slug' => $unitProject->slug]) : '' }}"
                                              class="btn btn-soft-primary btn-icon btn-sm btn-icon-start rounded w-100">
                                                 @lang('public.unit.whatsapp')
                                                 <i class="uil uil-whatsapp"></i>
                                             </a>
                                             <a wire:click="trackCallClick({{ $selectedUnit->id }})"
-                                                href="tel:{{ isset($selectedUnit->project) && $selectedUnit->project->sales_manager_id ?
-                                                App\Models\User::where('id',$selectedUnit->project->sales_manager_id)->first()->phone : setting('site_phone') }}"
+                                                href="tel:{{ $contactPhone }}"
                                                 class="btn btn-soft-primary btn-icon btn-sm btn-icon-start rounded w-100 text-dark">
                                                 @lang('public.unit.call')
                                                 <i class="uil uil-phone"></i>
@@ -154,10 +158,7 @@
                                         </a>
                                         <a target="_blank"
                                            wire:click="trackWhatsappClick({{ $selectedUnit->id }})"
-                                           href="https://wa.me/{{ isset($selectedUnit->project) && $selectedUnit->project->sales_manager_id ?
-                                            App\Models\User::where('id',$selectedUnit->project->sales_manager_id)->first()->phone ?? setting('site_phone') :
-                                        setting('site_phone')
-                                        }}?text=انا مهتم بهذا المشروع {{ isset($selectedUnit->project) ? $selectedUnit->project->name : '' }} {{ isset($selectedUnit->project) ? route('frontend.projects.single', ['slug' => $selectedUnit->project->slug]) : '' }}" class="btn btn-primary btn-icon btn-sm btn-icon-start rounded w-50">
+                                           href="https://wa.me/{{ $contactPhone }}?text=انا مهتم بهذا المشروع {{ $unitProject->name ?? '' }} {{ $unitProject ? route('frontend.projects.single', ['slug' => $unitProject->slug]) : '' }}" class="btn btn-primary btn-icon btn-sm btn-icon-start rounded w-50">
                                             @lang('public.unit.whatsapp')
                                             <i class="uil uil-whatsapp"></i>
                                         </a>

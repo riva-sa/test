@@ -11,7 +11,8 @@ class ProjectPriceListService
 {
     /**
      * Build a price-list PDF for the given project. The document lists all units
-     * (available, reserved, sold — available first) with their status and prices,
+     * (sold first, then reserved, then available) — each group ordered by the
+     * unit number numerically — with their status and prices,
      * the Riva and developer logos, and the extraction timestamp — because
      * availability and prices can change at any time.
      *
@@ -25,22 +26,30 @@ class ProjectPriceListService
         $project->loadMissing(['developer', 'city']);
 
         $query = $project->units()->select([
-            'id', 'project_id', 'title', 'unit_type', 'unit_area',
+            'id', 'project_id', 'title', 'unit_number', 'unit_type', 'unit_area',
             'floor', 'beadrooms', 'case', 'unit_price', 'show_price'
         ]);
         $driver = $query->getConnection()->getDriverName();
         $caseField = $driver === 'mysql' ? '`case`' : '"case"';
+        // MySQL needs UNSIGNED to cast a string column to a number; SQLite uses INTEGER.
+        $numericUnitNumber = $driver === 'mysql'
+            ? 'CAST(unit_number AS UNSIGNED)'
+            : 'CAST(unit_number AS INTEGER)';
 
+        // Sold units first, then reserved, then available (under construction last).
         $units = $query->orderByRaw("
             CASE {$caseField}
-                WHEN 0 THEN 1
+                WHEN 2 THEN 1
                 WHEN 1 THEN 2
-                WHEN 3 THEN 3
-                WHEN 2 THEN 4
+                WHEN 0 THEN 3
+                WHEN 3 THEN 4
                 ELSE 5
             END
         ")
-        ->orderBy('unit_price')
+        // Within each status group, order by the unit number as a number (not by id),
+        // falling back to a string comparison for non-numeric unit numbers.
+        ->orderByRaw("{$numericUnitNumber} ASC")
+        ->orderBy('unit_number')
         ->get();
 
         $rivaLogo = $this->rivaLogo();
